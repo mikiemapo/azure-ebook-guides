@@ -196,6 +196,23 @@
         .important-note { background-color: #fdf3e0; border-left: 4px solid var(--container-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
         .important-note i { color: var(--container-color); margin-right: 8px; }
 
+        /* Quick jump navigation */
+        .quick-jump {
+            display: flex; flex-wrap: wrap; gap: 10px; justify-content: center;
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            padding: 10px 12px; border-radius: 8px; box-shadow: 0 1px 3px var(--shadow-color);
+            margin: 10px 0 20px 0;
+        }
+        .quick-jump a {
+            text-decoration: none; color: var(--azure-blue-dark); font-weight: 600;
+            background: #e6f2ff; padding: 6px 10px; border-radius: 16px; border: 1px solid #b3d7ff;
+        }
+        .quick-jump a:hover { background: #d9ecff; }
+        /* Smaller quick links inside sections */
+        .quick-jump-mini { display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 12px 0; }
+        .quick-jump-mini a { text-decoration:none; font-size:0.85em; background:#f4f4f4; color:#333; padding:4px 8px; border-radius:12px; border:1px solid #ddd; }
+        .anchor-target { scroll-margin-top: 90px; }
+
     </style>
 </head>
 <body>
@@ -208,6 +225,15 @@
     <div class="main-container">
         <h1><i class="fas fa-boxes"></i>Azure Containers: ACI & Container Groups Guide</h1>
         <p class="instructions">Understand containers, Azure Container Instances (ACI), and Container Groups for efficient application deployment. Key for AZ-104. <strong>Click/Tap</strong> headers.</p>
+
+        <!-- Quick Jump Links -->
+        <nav class="quick-jump" aria-label="Quick jump">
+            <a href="#section-containers-vs-vms">Container Concept vs. VMs</a>
+            <a href="#section-aci">ACI</a>
+            <a href="#section-container-groups">Container Groups</a>
+            <a href="#section-deployment">Deployment</a>
+            <a href="#section-az104-focus">AZ-104 Focus</a>
+        </nav>
 
         <!-- Mind Map -->
         <div class="mindmap-container">
@@ -222,7 +248,7 @@
         <div class="card-container">
 
             <!-- Containers vs. Virtual Machines -->
-            <div class="card comparison-card"> <!-- Full width on larger screens -->
+            <div class="card comparison-card anchor-target" id="section-containers-vs-vms"> <!-- Full width on larger screens -->
                 <input type="checkbox" id="container-vm-toggle" class="card-toggle" checked>
                 <label for="container-vm-toggle" class="card-header">
                     <h2><i class="fas fa-balance-scale-right"></i>Containers vs. Virtual Machines (VMs)</h2>
@@ -343,7 +369,7 @@
             </div>
 
             <!-- Card: Introduction to Azure Container Instances (ACI) -->
-            <div class="card aci-card">
+            <div class="card aci-card anchor-target" id="section-aci">
                 <input type="checkbox" id="intro-aci-toggle" class="card-toggle">
                 <label for="intro-aci-toggle" class="card-header aci-header">
                     <h2><i class="fas fa-shipping-fast"></i>Intro to Azure Container Instances (ACI)</h2>
@@ -371,7 +397,7 @@
             </div>
 
             <!-- Card: Deploying an ACI (Step-by-Step) -->
-            <div class="card aci-card">
+            <div class="card aci-card anchor-target" id="section-deployment">
                 <input type="checkbox" id="deploy-aci-toggle" class="card-toggle">
                 <label for="deploy-aci-toggle" class="card-header aci-header">
                     <h2><i class="fas fa-cloud-upload-alt"></i>Step-by-Step: Deploying an ACI (Portal Example)</h2>
@@ -418,7 +444,7 @@
             </div>
             
             <!-- Card: What is an Azure Container Group? -->
-            <div class="card aci-card">
+            <div class="card aci-card anchor-target" id="section-container-groups">
                 <input type="checkbox" id="what-group-toggle" class="card-toggle">
                 <label for="what-group-toggle" class="card-header aci-header">
                     <h2><i class="fas fa-object-group"></i>What is an Azure Container Group?</h2>
@@ -522,7 +548,7 @@
             </div>
 
             <!-- Card: AZ-104 Focus for ACI -->
-            <div class="card aci-card">
+            <div class="card aci-card anchor-target" id="section-az104-focus">
                 <input type="checkbox" id="az104-aci-toggle" class="card-toggle">
                 <label for="az104-aci-toggle" class="card-header aci-header">
                     <h2><i class="fas fa-graduation-cap"></i>ACI & Container Groups: AZ-104 Focus</h2>
@@ -530,6 +556,13 @@
                 </label>
                 <div class="card-content">
                     <h3><i class="fas fa-lightbulb"></i>Key Concepts for the Exam</h3>
+                    <div class="quick-jump-mini" aria-label="Quick jump inside AZ-104">
+                        <a href="#section-containers-vs-vms">Containers vs VMs</a>
+                        <a href="#section-aci">ACI</a>
+                        <a href="#section-container-groups">Container Groups</a>
+                        <a href="#section-deployment">Deployment</a>
+                        <a href="#section-az104-focus">Top</a>
+                    </div>
                     <ul>
                         <li><i class="fa-li fas fa-info-circle"></i><strong>ACI vs. AKS:</strong> Know that ACI is for <span class="key-point">simpler, per-container/group deployments without orchestration</span>, while AKS is for full Kubernetes orchestration.</li>
                         <li><i class="fa-li fas fa-object-group"></i><strong>Container Groups:</strong> Understand they are the deployment unit, share resources (IP, network, lifecycle, optional volumes).</li>
@@ -540,6 +573,14 @@
                         <li><i class="fa-li fas fa-dollar-sign" style="color:var(--warning-color)"></i><strong>Cost Model:</strong> Per-second billing for CPU/memory.</li>
                         <li><i class="fa-li fas fa-arrows-alt-v"></i><strong>Scaling:</strong> ACI itself is not for horizontal auto-scaling of a single application like AKS; you scale by deploying more/larger container groups or use it for burst from AKS.</li>
                     </ul>
+
+                    <h3><i class="fas fa-exclamation-triangle"></i>ACI Scaling Behavior (Exam Weak Spot)</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-ban" style="color:var(--warning-color);"></i><strong>No in-place scaling:</strong> You cannot change the instance count of a running container group.</li>
+                        <li><i class="fa-li fas fa-redo" style="color:#a80000;"></i><strong>Redeploy to scale:</strong> To scale out/in, deploy a new container group with the desired instance count and replace the old one.</li>
+                        <li><i class="fa-li fas fa-balance-scale" style="color:#a19f9d;"></i><strong>No built-in load balancer or auto-scaling:</strong> For advanced scaling and traffic distribution, use AKS or another orchestrator.</li>
+                    </ul>
+                    <div class="important-note"><i class="fas fa-lightbulb"></i><strong>Mnemonic:</strong> <span class="key-point">ACI = Always Create Instance</span> (to “scale”, create a new container group).</div>
                 </div>
             </div>
             
