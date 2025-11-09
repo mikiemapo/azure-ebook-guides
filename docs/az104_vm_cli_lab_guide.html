@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Guide: Azure VM CLI Management (AZ-104)</title>
+     <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #2d2d2d; /* Darker background for code blocks */
+            --code-text-color: #dcdcdc; /* Light text for code */
+            --code-border: #444;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+             /* Feature Colors */
+            --vm-color: #0078FF; /* Blue */
+            --cli-color: #444; /* Dark Grey/Black for CLI */
+             --network-color: var(--success-color);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+       .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+         h1 i { color: var(--vm-color); }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+       
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1100px) { 
+             .card-container { grid-template-columns: repeat(3, 1fr); }
+             .card.summary-card { grid-column: span 3; }
+             .card.problem-card { grid-column: span 3; }
+             
+         }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--azure-blue); color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid var(--azure-blue-dark);
+        }
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+         .card-header.critical-header { background-color: var(--warning-color); border-bottom-color: #a4262c; }
+         .card-header.critical-header:hover { background-color: #a4262c; }
+         
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--azure-blue); font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--azure-blue); font-size: 0.9em;
+          }
+        /* Custom list icons */
+        .card-content li i.fa-terminal { color: var(--cli-color); }
+        .card-content li i.fa-server { color: var(--vm-color); }
+        .card-content li i.fa-toggle-on { color: var(--success-color); }
+        .card-content li i.fa-arrows-alt-v { color: var(--info-color); }
+        .card-content li i.fa-plug { color: var(--info-color); }
+        .card-content li i.fa-ssh { color: var(--cli-color); }
+        .card-content li i.fa-cogs { color: #605e5c; }
+        .card-content li i.fa-shield-alt { color: var(--success-color); }
+        .card-content li i.fa-cloud { color: var(--azure-blue); }
+        .card-content li i.fa-check { color: var(--success-color); }
+        .card-content li i.fa-times { color: var(--warning-color); }
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+        .card-content li i.fa-lightbulb { color: #f7b20c; }
+
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-box {
+            background-color: #fff; padding: 8px 12px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 90px; font-size: 0.9em;
+        }
+        .diagram-box i { font-size: 1.6em; } 
+        .diagram-box span { font-size: 0.8em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; margin: 0 5px; }
+       
+        /* Specific Diagram Styles */
+       .env-diagram i.fa-cloud, .env-diagram i.fa-terminal { color: var(--cli-color);}
+       .env-diagram i.fa-server { color: var(--vm-color);}
+       
+       .nsg-flow-diagram i.fa-user-shield { color: var(--warning-color); }
+       .nsg-flow-diagram i.fa-user-shield.open { color: var(--success-color); }
+       .nsg-flow-diagram .fa-lock, .nsg-flow-diagram .fa-lock-open { font-size: 0.9em; margin-left: 5px;}
+       .nsg-flow-diagram .fa-lock { color: var(--warning-color);}
+       .nsg-flow-diagram .fa-lock-open { color: var(--success-color);}
+
+
+        /* --- Code formatting --- */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+         pre {
+             background-color: var(--code-bg);
+             border: 1px solid var(--code-border);
+             padding: 15px; border-radius: 4px;
+             overflow-x: auto; font-size: 0.9em; 
+             color: var(--code-text-color);
+             margin-top: 10px;
+        }
+        pre code { background: none; border: none; padding: 0; font-size: 1em; color: var(--code-text-color); }
+        .param { color: #4ec9b0; } /* Teal for parameters */
+        .value { color: #ce9178; } /* Orange for values */
+        .comment { color: #6a9955; font-style: italic; } /* Green for comments */
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .warning-text { color: var(--warning-color); font-weight: 600; }
+         .important-note { background-color: #fff8db; border-left: 4px solid #ffcc00; padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: #ffcc00; margin-right: 8px; }
+         
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-server"></i>Lab Review: VM CLI Management & Networking</h1>
+     <!-- Add a "Back to Hub" link if desired -->
+     <div style="margin-bottom: 20px; padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: center;">
+         <a href="index.html" style="text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em;">
+             <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>Back to Study Hub
+         </a>
+     </div>
+       
+    <p class="instructions">Reinforcing the concepts from your hands-on Azure CLI lab session for deploying, managing, and configuring network access for VMs.</p>
+
+    <div class="card-container">
+
+        <!-- Summary of Lab -->
+        <div class="card">
+            <input type="checkbox" id="summary-toggle" class="card-toggle" checked> <!-- Start expanded -->
+            <label for="summary-toggle" class="card-header">
+                <h2><i class="fas fa-tasks"></i>Lab Activity Summary</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-check"></i>What You Did</h3>
+                 <ul>
+                    <li><i class="fa-li fas fa-terminal"></i>Used <span class="key-point">Azure CLI</span> in Cloud Shell.</li>
+                    <li><i class="fa-li fas fa-server"></i>Created, Started, Stopped, Resized, Listed, and Inspected Azure VMs (`az vm create, start, stop, resize, list, show`).</li>
+                     <li><i class="fa-li fas fa-network-wired"></i>Retrieved VM IP Addresses (`az vm list-ip-addresses`).</li>
+                    <li><i class="fa-li fas fa-ssh"></i>Connected to the VM using SSH.</li>
+                    <li><i class="fa-li fas fa-cogs"></i>Managed the VM internally by installing a web server (`nginx`) using `apt-get`.</li>
+                     <li><i class="fa-li fas fa-times"></i>Encountered a connection timeout trying to access the web server.</li>
+                      <li><i class="fa-li fas fa-lightbulb"></i>Identified the need to open Port 80 using `az vm open-port` from Cloud Shell.</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Key Learning Point -->
+         <div class="card">
+            <input type="checkbox" id="environment-toggle" class="card-toggle" checked>
+            <label for="environment-toggle" class="card-header critical-header">
+                 <h2><i class="fas fa-exclamation-triangle"></i>KEY CONCEPT: Where Commands Run Matters!</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-laptop-code"></i>Cloud Shell vs. VM Shell</h3>
+                 <p class="description">Understanding the difference was the core of solving the lab problem.</p>
+                 <div class="diagram env-diagram">
+                    <div class="diagram-box"> <i class="fas fa-cloud"></i> <span>CLOUD SHELL<br/>(Azure Environment)</span></div>
+                    <div class="diagram-box"> <i class="fas fa-server"></i> <span>VM SHELL (SSH)<br/>(Inside the VM OS)</span></div>
+                 </div>
+                 <ul>
+                    <li><i class="fa-li fas fa-cloud"></i><strong>AZURE CLOUD SHELL:</strong>
+                        <ul>
+                            <li>Is an environment hosted by Azure that has Azure CLI (`az`) and Azure PowerShell (`Az`) tools <span class="key-point">pre-installed</span>.</li>
+                             <li>Commands run here (like `az vm ...`) talk to the Azure Resource Manager (ARM) API to manage your Azure resources (like VMs, NSGs, Storage, etc).</li>
+                        </ul>
+                     </li>
+                     <li><i class="fa-li fas fa-server"></i><strong>VM SHELL (via SSH):</strong>
+                        <ul>
+                             <li>You are running commands <span class="key-point">inside</span> the Guest Operating System (Ubuntu, in your case) on that specific VM.</li>
+                            <li>It has OS commands (like `sudo`, `apt-get`, `curl`, `ls`).</li>
+                            <li>It does <span class="warning-text">NOT</span> have the Azure CLI (`az`) tools installed by default.</li>
+                        </ul>
+                     </li>
+                 </ul>
+                  <p class="important-note"><i class="fas fa-lightbulb"></i>To manage an Azure Resource (like modifying the NSG Rules), you MUST run the `az` command from an environment that has the Azure CLI installed and logged in, like the Cloud Shell.</p>
+            </div>
+        </div>
+
+
+        <!-- VM Management via CLI -->
+        <div class="card">
+            <input type="checkbox" id="vm-manage-toggle" class="card-toggle">
+            <label for="vm-manage-toggle" class="card-header">
+                <h2><i class="fas fa-server"></i>VM Lifecycle (CLI)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-cogs"></i>Commands You Used</h3>
+                <p class="description">Controlling the state and configuration of the VM resource via the `az vm` command group.</p>
+                 <ul>
+                    <li><i class="fa-li fas fa-plus-circle"></i><code class="code-term">az vm create</code>: Deploys the VM, creating associated NIC, Disk, Public IP, and NSG resources by default if not specified.</li>
+                    <li><i class="fa-li fas fa-list"></i><code class="code-term">az vm list / show</code>: Query for deployed VMs and their properties.</li>
+                    <li><i class="fa-li fas fa-toggle-on"></i><code class="code-term">az vm stop / start / restart</code>: Manage the power state of the VM. (Stop deallocates by default, saving compute costs).</li>
+                     <li><i class="fa-li fas fa-arrows-alt-v"></i><code class="code-term">az vm resize</code>: Changes the VM Size (CPU/Memory). Requires the VM to be running or stopped, but may require a restart.</li>
+                      <li><i class="fa-li fas fa-network-wired"></i><code class="code-term">az vm list-ip-addresses</code>: Convenient way to see Public and Private IPs.</li>
+                 </ul>
+            </div>
+        </div>
+
+       <!-- Networking and az vm open-port -->
+        <div class="card">
+            <input type="checkbox" id="nsg-toggle" class="card-toggle">
+            <label for="nsg-toggle" class="card-header">
+                <h2><i class="fas fa-network-wired"></i>Networking: Opening a Port</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-shield-alt"></i>How `az vm open-port` Works</h3>
+                 <p class="description">This is a convenience command that modifies the VM's Network Security Group (NSG).</p>
+                 <h4>Flow: Before vs After</h4>
+                 <div class="diagram nsg-flow-diagram">
+                    <div style="text-align:center; flex-basis: 100%; font-weight: bold;">BEFORE (Port 80 Blocked)</div>
+                     <div class="diagram-box"> <i class="fas fa-globe"></i><span>Web Request</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box" style="border-color: var(--warning-color)"> <i class="fas fa-user-shield"></i><span>NSG<i class="fas fa-lock"></i></span><span class="diagram-label">Default Deny Blocks Port 80</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow" style="opacity: 0.3;"></i>
+                     <div class="diagram-box" style="opacity: 0.3;"><i class="fas fa-server"></i><span>VM + Nginx</span></div>
+                 </div>
+                  <div class="diagram nsg-flow-diagram">
+                    <div style="text-align:center; flex-basis: 100%; font-weight: bold;">AFTER (Run `az vm open-port` in Cloud Shell)</div>
+                     <div class="diagram-box"> <i class="fas fa-globe"></i><span>Web Request</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow" style="color: var(--success-color)"></i>
+                     <div class="diagram-box" style="border-color: var(--success-color)"> <i class="fas fa-user-shield open"></i><span>NSG<i class="fas fa-lock-open"></i></span><span class="diagram-label">Rule Added to Allow Port 80</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow" style="color: var(--success-color)"></i>
+                     <div class="diagram-box"><i class="fas fa-server"></i><span>VM + Nginx</span></div>
+                 </div>
+                <ul>
+                    <li><i class="fa-li fas fa-info-circle"></i>When an Azure VM is created, it usually gets an NSG associated with its Network Interface (NIC).</li>
+                    <li><i class="fa-li fas fa-ban" style="color: var(--warning-color)"></i>By default, NSGs block most inbound traffic from the Internet for security.</li>
+                     <li><i class="fa-li fas fa-terminal"></i>The <code class="code-term">az vm open-port --port 80 ...</code> command, run from <span class="key-point">Cloud Shell</span>, finds the NSG attached to the VM and adds a new <span class="key-point">inbound security rule</span> to ALLOW traffic on the specified port (80) from Any source (`*`).</li>
+                     <li><i class="fa-li fas fa-check"></i>Once the NSG rule allows traffic on Port 80, and Nginx is running and listening on Port 80 inside the VM, connections (like from `curl` or a browser) can succeed.</li>
+                 </ul>
+            </div>
+        </div>
+
+         <!-- Connecting and Configuring -->
+        <div class="card">
+            <input type="checkbox" id="connect-toggle" class="card-toggle">
+            <label for="connect-toggle" class="card-header">
+                 <h2><i class="fas fa-ssh"></i>Connecting & Configuring</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-cogs"></i>Inside the VM</h3>
+                <p class="description">Once connected, you manage the VM's Guest OS directly.</p>
+                 <ul>
+                    <li><i class="fa-li fas fa-plug"></i><strong>SSH:</strong> Used your SSH client (available in Cloud Shell) to connect securely to the Linux VM's OS using its Public IP address.</li>
+                    <li><i class="fa-li fas fa-download" style="color:var(--success-color)"></i><strong>`sudo apt-get update`:</strong > Updates the list of available software packages from the configured repositories.</li>
+                    <li><i class="fa-li fas fa-box-open" style="color:var(--success-color)"></i><strong>`sudo apt-get install nginx`:</strong > Installs the Nginx web server software packages onto the VM's operating system.</li>
+                    <li><i class="fa-li fas fa-sign-out-alt"></i><strong>`exit`:</strong > Command used to close the SSH session and return to the Cloud Shell prompt.</li>
+                 </ul>
+                 <p>Tasks performed inside the VM via SSH manage the VM's Guest OS and Software, NOT the Azure resource properties.</p>
+            </div>
+        </div>
+
+        <!-- Summary -->
+         <div class="card summary-card">
+            <input type="checkbox" id="takeaway-toggle" class="card-toggle">
+            <label for="takeaway-toggle" class="card-header">
+                <h2><i class="fas fa-graduation-cap"></i>Key Takeaways from the Lab</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-lightbulb"></i>Reinforced Concepts</h3>
+                 <ul>
+                    <li><i class="fa-li fas fa-check"></i>Azure CLI (in Cloud Shell) is used to manage Azure Resources (VMs, NSGs, IPs).</li>
+                    <li><i class="fa-li fas fa-check"></i>SSH is used to log in and manage the Guest Operating System inside a VM.</li>
+                     <li><i class="fa-li fas fa-check"></i>The `az` command does not exist inside a standard VM unless you explicitly install it.</li>
+                     <li><i class="fa-li fas fa-check"></i>To allow network traffic to a VM, you must configure its associated Network Security Group (NSG).</li>
+                    <li><i class="fa-li fas fa-check"></i><code class="code-term">az vm open-port</code> is a convenient CLI command to modify NSG rules to allow specific inbound ports.</li>
+                </ul>
+            </div>
+        </div>
+
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+    <script>
+        // JavaScript for quiz functionality (same as previous quizzes)
+        document.querySelectorAll('.card-toggle').forEach(checkbox => {
+           checkbox.addEventListener('change', (e) => {
+             // This just enables the expand/collapse, no logic needed beyond CSS
+           });
+        });
+    </script>
+
+</body>
+</html>

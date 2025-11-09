@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Guide</title>
+
+    <!-- Include Tailwind and Flowbite CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      
+    </style>
+  </head>
+  <body>
+    <!-- Add your content here. You can find flowbite components at https://flowbite.com/docs/components/ -->
+    
+    <main class="pt-16 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900 antialiased">
+      <div class="flex px-4 justify-between mx-auto ">
+        <article class="mx-auto w-full max-w-2xl">
+          <img class="h-auto rounded-lg mb-6" src="https://learn.microsoft.com/en-us/media/open-graph-image.png" alt="image description">
+          <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Azure Storage Options and Architecture</h1>
+          <p class="mb-6 text-xl font-normal text-gray-500">A comprehensive guide to understanding Azure storage services, capabilities, and implementation considerations</p>
+          
+          <!-- Key Terms -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key Terms</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Blob Storage</mark> - An object storage solution for the cloud optimized for storing massive amounts of unstructured data that doesn't adhere to a specific data model or definition</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Core storage service for serving images, documents, streaming media, logs, backup data, and analytics data</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Container Storage</mark> - A fully managed, cloud-based volume management, deployment, and orchestration service built specifically for containers</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables dynamic provisioning of persistent volumes for stateful applications running on Kubernetes clusters</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Data Lake Storage Gen2</mark> - An enterprise big data analytics solution built on Blob Storage that offers hierarchical file system capabilities with Blob Storage advantages</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides petabyte-scale storage with high availability and disaster recovery capabilities for big data analytics</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure disk storage</mark> - Persistent, high-performance block storage service designed to power Azure Virtual Machines</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides durable and secure storage with single-instance SLA for virtual machines using Premium SSD or Ultra Disk Storage</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure File Sync</mark> - A service that centralizes file shares in Azure Files while maintaining local access to data</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables hybrid storage solutions by syncing on-premises file servers with cloud storage</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Files</mark> - A fully managed service providing native SMB and NFS file shares in the cloud without requiring virtual machine management</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables cloud-based file sharing and can be mounted as a network drive by Azure VMs or on-premises computers</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Managed Lustre</mark> - A high-performance distributed parallel file system solution managed by Azure</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Ideal for HPC workloads requiring high throughput and low latency</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure NetApp Files</mark> - An enterprise-class, high-performance, metered file storage service</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Supports various workload types with built-in high availability and customizable service levels</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Data Box Gateway</mark> - A virtual storage solution that enables seamless data transfer to Azure using NFS and SMB protocols</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Facilitates cloud data transfer through a virtual appliance in on-premises environments</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Geo-redundant storage (GRS)</mark> - A storage redundancy option that replicates data across multiple geographic regions</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides enhanced data protection against regional outages</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Locally redundant storage</mark> - A basic level of storage redundancy that maintains multiple copies of data within a single facility</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides basic protection against hardware failures within a single location</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Storage Service Encryption</mark> - Automatic encryption of data at rest in Azure Storage using Microsoft-managed keys</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides default security for all stored data without additional configuration</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Zone-redundant storage</mark> - A storage redundancy option that replicates data across multiple availability zones within a region</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Offers protection against datacenter-level failures while maintaining data within the same region</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+          
+          <!-- Key People -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key People & Entities</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure</mark> - Cloud computing platform referenced throughout the text as the main subject</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Primary cloud platform being discussed, providing various storage and computing services</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Data Box</mark> - Mentioned as a storage solution product</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Product for offline bulk data transfer to and from Azure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Files</mark> - Referenced as a file storage service</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Core storage service providing managed file shares in Azure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Kubernetes Service</mark> - Mentioned in context of container storage solutions</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Container orchestration service that integrates with Azure storage solutions</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure NetApp Files</mark> - Discussed as an enterprise file storage solution</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">High-performance file storage service for enterprise workloads</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">BitLocker</mark> - Mentioned in context of encryption technology</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Microsoft's disk encryption technology used in Azure storage security</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Cassandra</mark> - Referenced as a NoSQL database system</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Example of database system that can use Azure Premium SSD storage</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Dell-EMC</mark> - Mentioned as storage hardware manufacturer</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Referenced as comparison point for Azure storage solutions</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Microsoft</mark> - Company name appearing in copyright notice and product references</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Parent company of Azure and provider of the cloud services discussed</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">MongoDB</mark> - Referenced as a NoSQL database system</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Example of database system that can use Azure Premium SSD storage</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">NetApp</mark> - Referenced as storage hardware manufacturer</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Partner company providing enterprise storage solutions in Azure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Oracle</mark> - Mentioned as database software</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Example of database system that can run on Azure storage</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">SQL Server</mark> - Referenced multiple times as database software</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Microsoft's database product that can utilize Azure storage solutions</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Windows Server</mark> - Referenced in context of file services and storage</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Microsoft's server operating system that integrates with Azure storage services</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Key Dates -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key Dates</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">March 27, 2025</mark> - Article publication date</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">The date when this Azure architecture documentation was published/updated, indicating the currency of the information.</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">April 8 - May 28, 2025</mark> - AI Skills Fest event period</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">A scheduled event mentioned at the beginning of the document, indicating an upcoming training or learning opportunity.</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">May 19-22, 2025</mark> - Microsoft Build event</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Future Microsoft developer conference mentioned in the events section, scheduled to take place in Seattle.</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">2025</mark> - Copyright year</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">The copyright year listed at the bottom of the document, indicating the current version's legal protection period.</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Key Concepts -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key concepts</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Azure Storage</mark> - Azure's managed service platform for providing cloud storage, composed of several core services and supporting features that are highly available, secure, durable, scalable, and redundant.</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Forms the foundation of Microsoft's cloud storage solutions and is critical for supporting workloads and services hosted in the cloud.</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Blob Storage</mark> - An object storage solution optimized for storing massive amounts of unstructured data such as text, binary data, documents, media files, and application logs.</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides scalable storage for various types of data and supports features like static website hosting, backup, and archiving capabilities.</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Azure Files</mark> - A fully managed service providing native SMB and NFS file shares in the cloud without requiring virtual machine management.</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables organizations to migrate traditional file-based applications and workloads to the cloud while maintaining compatibility with existing systems.</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Azure Disk Storage</mark> - Offers persistent, high-performance block storage specifically designed for Azure Virtual Machines with various performance tiers (Standard SSD, Premium SSD, Ultra Disk).</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Critical for running production workloads and applications that require consistent, low-latency disk performance.</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Data Lake Storage Gen2</mark> - An enterprise big data analytics solution built on Azure Blob Storage that offers hierarchical file system capabilities and enhanced performance for analytics workloads.</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables organizations to process and analyze massive amounts of data while maintaining high availability and disaster recovery capabilities.</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Storage Redundancy Options</mark> - Various data replication configurations including locally redundant storage, zone-redundant storage, geo-redundant storage, and read-access geo-redundant storage.</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Ensures data durability and availability across different failure scenarios, from hardware failures to entire region outages.</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Azure NetApp Files</mark> - Enterprise-class, high-performance, metered file storage service that supports various workload types and includes advanced data management features.</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides enterprise-grade storage solutions for organizations requiring high performance and advanced features like snapshots and cloning.</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Azure Container Storage</mark> - A fully managed, cloud-based volume management service built specifically for containers, integrating with Kubernetes for dynamic persistent volume provisioning.</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables stateful applications in container environments by providing persistent storage solutions with automated management.</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+
+          <!-- Full Doc -->
+          <section class="pb-6">
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Core Azure Storage Services</h1>
+              <p class="mb-3 text-xl text-gray-500">Overview of primary storage solutions offered by Azure</p>
+              <p class="text-gray-500 dark:text-gray-900">Azure provides multiple storage solutions to meet various business needs. The core services include Blob Storage for unstructured data storage, Azure Files for fully managed file shares, Azure Disk Storage for block storage supporting virtual machines, and specialized solutions like Data Lake Storage Gen2 for big data analytics. Each service is designed to address specific use cases while maintaining high availability, security, and scalability. Azure Blob Storage serves as the foundation for object storage, handling everything from simple file storage to complex data lakes. Azure Files offers SMB and NFS protocols for cloud-native file sharing, while Azure Disk Storage provides the persistent block storage necessary for virtual machine operations.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      Azure Storage encompasses multiple specialized services for different storage needs
+                  </li>
+                  <li>
+                      Blob Storage handles unstructured data and serves as the foundation for other services
+                  </li>
+                  <li>
+                      Azure Files provides managed SMB and NFS file shares
+                  </li>
+                  <li>
+                      Azure Disk Storage supports virtual machine operations with block storage
+                  </li>
+                  <li>
+                      Data Lake Storage Gen2 enables big data analytics capabilities
+                  </li>
+              </ul>
+            </div>
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Storage Scenarios and Selection Criteria</h1>
+              <p class="mb-3 text-xl text-gray-500">Understanding which storage solution best fits specific use cases</p>
+              <p class="text-gray-500 dark:text-gray-900">Selecting the appropriate storage solution requires careful consideration of workload requirements and scenarios. For block storage needs, Premium SSD offers consistent low-latency performance for production workloads, while Standard SSD provides a cost-effective solution for less demanding applications. High-performance computing scenarios might benefit from Azure Managed Lustre or Azure NetApp Files. For file sharing scenarios, Azure Files provides native SMB and NFS support, with Azure File Sync enabling hybrid scenarios. Object storage needs are typically served by Blob Storage, with various access tiers (hot, cool, archive) to optimize costs based on access patterns. The selection process should consider factors such as performance requirements, access patterns, scalability needs, and cost constraints.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      Match storage solution to specific workload requirements and performance needs
+                  </li>
+                  <li>
+                      Consider cost optimization through appropriate tier selection
+                  </li>
+                  <li>
+                      Evaluate hybrid scenarios and integration requirements
+                  </li>
+                  <li>
+                      Assess performance requirements and SLA needs
+                  </li>
+                  <li>
+                      Factor in scalability and growth requirements
+                  </li>
+              </ul>
+            </div>
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Data Protection and Security</h1>
+              <p class="mb-3 text-xl text-gray-500">Security features and data protection capabilities across Azure storage services</p>
+              <p class="text-gray-500 dark:text-gray-900">Azure storage services implement comprehensive security measures to protect data at rest and in transit. All services support encryption by default, with options for customer-managed keys through Azure Key Vault. Data redundancy options include locally redundant storage (LRS), zone-redundant storage (ZRS), and geo-redundant storage (GRS) to meet various availability and disaster recovery requirements. Access control is managed through Azure RBAC and Microsoft Entra ID integration, while shared access signatures (SAS) provide delegated access capabilities. Network security features include private endpoints, service endpoints, and network rules to control data access patterns. Regular backup and snapshot capabilities provide additional data protection layers.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      All Azure storage services provide encryption at rest by default
+                  </li>
+                  <li>
+                      Multiple redundancy options support different availability requirements
+                  </li>
+                  <li>
+                      Comprehensive access control through Azure RBAC and Microsoft Entra ID
+                  </li>
+                  <li>
+                      Network security features enable secure access patterns
+                  </li>
+                  <li>
+                      Built-in backup and snapshot capabilities enhance data protection
+                  </li>
+              </ul>
+            </div>
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Compliance and Data Residency</h1>
+              <p class="mb-3 text-xl text-gray-500">Meeting regulatory requirements and data sovereignty needs</p>
+              <p class="text-gray-500 dark:text-gray-900">Azure storage services support various compliance requirements through regional deployment options and data residency controls. Organizations can deploy storage resources in specific Azure regions to meet data sovereignty requirements and comply with local regulations. Azure geographies are organized to honor data residency, sovereignty, and compliance requirements within geographical and political boundaries. The shared responsibility model clearly defines the roles of Microsoft and customers in ensuring data protection and compliance. Regular compliance certifications and audits validate Azure's adherence to various international and industry-specific standards. Organizations should consider their specific compliance requirements when planning storage deployments and implementing data protection measures.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      Azure regions support specific data residency requirements
+                  </li>
+                  <li>
+                      Geographies are organized to meet sovereignty and compliance needs
+                  </li>
+                  <li>
+                      Clear shared responsibility model for data protection
+                  </li>
+                  <li>
+                      Regular compliance certifications and audits
+                  </li>
+                  <li>
+                      Regional deployment options support various regulatory requirements
+                  </li>
+              </ul>
+            </div>
+            
+          </section>
+        </article>
+      </div>
+        
+      </div>
+      <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700">
+      <footer>
+        <span class="block text-sm text-center text-gray-500">End of study guide.
+          </span>
+      </footer>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+  </body>
+</html>

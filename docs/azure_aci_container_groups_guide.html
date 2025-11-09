@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Containers: ACI & Container Groups Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors */
+            --container-color: #762F76; /* Purple from compute options */
+            --aci-color: #9b59b6;   /* Lighter Purple for ACI */
+            --vm-color: #0078FF;
+            --docker-color: #0db7ed; /* Docker Blue */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-boxes { font-size: 1.1em; color: var(--container-color); }
+
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--container-color); }
+
+        /* --- Mind Map Diagram --- */
+        .mindmap-container {
+            background-color: var(--card-bg); border-radius: 8px; padding: 20px;
+            margin: 0 auto 30px auto; width: 100%;
+            box-shadow: 0 2px 8px var(--shadow-color); border: 1px solid var(--border-color);
+            display: flex; flex-wrap: wrap; justify-content: space-around; align-items: flex-start; gap: 15px;
+        }
+        .mindmap-item {
+            background-color: var(--diagram-bg); padding: 10px 15px;
+            border-radius: 6px; font-size: 0.9em; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            width: calc(33.33% - 20px); min-width: 140px; 
+            transition: transform 0.2s ease;
+        }
+        .mindmap-item:hover { transform: translateY(-3px); }
+        .mindmap-item i { font-size: 1.8em; margin-bottom: 5px; }
+        .mindmap-item span { font-weight: 600; }
+        /* Specific item colors for mind map */
+        .mindmap-item.concept i { color: var(--container-color); }
+        .mindmap-item.vs-vm i { color: var(--vm-color); }
+        .mindmap-item.aci i { color: var(--aci-color); }
+        .mindmap-item.group i { color: var(--aci-color); opacity: 0.8;}
+        .mindmap-item.deploy i { color: #605e5c; }
+        .mindmap-item.az104 i { color: var(--success-color); }
+
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1200px) { 
+            .card-container { grid-template-columns: repeat(3, 1fr); } 
+            .card.comparison-card { grid-column: span 3;}
+        }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--container-color); color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid #512051; 
+        }
+        .card-header:hover { background-color: #512051; }
+        .card-header.aci-header { background-color: var(--aci-color); border-bottom-color: #6c3483;}
+        .card-header.aci-header:hover { background-color: #6c3483;}
+        
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { font-size: 0.9em; color: var(--container-color);} 
+         .aci-card .card-content h3 i { color: var(--aci-color); }
+
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--container-color); 
+          }
+        
+        .card-content li i.fa-box-open, .card-content li i.fa-boxes { color: var(--container-color); }
+        .card-content li i.fa-cogs { color: #605e5c; }
+        .card-content li i.fa-shipping-fast { color: var(--info-color); }
+        .card-content li i.fa-check-circle { color: var(--success-color); }
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+        .card-content li i.fa-server { color: var(--vm-color); }
+        .card-content li i.fa-stopwatch { color: var(--warning-color); }
+        .card-content li i.fa-hdd { color: #605e5c; }
+        .card-content li i.fa-layer-group { color: var(--info-color); }
+        .card-content li i.fa-puzzle-piece { color: var(--info-color); }
+
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: space-around; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-box {
+            background-color: #fff; padding: 10px 15px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 8px; 
+            min-width: 120px; font-size: 0.9em;
+        }
+        .diagram-box i { font-size: 1.8em; }
+        .diagram-box strong { font-size: 1em; color: var(--azure-blue-dark); margin-bottom: 3px;}
+        .diagram-box span { font-size: 0.85em; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; align-self: center; margin: 0 10px; }
+        .diagram-label { font-size: 0.75em; color: #605e5c; font-style: italic; width: 100%; text-align: center; margin-top: 5px;}
+
+        /* Specific Diagram Styles */
+        .shipping-analogy i.fa-box-open { color: var(--container-color); font-size: 2.5em;}
+        .shipping-analogy i.fa-ship, .shipping-analogy i.fa-truck { color: #605e5c; font-size: 2em;}
+        .shipping-analogy .analogy-text {font-size: 0.8em; margin-top: 5px;}
+
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em;}
+        .comparison-table th, .comparison-table td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; vertical-align: top;}
+        .comparison-table th { background-color: var(--diagram-bg); font-weight: 600; }
+        .comparison-table td ul { margin:0; padding-left: 15px; list-style: disc; font-size: 0.95em;}
+        .comparison-table td li { padding-left: 0; margin-bottom: 3px;}
+        .comparison-table .vm-col { background-color: #e6f2ff; }
+        .comparison-table .container-col { background-color: #f3e6f3; }
+        .comparison-table i { margin-right: 5px; }
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--container-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .important-note { background-color: #fdf3e0; border-left: 4px solid var(--container-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--container-color); margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-boxes"></i>Azure Containers: ACI & Container Groups Guide</h1>
+        <p class="instructions">Understand containers, Azure Container Instances (ACI), and Container Groups for efficient application deployment. Key for AZ-104. <strong>Click/Tap</strong> headers.</p>
+
+        <!-- Mind Map -->
+        <div class="mindmap-container">
+            <div class="mindmap-item concept"><i class="fas fa-box-open"></i><span>Container Concept</span></div>
+            <div class="mindmap-item vs-vm"><i class="fas fa-balance-scale-right"></i><span>vs. VMs</span></div>
+            <div class="mindmap-item aci"><i class="fas fa-shipping-fast"></i><span>ACI</span></div>
+            <div class="mindmap-item group"><i class="fas fa-object-group"></i><span>Container Groups</span></div>
+            <div class="mindmap-item deploy"><i class="fas fa-cloud-upload-alt"></i><span>Deployment</span></div>
+            <div class="mindmap-item az104"><i class="fas fa-graduation-cap"></i><span>AZ-104 Focus</span></div>
+        </div>
+
+        <div class="card-container">
+
+            <!-- Containers vs. Virtual Machines -->
+            <div class="card comparison-card"> <!-- Full width on larger screens -->
+                <input type="checkbox" id="container-vm-toggle" class="card-toggle" checked>
+                <label for="container-vm-toggle" class="card-header">
+                    <h2><i class="fas fa-balance-scale-right"></i>Containers vs. Virtual Machines (VMs)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--container-color);"><i class="fas fa-server"></i>Key Differences</h3>
+                    <div class="diagram">
+                        <div class="diagram-box vm-col" style="border-color: var(--vm-color);">
+                            <i class="fas fa-server" style="color:var(--vm-color)"></i><strong>Virtual Machine</strong>
+                            <span>Full OS + App + Dependencies</span>
+                            <span>Boot: Minutes</span>
+                            <span>Size: GBs</span>
+                            <span>Isolation: Strong (OS Kernel)</span>
+                        </div>
+                        <div class="diagram-box container-col" style="border-color: var(--container-color);">
+                             <i class="fas fa-box-open" style="color:var(--container-color)"></i><strong>Container</strong>
+                            <span>App + Dependencies (Shares Host OS Kernel)</span>
+                            <span>Boot: Seconds</span>
+                            <span>Size: MBs</span>
+                            <span>Isolation: Process Level</span>
+                        </div>
+                    </div>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th><i class="fas fa-server" style="color:var(--vm-color)"></i> Virtual Machine</th>
+                                <th><i class="fas fa-box-open" style="color:var(--container-color)"></i> Container</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Includes</strong></td>
+                                <td>Full OS + Application + Dependencies</td>
+                                <td>Application + Dependencies (shares host OS kernel)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Boot Time</strong></td>
+                                <td>Minutes</td>
+                                <td>Seconds</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Size</strong></td>
+                                <td>Large (Gigabytes)</td>
+                                <td>Small (Megabytes)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Isolation</strong></td>
+                                <td>Strong (Hardware virtualization, separate OS kernel)</td>
+                                <td>Lighter (Process-level isolation via namespaces and cgroups)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Resource Usage</strong></td>
+                                <td>Higher (each VM has its own OS)</td>
+                                <td>Lower (shares host OS, higher density)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Typical Use Case</strong></td>
+                                <td>Full OS isolation, legacy apps, GUI apps, apps requiring specific kernel versions.</td>
+                                <td>Microservices, fast deployment, CI/CD, web apps, APIs.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p><strong>Implication:</strong> Containers offer greater agility, density, and speed for many modern applications, while VMs provide stronger isolation and full OS control for traditional workloads.</p>
+                </div>
+            </div>
+
+             <!-- What is a Container? -->
+            <div class="card">
+                <input type="checkbox" id="what-container-toggle" class="card-toggle" checked>
+                <label for="what-container-toggle" class="card-header">
+                    <h2><i class="fas fa-question-circle"></i>What Is a Container? (Computer Context)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--container-color);"><i class="fas fa-box-open"></i>Lightweight, Executable Package</h3>
+                    <p class="description">A container is a standard unit of software that packages up code and all its dependencies so the application runs quickly and reliably from one computing environment to another.</p>
+                    <div class="diagram shipping-analogy">
+                        <div class="diagram-box" style="border-color: var(--container-color); min-width:150px;"> <i class="fas fa-box-open"></i><strong>Software Container</strong><span>Code + Runtime + System Tools + Libraries + Settings</span></div>
+                        <i class="fas fa-exchange-alt diagram-arrow"></i>
+                        <div class="diagram-box" style="min-width:150px;"> <i class="fas fa-ship"></i> <i class="fas fa-truck"></i><strong>Shipping Container</strong><span class="analogy-text">Self-contained, Portable</span></div>
+                    </div>
+                    <ul>
+                        <li><i class="fa-li fas fa-box"></i><strong>Includes Everything Needed:</strong> Code, runtime (e.g., .NET, Node.js), system tools, system libraries, and settings.</li>
+                        <li><i class="fa-li fas fa-feather-alt"></i><strong>Lightweight:</strong> Unlike VMs, containers virtualize the OS (share the host OS kernel) instead of virtualizing hardware.</li>
+                        <li><i class="fa-li fas fa-shipping-fast"></i><strong>Standalone & Executable:</strong> Can run independently.</li>
+                        <li><i class="fa-li fas fa-sync-alt"></i><strong>Consistent Operation:</strong> Runs the same regardless of where it's deployed (dev laptop, on-prem, cloud).</li>
+                    </ul>
+                    <p><strong>Analogy Implication:</strong> Just like a physical shipping container standardizes transport, software containers standardize application packaging and deployment.</p>
+                </div>
+            </div>
+                        <!-- Card: Why Containers in Azure? -->
+            <div class="card">
+                <input type="checkbox" id="why-containers-azure-toggle" class="card-toggle">
+                <label for="why-containers-azure-toggle" class="card-header">
+                    <h2><i class="fab fa-microsoft" style="color:var(--azure-blue);"></i>Why Containers in Azure?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--container-color);"><i class="fas fa-check-circle"></i>Advantages for Cloud Workloads</h3>
+                    <p class="description">Azure provides robust support for containers, leveraging their inherent benefits for cloud-native applications.</p>
+                    <div class="diagram" style="justify-content:space-around;">
+                        <div class="diagram-box"><i class="fas fa-shipping-fast" style="color:var(--success-color)"></i><span>Faster Deployment</span></div>
+                        <div class="diagram-box"><i class="fas fa-arrows-alt-v" style="color:var(--success-color)"></i><span>Easier Scaling</span></div>
+                        <div class="diagram-box"><i class="fas fa-sync-alt" style="color:var(--success-color)"></i><span>Consistency</span></div>
+                        <div class="diagram-box"><i class="fas fa-leaf" style="color:var(--success-color)"></i><span>Resource Efficient</span></div>
+                    </div>
+                    <ul>
+                        <li><i class="fa-li fas fa-rocket"></i><strong>Faster to Deploy:</strong> Containers start much quicker than VMs.</li>
+                        <li><i class="fa-li fas fa-arrows-alt-v"></i><strong>Easier to Scale & Move:</strong> Lightweight nature makes scaling out/in and moving between environments simpler.</li>
+                        <li><i class="fa-li fas fa-sync-alt"></i><strong>Consistent Across Environments:</strong> Run the same way on a developer's laptop, test servers, and production in Azure. Solves "works on my machine" problems.</li>
+                        <li><i class="fa-li fas fa-leaf"></i><strong>Resource-Efficient:</strong> Higher density (more applications per host) compared to VMs due to shared OS kernel.</li>
+                        <li><i class="fa-li fas fa-cogs"></i><strong>DevOps Enabler:</strong> Streamlines CI/CD pipelines for building, testing, and deploying applications.</li>
+                    </ul>
+                    <p><strong>Azure Services:</strong> Azure offers Azure Container Instances (ACI), Azure Kubernetes Service (AKS), Web App for Containers, and Azure Container Registry (ACR) to support containerized workloads.</p>
+                </div>
+            </div>
+
+            <!-- Card: Introduction to Azure Container Instances (ACI) -->
+            <div class="card aci-card">
+                <input type="checkbox" id="intro-aci-toggle" class="card-toggle">
+                <label for="intro-aci-toggle" class="card-header aci-header">
+                    <h2><i class="fas fa-shipping-fast"></i>Intro to Azure Container Instances (ACI)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-play-circle"></i>Simplest Way to Run Containers in Azure (PaaS)</h3>
+                    <p class="description">ACI allows you to run Docker containers directly in Azure without needing to provision or manage any underlying virtual machines or complex orchestrators.</p>
+                     <div class="diagram">
+                        <div class="diagram-box"><i class="fab fa-docker" style="color: var(--docker-color);"></i><span>Container Image</span></div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box" style="border-color: var(--aci-color);"><i class="fas fa-cloud" style="color:var(--aci-color)"></i><span>Azure Manages Infrastructure & ACI Service</span></div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box"><i class="fas fa-box" style="color:var(--container-color)"></i><span>Running Container(s)</span></div>
+                    </div>
+                    <ul>
+                        <li><i class="fa-li fas fa-server-times" style="color:var(--aci-color);"></i><strong>Serverless Containers:</strong> No VM infrastructure to manage. Azure handles the underlying hosts.</li>
+                        <li><i class="fa-li fas fa-rocket"></i><strong>Fast Startup:</strong> Containers can start in seconds.</li>
+                        <li><i class="fa-li fas fa-tasks"></i><strong>Simple Use Cases:</strong> Ideal for simple applications, task automation, build jobs, data processing, or bursting from AKS.</li>
+                        <li><i class="fa-li fas fa-object-group"></i><strong>Container Groups:</strong> The unit of deployment. A group can contain one or more containers that share resources.</li>
+                        <li><i class="fa-li fas fa-dollar-sign" style="color:var(--warning-color);"></i><strong>Per-Second Billing:</strong> Pay only for the CPU and memory resources allocated to your container group while it's running.</li>
+                    </ul>
+                    <p><strong>Implication:</strong> Offers a fast and straightforward way to run isolated containers without orchestration complexity.</p>
+                </div>
+            </div>
+
+            <!-- Card: Deploying an ACI (Step-by-Step) -->
+            <div class="card aci-card">
+                <input type="checkbox" id="deploy-aci-toggle" class="card-toggle">
+                <label for="deploy-aci-toggle" class="card-header aci-header">
+                    <h2><i class="fas fa-cloud-upload-alt"></i>Step-by-Step: Deploying an ACI (Portal Example)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-list-ol"></i>Portal Workflow for ACI Creation</h3>
+                    <p class="description">Based on your transcript, a typical flow for deploying an ACI via the Azure portal.</p>
+                    <ol style="padding-left: 20px; font-size:0.9em;">
+                        <li>Navigate to "Container Instances" in Azure portal & click "Create".</li>
+                        <li><strong>Basics Tab:</strong>
+                            <ul>
+                                <li>Select/Create Resource Group.</li>
+                                <li>Enter unique Container Name.</li>
+                                <li>Choose Region.</li>
+                                <li>(Optional) Availability Zones.</li>
+                            </ul>
+                        </li>
+                        <li><strong>Container Tab (Image Settings):</strong>
+                            <ul>
+                                <li><strong>Image Source:</strong> Quickstart, Azure Container Registry (ACR), Docker Hub/Other Public.</li>
+                                <li><strong>OS Type:</strong> Linux or Windows.</li>
+                                <li><strong>Image:</strong> Specify the image (e.g., `mcr.microsoft.com/azuredocs/aci-helloworld`).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Container Tab (Size Settings - per container if multiple):</strong>
+                            <ul>
+                                <li>CPU Cores (e.g., 1-4).</li>
+                                <li>Memory (e.g., 1.5GB - 14GB).</li>
+                                <li>GPU (Optional).</li>
+                            </ul>
+                        </li>
+                        <li><strong>Networking Tab:</strong>
+                            <ul>
+                                <li><strong>Networking Type:</strong> Public (internet accessible) or Private (VNet only).</li>
+                                <li><strong>DNS Name Label:</strong> (For Public) Creates a FQDN like `yourlabel.region.azurecontainer.io`.</li>
+                                <li><strong>Ports:</strong> Define which container ports to expose (e.g., TCP 80).</li>
+                            </ul>
+                        </li>
+                        <li>Review settings and click "Create". Deployment is usually very fast (~30 seconds - few minutes).</li>
+                    </ol>
+                    <p><strong>AZ-104 Focus:</strong> Knowing the key configuration settings: RG, Name, Region, Image Source, OS Type, CPU/Memory, Networking (Public/Private IP, DNS label, Ports).</p>
+                </div>
+            </div>
+            
+            <!-- Card: What is an Azure Container Group? -->
+            <div class="card aci-card">
+                <input type="checkbox" id="what-group-toggle" class="card-toggle">
+                <label for="what-group-toggle" class="card-header aci-header">
+                    <h2><i class="fas fa-object-group"></i>What is an Azure Container Group?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-boxes"></i>The ACI Deployment Unit</h3>
+                    <p class="description">The top-level resource in Azure Container Instances. A container group is a collection of containers that get scheduled on the same host machine.</p>
+                    <div class="diagram">
+                         <div class="diagram-box" style="border-color:var(--aci-color); min-width:180px;">
+                            <i class="fas fa-object-group" style="color:var(--aci-color); font-size: 2em;"></i>
+                            <strong>Container Group</strong>
+                            <span>(Single Host, IP, Lifecycle)</span>
+                            <div style="display:flex; gap:5px; margin-top:5px; justify-content:center; border-top:1px solid #eee; padding-top:5px;">
+                               <div class="diagram-box container-item" style="min-width: 60px; padding:5px; background-color: #f3e6f3;"><i class="fas fa-box"></i><span>App</span></div>
+                               <div class="diagram-box container-item" style="min-width: 60px; padding:5px; background-color: #f3e6f3;"><i class="fas fa-box"></i><span>Sidecar</span></div>
+                            </div>
+                         </div>
+                    </div>
+                    <ul>
+                        <li><i class="fa-li fas fa-server"></i><strong>Same Host Machine:</strong> All containers within a single group run on the same underlying Azure-managed VM node.</li>
+                        <li><i class="fa-li fas fa-recycle"></i><strong>Shared Lifecycle:</strong> Containers in a group start, stop, and are deleted together.</li>
+                        <li><i class="fa-li fas fa-share-alt"></i><strong>Shared Resources:</strong> They share a network namespace (same IP address, port space), and can optionally share storage volumes (e.g., Azure Files). CPU and Memory are allocated to the group and shared.</li>
+                        <li><i class="fa-li fas fa-sitemap"></i><strong>"Pod-like" (Simplified):</strong> Conceptually similar to a Kubernetes Pod but much simpler and specific to ACI.</li>
+                    </ul>
+                    <p><strong>Implication:</strong> Allows co-locating tightly coupled containers that need to share resources or communicate via localhost.</p>
+                </div>
+            </div>
+
+            <!-- Card: Key Properties of a Container Group -->
+            <div class="card aci-card">
+                <input type="checkbox" id="group-props-toggle" class="card-toggle">
+                <label for="group-props-toggle" class="card-header aci-header">
+                    <h2><i class="fas fa-list-alt"></i>Key Properties of a Container Group</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-cogs"></i>Defining Characteristics</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-network-wired"></i><strong>Single IP Address & DNS Name:</strong> All containers in the group share one public IP (if configured) and one DNS name label.</li>
+                        <li><i class="fa-li fas fa-door-open"></i><strong>Exposed Ports:</strong> You can expose different ports from different containers within the group on that single IP.</li>
+                        <li><i class="fa-li fas fa-hdd" style="color:#605e5c;"></i><strong>Shared Volumes:</strong> Can mount Azure File Shares as volumes, accessible by all containers in the group.</li>
+                        <li><i class="fa-li fas fa-comments" style="color:var(--success-color);"></i><strong>Internal Communication:</strong> Containers within the same group can communicate with each other using `localhost:<port>`.</li>
+                        <li><i class="fa-li fas fa-redo"></i><strong>Restart Policy:</strong> Define what happens if a container stops (`Always`, `OnFailure`, `Never`).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card: Real-World Example of Container Group -->
+            <div class="card aci-card">
+                <input type="checkbox" id="group-example-toggle" class="card-toggle">
+                <label for="group-example-toggle" class="card-header aci-header">
+                    <h2><i class="fas fa-lightbulb"></i>Container Group Example: Web App + Sidecar</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-puzzle-piece"></i>Multi-Container Scenario</h3>
+                    <p class="description">Scenario: A web application with a frontend container and a logging sidecar container.</p>
+                    <div class="diagram">
+                         <div class="diagram-box" style="border-color:var(--aci-color); min-width:250px;">
+                            <i class="fas fa-object-group" style="color:var(--aci-color); font-size: 1.8em;"></i>
+                            <strong>Container Group (Public IP:80)</strong>
+                            <div style="display:flex; gap:10px; margin-top:10px; justify-content:center; width:100%;">
+                               <div class="diagram-box container-item" style="min-width: 100px; padding:8px; background-color: #e6f2ff;">
+                                   <i class="fas fa-globe" style="color:var(--webapp-color)"></i><span>Web Frontend</span><span style="font-size:0.7em">Port 80 (Exposed)</span>
+                                </div>
+                               <div class="diagram-box container-item" style="min-width: 100px; padding:8px; background-color: #f5f5f5;">
+                                   <i class="fas fa-file-alt" style="color:#605e5c"></i><span>Logging Sidecar</span><span style="font-size:0.7em">Port 5000 (Internal)</span>
+                                </div>
+                            </div>
+                            <span class="diagram-label">Web Frontend uses localhost:5000 to send logs to Sidecar. Both can access a shared Azure File Share.</span>
+                         </div>
+                    </div>
+                    <ul>
+                        <li><i class="fa-li fas fa-globe"></i>**Container A (Frontend):** Serves web content on port 80 (exposed publicly).</li>
+                        <li><i class="fa-li fas fa-file-signature"></i>**Container B (Logging Sidecar):** Collects logs from the frontend, perhaps listening on an internal port like 5000.</li>
+                        <li><i class="fa-li fas fa-comments"></i>Frontend sends logs to `localhost:5000` to reach the sidecar.</li>
+                        <li><i class="fa-li fas fa-hdd"></i>Both might mount a shared Azure File Share for persistent data or shared configuration.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card: Deployment Options ACI -->
+            <div class="card aci-card">
+                 <input type="checkbox" id="deploy-options-aci-toggle" class="card-toggle">
+                <label for="deploy-options-aci-toggle" class="card-header aci-header">
+                    <h2><i class="fas fa-tools"></i>Deployment Options for ACI</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-cloud-upload-alt"></i>How to Create Container Groups</h3>
+                     <ul>
+                        <li><i class="fa-li fas fa-desktop"></i><strong>Azure Portal (GUI):</strong> Good for quick tests, demos, and visual configuration.</li>
+                        <li><i class="fa-li fas fa-file-code" style="color:#f7630c;"></i><strong>ARM Templates (JSON):</strong> For Infrastructure-as-Code (IaC), repeatable deployments, enterprise scenarios.</li>
+                        <li><i class="fa-li fas fa-file-alt" style="color:#4caf50;"></i><strong>YAML Files (with CLI/PS):</strong> Declarative definitions, similar to Kubernetes style, often used with `az container create --file`.</li>
+                        <li><i class="fa-li fas fa-terminal" style="color:#444;"></i><strong>Azure CLI:</strong> `az container create ...` (scripting, automation).</li>
+                        <li><i class="fa-li fab fa-windows" style="color:#012456;"></i><strong>Azure PowerShell:</strong> `New-AzContainerGroup ...` (scripting, automation).</li>
+                        <li><i class="fa-li fas fa-leaf" style="color:#107c10;"></i><strong>Bicep:</strong> Newer DSL that transpiles to ARM JSON, offering simpler syntax for IaC.</li>
+                     </ul>
+                </div>
+            </div>
+
+            <!-- Card: AZ-104 Focus for ACI -->
+            <div class="card aci-card">
+                <input type="checkbox" id="az104-aci-toggle" class="card-toggle">
+                <label for="az104-aci-toggle" class="card-header aci-header">
+                    <h2><i class="fas fa-graduation-cap"></i>ACI & Container Groups: AZ-104 Focus</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-lightbulb"></i>Key Concepts for the Exam</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-info-circle"></i><strong>ACI vs. AKS:</strong> Know that ACI is for <span class="key-point">simpler, per-container/group deployments without orchestration</span>, while AKS is for full Kubernetes orchestration.</li>
+                        <li><i class="fa-li fas fa-object-group"></i><strong>Container Groups:</strong> Understand they are the deployment unit, share resources (IP, network, lifecycle, optional volumes).</li>
+                        <li><i class="fa-li fas fa-door-open"></i><strong>Port Exposure:</strong> How ports are exposed publicly vs. used for internal communication within a group.</li>
+                        <li><i class="fa-li fas fa-hdd"></i><strong>Volume Mounting:</strong> Primarily Azure File Shares for persistent data in ACI.</li>
+                        <li><i class="fa-li fas fa-rocket"></i><strong>Image Sources:</strong> Quickstart, ACR, Docker Hub/Public.</li>
+                        <li><i class="fa-li fas fa-network-wired"></i><strong>Networking:</strong> Public vs. Private IP, DNS name label.</li>
+                        <li><i class="fa-li fas fa-dollar-sign" style="color:var(--warning-color)"></i><strong>Cost Model:</strong> Per-second billing for CPU/memory.</li>
+                        <li><i class="fa-li fas fa-arrows-alt-v"></i><strong>Scaling:</strong> ACI itself is not for horizontal auto-scaling of a single application like AKS; you scale by deploying more/larger container groups or use it for burst from AKS.</li>
+                    </ul>
+                </div>
+            </div>
+            
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.querySelectorAll('.card-toggle').forEach(checkbox => {
+           checkbox.addEventListener('change', (e) => { /* CSS handles expand/collapse */ });
+        });
+    </script>
+</body>
+</html>
+            <!-- To be continued with: Why Containers in Azure, ACI Intro, ACI Deployment, Container Groups, etc. -->
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.querySelectorAll('.card-toggle').forEach(checkbox => {
+           checkbox.addEventListener('change', (e) => { /* CSS handles expand/collapse */ });
+        });
+    </script>
+</body>
+</html>

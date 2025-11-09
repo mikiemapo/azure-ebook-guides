@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Load Balancing Services Explained (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors for Load Balancing Guide */
+            --lb-main-color: #00A1F1; /* A distinct light blue for overall guide */
+            --l4-color: #0078d4; /* Darker blue for Layer 4 LB */
+            --l7-color: #107c10; /* Green for Layer 7 */
+            --traffic-manager-color: #4A235A; /* Deep purple for Traffic Manager */
+            --front-door-color: #D83B01; /* Orange/Red for Front Door */
+            --prereq-color: #605e5c; /* Grey for prerequisites */
+            --hybrid-flow-color: #8E44AD; /* DNS Purple for hybrid flow */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6; 
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--lb-main-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-balance-scale-right { font-size: 1.1em; } 
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--lb-main-color); }
+
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1200px) {
+             .card-container { grid-template-columns: repeat(3, 1fr); }
+             .card.wide-card { grid-column: span 3; } /* For cards that need more width like comparison table */
+        }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; } 
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+        }
+        .card-header.lb-header { background-color: var(--lb-main-color); border-bottom-color: #0077C0;}
+        .card-header.lb-header:hover { background-color: #0077C0;}
+        .card-header.default-summary-header { background-color: var(--azure-blue-dark); border-bottom-color: #004578;}
+        .card-header.default-summary-header:hover { background-color: #004578;}
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+ 
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; 
+            padding: 0 18px; 
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); 
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 3500px; /* Increased max-height for very long cards */
+            opacity: 1;
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            overflow-y: auto;
+        }
+
+        .card-content h3, .card-content h4 {
+             color: var(--azure-blue-dark); margin-top: 15px; margin-bottom: 10px; font-size: 1.1em;
+             font-weight: 600; padding-bottom: 6px;
+             display: flex; align-items: center; gap: 8px;
+         }
+        .card-content h3 { border-bottom: 1px solid #eee; font-size: 1.15em;}
+        .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+        .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+        .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--lb-main-color); 
+          }
+        
+        .key-point { font-weight: 600; color: var(--lb-main-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            min-width: 600px; /* Force a minimum width so it will scroll on phones */
+            border-collapse: collapse;
+            margin-top: 0;
+        }
+        .comparison-table th, .comparison-table td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; vertical-align: top;}
+        .comparison-table th { background-color: var(--diagram-bg); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-balance-scale-right"></i>Azure Load Balancing Services Explained</h1>
+        <p class="instructions">A deep dive into Azure Load Balancing services, exploring how they intelligently distribute network traffic to ensure your applications are highly available, scalable, and optimal. Includes supporting network elements like DNS and VPN Gateways.</p>
+
+        <div class="card-container">
+
+            <!-- Card 1: The Core Concept of Load Balancing -->
+            <div class="card">
+                <input type="checkbox" id="core-lb-concept-toggle" class="card-toggle" checked> 
+                <label for="core-lb-concept-toggle" class="card-header lb-header">
+                    <h2><i class="fas fa-info-circle"></i>Core Concept of Load Balancing</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--lb-main-color);"><i class="fas fa-random"></i>Intelligent Traffic Controller for Your Apps</h3>
+                    <p class="description">At its core, load balancing is about efficiently distributing incoming network traffic across a group of identical back-end resources (like virtual machines, containers, or scale sets).</p>
+
+                    <h4>Why is it crucial?</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-arrow-up"></i><strong>High Availability:</strong> Prevents any single server from becoming a bottleneck or single point of failure. If one instance goes down, traffic is automatically rerouted to healthy ones.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i><strong>Scalability:</strong> Allows your application to handle increased demand by simply adding more back-end instances, distributing the load efficiently.</li>
+                        <li><i class="fa-li fas fa-chart-line"></i><strong>Performance:</strong> Optimizes response times by ensuring no single server is overwhelmed, keeping everything flowing smoothly.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understanding these core benefits is fundamental before diving into specific services.</p>
+                </div>
+            </div>
+
+            <!-- Card 2: Prerequisites & Supporting Network Elements -->
+            <div class="card wide-card">
+                <input type="checkbox" id="lb-prerequisites-toggle" class="card-toggle"> 
+                <label for="lb-prerequisites-toggle" class="card-header" style="background-color: var(--prereq-color);">
+                    <h2><i class="fas fa-puzzle-piece"></i>Prerequisites & Supporting Network Elements</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--prereq-color);"><i class="fas fa-link"></i>Foundations for Load Balancing</h3>
+                    <p class="description">Before diving into the load balancing services, it's essential to understand the underlying Azure networking concepts that support them.</p>
+
+                    <h4><i class="fa-li fas fa-network-wired"></i>Virtual Networks (VNets) & Subnets</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-cloud"></i>VNets provide isolated network spaces in Azure, segmented by subnets for organization and security (via NSGs).</li>
+                        <li><i class="fa-li fas fa-sitemap"></i>Load balancers operate within or across these VNets.</li>
+                    </ul>
+
+                    <h4><i class="fa-li fas fa-id-badge"></i>IP Addressing</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-lock"></i><strong>Private IPs:</strong> For internal communication between load balancers and backend resources within VNets.</li>
+                        <li><i class="fa-li fas fa-globe"></i><strong>Public IPs (PIPs):</strong> For internet-facing load balancers. Always prefer <span class="key-point">Standard SKU PIPs</span> for production, as they are secure by default, static, and support Availability Zones.</li>
+                    </ul>
+
+                    <h4><i class="fa-li fas fa-dns"></i>DNS (Domain Name System)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-book"></i>DNS translates human-friendly names (like `yourcompany.com`) into IP addresses. It plays a critical role by directing user requests to the front door (the IP address of your load balancer).</li>
+                        <li><i class="fa-li fas fa-globe-americas"></i><strong>Azure Public DNS Zones:</strong> Host internet-facing domain names, ensuring users globally can resolve your application's public endpoint.</li>
+                        <li><i class="fa-li fas fa-eye-slash"></i><strong>Azure Private DNS Zones:</strong> For internal name resolution within your Azure VNets, allowing backend services to find each other by name without public exposure.</li>
+                        <li><i class="fa-li fas fa-exchange-alt"></i><strong>Azure Private DNS Resolver:</strong> Bridges the gap for hybrid setups, enabling your on-premises networks to resolve names within your Azure Private DNS Zones.</li>
+                    </ul>
+
+                    <h4><i class="fa-li fas fa-dungeon"></i>VPN Gateways</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-shield-alt"></i>Extend your on-premises network securely into Azure, allowing hybrid applications to leverage cloud load balancers.</li>
+                        <li><i class="fa-li fas fa-key"></i>Facilitate secure communication over encrypted tunnels (Site-to-Site, Point-to-Site).</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand how these foundational networking elements underpin and enable Azure's load balancing services.</p>
+                </div>
+            </div>
+            
+            <!-- Card 3: Azure Load Balancer (ALB) - L4 Regional -->
+            <div class="card">
+                <input type="checkbox" id="alb-l4-regional-toggle" class="card-toggle">
+                <label for="alb-l4-regional-toggle" class="card-header" style="background-color: var(--l4-color);">
+                    <h2><i class="fas fa-traffic-light"></i>Azure Load Balancer (Layer 4)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--l4-color);"><i class="fas fa-exchange-alt"></i>Regional TCP/UDP Traffic Distribution</h3>
+                    <p class="description">Azure Load Balancer is the foundational "workhorse" for general network traffic distribution, operating at Layer 4 (Transport Layer) of the OSI model.</p>
+
+                    <h4>Key Characteristics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-layer-group"></i><strong>OSI Layer:</strong> Layer 4 (TCP/UDP). Makes routing decisions based on IP addresses and port numbers; does not inspect traffic content beyond basic headers.</li>
+                        <li><i class="fa-li fas fa-map-pin"></i><strong>Scope:</strong> Regional. Distributes traffic across backend instances within a single Azure region.</li>
+                        <li><i class="fa-li fas fa-random"></i><strong>Traffic Type:</strong> Any TCP or UDP traffic. Ideal for non-web applications, backend tiers, or hybrid scenarios needing basic Layer 4 distribution.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-tags"></i>SKUs:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-ban" style="color:var(--warning-color);"></i><strong>Basic SKU (Avoid for Production):</strong> Older, open by default, lacks advanced features, and is being retired (Sept 2025).</li>
+                        <li><i class="fa-li fas fa-check-circle" style="color:var(--success-color);"></i><strong>Standard SKU (Recommended):</strong> Secure by default (requires NSGs for inbound). Supports zone redundancy (resilience against data center failures), up to 1,000 backend instances, and a 99.99% SLA.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-cogs"></i>Key Features:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-heartbeat"></i><strong>Health Probes:</strong> Continuously monitor backend instance health, only directing traffic to healthy ones.</li>
+                        <li><i class="fa-li fas fa-sticky-note"></i><strong>Session Persistence (Sticky Sessions):</strong> Can be configured to send successive requests from the same client (e.g., based on client IP: 2-tuple or 3-tuple) to the same backend instance.</li>
+                        <li><i class="fa-li fas fa-puzzle-piece"></i><strong>HA Ports:</strong> For internal Standard ALBs, allows load balancing all TCP/UDP flows on all ports simultaneously (useful for NVAs).</li>
+                        <li><i class="fa-li fas fa-sign-out-alt"></i><strong>Outbound Rules:</strong> For managing outbound connectivity from backend VMs, helps prevent SNAT port exhaustion.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand ALB is for **Layer 4 (TCP/UDP) traffic within a region**. Know its SKUs (Standard is preferred), core components (Health Probes, Session Persistence), and when it's appropriate.</p>
+                </div>
+            </div>
+
+            <!-- Card 4: Azure Application Gateway (App Gateway) - L7 Regional -->
+            <div class="card">
+                <input type="checkbox" id="app-gateway-l7-regional-toggle" class="card-toggle">
+                <label for="app-gateway-l7-regional-toggle" class="card-header" style="background-color: var(--l7-color);">
+                    <h2><i class="fas fa-globe"></i>Application Gateway (Layer 7)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--l7-color);"><i class="fas fa-code"></i>Regional Web Traffic Specialist</h3>
+                    <p class="description">Azure Application Gateway is the specialist for advanced web traffic management, operating at Layer 7 (HTTP/HTTPS) of the OSI model.</p>
+
+                    <h4>Key Characteristics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-layer-group"></i><strong>OSI Layer:</strong> Layer 7 (HTTP/HTTPS). It understands the content of HTTP/S requests.</li>
+                        <li><i class="fa-li fas fa-map-pin"></i><strong>Scope:</strong> Regional. Distributes incoming HTTP/S traffic across backend instances within a single Azure region.</li>
+                        <li><i class="fa-li fas fa-random"></i><strong>Traffic Type:</strong> Primarily HTTP, HTTPS, and WebSockets.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-cogs"></i>Key Features:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-lock-open"></i><strong>SSL/TLS Termination (Offloading):</strong> Decrypts incoming HTTPS traffic at the gateway, boosting backend server performance.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i><strong>Web Application Firewall (WAF):</strong> Integrated Layer 7 WAF protection against common web attacks (e.g., SQL injection).</li>
+                        <li><i class="fa-li fas fa-route"></i><strong>Path-Based Routing:</strong> Routes traffic based on the URL path (e.g., `/images` to one pool, `/api` to another).</li>
+                        <li><i class="fa-li fas fa-server"></i><strong>Multi-Site Hosting:</strong> Host multiple distinct web applications (e.g., `shop.com`, `blog.com`) on the same Application Gateway instance.</li>
+                        <li><i class="fa-li fas fa-cookie-bite"></i><strong>Cookie-Based Session Affinity:</strong> Maintains session stickiness for clients by injecting a cookie into the HTTP response.</li>
+                        <li><i class="fa-li fas fa-arrows-alt"></i><strong>Autoscaling (V2 SKU):</strong> Dynamically adjusts capacity based on web traffic load.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand App Gateway is for **regional, Layer 7 web traffic**. Know its unique features like WAF, SSL Offloading, Path-Based Routing, and Multi-Site Hosting.</p>
+                </div>
+            </div>
+
+            <!-- Card 5: Azure Traffic Manager (TM) - Global DNS Layer -->
+            <div class="card">
+                <input type="checkbox" id="traffic-manager-toggle" class="card-toggle">
+                <label for="traffic-manager-toggle" class="card-header" style="background-color: var(--traffic-manager-color);">
+                    <h2><i class="fas fa-globe"></i>Azure Traffic Manager (Global DNS)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--traffic-manager-color);"><i class="fas fa-map-marked-alt"></i>DNS-Based Global Traffic Distribution</h3>
+                    <p class="description">Azure Traffic Manager is a DNS-based solution for global traffic distribution and intelligent routing. It operates at the DNS Layer.</p>
+
+                    <h4>Key Characteristics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-globe"></i><strong>Scope:</strong> Global. Directs user traffic to the best available service endpoint across multiple Azure regions or even external endpoints.</li>
+                        <li><i class="fa-li fas fa-dns"></i><strong>OSI Layer:</strong> DNS Layer. <span class="key-point">It does NOT sit in the data path or process traffic directly.</span> It simply provides DNS resolution, telling the client's browser which IP address (endpoint) to connect to.</li>
+                        <li><i class="fa-li fas fa-random"></i><strong>Traffic Type:</strong> Any public endpoint accessible via DNS.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-route"></i>Key Routing Methods:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-star"></i><strong>Priority:</strong> For failover scenarios. Directs all traffic to a primary endpoint, only switching to a secondary if the primary is unavailable.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i><strong>Performance:</strong> Routes users to the endpoint with the lowest network latency (usually the geographically closest one).</li>
+                        <li><i class="fa-li fas fa-weight-hanging"></i><strong>Weighted:</strong> Distributes traffic proportionally among endpoints based on assigned weights.</li>
+                        <li><i class="fa-li fas fa-map-pin"></i><strong>Geographic:</strong> Directs users to specific endpoints based on their geographical origin.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand TM is **Global, DNS-based**. Crucially, know it's a *director*, not a *proxy* – it doesn't handle actual traffic. Know its main routing methods.</p>
+                </div>
+            </div>
+
+            <!-- Card 6: Azure Front Door (AFD) - Global L7/Edge -->
+            <div class="card">
+                <input type="checkbox" id="front-door-toggle" class="card-toggle">
+                <label for="front-door-toggle" class="card-header" style="background-color: var(--front-door-color);">
+                    <h2><i class="fas fa-door-open"></i>Azure Front Door (Global Layer 7)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--front-door-color);"><i class="fas fa-fighter-jet"></i>Premium Global Web Delivery at the Edge</h3>
+                    <p class="description">Azure Front Door is a premium, global Layer 7 service for high-performance web application delivery at the edge. It leverages Microsoft's massive global edge network, sitting closer to your users.</p>
+
+                    <h4>Key Characteristics & Advantages:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-globe"></i><strong>Scope:</strong> Global. Ideal for global web applications requiring top performance, strong security, and advanced routing.</li>
+                        <li><i class="fa-li fas fa-network-wired"></i><strong>OSI Layer:</strong> Layer 7 (HTTP/S). It leverages Microsoft's global edge network (POPs), sitting closer to your users.</li>
+                        <li><i class="fa-li fas fa-exchange-alt"></i><strong>Traffic Handling:</strong> <span class="key-point" style="color:var(--front-door-color);">Sits directly in the data path</span>. Users connect to the closest edge location, and traffic flows over Microsoft's backbone.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-cogs"></i>Key Features:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-bolt"></i><strong>Global Web Acceleration:</strong> Caches content at edge locations and optimizes routing over Microsoft's backbone, significantly speeding up web application delivery.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i><strong>Web Application Firewall (WAF) at the Edge:</strong> Provides WAF protection *before* traffic even enters an Azure region, blocking malicious requests closer to the source.</li>
+                        <li><i class="fa-li fas fa-lock-open"></i><strong>SSL/TLS Offloading at the Edge:</strong> Terminates SSL connections closer to the user, reducing latency for secure traffic.</li>
+                        <li><i class="fa-li fas fa-route"></i><strong>Advanced Layer 7 Routing:</strong> Sophisticated routing based on URL paths, host headers, etc., applied globally.</li>
+                        <li><i class="fa-li fas fa-layer-group"></i><strong>Unified Entry Point:</strong> Provides a single global entry point for your web application.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand AFD is **Global, Layer 7**. Its key differentiators are its *edge network for performance*, *global WAF*, *caching*, and *direct traffic handling* (contrast with TM).</p>
+                </div>
+            </div>
+
+            <!-- Card 7: Service Comparison: Which Load Balancer to Use? (Comparison Table) -->
+            <div class="card wide-card">
+                <input type="checkbox" id="lb-comparison-toggle" class="card-toggle" checked>
+                <label for="lb-comparison-toggle" class="card-header" style="background-color: var(--azure-blue-dark);">
+                    <h2><i class="fas fa-balance-scale-right"></i>Service Comparison: Which Load Balancer to Use?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-blue-dark);"><i class="fas fa-question-circle"></i>Choosing the Right Tool for the Job</h3>
+                    <div class="table-responsive-wrapper">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th style="color:var(--l4-color);">Load Balancer</th>
+                                    <th style="color:var(--l7-color);">Application Gateway</th>
+                                    <th style="color:var(--traffic-manager-color);">Traffic Manager</th>
+                                    <th style="color:var(--front-door-color);">Front Door</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>OSI Layer</strong></td>
+                                    <td>Layer 4 (TCP/UDP)</td>
+                                    <td>Layer 7 (HTTP/S)</td>
+                                    <td>DNS Layer</td>
+                                    <td>Layer 7 (HTTP/S)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Scope</strong></td>
+                                    <td>Regional</td>
+                                    <td>Regional</td>
+                                    <td><span class="key-point" style="color:var(--traffic-manager-color);">Global</span></td>
+                                    <td><span class="key-point" style="color:var(--front-door-color);">Global</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Traffic Handling</strong></td>
+                                    <td>Routes traffic directly</td>
+                                    <td>Routes traffic directly</td>
+                                    <td><span class="warning-text">Does not route traffic</span>; responds to DNS queries</td>
+                                    <td>Routes traffic via global edge network</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>WAF Feature</strong></td>
+                                    <td>No</td>
+                                    <td>Yes (Optional, Regional)</td>
+                                    <td>No</td>
+                                    <td>Yes (Optional, Global Edge)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SSL Offloading</strong></td>
+                                    <td>No</td>
+                                    <td>Yes (Regional)</td>
+                                    <td>No</td>
+                                    <td>Yes (Global Edge)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Caching</strong></td>
+                                    <td>No</td>
+                                    <td>No</td>
+                                    <td>No</td>
+                                    <td>Yes (Global Edge)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Traffic Acceleration</strong></td>
+                                    <td>No</td>
+                                    <td>No</td>
+                                    <td>Via DNS Latency-based Routing</td>
+                                    <td>Yes (Global Anycast, Split TCP)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Typical Use Case</strong></td>
+                                    <td>High-performance, non-HTTP traffic within a region.</td>
+                                    <td>Web traffic routing, SSL offload, WAF within a region.</td>
+                                    <td>Global DNS-based failover & routing.</td>
+                                    <td>Global web traffic acceleration & security (WAF).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 8: Load Balancing: AZ-104 Key Takeaways (Final Summary) -->
+            <div class="card wide-card">
+                <input type="checkbox" id="lb-summary-final-toggle" class="card-toggle" checked>
+                <label for="lb-summary-final-toggle" class="card-header default-summary-header">
+                    <h2><i class="fas fa-graduation-cap"></i>Load Balancing: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-blue-dark);"><i class="fas fa-check-double"></i>Exam Essentials & Differentiators</h3>
+                    <p class="description">For the exam, you must be able to differentiate the four main load balancing services based on scope, OSI layer, and primary features.</p>
+                    
+                    <h4>1. The Core Differentiators</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-ruler-horizontal"></i><strong>Scope is Key:</strong>
+                            <ul>
+                                <li><strong>Regional (within one region):</strong> Azure Load Balancer (L4), Application Gateway (L7).</li>
+                                <li><strong>Global (across multiple regions):</b> Traffic Manager (DNS), Azure Front Door (L7).</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top:10px;"><i class="fa-li fas fa-layer-group"></i><strong>Traffic Type (OSI Layer):</strong>
+                            <ul>
+                                <li><strong>Layer 4 (any protocol):</strong> Azure Load Balancer.</li>
+                                <li><strong>Layer 7 (web only):</strong> Application Gateway, Azure Front Door.</li>
+                                <li><strong>DNS Layer:</b> Traffic Manager.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4>2. Service-Specific Must-Knows</h4>
+                     <ul>
+                        <li><i class="fa-li fas fa-project-diagram" style="color:var(--l4-color);"></i><strong>Azure Load Balancer (Standard):</strong> Remember its core components from your lab: Frontend IP, Backend Pool, **Health Probe**, and Rules. It is zone-redundant and primarily for non-HTTP traffic.</li>
+                        <li><i class="fa-li fas fa-globe" style="color:var(--l7-color);"></i><strong>Application Gateway:</strong> Its unique features are **SSL Offloading**, **Path-Based Routing**, and integrated **Web Application Firewall (WAF)** for regional web apps.</li>
+                        <li><i class="fa-li fas fa-dns" style="color:var(--traffic-manager-color);"></i><strong>Traffic Manager:</strong> Is **DNS-based only** (it doesn't see the traffic). **Priority** routing is used for failover/DR, and **Performance** routing is for directing users to the lowest-latency region.</li>
+                        <li><i class="fa-li fas fa-door-open" style="color:var(--front-door-color);"></i><strong>Azure Front Door:</strong> The modern, premium global service. It uses a **global edge network** for caching and performance acceleration. Provides global WAF at the edge.</li>
+                    </ul>
+
+                    <p class="important-note" style="border-left-color: var(--warning-color); background-color: #fcf8e3;">
+                        <i class="fas fa-exclamation-triangle" style="color:var(--warning-color);"></i><strong>Exam Tip:</strong> If a question mentions "global failover" for any type of public endpoint, think **Traffic Manager**. If it mentions "global web traffic acceleration" or "WAF at the edge," think **Front Door**. If it mentions "SSL offloading" or "URL path routing" for a regional app, think **Application Gateway**.
+                    </p>
+                </div>
+            </div>

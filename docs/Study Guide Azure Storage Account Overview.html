@@ -1,0 +1,1087 @@
+html_content = """<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azure Storage Account Overview (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --azure-blue: #0078d4;
+        --azure-blue-dark: #005a9e;
+        --azure-bg-light: #f0f4f8;
+        --text-dark: #323130;
+        --text-light: #ffffff;
+        --border-color: #d1d1d1;
+        --card-bg: #ffffff;
+        --diagram-bg: #f8f9fa;
+        --success-color: #107c10;
+        --warning-color: #d83b01;
+        --info-color: #005a9e;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+
+        /* Specific colors for this guide */
+        --storage-main-color: #0078d4; /* A primary blue for Storage */
+        --key-terms-header: #0078d4; /* Blue */
+        --key-people-header: #e91e63; /* Pink */
+        --key-dates-header: #4caf50; /* Green */
+        --key-concepts-header: #9c27b0; /* Violet */
+        --overview-header: #005a9e; /* Dark Azure Blue */
+        --blob-header: #2196f3; /* Medium Blue */
+        --files-header: #4caf50; /* Green */
+        --disk-header: #ff9800; /* Orange */
+        --summary-header: #607d8b; /* Blue Grey */
+
+        /* Icon colors for list items within content, to add variety */
+        --icon-term: #0078d4;
+        --icon-person: #e91e63;
+        --icon-date: #4caf50;
+        --icon-concept: #9c27b0;
+        --icon-default-list: var(--info-color);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+          Helvetica, Arial, sans-serif;
+        background-color: var(--azure-bg-light);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--text-dark);
+        line-height: 1.6;
+      }
+
+      .main-container {
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      h1 {
+        color: var(--storage-main-color);
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      h1 .fa-database {
+        font-size: 1.1em;
+      }
+
+      .back-to-hub-container {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto 20px auto;
+        padding: 0 20px;
+        box-sizing: border-box;
+      }
+      .back-to-hub {
+        padding: 10px;
+        background-color: #e6f2ff;
+        border-radius: 5px;
+        text-align: left;
+        border: 1px solid var(--azure-blue);
+      }
+      .back-to-hub a {
+        text-decoration: none;
+        color: #005a9e;
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+      .back-to-hub a i {
+        margin-right: 8px;
+      }
+
+      .instructions {
+        background-color: var(--card-bg);
+        padding: 12px 18px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        text-align: center;
+        font-size: 0.95em;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px var(--shadow-color);
+      }
+      .instructions strong {
+        color: var(--storage-main-color);
+      }
+
+      .card-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        width: 100%;
+      }
+      @media (min-width: 768px) {
+        .card-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1024px) {
+        .card-container {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      .card {
+        background-color: var(--card-bg);
+        border-radius: 6px;
+        box-shadow: 0 2px 5px var(--shadow-color);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+      }
+      .card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+      .card-toggle {
+        display: none;
+      }
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        color: var(--text-light);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        border-bottom: 1px solid;
+      }
+      /* Specific card header colors - using CSS variables defined above */
+      .card-header.key-terms-header {
+        background-color: var(--key-terms-header);
+        border-bottom-color: #005a9e;
+      }
+      .card-header.key-terms-header:hover {
+        background-color: #005a9e;
+      }
+      .card-header.key-people-header {
+        background-color: var(--key-people-header);
+        border-bottom-color: #c7174e;
+      }
+      .card-header.key-people-header:hover {
+        background-color: #c7174e;
+      }
+      .card-header.key-dates-header {
+        background-color: var(--key-dates-header);
+        border-bottom-color: #388e3c;
+      }
+      .card-header.key-dates-header:hover {
+        background-color: #388e3c;
+      }
+      .card-header.key-concepts-header {
+        background-color: var(--key-concepts-header);
+        border-bottom-color: #791e87;
+      }
+      .card-header.key-concepts-header:hover {
+        background-color: #791e87;
+      }
+      .card-header.overview-header {
+        background-color: var(--overview-header);
+        border-bottom-color: #004578;
+      }
+      .card-header.overview-header:hover {
+        background-color: #004578;
+      }
+      .card-header.blob-header {
+        background-color: var(--blob-header);
+        border-bottom-color: #1a6fba;
+      }
+      .card-header.blob-header:hover {
+        background-color: #1a6fba;
+      }
+      .card-header.files-header {
+        background-color: var(--files-header);
+        border-bottom-color: #388e3c;
+      }
+      .card-header.files-header:hover {
+        background-color: #388e3c;
+      }
+      .card-header.disk-header {
+        background-color: var(--disk-header);
+        border-bottom-color: #cc7a00;
+      }
+      .card-header.disk-header:hover {
+        background-color: #cc7a00;
+      }
+      .card-header.exam-takeaways-header {
+        background-color: var(--summary-header);
+        border-bottom-color: #455a64;
+      } /* Adjusted to summary-header color */
+      .card-header.exam-takeaways-header:hover {
+        background-color: #455a64;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 1.2em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-header h2 i {
+        font-size: 1em;
+        opacity: 0.9;
+        color: var(--text-light);
+      } /* Icons in header are white */
+      .card-header .toggle-icon {
+        font-size: 1.1em;
+        transition: transform 0.3s ease;
+      }
+
+      .card-content {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        padding: 0 18px;
+        transition: max-height 0.4s ease-out, opacity 0.3s ease-in,
+          padding 0.4s ease-out, border-top 0.4s ease-out;
+        background-color: var(--card-bg);
+        border-top: 0px solid var(--border-color);
+        flex-grow: 1;
+      }
+
+      .card-toggle:checked + .card-header {
+        border-bottom-color: transparent;
+      }
+      .card-toggle:checked + .card-header .toggle-icon {
+        transform: rotate(180deg);
+      }
+      .card-toggle:checked ~ .card-content {
+        max-height: 2000px; /* Adjusted for content */
+        opacity: 1;
+        padding: 15px 18px;
+        border-top: 1px solid var(--border-color);
+        overflow-y: auto;
+      }
+
+      .card-content h3,
+      .card-content h4.sub-heading {
+        /* Apply consistent styling to sub-headings */
+        color: var(--azure-blue-dark);
+        margin-top: 15px;
+        margin-bottom: 10px;
+        font-size: 1.1em;
+        font-weight: 600;
+        padding-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-bottom: 1px dotted #ccc; /* Dotted border for consistency */
+      }
+      .card-content h3 {
+        border-bottom: 1px solid #eee;
+        font-size: 1.15em;
+        margin-top: 0;
+      }
+      .card-content h4.sub-heading i {
+        color: var(--azure-blue-dark); /* Icon color for sub-headings */
+        font-size: 0.9em;
+        margin-right: 5px;
+      }
+
+      .card-content ul {
+        font-size: 0.95em;
+        padding-left: 0;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        list-style: none;
+      }
+      .card-content li {
+        margin-bottom: 8px;
+        position: relative;
+        padding-left: 25px;
+      }
+      /* Unique fa-li icon colors for specific content sections */
+      .card-content .key-terms-list li i.fa-li {
+        color: var(--icon-term);
+      }
+      .card-content .key-people-list li i.fa-li {
+        color: var(--icon-person);
+      }
+      .card-content .key-dates-list li i.fa-li {
+        color: var(--icon-date);
+      }
+      .card-content .key-concepts-list li i.fa-li {
+        color: var(--icon-concept);
+      }
+      .card-content .overview-list li i.fa-li,
+      .card-content .blob-list li i.fa-li,
+      .card-content .files-list li i.fa-li,
+      .card-content .disk-list li i.fa-li,
+      .card-content .exam-takeaways-list li i.fa-li {
+        color: var(--icon-default-list);
+      } /* Default list items */
+
+      .key-point {
+        font-weight: 600;
+        color: var(--storage-main-color);
+      }
+      .description {
+        font-style: italic;
+        color: #605e5c;
+        margin-bottom: 15px;
+        display: block;
+      }
+      code,
+      .code-term {
+        font-family: "Consolas", "Courier New", monospace;
+        background-color: #eef1f5;
+        padding: 0.1em 0.4em;
+        border-radius: 3px;
+        font-size: 0.9em;
+        border: 1px solid #ddd;
+        color: var(--azure-blue-dark);
+      }
+
+      .important-note {
+        background-color: #fcebeb;
+        border-left: 4px solid var(--storage-main-color);
+        padding: 10px 15px;
+        margin: 15px 0;
+        font-size: 0.9em;
+      }
+      .important-note i {
+        color: var(--storage-main-color);
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="back-to-hub-container">
+      <div class="back-to-hub">
+        <a href="index.html"
+          ><i class="fas fa-arrow-left"></i>Back to Study Hub</a
+        >
+      </div>
+    </div>
+
+    <div class="main-container">
+      <h1><i class="fas fa-database"></i>Azure Storage Account Overview</h1>
+      <p class="instructions">
+        A comprehensive guide to understanding Azure Storage accounts, types,
+        and configurations. Essential for AZ-104.
+      </p>
+
+      <div class="card-container">
+        <!-- Exam-Focused Collapsible Card: Azure Storage Account Overview -->
+        <div class="card" style="grid-column: 1 / -1">
+          <input
+            type="checkbox"
+            id="azure-storage-overview-toggle"
+            class="card-toggle"
+            checked
+          />
+          <label
+            for="azure-storage-overview-toggle"
+            class="card-header overview-header"
+          >
+            <h2>
+              <i class="fas fa-database"></i>Azure Storage Account Overview
+              (Exam Essentials)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h4 class="sub-heading">
+              <i class="fas fa-info-circle"></i>What is an Azure Storage
+              Account?
+            </h4>
+            <ul class="overview-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-cube"></i></span>
+                <span class="key-point"
+                  >Foundation for all Azure Storage services</span
+                >
+                (Blobs, Files, Queues, Tables, Disks).
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-tag"></i></span>
+                <span class="key-point">Unique namespace</span> in Azure for
+                your data.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-cogs"></i></span>
+                Account types:
+                <span class="key-point">General-purpose v2 (GPv2)</span>
+                (recommended), <span class="key-point">Premium</span> (for high
+                performance).
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-shield-alt"></i></span>
+                Supports <span class="key-point">redundancy</span> and
+                <span class="key-point">encryption</span> by default.
+              </li>
+            </ul>
+            <h4 class="sub-heading">
+              <i class="fas fa-star"></i>Key Concepts for the Exam
+            </h4>
+            <ul class="overview-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-layer-group"></i></span>
+                <strong>Redundancy options:</strong> LRS, ZRS, GRS, RA-GRS,
+                GZRS.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-link"></i></span>
+                <strong>Endpoints:</strong> Standard and DNS zone endpoints.
+                Know the difference!
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-dollar-sign"></i></span>
+                <strong>Billing factors:</strong> Region, redundancy, storage
+                tier, type, usage, and data egress.
+              </li>
+              <li>
+                <span class="fa-li"
+                  ><i class="fas fa-expand-arrows-alt"></i
+                ></span>
+                <strong>Scalability targets:</strong> Limits on storage accounts
+                per region, performance boundaries.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-lock"></i></span>
+                <strong>Encryption at rest:</strong> Always enabled by default.
+              </li>
+            </ul>
+            <h4 class="sub-heading">
+              <i class="fas fa-lightbulb"></i>Exam Tips
+            </h4>
+            <ul class="overview-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-check-circle"></i></span>
+                <strong>Choose GPv2</strong> for most workloads unless
+                low-latency is required.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-exchange-alt"></i></span>
+                <strong>Replication:</strong> Understand when to use LRS
+                (cheapest, single region) vs. GRS (geo-redundant, for DR).
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-network-wired"></i></span>
+                <strong>Networking:</strong> Use private endpoints and firewalls
+                for secure access.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-coins"></i></span>
+                <strong>Cost optimization:</strong> Use correct access tiers
+                (hot, cool, archive) and monitor egress.
+              </li>
+              <li>
+                <span class="fa-li"
+                  ><i class="fas fa-exclamation-triangle"></i
+                ></span>
+                <strong
+                  >Classic storage accounts retire August 31, 2024.</strong
+                >
+              </li>
+            </ul>
+            <div class="important-note">
+              <i class="fas fa-info-circle"></i>
+              <strong>Remember:</strong> All storage resources (blobs, files,
+              etc.) must be created inside a storage account!
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 6: Blob & Data Services -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="blob-data-section-toggle"
+            class="card-toggle"
+          />
+          <label for="blob-data-section-toggle" class="card-header blob-header">
+            <h2><i class="fas fa-file-upload"></i> Blob &amp; Data Services</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h4 class="sub-heading"><i class="fas fa-box"></i>Overview:</h4>
+            <ul class="blob-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-cloud"></i></span>Blob
+                storage for <span class="key-point">unstructured data</span>.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-cube"></i></span>Supports
+                <span class="key-point">block</span>,
+                <span class="key-point">page</span>, and
+                <span class="key-point">append</span> blobs.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-chart-line"></i></span
+                >Optimized for
+                <span class="key-point">cloud-native &amp; analytics</span>
+                workloads.
+              </li>
+            </ul>
+            <h4 class="sub-heading">
+              <i class="fas fa-star"></i>Key Takeaways:
+            </h4>
+            <ul class="blob-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-arrows-alt-v"></i></span
+                >Highly scalable object storage.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-folder-tree"></i></span
+                >Hierarchical namespace for analytics (Data Lake).
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-fire"></i></span>Supports
+                hot, cool, archive tiers.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-lock"></i></span>Secured
+                with encryption at rest.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 7: File Storage (SMB & NTFS) -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="file-storage-section-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="file-storage-section-toggle"
+            class="card-header files-header"
+          >
+            <h2><i class="fas fa-folder"></i> File Storage (SMB &amp; NTFS)</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h4 class="sub-heading"><i class="fas fa-box"></i>Overview:</h4>
+            <ul class="files-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-cloud-arrow-up"></i></span>
+                Azure Files provides fully managed
+                <span class="key-point">file shares</span> in the cloud, similar
+                to traditional on-premises file servers.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-windows"></i></span>
+                Supports <span class="key-point">SMB protocol</span> (Server
+                Message Block) so Windows, Linux, and macOS clients can mount
+                shares natively.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-key"></i></span>
+                Integrates with
+                <span class="key-point">NTFS Access Control Lists (ACLs)</span>,
+                enabling fine-grained file/folder permissions.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-user-shield"></i></span>
+                Works with
+                <span class="key-point"
+                  >Active Directory Domain Services (AD DS)</span
+                >
+                for centralized authentication and access control.
+              </li>
+            </ul>
+
+            <h4 class="sub-heading">
+              <i class="fas fa-star"></i>Key Takeaways:
+            </h4>
+            <ul class="files-list fa-ul">
+              <li>
+                <span class="fa-li"
+                  ><i class="fas fa-arrows-to-cloud"></i
+                ></span>
+                Think of Azure Files as a cloud-based file server:
+                lift-and-shift ready for legacy applications without rewriting
+                code.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-shield-alt"></i></span>
+                <span class="key-point">NTFS permissions</span> are enforced in
+                the cloud, ensuring consistency with on-prem environments.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-camera"></i></span>
+                Supports
+                <span class="key-point">snapshots and backups</span> for
+                protecting file data.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-network-wired"></i></span>
+                Ideal for scenarios requiring
+                <span class="key-point">cross-platform access</span> to shared
+                files and folders.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- NEW CARD: Azure Files Access & Security (Exam Focus) -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="azure-files-access-security-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="azure-files-access-security-toggle"
+            class="card-header files-header"
+          >
+            <h2>
+              <i class="fas fa-user-shield"></i>Azure Files Access &amp;
+              Security (Exam Focus)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h4 class="sub-heading">
+              <i class="fas fa-info-circle"></i>Overview
+            </h4>
+            <ul class="files-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-key"></i></span>
+                Azure Files supports multiple authentication methods for secure
+                access.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-users-cog"></i></span>
+                Integrates with <span class="key-point">Azure AD DS</span> and
+                <span class="key-point">on-prem AD DS</span> for identity-based
+                access.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-lock"></i></span>
+                Supports <span class="key-point">NTFS ACLs</span> for granular
+                file/folder permissions.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-link"></i></span>
+                Access can be secured by
+                <span class="key-point">SAS tokens</span> and
+                <span class="key-point">RBAC</span>.
+              </li>
+            </ul>
+
+            <h4 class="sub-heading">
+              <i class="fas fa-list-ul"></i>Core Topics
+            </h4>
+            <ul class="files-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-user-lock"></i></span>
+                <strong>Authentication:</strong> Storage account key, Azure AD
+                DS, AD DS, and Azure AD Kerberos.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-fingerprint"></i></span>
+                <strong>Authorization:</strong> NTFS ACLs, RBAC, and share-level
+                permissions.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-network-wired"></i></span>
+                <strong>Network Security:</strong> Private endpoints, service
+                endpoints, and firewall rules.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-clock"></i></span>
+                <strong>SAS Tokens:</strong> Grant time-limited,
+                permission-scoped access to shares/files.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-shield-alt"></i></span>
+                <strong>Encryption:</strong> Data encrypted at rest and in
+                transit (SMB 3.0+).
+              </li>
+            </ul>
+
+            <h4 class="sub-heading">
+              <i class="fas fa-lightbulb"></i>Exam Tips
+            </h4>
+            <ul class="files-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-check-circle"></i></span>
+                <strong
+                  >Know when to use Azure AD DS vs. storage account keys for
+                  authentication.</strong
+                >
+              </li>
+              <li>
+                <span class="fa-li"
+                  ><i class="fas fa-exclamation-triangle"></i
+                ></span>
+                <strong>NTFS ACLs</strong> are only enforced if using AD
+                DS-based authentication.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-user-cog"></i></span>
+                <strong>RBAC</strong> is used for management operations, not
+                file-level access.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-link"></i></span>
+                <strong>SAS tokens</strong> are ideal for sharing access with
+                external users or apps.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-network-wired"></i></span>
+                <strong>Secure Azure Files</strong> using private endpoints and
+                restrict public network access.
+              </li>
+            </ul>
+
+            <h4 class="sub-heading">
+              <i class="fas fa-tasks"></i>Next Steps Tracker
+            </h4>
+            <ul class="files-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-check"></i></span>
+                Review Azure Files authentication options and scenarios.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-check"></i></span>
+                Practice configuring NTFS ACLs and testing access.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-check"></i></span>
+                Try creating and using SAS tokens for delegated access.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-check"></i></span>
+                Explore configuring private endpoints for Azure Files.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 8: Disk Storage -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="disk-storage-section-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="disk-storage-section-toggle"
+            class="card-header disk-header"
+          >
+            <h2><i class="fas fa-hdd"></i> Disk Storage</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h4 class="sub-heading"><i class="fas fa-box"></i>Overview:</h4>
+            <ul class="disk-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-server"></i></span
+                >SSD/HDD-backed storage for
+                <span class="key-point">Azure VMs</span>.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-wrench"></i></span>Used for
+                <span class="key-point">OS and data disks</span>.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-dollar-sign"></i></span
+                ><span class="key-point">Premium SSD</span> for low-latency
+                workloads.
+              </li>
+            </ul>
+            <h4 class="sub-heading">
+              <i class="fas fa-star"></i>Key Takeaways:
+            </h4>
+            <ul class="disk-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-tachometer-alt"></i></span
+                >Ultra, Premium, Standard SSD options.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-lock"></i></span>Encryption
+                at rest for all disks.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-copy"></i></span>Snapshot
+                support for backup/restore.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-chart-line"></i></span
+                >Performance tier tied to VM size.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card: Queues -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="queue-storage-section-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="queue-storage-section-toggle"
+            class="card-header blob-header"
+          >
+            <h2><i class="fas fa-stream"></i> Queue Storage</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h4 class="sub-heading"><i class="fas fa-box"></i>Overview:</h4>
+            <ul class="blob-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-stream"></i></span>
+                Provides
+                <span class="key-point">asynchronous message queueing</span> for
+                communication between application components.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-envelope"></i></span>
+                Each message can be up to 64 KB in size; queues can contain
+                millions of messages.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-cogs"></i></span>
+                Used for <span class="key-point">decoupling</span> and
+                <span class="key-point">load leveling</span> in
+                distributed/cloud-native apps.
+              </li>
+            </ul>
+            <h4 class="sub-heading">
+              <i class="fas fa-star"></i>Key Concepts:
+            </h4>
+            <ul class="blob-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-clock"></i></span>
+                Supports <strong>first-in, first-out (FIFO)</strong> message
+                delivery.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-lock"></i></span>
+                Messages are encrypted at rest.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-download"></i></span>
+                Message retrieval is <strong>poll-based</strong>; clients must
+                delete messages after processing.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-key"></i></span>
+                Supports <strong>SAS tokens</strong> and
+                <strong>RBAC</strong> for access.
+              </li>
+            </ul>
+            <h4 class="sub-heading">
+              <i class="fas fa-lightbulb"></i>Exam Takeaways:
+            </h4>
+            <ul class="blob-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-check-circle"></i></span>
+                Use for <strong>asynchronous workflow</strong> and
+                <strong>application decoupling</strong>.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-exchange-alt"></i></span>
+                Know how to
+                <strong>insert, peek, get, and delete messages</strong> via REST
+                API or SDK.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-shield-alt"></i></span>
+                Understand <strong>message visibility timeout</strong> and how
+                it affects processing.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-bolt"></i></span>
+                Differentiate between <strong>Queue Storage</strong> and
+                <strong>Service Bus Queues</strong>.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card: Tables -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="table-storage-section-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="table-storage-section-toggle"
+            class="card-header files-header"
+          >
+            <h2><i class="fas fa-table"></i> Table Storage</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h4 class="sub-heading"><i class="fas fa-box"></i>Overview:</h4>
+            <ul class="files-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-table"></i></span>
+                <span class="key-point">NoSQL key-value store</span> for
+                structured, non-relational data.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-database"></i></span>
+                Stores large amounts of
+                <span class="key-point">semi-structured</span> data (entities
+                with properties).
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-expand"></i></span>
+                Highly <span class="key-point">scalable</span> and
+                <span class="key-point">cost-effective</span>.
+              </li>
+            </ul>
+            <h4 class="sub-heading">
+              <i class="fas fa-star"></i>Key Concepts:
+            </h4>
+            <ul class="files-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-key"></i></span>
+                Each entity is identified by a <strong>PartitionKey</strong> and
+                <strong>RowKey</strong>.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-chart-bar"></i></span>
+                Supports <strong>OData queries</strong> via REST API or SDK.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-lock"></i></span>
+                Data is encrypted at rest.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-link"></i></span>
+                <strong>Table Storage</strong> is different from
+                <strong>Cosmos DB Table API</strong> (no global distribution,
+                limited features).
+              </li>
+            </ul>
+            <h4 class="sub-heading">
+              <i class="fas fa-lightbulb"></i>Exam Takeaways:
+            </h4>
+            <ul class="files-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-check-circle"></i></span>
+                Choose for
+                <strong>simple, scalable NoSQL storage</strong> needs.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-search"></i></span>
+                Know how to query data using <strong>PartitionKey</strong> and
+                <strong>RowKey</strong>.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-bolt"></i></span>
+                Understand
+                <strong>Table Storage vs. Cosmos DB Table API</strong> for exam
+                scenarios.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-shield-alt"></i></span>
+                Permissions managed via <strong>SAS tokens</strong> and
+                <strong>RBAC</strong>.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Card 9: Key Concepts & Exam Takeaways -->
+        <div class="card" style="grid-column: 1 / -1">
+          <input
+            type="checkbox"
+            id="exam-takeaways-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="exam-takeaways-toggle"
+            class="card-header exam-takeaways-header"
+          >
+            <h2>
+              <i class="fas fa-lightbulb"></i>Key Concepts &amp; Exam Takeaways
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h4 class="sub-heading">
+              <i class="fas fa-info-circle"></i>Overview:
+            </h4>
+            <ul class="exam-takeaways-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-link"></i></span>Endpoints:
+                standard vs DNS zone.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-clone"></i></span
+                >Redundancy: LRS, ZRS, GRS, RA-GRS, GZRS.
+              </li>
+              <li>
+                <span class="fa-li"
+                  ><i class="fas fa-expand-arrows-alt"></i></span
+                >Scalability targets.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-dollar-sign"></i></span
+                >Billing factors: region, redundancy, usage.
+              </li>
+            </ul>
+            <h4 class="sub-heading">
+              <i class="fas fa-star"></i>Key Takeaways:
+            </h4>
+            <ul class="exam-takeaways-list fa-ul">
+              <li>
+                <span class="fa-li"><i class="fas fa-layer-group"></i></span
+                >Understand storage tiers &amp; use cases.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-clone"></i></span>Know
+                replication models &amp; impact.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-piggy-bank"></i></span>Cost
+                optimization strategies.
+              </li>
+              <li>
+                <span class="fa-li"><i class="fas fa-network-wired"></i></span
+                >Networking: private endpoints, firewall rules.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <!-- End card-container -->
+    </div>
+    <!-- End main-container -->
+
+    <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
+    <footer>
+      <span class="block text-sm text-center text-gray-500"
+        >End of study guide.</span
+      >
+    </footer>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".card-toggle").forEach((checkbox) => {
+          checkbox.addEventListener("change", (e) => {
+            /* CSS :checked handles expand/collapse */
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

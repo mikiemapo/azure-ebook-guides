@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Key Vault Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #e8f4fd;
+            --text-dark: #1a1a1a;
+            --text-light: #ffffff;
+            --border-color: #c5d9e8;
+            --card-bg: #ffffff;
+            --diagram-bg: #f5f9fc;
+            --code-bg: #2d2d2d;
+            --code-text-color: #dcdcdc;
+            --code-border: #444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --shadow-color: rgba(0, 120, 212, 0.12);
+            --shadow-hover: rgba(0, 120, 212, 0.2);
+            --keyvault-color: #0078d4;
+            --keyvault-light: #3b9ff5;
+            --secret-color: #f97316;
+            --secret-light: #fb923c;
+            --key-color: #eab308;
+            --key-light: #fbbf24;
+            --cert-color: #10b981;
+            --cert-light: #34d399;
+            --security-color: #dc2626;
+            --security-light: #ef4444;
+            --governance-color: #2563eb;
+            --governance-light: #3b82f6;
+            --takeaway-color: #8b5cf6;
+            --takeaway-light: #a78bfa;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #e8f4fd 0%, #f0f9ff 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-dark);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            padding: 12px 18px;
+            border-radius: 10px;
+            text-align: left;
+            border: 2px solid var(--keyvault-light);
+            box-shadow: 0 3px 10px var(--shadow-color);
+        }
+        .back-to-hub a { 
+            text-decoration: none; 
+            color: var(--keyvault-color); 
+            font-weight: 700; 
+            font-size: 1.05em;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: color 0.3s ease;
+        }
+        .back-to-hub a:hover { color: var(--azure-blue-dark); }
+
+        h1 {
+            color: var(--keyvault-color);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 2.1em;
+            text-shadow: 0 2px 4px rgba(0, 120, 212, 0.1);
+        }
+        h1 i {
+            font-size: 1.1em;
+            filter: drop-shadow(0 2px 4px rgba(0, 120, 212, 0.2));
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+            padding: 16px 24px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1em;
+            border: 2px solid var(--keyvault-light);
+            box-shadow: 0 4px 12px var(--shadow-color);
+        }
+        .instructions strong { color: var(--keyvault-color); font-weight: 700; }
+
+        /* --- Quick Jump Navigation --- */
+        .quick-jump {
+            background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin: 0 auto 35px auto;
+            width: 100%;
+            box-shadow: 0 6px 20px var(--shadow-color);
+            border: 2px solid var(--keyvault-light);
+        }
+        .quick-jump h3 {
+            margin: 0 0 16px 0;
+            color: var(--keyvault-color);
+            font-size: 1.2em;
+            font-weight: 700;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .quick-jump-links {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+        }
+        .quick-jump-links a {
+            background: linear-gradient(135deg, var(--keyvault-color) 0%, var(--keyvault-light) 100%);
+            color: var(--text-light);
+            padding: 10px 18px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.95em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 10px rgba(0, 120, 212, 0.25);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .quick-jump-links a:hover {
+            background: linear-gradient(135deg, var(--azure-blue-dark) 0%, var(--keyvault-color) 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 16px rgba(0, 120, 212, 0.35);
+        }
+
+        /* --- Card Section --- */
+        .card-container { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 25px; 
+            width: 100%; 
+        }
+        @media (min-width: 768px) {
+            .card-container { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1200px) {
+            .card-container { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            box-shadow: 0 8px 24px var(--shadow-hover);
+            transform: translateY(-2px);
+            border-color: var(--keyvault-light);
+        }
+        .card-toggle { display: none; }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, var(--keyvault-color) 0%, var(--keyvault-light) 100%);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        .card-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.3) 0%, 
+                rgba(255,255,255,0.6) 50%, 
+                rgba(255,255,255,0.3) 100%);
+        }
+        .card-header:hover {
+            background: linear-gradient(135deg, var(--keyvault-light) 0%, var(--azure-blue) 100%);
+        }
+        .card-header.secret-header {
+            background: linear-gradient(135deg, var(--secret-color) 0%, var(--secret-light) 100%);
+        }
+        .card-header.key-header {
+            background: linear-gradient(135deg, var(--key-color) 0%, var(--key-light) 100%);
+            color: var(--text-dark);
+        }
+        .card-header.cert-header {
+            background: linear-gradient(135deg, var(--cert-color) 0%, var(--cert-light) 100%);
+        }
+        .card-header.security-header {
+            background: linear-gradient(135deg, var(--security-color) 0%, var(--security-light) 100%);
+        }
+        .card-header.governance-header {
+            background: linear-gradient(135deg, var(--governance-color) 0%, var(--governance-light) 100%);
+        }
+        .card-header.takeaway-header {
+            background: linear-gradient(135deg, var(--takeaway-color) 0%, var(--takeaway-light) 100%);
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.25em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .card-header h2 i {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        .card-header .toggle-icon {
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+        }
+        .card-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            padding: 0 20px;
+            transition: max-height 0.5s ease-out, opacity 0.4s ease-in, padding 0.5s ease-out;
+            background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+            flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header .toggle-icon {
+            transform: rotate(180deg);
+        }
+        .card-toggle:checked ~ .card-content {
+            max-height: 3000px;
+            opacity: 1;
+            padding: 20px;
+            border-top: 2px solid var(--border-color);
+            overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+            color: var(--keyvault-color);
+            margin-top: 0;
+            margin-bottom: 14px;
+            font-size: 1.15em;
+            font-weight: 700;
+            border-bottom: 2px solid var(--keyvault-light);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-content h3 i {
+            font-size: 1em;
+            color: var(--keyvault-light);
+        }
+        .card-content h4 {
+            color: var(--azure-blue-dark);
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-size: 1.05em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-content p {
+            margin: 0 0 12px 0;
+        }
+        .card-content ul {
+            font-size: 0.98em;
+            padding-left: 0;
+            margin-top: 8px;
+            margin-bottom: 18px;
+            list-style: none;
+        }
+        .card-content li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 28px;
+            line-height: 1.6;
+        }
+        .card-content li i.fa-li {
+            position: absolute;
+            left: 0;
+            top: 4px;
+            width: 20px;
+            text-align: center;
+            font-size: 1em;
+            background: var(--keyvault-light);
+            color: #fff !important;
+            width: 26px;
+            height: 26px;
+            line-height: 26px;
+            border-radius: 50%;
+            font-size: 0.85em;
+            top: 0.35em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .card-content li:hover i.fa-li {
+            transform: scale(1.08);
+        }
+
+        /* Diagram Styles */
+        .diagram {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px dashed var(--keyvault-light);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .diagram-box {
+            background: #ffffff;
+            padding: 12px 16px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 2px 6px var(--shadow-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 110px;
+            transition: all 0.3s ease;
+        }
+        .diagram-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px var(--shadow-hover);
+        }
+        .diagram-box i {
+            font-size: 1.8em;
+            color: var(--keyvault-color);
+        }
+        .diagram-box span {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+        .diagram-arrow {
+            font-size: 1.8em;
+            color: var(--keyvault-light);
+        }
+
+        /* Mnemonic and example boxes */
+        .mnemonic-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+            border-left: 5px solid var(--keyvault-color);
+            padding: 18px 24px;
+            margin: 22px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 120, 212, 0.15);
+        }
+        .mnemonic-box strong {
+            color: var(--keyvault-color);
+            font-weight: 700;
+        }
+        .example-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 2px solid var(--success-color);
+            border-radius: 10px;
+            padding: 18px 24px;
+            margin: 22px 0;
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.15);
+        }
+        .example-box strong {
+            color: var(--success-color);
+            font-weight: 700;
+        }
+        .az104-tip {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
+            border-left: 5px solid var(--warning-color);
+            padding: 14px 20px;
+            margin: 18px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(245, 158, 11, 0.15);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .az104-tip i {
+            color: var(--warning-color);
+            font-size: 1.2em;
+            margin-top: 2px;
+        }
+        .az104-tip strong {
+            color: #92400e;
+            font-weight: 700;
+        }
+
+        code,
+        .code-term {
+            font-family: "Consolas", "Courier New", monospace;
+            background-color: #e0f2fe;
+            padding: 0.15em 0.5em;
+            border-radius: 4px;
+            font-size: 0.92em;
+            border: 1px solid #bae6fd;
+            color: var(--azure-blue-dark);
+            font-weight: 500;
+        }
+
+        .key-point {
+            font-weight: 700;
+            color: var(--keyvault-color);
+        }
+
+        /* Accessibility & mobile */
+        .quick-jump-links a:focus-visible,
+        .card-header:focus-visible {
+            outline: 3px solid var(--keyvault-color);
+            outline-offset: 3px;
+        }
+
+        /* Mobile tweaks */
+        @media (max-width: 767px) {
+            body {
+                padding: 12px;
+            }
+            h1 {
+                font-size: 1.75em;
+            }
+            .card-header h2 {
+                font-size: 1.05em;
+            }
+            .quick-jump-links {
+                flex-direction: column;
+            }
+            .quick-jump-links a {
+                width: 100%;
+                text-align: center;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+                scroll-behavior: auto !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1>
+            <i class="fas fa-key"></i>
+            Azure Key Vault Guide (AZ-104)
+        </h1>
+
+        <div class="instructions">
+            <strong>Master Azure Key Vault for secure secret, key, and certificate management.</strong> Focused on AZ-104 essentials. Click any section header to expand and explore core concepts, security, and integrations.
+        </div>
+
+        <!-- Quick Jump Menu -->
+        <div class="quick-jump">
+            <h3><i class="fas fa-bolt"></i> Quick Jump</h3>
+            <div class="quick-jump-links">
+                <a href="#pillar1"><i class="fas fa-question-circle"></i> What is Key Vault?</a>
+                <a href="#pillar2"><i class="fas fa-cubes"></i> Core Objects</a>
+                <a href="#pillar3"><i class="fas fa-balance-scale"></i> Governance & Compliance</a>
+                <a href="#pillar4"><i class="fas fa-shield-alt"></i> Security & Access</a>
+                <a href="#pillar5"><i class="fas fa-puzzle-piece"></i> Azure Integrations</a>
+                <a href="#pillar6"><i class="fas fa-layer-group"></i> Tiers & HSM</a>
+                <a href="#pillar7"><i class="fas fa-graduation-cap"></i> Exam Essentials</a>
+            </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="card-container">
+
+            <!-- Pillar 1: What is Azure Key Vault? -->
+            <div class="card" id="pillar1">
+                <input type="checkbox" id="pillar1-toggle" class="card-toggle" checked>
+                <label for="pillar1-toggle" class="card-header">
+                    <h2><i class="fas fa-question-circle"></i> What is Azure Key Vault?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-vault"></i> Centralized Secrets Management Service</h3>
+                    <p>Azure Key Vault is a cloud service for securely storing and accessing <strong>secrets</strong>, <strong>keys</strong>, and <strong>certificates</strong>. It removes the need to store sensitive information in application code or configuration files, providing a single source of truth for managing sensitive materials across your Azure environment.</p>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>AZ-104 Focus:</strong> Understand Key Vault's purpose as the secure repository for secrets, encryption keys, and SSL/TLS certificates, integrated with Azure services for data protection and compliance.
+                        </div>
+                    </div>
+
+                    <h4><i class="fas fa-bullseye"></i> Core Purpose</h4>
+                    <ul>
+                        <li><i class="fas fa-lock fa-li"></i><strong>Secure Storage:</strong> Stores secrets encrypted at rest; keys can be HSM-backed (Premium SKU) for FIPS 140-2 Level 2 compliance</li>
+                        <li><i class="fas fa-shield-alt fa-li"></i><strong>Access Control:</strong> Integrates with Azure AD for authentication; supports Azure RBAC and vault access policies for authorization</li>
+                        <li><i class="fas fa-eye fa-li"></i><strong>Auditing & Monitoring:</strong> Logs all access attempts and operations to Azure Monitor for compliance tracking</li>
+                        <li><i class="fas fa-users fa-li"></i><strong>Separation of Duties:</strong> Security teams manage vault access; developers reference secrets without seeing actual values</li>
+                    </ul>
+
+                    <div class="mnemonic-box">
+                        <strong><i class="fas fa-brain"></i> Remember the "3Cs" of Key Vault:</strong> <span class="key-point">Control</span> (fine-grained access), <span class="key-point">Compliance</span> (HSM, auditing, standards), <span class="key-point">Confidentiality</span> (secrets never exposed in code).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 2: Core Objects (Secrets, Keys, Certificates) -->
+            <div class="card" id="pillar2">
+                <input type="checkbox" id="pillar2-toggle" class="card-toggle">
+                <label for="pillar2-toggle" class="card-header secret-header">
+                    <h2><i class="fas fa-cubes"></i> Core Objects: Secrets, Keys, Certificates</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-user-secret"></i> 1. Secrets</h3>
+                    <p>Small pieces of sensitive data (up to <strong>25KB</strong>) such as passwords, API keys, connection strings, or tokens.</p>
+                    <ul>
+                        <li><i class="fas fa-key fa-li"></i><strong>Use Cases:</strong> Database connection strings, third-party API keys, application passwords</li>
+                        <li><i class="fas fa-database fa-li"></i><strong>Storage:</strong> Encrypted at rest; accessed via Key Vault API or SDK</li>
+                        <li><i class="fas fa-clock fa-li"></i><strong>Versioning:</strong> Each update creates a new version; previous versions retained for rollback</li>
+                        <li><i class="fas fa="recycle fa-li"></i><strong>Rotation:</strong> Supports manual and automated rotation strategies</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <strong><i class="fas fa-code"></i> Example Secret:</strong> Store a SQL connection string as a secret named <code>mydb-connection</code>. App Service references it using <code>@Microsoft.KeyVault(SecretUri=https://myvault.vault.azure.net/secrets/mydb-connection)</code> in app settings.
+                    </div>
+
+                    <h3><i class="fas fa-key"></i> 2. Keys</h3>
+                    <p>Cryptographic keys (RSA, Elliptic Curve) used for encryption, decryption, signing, and verification operations.</p>
+                    <ul>
+                        <li><i class="fas fa-cogs fa-li"></i><strong>Key Operations:</strong> Encrypt, decrypt, wrap, unwrap, sign, verify—all performed <strong>within Key Vault</strong> (key material never exposed)</li>
+                        <li><i class="fas fa-shield-alt fa-li"></i><strong>HSM-Backed Keys:</strong> Premium SKU uses hardware security modules (FIPS 140-2 Level 2); Managed HSM offers Level 3</li>
+                        <li><i class="fas fa-download fa-li"></i><strong>Bring Your Own Key (BYOK):</strong> Import existing keys from on-premises HSMs</li>
+                        <li><i class="fas fa-cloud fa-li"></i><strong>Customer-Managed Keys (CMK):</strong> Use for Azure Storage SSE, SQL TDE, Disk Encryption</li>
+                    </ul>
+
+                    <h3><i class="fas fa-certificate"></i> 3. Certificates</h3>
+                    <p>X.509 certificates (TLS/SSL) with automated lifecycle management—built on top of keys and secrets.</p>
+                    <ul>
+                        <li><i class="fas fa-check fa-li"></i><strong>Enrollment:</strong> Integrate with public CAs (DigiCert, GlobalSign) or import existing certs</li>
+                        <li><i class="fas fa-sync fa-li"></i><strong>Auto-Renewal:</strong> Configure automatic renewal before expiration for CA-issued certs</li>
+                        <li><i class="fas fa-network-wired fa-li"></i><strong>Deployment:</strong> Deploy to App Service, Application Gateway, API Management, Front Door</li>
+                        <li><i class="fas fa-lock fa-li"></i><strong>Private Key Protection:</strong> Private key remains secured in Key Vault, never exposed</li>
+                    </ul>
+
+                    <div class="diagram">
+                        <div class="diagram-box">
+                            <i class="fas fa-user-secret" style="color: var(--secret-color);"></i>
+                            <span>Secrets</span>
+                        </div>
+                        <div class="diagram-box">
+                            <i class="fas fa-key" style="color: var(--key-color);"></i>
+                            <span>Keys</span>
+                        </div>
+                        <div class="diagram-box">
+                            <i class="fas fa-certificate" style="color: var(--cert-color);"></i>
+                            <span>Certificates</span>
+                        </div>
+                    </div>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>Exam Tip:</strong> Know the difference: <strong>Secrets</strong> are generic text data. <strong>Keys</strong> are for cryptographic operations. <strong>Certificates</strong> are X.509 objects combining keys + metadata.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 3: Governance & Compliance Role -->
+            <div class="card" id="pillar3">
+                <input type="checkbox" id="pillar3-toggle" class="card-toggle">
+                <label for="pillar3-toggle" class="card-header governance-header">
+                    <h2><i class="fas fa-balance-scale"></i> Governance & Compliance Role</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-gavel"></i> Meeting Regulatory & Organizational Standards</h3>
+                    <p>Key Vault plays a critical role in data protection, compliance, and governance strategies by centralizing secret management and enforcing security policies.</p>
+
+                    <h4><i class="fas fa-file-contract"></i> Compliance Standards</h4>
+                    <ul>
+                        <li><i class="fas fa-check-circle fa-li"></i><strong>FIPS 140-2:</strong> HSM-backed keys (Premium SKU: Level 2; Managed HSM: Level 3)</li>
+                        <li><i class="fas fa-globe fa-li"></i><strong>ISO/IEC 27001:</strong> Certified service for information security management</li>
+                        <li><i class="fas fa-shield-alt fa-li"></i><strong>GDPR, HIPAA, PCI-DSS:</strong> Supports data protection requirements via encryption key control and audit logs</li>
+                        <li><i class="fas fa-landmark fa-li"></i><strong>SOC 1/2/3:</strong> Undergoes regular third-party audits for service organization controls</li>
+                    </ul>
+
+                    <h4><i class="fas fa-tasks"></i> Azure Policy Integration</h4>
+                    <ul>
+                        <li><i class="fas fa-file-alt fa-li"></i><strong>Policy Enforcement:</strong> Use Azure Policy to require Key Vault for storing secrets (e.g., deny storage account keys in App Service settings)</li>
+                        <li><i class="fas fa-recycle fa-li"></i><strong>Soft Delete & Purge Protection:</strong> Policies can mandate these features are enabled on all vaults</li>
+                        <li><i class="fas fa-network-wired fa-li"></i><strong>Network Restrictions:</strong> Enforce firewall rules or private endpoints via policy</li>
+                        <li><i class="fas fa-key fa-li"></i><strong>Key Rotation:</strong> Audit compliance for key/secret rotation intervals</li>
+                    </ul>
+
+                    <h4><i class="fas fa-eye"></i> Microsoft Defender for Key Vault</h4>
+                    <ul>
+                        <li><i class="fas fa-exclamation-triangle fa-li"></i><strong>Threat Detection:</strong> Identifies unusual access patterns, suspicious operations, malicious IP access</li>
+                        <li><i class="fas fa-bell fa-li"></i><strong>Alerts:</strong> Integrates with Microsoft Defender for Cloud for real-time security alerts</li>
+                        <li><i class="fas fa-chart-line fa-li"></i><strong>Recommendations:</strong> Provides security hardening advice (e.g., enable logging, restrict network access)</li>
+                    </ul>
+
+                    <div class="mnemonic-box">
+                        <strong><i class="fas fa-brain"></i> Governance Mnemonic - "CAPS":</strong> <span class="key-point">Compliance</span> (FIPS, ISO), <span class="key-point">Auditing</span> (logs), <span class="key-point">Policy</span> (Azure Policy), <span class="key-point">Security</span> (Defender).
+                    </div>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>AZ-104 Scenario:</strong> Your organization requires FIPS 140-2 Level 2 compliance for encryption keys protecting customer data. Solution: Use Key Vault Premium SKU with HSM-backed keys, enable soft delete + purge protection, and enforce via Azure Policy.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 4: Security & Access Control -->
+            <div class="card" id="pillar4">
+                <input type="checkbox" id="pillar4-toggle" class="card-toggle">
+                <label for="pillar4-toggle" class="card-header security-header">
+                    <h2><i class="fas fa-shield-alt"></i> Security & Access Control</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-lock"></i> Authentication & Authorization</h3>
+                    <p>Key Vault uses Azure AD for authentication and supports two authorization models for controlling access to secrets, keys, and certificates.</p>
+
+                    <h4><i class="fas fa-id-card"></i> Authentication</h4>
+                    <ul>
+                        <li><i class="fas fa-user fa-li"></i><strong>Azure AD Integration:</strong> All principals (users, groups, service principals, managed identities) authenticate via Azure AD</li>
+                        <li><i class="fas fa-robot fa-li"></i><strong>Managed Identity (Recommended):</strong> Assign system or user-assigned managed identity to Azure resources (VMs, App Service, Functions) to eliminate credential storage</li>
+                        <li><i class="fas fa-certificate fa-li"></i><strong>Service Principals:</strong> For applications running outside Azure, use app registrations with client secret or certificate</li>
+                    </ul>
+
+                    <h4><i class="fas fa-key"></i> Authorization Models</h4>
+                    <p><strong>1. Azure RBAC (Recommended - Data Plane)</strong></p>
+                    <ul>
+                        <li><i class="fas fa-users-cog fa-li"></i><strong>Built-in Roles:</strong> Key Vault Administrator, Secrets Officer, Secrets User, Crypto Officer, Crypto User, Certificates Officer</li>
+                        <li><i class="fas fa-layer-group fa-li"></i><strong>Scope:</strong> Assign at subscription, resource group, vault, or individual object level</li>
+                        <li><i class="fas fa-cogs fa-li"></i><strong>Granularity:</strong> Separate permissions for secrets, keys, and certificates</li>
+                    </ul>
+
+                    <p><strong>2. Vault Access Policies (Legacy)</strong></p>
+                    <ul>
+                        <li><i class="fas fa-list fa-li"></i><strong>Permissions:</strong> Grant specific operations (Get, List, Set, Delete, Recover, Purge) per object type</li>
+                        <li><i class="fas fa-user-lock fa-li"></i><strong>Principal-Based:</strong> Assign to Azure AD users, groups, service principals, or managed identities</li>
+                        <li><i class="fas fa-exclamation-circle fa-li"></i><strong>Limitation:</strong> Less granular than RBAC; applies at vault level only</li>
+                    </ul>
+
+                    <div class="diagram">
+                        <div class="diagram-box">
+                            <i class="fas fa-desktop"></i>
+                            <span>Application</span>
+                        </div>
+                        <div class="diagram-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="diagram-box">
+                            <i class="fas fa-id-card" style="color: var(--security-color);"></i>
+                            <span>Azure AD Auth</span>
+                        </div>
+                        <div class="diagram-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="diagram-box">
+                            <i class="fas fa-key" style="color: var(--keyvault-color);"></i>
+                            <span>Key Vault</span>
+                        </div>
+                        <div class="diagram-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="diagram-box">
+                            <i class="fas fa-check-circle" style="color: var(--success-color);"></i>
+                            <span>Access Granted</span>
+                        </div>
+                    </div>
+
+                    <h4><i class="fas fa-trash-restore"></i> Data Protection Features</h4>
+                    <ul>
+                        <li><i class="fas fa-undo fa-li"></i><strong>Soft Delete:</strong> Deleted vaults and objects retained for 7-90 days (configurable); recoverable during retention period</li>
+                        <li><i class="fas fa-ban fa-li"></i><strong>Purge Protection:</strong> Prevents immediate purge of soft-deleted objects; enforces retention period</li>
+                        <li><i class="fas fa-network-wired fa-li"></i><strong>Firewall & VNets:</strong> Restrict access to specific IP ranges or Azure virtual networks</li>
+                        <li><i class="fas fa-lock fa-li"></i><strong>Private Endpoints:</strong> Access Key Vault over private IP within your VNet (no internet exposure)</li>
+                    </ul>
+
+                    <h4><i class="fas fa-chart-line"></i> Monitoring & Auditing</h4>
+                    <ul>
+                        <li><i class="fas fa-file-alt fa-li"></i><strong>Diagnostic Logs:</strong> Send to Log Analytics, Storage Account, or Event Hub</li>
+                        <li><i class="fas fa-bell fa-li"></i><strong>Logged Events:</strong> Access attempts (success/failure), object operations (Get, Set, Delete), vault configuration changes</li>
+                        <li><i class="fas fa-search fa-li"></i><strong>Queries:</strong> Use KQL in Log Analytics to analyze access patterns and detect anomalies</li>
+                    </ul>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>Best Practice:</strong> Always use <strong>Managed Identity</strong> for Azure resources accessing Key Vault. Enable <strong>soft delete</strong> and <strong>purge protection</strong> on production vaults. Use <strong>Azure RBAC</strong> for fine-grained permissions.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 5: Integration with Azure Services -->
+            <div class="card" id="pillar5">
+                <input type="checkbox" id="pillar5-toggle" class="card-toggle">
+                <label for="pillar5-toggle" class="card-header key-header">
+                    <h2><i class="fas fa-puzzle-piece"></i> Integration with Azure Services</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-link"></i> Native Azure Service Integrations</h3>
+                    <p>Key Vault integrates seamlessly with many Azure services for secure secret injection, encryption key management, and certificate deployment.</p>
+
+                    <h4><i class="fas fa-cloud fa-li"></i> Compute & App Hosting</h4>
+                    <ul>
+                        <li><i class="fas fa-code fa-li"></i><strong>App Service & Functions:</strong> Reference secrets in app settings: <code>@Microsoft.KeyVault(SecretUri=...)</code></li>
+                        <li><i class="fas fa-server fa-li"></i><strong>Virtual Machines:</strong> Use VM extensions or managed identity to fetch secrets at startup or runtime</li>
+                        <li><i class="fas fa-cube fa-li"></i><strong>AKS (Kubernetes):</strong> CSI driver mounts secrets as volumes or environment variables in pods</li>
+                        <li><i class="fas fa-ship fa-li"></i><strong>Container Instances:</strong> Pass secrets as secure environment variables via Key Vault reference</li>
+                    </ul>
+
+                    <h4><i class="fas fa-database"></i> Data & Storage</h4>
+                    <ul>
+                        <li><i class="fas fa-hdd fa-li"></i><strong>Azure Storage:</strong> Customer-managed keys (CMK) for Storage Service Encryption (SSE)</li>
+                        <li><i class="fas fa-table fa-li"></i><strong>SQL Database & Managed Instance:</strong> Transparent Data Encryption (TDE) with CMK</li>
+                        <li><i class="fas fa-hard-drive fa-li"></i><strong>Azure Disk Encryption:</strong> Protect VM OS and data disks with Key Vault keys</li>
+                        <li><i class="fas fa-server fa-li"></i><strong>Cosmos DB:</strong> Encryption at rest using customer-managed keys</li>
+                    </ul>
+
+                    <h4><i class="fas fa-network-wired"></i> Networking & Security</h4>
+                    <ul>
+                        <li><i class="fas fa-shield-alt fa-li"></i><strong>Application Gateway:</strong> TLS termination using certificates from Key Vault</li>
+                        <li><i class="fas fa-globe fa-li"></i><strong>Azure Front Door:</strong> Custom domain HTTPS with Key Vault certificates</li>
+                        <li><i class="fas fa-plug fa-li"></i><strong>API Management:</strong> Secure backend APIs with certificates and store subscription keys as secrets</li>
+                        <li><i class="fas fa-lock fa-li"></i><strong>VPN Gateway:</strong> Store pre-shared keys for site-to-site VPN connections</li>
+                    </ul>
+
+                    <h4><i class="fas fa-cogs"></i> Automation & DevOps</h4>
+                    <ul>
+                        <li><i class="fas fa-tasks fa-li"></i><strong>Azure Pipelines:</strong> Fetch secrets for CI/CD workflows via Key Vault task or variable groups</li>
+                        <li><i class="fas fa="robot fa-li"></i><strong>GitHub Actions:</strong> Use Azure Key Vault action to retrieve secrets during workflow execution</li>
+                        <li><i class="fas fa-book fa-li"></i><strong>Logic Apps & Functions:</strong> Securely call APIs using Key Vault-stored credentials</li>
+                        <li><i class="fas fa-terminal fa-li"></i><strong>Terraform & ARM:</strong> Reference Key Vault data sources in Infrastructure as Code templates</li>
+                    </ul>
+
+                    <div class="example-box">
+                        <strong><i class="fas fa-lightbulb"></i> Example Integration:</strong> An App Service web app connects to SQL Database. Instead of hardcoding the connection string, store it as a secret in Key Vault. In App Service configuration, set connection string to <code>@Microsoft.KeyVault(SecretUri=https://myvault.vault.azure.net/secrets/sqlconnection)</code>. App Service managed identity authenticates to Key Vault and retrieves the secret at runtime.
+                    </div>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>Exam Focus:</strong> Know how to configure App Service to reference Key Vault secrets, enable disk encryption with Key Vault keys, and deploy certificates to Application Gateway from Key Vault.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 6: Key Vault Tiers & HSM -->
+            <div class="card" id="pillar6">
+                <input type="checkbox" id="pillar6-toggle" class="card-toggle">
+                <label for="pillar6-toggle" class="card-header cert-header">
+                    <h2><i class="fas fa-layer-group"></i> Key Vault Tiers & HSM</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-th-list"></i> Service Tiers</h3>
+                    <p>Azure Key Vault offers two SKUs and a dedicated HSM service for different security and compliance requirements.</p>
+
+                    <h4><i class="fas fa-star"></i> Standard Tier</h4>
+                    <ul>
+                        <li><i class="fas fa-lock fa-li"></i><strong>Encryption:</strong> Software-protected keys and secrets</li>
+                        <li><i class="fas fa-dollar-sign fa-li"></i><strong>Cost:</strong> Lower pricing; pay-per-operation model</li>
+                        <li><i class="fas fa-check fa-li"></i><strong>Use Case:</strong> General-purpose workloads, development/test environments</li>
+                        <li><i class="fas fa-times fa-li"></i><strong>Limitation:</strong> No HSM-backed keys (no FIPS 140-2 Level 2+ compliance)</li>
+                    </ul>
+
+                    <h4><i class="fas fa-gem"></i> Premium Tier</h4>
+                    <ul>
+                        <li><i class="fas fa-shield-alt fa-li"></i><strong>HSM-Backed Keys:</strong> Keys protected by FIPS 140-2 Level 2 validated HSMs</li>
+                        <li><i class="fas fa-key fa-li"></i><strong>Operations:</strong> All cryptographic operations (encrypt, decrypt, sign, verify) performed within HSM</li>
+                        <li><i class="fas fa-download fa-li"></i><strong>BYOK Support:</strong> Import keys from on-premises HSMs using secure transfer</li>
+                        <li><i class="fas fa-certificate fa-li"></i><strong>Compliance:</strong> Meets regulatory requirements for key protection (HIPAA, PCI-DSS, etc.)</li>
+                        <li><i class="fas fa-dollar-sign fa-li"></i><strong>Cost:</strong> Higher pricing due to HSM usage</li>
+                    </ul>
+
+                    <h4><i class="fas fa-server"></i> Azure Managed HSM</h4>
+                    <p>Dedicated, single-tenant HSM pools for organizations requiring the highest level of key protection.</p>
+                    <ul>
+                        <li><i class="fas fa-lock fa-li"></i><strong>FIPS 140-2 Level 3:</strong> Highest certification level; tamper-evident hardware</li>
+                        <li><i class="fas fa-users fa-li"></i><strong>Multi-User Control:</strong> Supports security domain quorum for administrative operations</li>
+                        <li><i class="fas fa-cloud fa-li"></i><strong>Single Tenant:</strong> Dedicated HSM instances (not shared with other customers)</li>
+                        <li><i class="fas fa-cogs fa-li"></i><strong>Full Control:</strong> Customer has full cryptographic control and administrative access</li>
+                        <li><i class="fas fa-dollar-sign fa-li"></i><strong>Cost:</strong> Significantly higher; fixed monthly cost plus operations</li>
+                    </ul>
+
+                    <div class="diagram">
+                        <div class="diagram-box">
+                            <i class="fas fa-star" style="color: var(--keyvault-color);"></i>
+                            <span>Standard</span>
+                            <span style="font-size: 0.8em;">Software Keys</span>
+                        </div>
+                        <div class="diagram-box">
+                            <i class="fas fa-gem" style="color: var(--key-color);"></i>
+                            <span>Premium</span>
+                            <span style="font-size: 0.8em;">HSM-Backed (L2)</span>
+                        </div>
+                        <div class="diagram-box">
+                            <i class="fas fa-server" style="color: var(--cert-color);"></i>
+                            <span>Managed HSM</span>
+                            <span style="font-size: 0.8em;">Dedicated (L3)</span>
+                        </div>
+                    </div>
+
+                    <h4><i class="fas fa-download"></i> Bring Your Own Key (BYOK)</h4>
+                    <ul>
+                        <li><i class="fas fa-lock fa-li"></i><strong>On-Premises HSM:</strong> Generate keys in your own HSM, then securely transfer to Azure</li>
+                        <li><i class="fas fa-shield-alt fa-li"></i><strong>Transfer Methods:</strong> Use Azure Key Vault BYOK toolset or nCipher/Thales nShield Direct</li>
+                        <li><i class="fas fa-key fa-li"></i><strong>Key Lifecycle:</strong> You control key generation and backup; Azure never has access to plaintext key</li>
+                        <li><i class="fas fa-balance-scale fa-li"></i><strong>Compliance:</strong> Maintains chain of custody for regulated industries</li>
+                    </ul>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>Decision Guide:</strong> Use <strong>Standard</strong> for dev/test and non-regulated workloads. Choose <strong>Premium</strong> when FIPS 140-2 Level 2 is required (most production scenarios). Select <strong>Managed HSM</strong> only for highly regulated environments requiring Level 3 and dedicated HSMs.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 7: Exam Essentials & Key Takeaways -->
+            <div class="card" id="pillar7">
+                <input type="checkbox" id="pillar7-toggle" class="card-toggle">
+                <label for="pillar7-toggle" class="card-header takeaway-header">
+                    <h2><i class="fas fa-graduation-cap"></i> Exam Essentials & Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-check-circle"></i> AZ-104 Exam Focus Areas</h3>
+
+                    <h4><i class="fas fa-tasks"></i> Key Concepts to Master</h4>
+                    <ul>
+                        <li><i class="fas fa-vault fa-li"></i><strong>Purpose:</strong> Key Vault securely stores secrets, keys, and certificates; removes credentials from code</li>
+                        <li><i class="fas fa-cubes fa-li"></i><strong>Object Types:</strong> Secrets (up to 25KB), Keys (RSA/EC for crypto operations), Certificates (X.509 with auto-renewal)</li>
+                        <li><i class="fas fa-id-card fa-li"></i><strong>Authentication:</strong> Azure AD-based; use managed identities for Azure resources</li>
+                        <li><i class="fas fa-lock fa-li"></i><strong>Authorization:</strong> Azure RBAC (recommended) or vault access policies; grant least privilege</li>
+                        <li><i class="fas fa-layer-group fa-li"></i><strong>Tiers:</strong> Standard (software keys) vs. Premium (HSM-backed, FIPS 140-2 Level 2)</li>
+                        <li><i class="fas fa-trash-restore fa-li"></i><strong>Data Protection:</strong> Soft delete (7-90 day retention) + purge protection</li>
+                    </ul>
+
+                    <h4><i class="fas fa-clipboard-list"></i> Common Exam Scenarios</h4>
+                    <ul>
+                        <li><i class="fas fa-code fa-li"></i><strong>App Service Integration:</strong> Configure app settings with <code>@Microsoft.KeyVault(SecretUri=...)</code> syntax</li>
+                        <li><i class="fas fa-hard-drive fa-li"></i><strong>Disk Encryption:</strong> Enable Azure Disk Encryption (ADE) using Key Vault to store BitLocker/dm-crypt keys</li>
+                        <li><i class="fas fa-certificate fa-li"></i><strong>Application Gateway:</strong> Deploy TLS certificates from Key Vault for HTTPS listeners</li>
+                        <li><i class="fas fa-robot fa-li"></i><strong>Managed Identity:</strong> Assign system/user-assigned MI to VM or App Service, grant Key Vault access via RBAC</li>
+                        <li><i class="fas fa-network-wired fa-li"></i><strong>Network Security:</strong> Configure firewall rules or private endpoints to restrict Key Vault access</li>
+                    </ul>
+
+                    <h4><i class="fas fa-wrench"></i> Key CLI/PowerShell Commands</h4>
+                    <ul>
+                        <li><i class="fas fa-plus fa-li"></i><strong>Create Vault:</strong> <code>az keyvault create --name myVault --resource-group myRG --location eastus</code></li>
+                        <li><i class="fas fa-key fa-li"></i><strong>Set Secret:</strong> <code>az keyvault secret set --vault-name myVault --name mySecret --value "secretValue"</code></li>
+                        <li><i class="fas fa-search fa-li"></i><strong>Get Secret:</strong> <code>az keyvault secret show --vault-name myVault --name mySecret --query value -o tsv</code></li>
+                        <li><i class="fas fa-trash-alt fa-li"></i><strong>Enable Soft Delete:</strong> <code>az keyvault update --name myVault --enable-soft-delete true --enable-purge-protection true</code></li>
+                        <li><i class="fas fa-user-shield fa-li"></i><strong>Assign RBAC:</strong> <code>az role assignment create --role "Key Vault Secrets User" --assignee &lt;identity&gt; --scope /subscriptions/.../vaults/myVault</code></li>
+                    </ul>
+
+                    <div class="mnemonic-box">
+                        <strong><i class="fas fa-brain"></i> Master Mnemonic - "SECURE-KV":</strong>
+                        <ul style="margin-top: 8px; margin-bottom: 0;">
+                            <li><span class="key-point">S</span>tore secrets, keys, certificates</li>
+                            <li><span class="key-point">E</span>ncryption with HSMs (Premium)</li>
+                            <li><span class="key-point">C</span>ontrol access (RBAC + Azure AD)</li>
+                            <li><span class="key-point">U</span>se managed identities</li>
+                            <li><span class="key-point">R</span>ecover with soft delete</li>
+                            <li><span class="key-point">E</span>nable purge protection</li>
+                            <li><span class="key-point">K</span>eep audit logs</li>
+                            <li><span class="key-point">V</span>ault integrations (App Service, Storage, SQL, etc.)</li>
+                        </ul>
+                    </div>
+
+                    <h4><i class="fas fa-exclamation-triangle"></i> Common Pitfalls to Avoid</h4>
+                    <ul>
+                        <li><i class="fas fa-times fa-li"></i>Forgetting to enable <strong>managed identity</strong> on the resource accessing Key Vault</li>
+                        <li><i class="fas fa-times fa-li"></i>Using <strong>access policies</strong> instead of Azure RBAC for new implementations</li>
+                        <li><i class="fas fa-times fa-li"></i>Not enabling <strong>soft delete + purge protection</strong> on production vaults</li>
+                        <li><i class="fas fa-times fa-li"></i>Granting overly broad permissions (e.g., Key Vault Administrator when Secrets User suffices)</li>
+                        <li><i class="fas fa-times fa-li"></i>Storing secrets in code/config instead of Key Vault references</li>
+                    </ul>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>Final Exam Tip:</strong> Always recommend <strong>Managed Identity + Azure RBAC</strong> for authentication/authorization. Enable <strong>soft delete + purge protection</strong>. Choose <strong>Premium SKU</strong> when compliance requires HSM-backed keys. Integrate via <code>@Microsoft.KeyVault(...)</code> syntax for App Service.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- End card-container -->
+
+    </div> <!-- End main-container -->
+
+    <script>
+        // Smooth scroll for Quick Jump links
+        document.querySelectorAll('.quick-jump-links a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetCard = document.getElementById(targetId);
+                if (targetCard) {
+                    // Smooth scroll to card
+                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Auto-expand the card
+                    const checkbox = targetCard.querySelector('.card-toggle');
+                    if (checkbox && !checkbox.checked) {
+                        checkbox.checked = true;
+                    }
+                }
+            });
+        });
+
+        // Optional: Auto-collapse other cards when one expands (accordion mode)
+        // Uncomment below if you want accordion behavior
+        /*
+        document.querySelectorAll('.card-toggle').forEach(toggle => {
+            toggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.querySelectorAll('.card-toggle').forEach(other => {
+                        if (other !== this) other.checked = false;
+                    });
+                }
+            });
+        });
+        */
+    </script>
+
+</body>
+</html>

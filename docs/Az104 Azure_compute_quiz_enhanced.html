@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Azure Compute Quiz (AZ-104)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --correct-color: #107c10;
+            --incorrect-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --compute-color: #6f42c1; /* Purple for compute */
+            --timer-button-bg: #d83b01; /* Red for check answer button */
+            --timer-button-hover-bg: #a4262c;
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .quiz-container {
+            max-width: 850px; margin: 20px auto; padding: 25px 35px;
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 8px; box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark); text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px; margin-bottom: 25px;
+        }
+        h1 i { margin-right: 10px; color: var(--compute-color); }
+
+        .back-to-hub {
+            margin-bottom: 20px; padding: 10px; background-color: #e6f2ff; 
+            border-radius: 5px; text-align: center;
+        }
+        .back-to-hub a {
+            text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em;
+        }
+        .back-to-hub a i { margin-right: 8px; }
+
+
+        .question-block {
+            margin-bottom: 30px; padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+
+        .question-text { font-weight: 600; font-size: 1.1em; margin-bottom: 15px; }
+        .question-text i { margin-right: 8px; color: var(--compute-color); }
+        .scenario-text {
+            font-style: italic;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-left: 3px solid var(--info-color);
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+
+        .options-list { list-style: none; padding-left: 0; margin: 0; }
+        .options-list li {
+            margin-bottom: 10px; padding: 10px 15px; /* Increased padding */
+            border: 1px solid var(--border-color);
+            border-radius: 4px; cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .options-list li label {
+            display: flex; align-items: center; cursor: pointer;
+            width: 100%; font-size: 1em; /* Slightly larger option text */
+        }
+        .options-list li input[type="radio"] {
+            margin-right: 12px; accent-color: var(--azure-blue); cursor: pointer;
+            width: 18px; height: 18px;
+        }
+        .options-list li:hover { background-color: #eef1f5; border-color: var(--azure-blue); }
+
+        .feedback {
+            margin-top: 12px; padding: 10px 15px; /* Increased padding */
+            border-radius: 4px; font-weight: 600; display: none; font-size: 0.95em;
+        }
+        .feedback.correct {
+            background-color: #e7f3e7; border: 1px solid var(--correct-color); color: var(--correct-color);
+        }
+        .feedback.incorrect {
+            background-color: #fdeceb; border: 1px solid var(--incorrect-color); color: var(--incorrect-color);
+        }
+        .feedback i { margin-right: 8px; }
+        .feedback .review-hint {
+            display: block;
+            font-size: 0.9em;
+            font-weight: normal;
+            margin-top: 8px;
+            color: #555;
+        }
+        .feedback .review-hint a { color: var(--azure-blue-dark); text-decoration: underline;}
+
+
+        .options-list li.correct-answer-highlight { background-color: #d4edda !important; border-color: var(--correct-color) !important; font-weight: bold; }
+        .options-list li.incorrect-selection-highlight { background-color: #f8d7da !important; border-color: var(--incorrect-color) !important; opacity: 0.8; }
+
+        .sticky-footer {
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .timer-button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #check-answers-btn {
+            padding: 12px 25px; /* Larger button */
+            font-size: 1.15em; /* Larger font */
+            font-weight: bold;
+            color: var(--text-light);
+            background-color: var(--timer-button-bg);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            min-width: 180px; /* Ensure it's wide enough */
+        }
+        #check-answers-btn:hover { background-color: var(--timer-button-hover-bg); }
+        #check-answers-btn:disabled { background-color: #e74c3c; opacity: 0.7; cursor: not-allowed; }
+
+        #timer-display {
+            font-size: 0.9em;
+            color: var(--text-dark);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        #timer-display.active { color: var(--warning-color); font-weight: bold;}
+
+
+        #score-area {
+            text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 20px; padding: 10px;
+            background-color: var(--diagram-bg); border-radius: 4px; border: 1px solid var(--border-color);
+            display: none;
+        }
+        #score-area i { margin-right: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1><i class="fas fa-cogs"></i>Enhanced Azure Compute Quiz</h1>
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+
+        <form id="quiz-form">
+            <!-- Questions will be injected here by JS for better structure if we have many -->
+            <!-- For now, hardcoding for simplicity of example -->
+
+            <!-- Question 1: VM Use Case -->
+            <div class="question-block" data-question-id="q1_vm_usecase" data-correct-answer="lift_shift" data-review-topic="Azure Virtual Machines Guide">
+                <p class="question-text"><i class="fas fa-server"></i>Your company wants to migrate an existing on-premises application that requires full control over the operating system with minimal changes. Which Azure compute option is MOST suitable?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q1_vm_usecase" value="aci"> Azure Container Instances (ACI)</label></li>
+                    <li><label><input type="radio" name="q1_vm_usecase" value="aks"> Azure Kubernetes Service (AKS)</label></li>
+                    <li><label><input type="radio" name="q1_vm_usecase" value="lift_shift"> Azure Virtual Machines (VMs)</label></li>
+                    <li><label><input type="radio" name="q1_vm_usecase" value="avd"> Azure Virtual Desktop (AVD)</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 2: AVD Multi-session -->
+            <div class="question-block" data-question-id="q2_avd_multisession" data-correct-answer="yes" data-review-topic="Azure Virtual Desktop Guide">
+                <p class="question-text"><i class="fas fa-desktop"></i>A company plans to provide remote desktop access to 50 users for standard office applications. To optimize costs, they propose using Windows 10 Enterprise multi-session on Azure Virtual Desktop session hosts. Does this solution meet the goal of cost optimization while providing a full desktop experience?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q2_avd_multisession" value="yes"> Yes</label></li>
+                    <li><label><input type="radio" name="q2_avd_multisession" value="no"> No</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 3: ACI vs AKS -->
+            <div class="question-block" data-question-id="q3_aci_aks" data-correct-answer="aci_simple" data-review-topic="Containers (ACI/AKS) Guide">
+                <p class="question-text"><i class="fas fa-box-open"></i>You need to run a single, simple containerized task that processes data overnight and then stops. You want the simplest deployment method without managing underlying infrastructure or orchestration. Which Azure container service is most appropriate?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q3_aci_aks" value="aks_complex"> Azure Kubernetes Service (AKS) because it offers advanced scheduling.</label></li>
+                    <li><label><input type="radio" name="q3_aci_aks" value="aci_simple"> Azure Container Instances (ACI) because it's for single containers/simple tasks without orchestration overhead.</label></li>
+                    <li><label><input type="radio" name="q3_aci_aks" value="vm_docker"> A Virtual Machine with Docker installed for full control.</label></li>
+                    <li><label><input type="radio" name="q3_aci_aks" value="app_service_container"> App Service for Containers, as it's fully PaaS.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 4: VMSS Orchestration -->
+            <div class="question-block" data-question-id="q4_vmss_orchestration" data-correct-answer="no_uniform_diff_vm" data-review-topic="Azure VM Scale Sets (VMSS) Guide">
+                <div class="scenario-text">
+                    Scenario: You are designing a highly available application using Azure Virtual Machine Scale Sets (VMSS). You need some instances in the scale set to be general-purpose D-series VMs and others to be memory-optimized E-series VMs.
+                </div>
+                <p class="question-text"><i class="fas fa-layer-group"></i>Proposed Solution: You configure the VMSS with Uniform orchestration mode. Does this solution meet the goal of using different VM types in the same scale set?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q4_vmss_orchestration" value="yes_uniform_allows"> Yes, Uniform mode supports mixed VM types.</label></li>
+                    <li><label><input type="radio" name="q4_vmss_orchestration" value="no_uniform_diff_vm"> No, Uniform orchestration requires identical instances; Flexible orchestration should be used for mixed VM types.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 5: VM Availability -->
+            <div class="question-block" data-question-id="q5_vm_availability" data-correct-answer="availability_zones" data-review-topic="Azure Virtual Machines Guide">
+                <p class="question-text"><i class="fas fa-shield-alt"></i>To protect an Azure VM from a datacenter-level failure within a region, which availability option should you primarily configure for the VM?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q5_vm_availability" value="availability_set"> Availability Set</label></li>
+                    <li><label><input type="radio" name="q5_vm_availability" value="availability_zones"> Availability Zones</label></li>
+                    <li><label><input type="radio" name="q5_vm_availability" value="vmss_uniform"> VM Scale Set with Uniform Orchestration</label></li>
+                    <li><label><input type="radio" name="q5_vm_availability" value="proximity_group"> Proximity Placement Group</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+        </form>
+    </div>
+
+    <div class="sticky-footer">
+        <div class="timer-button-container">
+            <button type="button" id="check-answers-btn">Check Answers</button>
+            <div id="timer-display">Timer: 00:00</div>
+        </div>
+    </div>
+
+    <script>
+        const quizForm = document.getElementById('quiz-form');
+        const checkAnswersBtn = document.getElementById('check-answers-btn');
+        const scoreArea = document.getElementById('score-area'); // We'll add this later if needed
+        const questionBlocks = document.querySelectorAll('.question-block');
+        const timerDisplay = document.getElementById('timer-display');
+
+        let timerInterval = null;
+        let secondsElapsed = 0;
+        let timerStarted = false;
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (timerStarted) return;
+            timerStarted = true;
+            timerDisplay.classList.add('active');
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                timerDisplay.textContent = `Timer: ${formatTime(secondsElapsed)}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerDisplay.classList.remove('active');
+        }
+
+        // Start timer when any radio button is first clicked
+        quizForm.addEventListener('click', function(event) {
+            if (event.target.type === 'radio' && !timerStarted && !checkAnswersBtn.disabled) {
+                startTimer();
+            }
+        });
+
+        checkAnswersBtn.addEventListener('click', () => {
+            if (!timerStarted && questionBlocks.length > 0) { // Start timer if not started and button is clicked first
+                startTimer();
+            }
+            stopTimer();
+            let score = 0;
+            const totalQuestions = questionBlocks.length;
+
+            questionBlocks.forEach(block => {
+                const questionId = block.dataset.questionId;
+                const correctAnswer = block.dataset.correctAnswer;
+                const reviewTopic = block.dataset.reviewTopic || "the relevant study guide"; // Default hint
+                const feedbackEl = block.querySelector('.feedback');
+                const optionsList = block.querySelector('.options-list');
+                const selectedOptionInput = optionsList.querySelector(`input[name="${questionId}"]:checked`);
+
+                optionsList.querySelectorAll('li').forEach(li => {
+                    li.classList.remove('correct-answer-highlight', 'incorrect-selection-highlight');
+                });
+
+                if (selectedOptionInput) {
+                    const userAnswer = selectedOptionInput.value;
+                    const selectedLi = selectedOptionInput.closest('li');
+                    const correctLi = optionsList.querySelector(`input[value="${correctAnswer}"]`).closest('li');
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        feedbackEl.innerHTML = `<i class="fas fa-check-circle"></i> Correct!`;
+                        feedbackEl.className = 'feedback correct';
+                        selectedLi.classList.add('correct-answer-highlight');
+                    } else {
+                        feedbackEl.innerHTML = `<i class="fas fa-times-circle"></i> Incorrect. 
+                                                <span class="review-hint">Hint: The correct answer is related to '${correctAnswer}'. Please review ${reviewTopic}.</span>`;
+                        feedbackEl.className = 'feedback incorrect';
+                        selectedLi.classList.add('incorrect-selection-highlight');
+                        if (correctLi) {
+                            correctLi.classList.add('correct-answer-highlight');
+                        }
+                    }
+                } else {
+                    feedbackEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Please select an answer. 
+                                            <span class="review-hint">Review ${reviewTopic} for this concept.</span>`;
+                    feedbackEl.className = 'feedback incorrect';
+                }
+                feedbackEl.style.display = 'block';
+            });
+
+            const scoreDisplay = document.createElement('div'); // Create score display dynamically
+            scoreDisplay.id = 'score-area';
+            scoreDisplay.innerHTML = `<i class="fas fa-star"></i> Your Score: ${score} out of ${totalQuestions} in ${formatTime(secondsElapsed)}`;
+            scoreDisplay.style.display = 'block';
+            
+            // Insert score after the form, before the sticky footer if possible, or just append to container
+            const container = document.querySelector('.quiz-container');
+            const stickyFooter = document.querySelector('.sticky-footer');
+            if (container && stickyFooter) {
+                container.insertBefore(scoreDisplay, stickyFooter);
+            } else if (container) {
+                container.appendChild(scoreDisplay);
+            }
+
+
+            checkAnswersBtn.disabled = true;
+            checkAnswersBtn.textContent = 'Answers Checked';
+        });
+    </script>
+
+</body>
+</html>

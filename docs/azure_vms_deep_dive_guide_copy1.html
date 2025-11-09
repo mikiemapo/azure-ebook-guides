@@ -1,0 +1,2325 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azure Virtual Machines Deep Dive (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      :root {
+        --azure-blue: #0078d4;
+        --azure-blue-dark: #005a9e;
+        --azure-bg-light: #f0f4f8;
+        --text-dark: #323130;
+        --text-light: #ffffff;
+        --border-color: #d1d1d1;
+        --card-bg: #ffffff;
+        --diagram-bg: #f8f9fa;
+        --code-bg: #2d2d2d;
+        --code-text-color: #dcdcdc;
+        --code-border: #444;
+        --success-color: #107c10;
+        --warning-color: #d83b01;
+        --info-color: #005a9e;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        /* Feature Colors */
+        --vm-color: #0078ff;
+        --storage-color: #605e5c;
+        --network-color: var(--success-color);
+        --availability-color: #ffb900;
+        --management-color: #6f42c1;
+        --encryption-color: var(--success-color);
+        --keyvault-color: var(--azure-blue);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+          Helvetica, Arial, sans-serif;
+        background-color: var(--azure-bg-light);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--text-dark);
+        line-height: 1.6;
+      }
+
+      .main-container {
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      h1 {
+        color: var(--azure-blue-dark);
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      h1 .fa-server {
+        font-size: 1.1em;
+        color: var(--vm-color);
+      }
+
+      .back-to-hub-container {
+        /* Renamed and styled container for back link */
+        width: 100%;
+        max-width: 1000px; /* Match main container */
+        margin: 0 auto 20px auto; /* Centered, with bottom margin */
+        padding: 0 20px; /* Match body padding for alignment */
+        box-sizing: border-box;
+      }
+      .back-to-hub {
+        padding: 10px;
+        background-color: #e6f2ff;
+        border-radius: 5px;
+        text-align: left; /* Aligned left for better placement */
+        border: 1px solid var(--azure-blue);
+      }
+      .back-to-hub a {
+        text-decoration: none;
+        color: #005a9e;
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+      .back-to-hub a i {
+        margin-right: 8px;
+      }
+
+      .instructions {
+        background-color: var(--card-bg);
+        padding: 12px 18px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        text-align: center;
+        font-size: 0.95em;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px var(--shadow-color);
+      }
+      .instructions strong {
+        color: var(--vm-color);
+      }
+
+      /* --- Mind Map Diagram --- */
+      .mindmap-container {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 20px;
+        margin: 0 auto 30px auto;
+        width: 100%;
+        box-shadow: 0 2px 8px var(--shadow-color);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      .mindmap-item {
+        background-color: var(--diagram-bg);
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-size: 0.9em;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px var(--shadow-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        width: calc(33.33% - 20px);
+        min-width: 140px;
+        transition: transform 0.2s ease;
+      }
+      .mindmap-item:hover {
+        transform: translateY(-3px);
+      }
+      .mindmap-item i {
+        font-size: 1.8em;
+        margin-bottom: 5px;
+      }
+      .mindmap-item span {
+        font-weight: 600;
+      }
+      .mindmap-item.whatis i {
+        color: var(--vm-color);
+      }
+      .mindmap-item.planning i {
+        color: var(--info-color);
+      }
+      .mindmap-item.storage i {
+        color: var(--storage-color);
+      }
+      .mindmap-item.network i {
+        color: var(--network-color);
+      }
+      .mindmap-item.availability i {
+        color: var(--availability-color);
+      }
+      .mindmap-item.management i {
+        color: var(--management-color);
+      }
+
+      /* --- Card Section --- */
+      .card-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        width: 100%;
+      }
+      @media (min-width: 768px) {
+        .card-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1200px) {
+        .card-container {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      /* General Card Styles */
+      .card {
+        background-color: var(--card-bg);
+        border-radius: 6px;
+        box-shadow: 0 2px 5px var(--shadow-color);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+      }
+      .card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+      .card-toggle {
+        display: none;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        background-color: var(--vm-color);
+        color: var(--text-light);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        border-bottom: 1px solid #0056b3;
+      }
+      .card-header:hover {
+        background-color: #0056b3;
+      }
+      .card-header.availability-header {
+        background-color: var(--availability-color);
+        border-bottom-color: #c88f00;
+        color: var(--text-dark);
+      }
+      .card-header.availability-header:hover {
+        background-color: #e0a800;
+      }
+      .card-header.storage-header {
+        background-color: var(--storage-color);
+        border-bottom-color: #444;
+      }
+      .card-header.storage-header:hover {
+        background-color: #444;
+      }
+      .card-header.encryption-header {
+        background-color: var(--encryption-color);
+        border-bottom-color: #0d6a0d;
+      }
+      .card-header.encryption-header:hover {
+        background-color: #0d6a0d;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 1.2em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-header h2 i {
+        font-size: 1em;
+        opacity: 0.9;
+      }
+      .card-header .toggle-icon {
+        font-size: 1.1em;
+        transition: transform 0.3s ease;
+      }
+      .card-content {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        padding: 0 18px;
+        transition: max-height 0.4s ease-out, opacity 0.3s ease-in,
+          padding 0.4s ease-out, border-top 0.4s ease-out;
+        background-color: var(--card-bg);
+        border-top: 0px solid var(--border-color);
+        flex-grow: 1;
+      }
+      .card-toggle:checked + .card-header {
+        border-bottom-color: transparent;
+      }
+      .card-toggle:checked + .card-header .toggle-icon {
+        transform: rotate(180deg);
+      }
+      .card-toggle:checked ~ .card-content {
+        max-height: 2500px;
+        opacity: 1;
+        padding: 15px 18px;
+        border-top: 1px solid var(--border-color);
+        overflow-y: auto;
+      }
+
+      /* --- Content Styling --- */
+      .card-content h3 {
+        color: var(--azure-blue-dark);
+        margin-top: 0;
+        margin-bottom: 12px;
+        font-size: 1.1em;
+        font-weight: 600;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-content h3 i {
+        font-size: 0.9em;
+      }
+      .card-content ul {
+        font-size: 0.95em;
+        padding-left: 0;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        list-style: none;
+      }
+      .card-content li {
+        margin-bottom: 8px;
+        position: relative;
+        padding-left: 25px;
+      }
+      .card-content li i.fa-li {
+        position: absolute;
+        left: 0;
+        top: 3px;
+        width: 20px;
+        text-align: center;
+        font-size: 0.9em;
+        color: var(--vm-color);
+      }
+      .availability-card li i.fa-li {
+        color: var(--availability-color);
+      }
+      .storage-card li i.fa-li {
+        color: var(--storage-color);
+      }
+      .encryption-card li i.fa-li {
+        color: var(--encryption-color);
+      }
+
+      /* General icons for points */
+      .card-content li i.fa-cloud,
+      .card-content li i.fa-server {
+        color: var(--vm-color);
+      }
+      .card-content li i.fa-cogs {
+        color: #605e5c;
+      }
+      .card-content li i.fa-shield-alt {
+        color: var(--success-color);
+      }
+      .card-content li i.fa-info-circle {
+        color: var(--info-color);
+      }
+      .card-content li i.fa-map-marker-alt {
+        color: var(--azure-blue-dark);
+      }
+      .card-content li i.fa-building,
+      .card-content li i.fa-cubes {
+        color: var(--availability-color);
+      }
+      .card-content li i.fa-exclamation-triangle {
+        color: var(--warning-color);
+      }
+      .card-content li i.fa-hdd,
+      .card-content li i.fa-database,
+      .card-content li i.fa-compact-disc {
+        color: var(--storage-color);
+      }
+      .card-content li i.fa-tachometer-alt,
+      .card-content li i.fa-history,
+      .card-content li i.fa-layer-group {
+        color: var(--storage-color);
+      }
+      .card-content li i.fa-key {
+        color: var(--keyvault-color);
+      }
+      .card-content li i.fa-lock {
+        color: var(--encryption-color);
+      }
+      .card-content li i.fa-plug {
+        color: var(--encryption-color);
+      }
+      .card-content li i.fa-user-shield {
+        color: var(--info-color);
+      }
+      .card-content li i.fa-clock {
+        color: var(--warning-color);
+      }
+
+      /* --- Diagram Styles --- */
+      .diagram {
+        border: 1px dashed var(--border-color);
+        padding: 15px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        background-color: var(--diagram-bg);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .diagram-box {
+        background-color: #fff;
+        padding: 8px 12px;
+        border-radius: 4px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 2px var(--shadow-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        min-width: 90px;
+        font-size: 0.9em;
+      }
+      .diagram-box i {
+        font-size: 1.6em;
+      }
+      .diagram-box span {
+        font-size: 0.8em;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+      .diagram-arrow {
+        font-size: 1.8em;
+        color: #a19f9d;
+        margin: 0 5px;
+      }
+      .diagram-arrow-down {
+        transform: rotate(90deg);
+        margin: 5px 0;
+      }
+      .diagram-label {
+        font-size: 0.75em;
+        color: #605e5c;
+        font-style: italic;
+        width: 100%;
+        text-align: center;
+        margin-top: 5px;
+      }
+
+      .iaas-diagram .fa-server {
+        color: var(--vm-color);
+      }
+      .iaas-diagram .fa-user {
+        color: var(--azure-blue-dark);
+      }
+      .iaas-diagram .fa-cloud {
+        color: #605e5c;
+      }
+      .iaas-diagram .responsibility-label {
+        font-size: 0.7em;
+        font-weight: bold;
+        margin-top: 3px;
+      }
+
+      .availability-diagram .zone-box,
+      .availability-diagram .set-box {
+        border: 2px solid;
+        padding: 10px;
+        margin: 5px;
+        background-color: #fff;
+        min-width: 120px;
+      }
+      .availability-diagram .zone-box {
+        border-color: var(--availability-color);
+      }
+      .availability-diagram .zone-box i.fa-cubes {
+        color: var(--availability-color);
+      }
+      .availability-diagram .set-box {
+        border-color: var(--info-color);
+      }
+      .availability-diagram .set-box i.fa-object-group {
+        color: var(--info-color);
+      }
+      .availability-diagram .fd-ud-box {
+        border: 1px dotted #aaa;
+        padding: 5px;
+        margin-top: 5px;
+        font-size: 0.75em;
+      }
+      .availability-diagram .fd-ud-box i {
+        font-size: 0.9em;
+        margin-right: 3px;
+      }
+
+      .ade-flow-diagram .fa-key {
+        color: var(--keyvault-color);
+      }
+      .ade-flow-diagram .fa-lock {
+        color: var(--encryption-color);
+      }
+      .ade-flow-diagram .fa-hdd {
+        color: #605e5c;
+      }
+      .ade-flow-diagram .fa-server {
+        color: var(--vm-color);
+      }
+      .ade-flow-diagram .diagram-box {
+        min-width: 120px;
+      }
+
+      /* --- Code formatting --- */
+      code,
+      .code-term {
+        font-family: "Consolas", "Courier New", monospace;
+        background-color: #eef1f5;
+        padding: 0.1em 0.4em;
+        border-radius: 3px;
+        font-size: 0.9em;
+        border: 1px solid #ddd;
+        color: var(--azure-blue-dark);
+      }
+      pre {
+        background-color: var(--code-bg);
+        border: 1px solid var(--code-border);
+        padding: 15px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-size: 0.9em;
+        color: var(--code-text-color);
+        margin-top: 10px;
+      }
+      pre code {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 1em;
+        color: var(--code-text-color);
+      }
+      .param {
+        color: #4ec9b0;
+      }
+      .value {
+        color: #ce9178;
+      }
+      .comment {
+        color: #6a9955;
+        font-style: italic;
+      }
+      .cmdlet {
+        color: #dcdcaa;
+      }
+      .variable {
+        color: #9cdcfe;
+      }
+
+      /* Helper classes */
+      .key-point {
+        font-weight: 600;
+        color: var(--azure-blue-dark);
+      }
+      .description {
+        font-style: italic;
+        color: #605e5c;
+        margin-bottom: 15px;
+        display: block;
+      }
+      .important-note {
+        background-color: #e6f2ff;
+        border-left: 4px solid var(--vm-color);
+        padding: 10px 15px;
+        margin: 15px 0;
+        font-size: 0.9em;
+      }
+      .important-note i {
+        color: var(--vm-color);
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="back-to-hub-container">
+      <div class="back-to-hub">
+        <a href="index.html"
+          ><i class="fas fa-arrow-left"></i>Back to Study Hub</a
+        >
+      </div>
+    </div>
+
+    <div class="main-container">
+      <h1><i class="fas fa-server"></i>Azure Virtual Machines Deep Dive</h1>
+      <p class="instructions">
+        A comprehensive look at Azure Virtual Machines: planning, creation,
+        components, availability, and management concepts relevant for AZ-104.
+        <strong>Click/Tap</strong> headers to explore.
+      </p>
+
+      <!-- Mind Map -->
+      <div class="mindmap-container">
+        <div class="mindmap-item whatis">
+          <i class="fas fa-server"></i><span>What are VMs? (IaaS)</span>
+        </div>
+        <div class="mindmap-item planning">
+          <i class="fas fa-map-signs"></i><span>Planning & Creation</span>
+        </div>
+        <div class="mindmap-item storage">
+          <i class="fas fa-hdd"></i><span>VM Storage</span>
+        </div>
+        <div class="mindmap-item network">
+          <i class="fas fa-network-wired"></i><span>VM Networking</span>
+        </div>
+        <div class="mindmap-item availability">
+          <i class="fas fa-shield-alt"></i><span>Availability</span>
+        </div>
+        <div class="mindmap-item management">
+          <i class="fas fa-cogs"></i><span>Management</span>
+        </div>
+      </div>
+
+      <div class="card-container">
+        <!-- Pillar 1: VM Foundations (IaaS, Planning, Sizing) -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="pillar1-vm-foundations-toggle"
+            class="card-toggle"
+            checked
+          />
+          <label for="pillar1-vm-foundations-toggle" class="card-header">
+            <h2>
+              <i class="fas fa-server"></i>Pillar 1: VM Foundations (IaaS,
+              Planning & Sizing)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--vm-color)">
+              <i class="fas fa-cloud"></i>What are Azure VMs? (IaaS)
+            </h3>
+            <p class="description">
+              Azure Virtual Machines (VMs) are on-demand, scalable computing
+              resources that give you the flexibility of virtualization without
+              having to buy and maintain the physical hardware that runs it.
+              This is Infrastructure as a Service (IaaS).
+            </p>
+            <div class="diagram iaas-diagram">
+              <div class="diagram-box">
+                <i class="fas fa-user"></i><span>YOU Manage</span>
+                <span class="responsibility-label"
+                  >Data, Apps, OS, Network Config</span
+                >
+              </div>
+              <div class="diagram-box">
+                <i class="fas fa-cloud"></i><span>AZURE Manages</span>
+                <span class="responsibility-label"
+                  >Physical Hardware, Virtualization</span
+                >
+              </div>
+            </div>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cogs"></i
+                ><span class="key-point">Full Control:</span> You choose the OS
+                (Windows, various Linux distros), install software, configure
+                networking, and manage storage.
+              </li>
+              <li>
+                <i class="fa-li fas fa-arrows-alt-v"></i
+                ><strong>Scalability:</strong> Easily change VM sizes (CPU, RAM,
+                etc.) or deploy multiple VMs.
+              </li>
+              <li>
+                <i class="fa-li fas fa-globe"></i
+                ><strong>Global Reach:</strong> Deploy VMs in any Azure region
+                worldwide.
+              </li>
+              <li>
+                <i class="fa-li fas fa-cloud-upload-alt"></i
+                ><strong>Use Cases:</strong> Migrating on-premises servers
+                ("lift-and-shift"), hosting applications requiring specific OS
+                configurations, development/test environments, running
+                databases, backend for web apps.
+              </li>
+            </ul>
+            <p>
+              <strong>Implication:</strong> Provides maximum flexibility but
+              comes with the responsibility of managing the guest OS, patching,
+              software, and some networking aspects (as per Shared
+              Responsibility Model).
+            </p>
+
+            <h3 style="color: var(--availability-color); margin-top: 20px">
+              <i class="fas fa-map-marker-alt"></i>Planning: Region &
+              Availability
+            </h3>
+            <p class="description">
+              Choosing the right region and availability options is critical for
+              application uptime.
+            </p>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-globe-americas"></i
+                ><strong>Region:</strong> Geographic area where your VM is
+                deployed. Choose based on user proximity, data sovereignty,
+                service availability, and cost.
+              </li>
+              <li>
+                <i class="fa-li fas fa-server"></i
+                ><strong>Single VM SLA:</strong> To get an SLA for a single VM,
+                it
+                <span class="key-point"
+                  >must use Premium SSD or Ultra Disk</span
+                >
+                for all its OS and data disks. (Typically 99.9% or higher based
+                on disk type).
+              </li>
+              <li>
+                <i class="fa-li fas fa-object-group"></i
+                ><strong>Availability Sets:</strong>
+                <ul>
+                  <li>
+                    Protects against hardware failures
+                    <span class="key-point">within a single datacenter</span>.
+                  </li>
+                  <li>
+                    Spreads VMs across
+                    <code class="code-term">Fault Domains (FDs)</code> - racks
+                    with independent power/network.
+                  </li>
+                  <li>
+                    Spreads VMs across
+                    <code class="code-term">Update Domains (UDs)</code> - groups
+                    that can be rebooted for planned maintenance together.
+                  </li>
+                  <li>
+                    Typically provides 99.95% SLA if 2+ VMs are in an
+                    Availability Set.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-building"></i
+                ><strong>Availability Zones:</strong>
+                <ul>
+                  <li>
+                    Protects against
+                    <span class="key-point">entire datacenter failures</span>
+                    within a region.
+                  </li>
+                  <li>
+                    Physically separate locations within an Azure region, each
+                    with independent power, cooling, and networking.
+                  </li>
+                  <li>
+                    You deploy VMs (or VMSS instances) across multiple zones.
+                  </li>
+                  <li>
+                    Typically provides 99.99% SLA if VMs are deployed across
+                    zones.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <div class="diagram availability-diagram">
+              <div class="diagram-box set-box">
+                <i class="fas fa-object-group"></i><span>Availability Set</span>
+                <div class="fd-ud-box">
+                  <i class="fas fa-bolt"></i>FD0
+                  <i class="fas fa-sync-alt"></i>UD0 (VM1)
+                </div>
+                <div class="fd-ud-box">
+                  <i class="fas fa-bolt"></i>FD1
+                  <i class="fas fa-sync-alt"></i>UD1 (VM2)
+                </div>
+              </div>
+              <div class="diagram-box zone-box">
+                <i class="fas fa-cubes"></i><span>Zone 1 (VM A)</span>
+              </div>
+              <div class="diagram-box zone-box">
+                <i class="fas fa-cubes"></i><span>Zone 2 (VM B)</span>
+              </div>
+            </div>
+
+            <h3 style="color: var(--info-color); margin-top: 20px">
+              <i class="fas fa-th-large"></i>VM Sizes & Series (Choosing
+              Compute)
+            </h3>
+            <p class="description">
+              Azure offers a wide variety of VM sizes optimized for different
+              workloads. Understanding the series helps you select the
+              appropriate compute resources for performance and cost.
+            </p>
+            <div
+              class="diagram"
+              style="flex-direction: column; align-items: stretch; gap: 8px"
+            >
+              <div
+                class="diagram-box"
+                style="width: auto; padding: 10px; background-color: #e9ecef"
+              >
+                <i
+                  class="fas fa-tasks"
+                  style="color: var(--azure-blue-dark)"
+                ></i>
+                <strong>Key Considerations for Sizing:</strong><br />
+                <span
+                  >vCPUs, RAM, Temporary Storage, Max Data Disks, Max IOPS,
+                  Network Bandwidth, Cost, GPU needs.</span
+                >
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-wrap: wrap;
+                  justify-content: space-around;
+                  gap: 10px;
+                  margin-top: 10px;
+                "
+              >
+                <div
+                  class="diagram-box"
+                  style="
+                    min-width: 130px;
+                    border-left: 3px solid var(--vm-color);
+                  "
+                >
+                  <i class="fas fa-cogs" style="color: var(--vm-color)"></i
+                  ><span>General Purpose (D, B, Av2)</span>
+                </div>
+                <div
+                  class="diagram-box"
+                  style="
+                    min-width: 130px;
+                    border-left: 3px solid var(--warning-color);
+                  "
+                >
+                  <i
+                    class="fas fa-rocket"
+                    style="color: var(--warning-color)"
+                  ></i
+                  ><span>Compute Optimized (F)</span>
+                </div>
+                <div
+                  class="diagram-box"
+                  style="
+                    min-width: 130px;
+                    border-left: 3px solid var(--success-color);
+                  "
+                >
+                  <i
+                    class="fas fa-memory"
+                    style="color: var(--success-color)"
+                  ></i
+                  ><span>Memory Optimized (E, M)</span>
+                </div>
+                <div
+                  class="diagram-box"
+                  style="
+                    min-width: 130px;
+                    border-left: 3px solid var(--storage-color);
+                  "
+                >
+                  <i class="fas fa-hdd" style="color: var(--storage-color)"></i
+                  ><span>Storage Optimized (L)</span>
+                </div>
+                <div
+                  class="diagram-box"
+                  style="min-width: 130px; border-left: 3px solid #6f42c1"
+                >
+                  <i class="fas fa-microchip" style="color: #6f42c1"></i
+                  ><span>GPU Optimized (N)</span>
+                </div>
+                <div
+                  class="diagram-box"
+                  style="min-width: 130px; border-left: 3px solid #fd7e14"
+                >
+                  <i class="fas fa-tachometer-alt" style="color: #fd7e14"></i
+                  ><span>HPC Optimized (H)</span>
+                </div>
+              </div>
+            </div>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cogs" style="color: var(--vm-color)"></i
+                ><strong
+                  >General Purpose (e.g., Dsv5, Dasv5, B-series,
+                  Av2-series):</strong
+                >
+                <ul>
+                  <li>Balanced CPU-to-memory ratio.</li>
+                  <li>
+                    Ideal for testing, development, small to medium databases,
+                    and web servers.
+                  </li>
+                  <li>
+                    <code class="code-term">B-series:</code> Burstable VMs,
+                    cost-effective for workloads with typically low CPU usage
+                    but occasional peaks. Accrue credits when below baseline.
+                  </li>
+                </ul>
+              </li>
+              <li style="margin-top: 10px">
+                <i
+                  class="fa-li fas fa-rocket"
+                  style="color: var(--warning-color)"
+                ></i
+                ><strong>Compute Optimized (e.g., Fsv2-series):</strong>
+                <ul>
+                  <li>High CPU-to-memory ratio.</li>
+                  <li>
+                    Best for medium-traffic web servers, network appliances,
+                    batch processes, and application servers.
+                  </li>
+                </ul>
+              </li>
+              <li style="margin-top: 10px">
+                <i
+                  class="fa-li fas fa-memory"
+                  style="color: var(--success-color)"
+                ></i
+                ><strong
+                  >Memory Optimized (e.g., Esv5, Easv5, M-series):</strong
+                >
+                <ul>
+                  <li>High memory-to-CPU ratio.</li>
+                  <li>
+                    Great for relational database servers (SQL, MySQL), medium
+                    to large caches, and in-memory analytics.
+                  </li>
+                  <li>
+                    <code class="code-term">M-series:</code> Offer very high
+                    memory (up to 12TB), for largest in-memory workloads like
+                    SAP HANA.
+                  </li>
+                </ul>
+              </li>
+              <li style="margin-top: 10px">
+                <i
+                  class="fa-li fas fa-hdd"
+                  style="color: var(--storage-color)"
+                ></i
+                ><strong>Storage Optimized (e.g., Lsv3, Lasv3-series):</strong>
+                <ul>
+                  <li>
+                    High disk throughput and IOPS. Features fast, large local
+                    NVMe storage.
+                  </li>
+                  <li>
+                    Ideal for Big Data, SQL and NoSQL databases (Cassandra,
+                    MongoDB), data warehousing, and large transactional
+                    databases.
+                  </li>
+                </ul>
+              </li>
+              <li style="margin-top: 10px">
+                <i class="fa-li fas fa-microchip" style="color: #6f42c1"></i
+                ><strong>GPU Optimized (N-series):</strong>
+                <ul>
+                  <li>Include NVIDIA GPUs (e.g., T4, A10, A100).</li>
+                  <li>
+                    Designed for compute-intensive, graphics-intensive, and
+                    AI/ML workloads, video editing, rendering, deep learning.
+                  </li>
+                </ul>
+              </li>
+              <li style="margin-top: 10px">
+                <i
+                  class="fa-li fas fa-tachometer-alt"
+                  style="color: #fd7e14"
+                ></i
+                ><strong
+                  >High Performance Compute (HPC) (e.g., HB-series,
+                  HC-series):</strong
+                >
+                <ul>
+                  <li>
+                    Optimized for highest-end computational workloads, often
+                    with low-latency RDMA networking (InfiniBand).
+                  </li>
+                  <li>
+                    Used for financial modeling, weather simulation, engineering
+                    simulations.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-arrows-alt-v"></i
+                ><strong>Resizing VMs:</strong> You can change the size of an
+                existing VM using
+                <code class="code-term">az vm resize</code> (CLI) or
+                <code class="code-term">Update-AzVM</code> with
+                <code class="code-term">Set-AzVMHardwareProfile</code>
+                (PowerShell), or via the portal. The VM typically restarts.
+                Ensure the new size is available in the region/Availability
+                Zone.
+              </li>
+            </ul>
+            <p>
+              <strong>AZ-104 Focus:</strong> Understanding IaaS fundamentals;
+              difference between Availability Sets and Availability Zones with
+              SLA implications (FDs/UDs for sets); knowing VM series purposes (D
+              for general, E for memory, F for compute, N for GPU, L for storage
+              IO); sizing based on workload; B-series (burstable) concept;
+              resizing VMs.
+            </p>
+            <p>
+              <strong>Implication:</strong> Proper planning (region,
+              availability option, VM size/series) is foundational for balancing
+              performance, cost, and resilience. Over-provisioning wastes money;
+              under-provisioning hurts performance.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pillar 2: Storage & Security -->
+        <div class="card storage-card">
+          <input
+            type="checkbox"
+            id="pillar2-storage-security-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="pillar2-storage-security-toggle"
+            class="card-header storage-header"
+          >
+            <h2>
+              <i class="fas fa-hdd"></i>Pillar 2: Storage & Security (Disks,
+              Encryption)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--storage-color)">
+              <i class="fas fa-compact-disc"></i>VM Storage: OS Disks, Data
+              Disks, Types & More
+            </h3>
+            <p class="description">
+              Understanding the storage options available for your Azure VMs.
+            </p>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cog"></i><strong>OS Disk:</strong> Every
+                VM has one OS disk (Windows or Linux). Managed Disks are
+                recommended. Default size varies (e.g., ~127GB for Windows). Max
+                2TB (MBR) or 4TB (GPT, Gen2 VMs usually).
+              </li>
+              <li>
+                <i class="fa-li fas fa-database"></i
+                ><strong>Data Disks:</strong> Optional additional disks for data
+                storage. Can be attached/detached. Must be initialized and
+                formatted within the OS. Max 32TB per disk (P50/E50 or larger).
+              </li>
+              <li>
+                <i class="fa-li fas fa-tachometer-alt"></i
+                ><strong>Managed Disk Types (Performance & Cost):</strong>
+                <ul>
+                  <li>
+                    <i
+                      class="fas fa-circle fa-xs fa-li"
+                      style="color: #6c757d"
+                    ></i
+                    >Standard HDD: Lowest cost, for dev/test, backups, less
+                    critical workloads. Higher latency.
+                  </li>
+                  <li>
+                    <i
+                      class="fas fa-circle fa-xs fa-li"
+                      style="color: var(--azure-blue)"
+                    ></i
+                    >Standard SSD: Consistent performance for web servers, light
+                    app servers, dev/test. Better latency than HDD.
+                  </li>
+                  <li>
+                    <i
+                      class="fas fa-circle fa-xs fa-li"
+                      style="color: var(--success-color)"
+                    ></i
+                    >Premium SSD: High-performance, low-latency for
+                    I/O-intensive production (SQL Server, Dynamics). Higher
+                    IOPS/throughput.
+                  </li>
+                  <li>
+                    <i
+                      class="fas fa-circle fa-xs fa-li"
+                      style="color: var(--warning-color)"
+                    ></i
+                    >Ultra Disk: Highest performance Azure disk, sub-millisecond
+                    latency for top-tier databases (SAP HANA, etc.). Dynamically
+                    configurable performance.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-history"></i
+                ><strong>Temporary Disk:</strong> Present on the physical host
+                (not durable, SSD-based). For temporary data like page files,
+                swap files, SQL Server TempDB. Data
+                <span class="warning-text"
+                  >lost on deallocation, resize, host failure, or
+                  migration</span
+                >. Size varies by VM size.
+                <span class="key-point"
+                  >Do NOT store persistent data here.</span
+                >
+              </li>
+              <li>
+                <i class="fa-li fas fa-layer-group"></i
+                ><strong>Disk Caching (Host Caching):</strong> Can improve
+                performance.
+                <ul>
+                  <li>OS Disk: Default is Read/Write.</li>
+                  <li>
+                    Data Disks: Options are None, ReadOnly, ReadWrite. ReadOnly
+                    recommended for read-heavy workloads (like SQL data files).
+                    ReadWrite for balanced workloads (but risk of data loss on
+                    host failure if app doesn't handle write-back caching).
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <h3 style="color: var(--encryption-color); margin-top: 20px">
+              <i class="fas fa-lock"></i>Securing VM Disks: Azure Disk
+              Encryption (ADE)
+            </h3>
+            <p class="description">
+              This section covers a lab flow: 1. Deploying/Preparing a Windows
+              VM. 2. Enabling Azure Disk Encryption (ADE) using PowerShell & Key
+              Vault. 3. Subsequently using an ARM Quickstart template from the
+              Azure portal to disable/decrypt encryption.
+            </p>
+
+            <h4>Lab Workflow Summary:</h4>
+            <ol style="padding-left: 20px; font-size: 0.9em">
+              <li>
+                Windows VM (`fmdata-vm01`) created/prepared (e.g., via
+                `New-AzVm`).
+              </li>
+              <li>
+                Initial Disk Encryption Status Checked:
+                `Get-AzVmDiskEncryptionStatus` (Showed "NotEncrypted").
+              </li>
+              <li>
+                Key Vault Created/Ensured: `New-AzKeyVault ...
+                -EnabledForDiskEncryption`.
+              </li>
+              <li>
+                ADE Enabled on VM via PowerShell:
+                `Set-AzVmDiskEncryptionExtension -VolumeType All ...`.
+              </li>
+              <li>
+                Encryption Verified via PowerShell:
+                `Get-AzVmDiskEncryptionStatus` (Showed "OsVolumeEncrypted :
+                Encrypted").
+              </li>
+              <li>
+                **Later Action (Portal):** An ARM Quickstart Template ("Disable
+                encryption on Windows VM encrypted without AAD" or similar) was
+                deployed against the VM.
+              </li>
+              <li>
+                Final Status Check via PowerShell:
+                `Get-AzVmDiskEncryptionStatus` (Showed "OsVolumeEncrypted :
+                NotEncrypted" with "Disable Encryption completed successfully").
+              </li>
+            </ol>
+
+            <div
+              class="diagram ade-flow-diagram"
+              style="flex-direction: column; align-items: stretch; gap: 8px"
+            >
+              <div class="diagram-box">
+                <i class="fab fa-windows" style="color: var(--ps-color)"></i
+                ><span>1. Create VM & Prep Key Vault (PowerShell)</span>
+              </div>
+              <div style="text-align: center">
+                <i class="fas fa-arrow-down diagram-arrow"></i>
+              </div>
+              <div
+                class="diagram-box"
+                style="border-color: var(--encryption-color)"
+              >
+                <i
+                  class="fas fa-plug"
+                  style="color: var(--encryption-color)"
+                ></i
+                ><span>2. Enable ADE via PowerShell Extension</span>
+              </div>
+              <div style="text-align: center">
+                <i class="fas fa-arrow-down diagram-arrow"></i>
+              </div>
+              <div
+                class="diagram-box"
+                style="border-color: var(--success-color)"
+              >
+                <i class="fas fa-lock" style="color: var(--success-color)"></i
+                ><span>3. VM Disks Encrypted</span>
+              </div>
+              <div
+                style="
+                  text-align: center;
+                  margin: 10px 0;
+                  font-style: italic;
+                  color: #555;
+                "
+              >
+                --- Later / Separate Action ---
+              </div>
+              <div class="diagram-box" style="background-color: #e9ecef">
+                <i class="fas fa-file-alt" style="color: var(--arm-color)"></i
+                ><span
+                  >4. Deploy ARM Template (Portal)<br />"Disable/Decrypt
+                  Encryption"</span
+                >
+              </div>
+              <div style="text-align: center">
+                <i class="fas fa-arrow-down diagram-arrow"></i>
+              </div>
+              <div
+                class="diagram-box"
+                style="border-color: var(--warning-color)"
+              >
+                <i class="fas fa-unlock" style="color: var(--warning-color)"></i
+                ><span>5. VM Disks Decrypted</span>
+              </div>
+            </div>
+
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cogs"></i
+                ><strong>Enabling ADE (PowerShell):</strong>
+                <ul>
+                  <li>
+                    Requires a Key Vault with
+                    <code class="code-term">-EnabledForDiskEncryption</code>.
+                  </li>
+                  <li>
+                    Uses `Set-AzVmDiskEncryptionExtension` to apply BitLocker
+                    (Windows).
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i
+                  class="fa-li fas fa-file-code"
+                  style="color: var(--arm-color)"
+                ></i
+                ><strong
+                  >Disabling/Decrypting via ARM Template (Portal):</strong
+                >
+                <ul>
+                  <li>
+                    Specific Quickstart templates exist for managing encryption
+                    states, including disabling it.
+                  </li>
+                  <li>
+                    When such a template is deployed, it reconfigures the VM's
+                    encryption settings, potentially removing the ADE extension
+                    or reversing the encryption.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i
+                ><strong>Conflicting States:</strong> If you enable ADE via
+                PowerShell and then deploy an ARM template that's designed to
+                disable encryption (or manage it differently without AAD
+                integration for certain older ADE versions), the ARM template's
+                desired state will likely take precedence, leading to the
+                "Disable Encryption completed" message.
+              </li>
+            </ul>
+            <p>
+              <strong>AZ-104 Focus:</strong> Choosing appropriate disk types,
+              attaching/detaching data disks, understanding performance tiers
+              and IOPS/throughput limits, temporary disk characteristics, host
+              caching implications. Understanding the PowerShell method to
+              enable ADE with Key Vault; recognizing ARM templates can manage VM
+              encryption settings; awareness that different management
+              tools/methods can interact and potentially override each other.
+            </p>
+            <p>
+              <strong>Implication:</strong> Proper storage selection balances
+              performance and cost. It's crucial to have a consistent strategy
+              for managing VM configurations including disk encryption.
+            </p>
+          </div>
+        </div>
+        <!-- Pillar 3: Images & Deployment -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="pillar3-images-deployment-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="pillar3-images-deployment-toggle"
+            class="card-header"
+            style="background-color: #008080"
+          >
+            <h2>
+              <i class="fas fa-compact-disc"></i>Pillar 3: Images & Deployment
+              (OS Images, Deployment Methods)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: #008080">
+              <i class="fas fa-layer-group"></i>VM Operating System Images
+            </h3>
+            <p class="description">
+              The operating system image is the starting point for your Azure
+              VM, defining the OS and initial software configuration.
+            </p>
+
+            <h4>
+              <i class="fas fa-store" style="color: var(--azure-blue)"></i>1.
+              Azure Marketplace Images
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>Pre-configured OS images
+                (Windows Server, various Linux distributions like Ubuntu,
+                CentOS, RHEL) and application images (e.g., SQL Server on
+                Windows, WordPress).
+              </li>
+              <li>
+                <i class="fa-li fas fa-users"></i>Provided by Microsoft,
+                open-source communities, and third-party vendors.
+              </li>
+              <li>
+                <i class="fa-li fas fa-search"></i>Discoverable and deployable
+                via Azure portal, CLI (<code class="code-term"
+                  >az vm image list</code
+                >), PowerShell (<code class="code-term">Get-AzVMImageSku</code
+                >), and ARM templates.
+              </li>
+              <li>
+                <i class="fa-li fas fa-check-circle"></i>Often include necessary
+                drivers and optimizations for Azure.
+              </li>
+              <li>
+                <i class="fa-li fas fa-dollar-sign"></i>May include software
+                licensing costs (e.g., Windows Server, paid Linux distros) or be
+                "Bring Your Own License" (BYOL) / "Bring Your Own Subscription"
+                (BYOS) for certain vendor images.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-tools" style="color: var(--management-color)"></i
+              >2. Custom Images
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-bullseye"></i
+                ><strong>Purpose:</strong> Create standardized VM deployments
+                with your pre-installed applications, configurations, and
+                security hardening. Reduces deployment time and ensures
+                consistency.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sliders-h"></i
+                ><strong>Generalized vs. Specialized Images:</strong>
+                <ul>
+                  <li>
+                    <i class="fas fa-clone fa-xs fa-li"></i
+                    ><u>Generalized:</u> Machine-specific information (computer
+                    name, user accounts) is removed using tools like Sysprep
+                    (Windows) or `waagent -deprovision` (Linux). Used as a
+                    template to create multiple new VMs.
+                    <span class="key-point"
+                      >This is the common approach for custom image
+                      templates.</span
+                    >
+                  </li>
+                  <li>
+                    <i class="fas fa-copy fa-xs fa-li"></i><u>Specialized:</u> A
+                    snapshot of a VM's OS disk without generalization. Creates
+                    an exact copy of the source VM, including its state and
+                    data. Useful for backups or migrating a specific server.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-plus-circle"></i
+                ><strong>Creation Methods:</strong>
+                <ul>
+                  <li>From an existing Azure VM (after generalizing).</li>
+                  <li>
+                    Using Azure Image Builder (a managed service for building
+                    and distributing images).
+                  </li>
+                  <li>Uploading a generalized VHD from on-premises.</li>
+                </ul>
+              </li>
+              <li
+                class="important-note"
+                style="
+                  margin-top: 15px;
+                  margin-bottom: 10px;
+                  border-left-color: var(--management-color);
+                  background-color: #f0e6ff;
+                "
+              >
+                <i
+                  class="fas fa-flask"
+                  style="color: var(--management-color)"
+                ></i
+                ><strong>Hands-on Lab:</strong> For practical steps on creating
+                a custom image from a Windows VM, see the
+                <a
+                  href="az104_windows_vm_image_lab_guide.html"
+                  target="_blank"
+                  style="color: var(--azure-blue-dark); font-weight: bold"
+                  >Lab Review: Windows VM, Web Server & Image Capture</a
+                >
+                guide.
+              </li>
+            </ul>
+
+            <h4>
+              <i
+                class="fas fa-images"
+                style="color: var(--availability-color)"
+              ></i
+              >3. Azure Compute Gallery (formerly Shared Image Gallery)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-share-alt"></i>A service to manage and
+                share images at scale.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sitemap"></i>Allows grouping images,
+                versioning, and replicating them to different Azure regions for
+                faster local deployments.
+              </li>
+              <li>
+                <i class="fa-li fas fa-users-cog"></i>Control access to images
+                using Azure RBAC.
+              </li>
+              <li>
+                <i class="fa-li fas fa-globe-americas"></i>Share images across
+                subscriptions and even different Azure AD tenants.
+              </li>
+              <li>
+                <i class="fa-li fas fa-list-ol"></i>Supports both generalized
+                and specialized images.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-cogs" style="color: var(--text-dark)"></i>Key
+              Considerations for Images
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-id-card"></i
+                ><strong>Licensing:</strong> Ensure compliance for OS and any
+                included software. Marketplace images handle this transparently
+                for base OS; for custom images, you are responsible.
+              </li>
+              <li>
+                <i class="fa-li fas fa-server"></i
+                ><strong>VM Generation:</strong>
+                <ul>
+                  <li>
+                    <i class="fas fa-angle-right fa-xs fa-li"></i>Gen1 VMs use
+                    BIOS-based boot.
+                  </li>
+                  <li>
+                    <i class="fas fa-angle-double-right fa-xs fa-li"></i>Gen2
+                    VMs use UEFI-based boot, support features like Trusted
+                    Launch, larger OS disks, and specific OS versions.
+                  </li>
+                  <li>
+                    Ensure your chosen image is compatible with the VM
+                    generation you plan to use. Most modern Marketplace images
+                    support Gen2.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-sync-alt"></i
+                ><strong>Image Updates:</strong> Custom images need to be
+                periodically updated (patched) and new versions created to
+                ensure security and include latest software.
+              </li>
+            </ul>
+
+            <h3 style="color: #6a0dad; margin-top: 20px">
+              <i class="fas fa-rocket"></i>VM Deployment Methods
+            </h3>
+            <p class="description">
+              Azure offers multiple ways to deploy VMs. Each method suits
+              different needs, from quick tests to complex, automated
+              infrastructure rollouts.
+            </p>
+
+            <h4>
+              <i class="fas fa-mouse-pointer" style="color: #0078d4"></i>1.
+              Azure Portal
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-desktop"></i>Provides a graphical user
+                interface (GUI).
+              </li>
+              <li>
+                <i class="fa-li fas fa-check-circle"></i>Good for learning and
+                one-off deployments.
+              </li>
+              <li>
+                <i class="fa-li fas fa-tasks"></i>Visually guides through
+                configuration options.
+              </li>
+              <li>
+                <i class="fa-li fas fa-history"></i>Less ideal for repeatable or
+                automated large-scale deployments.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-terminal" style="color: #1e1e1e"></i>2. Azure CLI
+              (Command-Line Interface)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-keyboard"></i>Cross-platform command-line
+                tool.
+              </li>
+              <li>
+                <i class="fa-li fas fa-cogs"></i>Uses commands like
+                <code class="code-term">az vm create</code>.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sync-alt"></i>Excellent for scripting and
+                automation tasks.
+              </li>
+              <li>
+                <i class="fa-li fas fa-file-code"></i>Can create VMs with
+                complex settings.
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>Initial learning curve
+                can be steeper than the portal.
+              </li>
+            </ul>
+            <p class="description" style="font-size: 0.9em; margin-left: 25px">
+              Example:
+              <code class="code-term"
+                >az vm create --resource-group MyRG --name MyVM --image
+                UbuntuLTS ...</code
+              >
+            </p>
+
+            <h4>
+              <i class="fab fa-windows" style="color: #0078d4"></i>3. Azure
+              PowerShell
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-code"></i>A command-line shell and
+                scripting language.
+              </li>
+              <li>
+                <i class="fa-li fas fa-cogs"></i>Built on .NET; strong in
+                Windows environments.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sync-alt"></i>Uses cmdlets such as
+                <code class="code-term">New-AzVm</code>.
+              </li>
+              <li>
+                <i class="fa-li fas fa-file-alt"></i>Powerful for automation and
+                managing complex tasks.
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>Often preferred by
+                administrators familiar with Windows.
+              </li>
+            </ul>
+            <p class="description" style="font-size: 0.9em; margin-left: 25px">
+              Example:
+              <code class="code-term"
+                >New-AzVm -ResourceGroupName MyRG -Name MyVM ...</code
+              >
+            </p>
+
+            <h4>
+              <i class="fas fa-file-invoice" style="color: #f25022"></i>4. ARM
+              Templates (Azure Resource Manager)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-dna"></i>Declarative JSON files. Define
+                the desired state.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sitemap"></i>Define all resources (VMs,
+                storage, network) & configs.
+              </li>
+              <li>
+                <i class="fa-li fas fa-check-double"></i>Ensures consistent and
+                repeatable deployments.
+              </li>
+              <li>
+                <i class="fa-li fas fa-redo"></i>Idempotent: Re-running results
+                in the same state.
+              </li>
+              <li>
+                <i class="fa-li fas fa-project-diagram"></i>Foundation for
+                Infrastructure as Code (IaC) in Azure.
+              </li>
+              <li>
+                <i class="fa-li fas fa-cogs"></i>Can be complex to author
+                initially. Portal can export templates.
+              </li>
+            </ul>
+            <p class="description" style="font-size: 0.9em; margin-left: 25px">
+              Deploy ARM templates using Portal, CLI (<code class="code-term"
+                >az deployment group create</code
+              >), or PowerShell.
+            </p>
+
+            <h4>
+              <i class="fas fa-cubes" style="color: #7fba00"></i>5. Other Tools
+              (e.g., Terraform, Bicep)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-puzzle-piece"></i>Third-party IaC tools
+                like Terraform.
+              </li>
+              <li>
+                <i class="fa-li fas fa-language"></i>Azure Bicep: A simpler DSL
+                for Azure deployments. Transpiles to ARM JSON.
+              </li>
+              <li>
+                <i class="fa-li fas fa-code-branch"></i>Often used for
+                multi-cloud or advanced IaC scenarios.
+              </li>
+            </ul>
+
+            <p>
+              <strong>AZ-104 Focus:</strong> Understanding difference between
+              Marketplace and custom images, the purpose of generalization,
+              benefits of Azure Compute Gallery, VM generation compatibility.
+              Familiarity with Portal, CLI, PowerShell for VM deployment;
+              understanding ARM templates for repeatable IaC deployments.
+            </p>
+            <p>
+              <strong>Implication:</strong> Proper image selection (Marketplace
+              vs custom, generalized vs specialized) ensures consistent and
+              secure deployments. Choosing the right deployment method (Portal
+              for learning, CLI/PowerShell for automation, ARM templates for
+              IaC) balances efficiency with repeatability.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pillar 4: Networking -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="pillar4-networking-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="pillar4-networking-toggle"
+            class="card-header"
+            style="background-color: var(--network-color)"
+          >
+            <!-- Using your network-color -->
+            <h2>
+              <i class="fas fa-network-wired"></i>Pillar 4: Networking (VM
+              Networking Essentials)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--network-color)">
+              <i class="fas fa-ethernet"></i>Connecting Your Virtual Machines
+            </h3>
+            <p class="description">
+              Understanding how Azure VMs connect to networks and the internet
+              is crucial for accessibility, security, and communication with
+              other resources.
+            </p>
+
+            <h4>
+              <i class="fas fa-plug" style="color: var(--azure-blue-dark)"></i
+              >1. Network Interface Cards (NICs)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>A VM must have at least
+                one NIC to connect to an Azure Virtual Network (VNet).
+              </li>
+              <li>
+                <i class="fa-li fas fa-sitemap"></i>NICs are attached to a
+                subnet within a VNet.
+              </li>
+              <li>
+                <i class="fa-li fas fa-star"></i
+                ><strong>Primary NIC:</strong> The first NIC attached to a VM.
+                Cannot be deleted unless the VM is deleted. Default gateway is
+                assigned to this NIC.
+              </li>
+              <li>
+                <i class="fa-li fas fa-plus-circle"></i
+                ><strong>Secondary NICs:</strong> Depending on VM size, you can
+                attach multiple NICs.
+                <ul>
+                  <li>
+                    Use cases: Network appliances, routing traffic between
+                    different subnets/VNets, separate management traffic.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-link"></i>NICs can be associated with
+                Public IPs, Private IPs, and NSGs.
+              </li>
+            </ul>
+
+            <h4>
+              <i
+                class="fas fa-map-marked-alt"
+                style="color: var(--info-color)"
+              ></i
+              >2. IP Addressing
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-lock-open"></i
+                ><strong>Private IP Addresses:</strong>
+                <ul>
+                  <li>
+                    Assigned from the address range of the subnet the NIC is in.
+                  </li>
+                  <li>
+                    Used for communication within the VNet and connected
+                    networks (peered VNets, on-prem via VPN/ExpressRoute).
+                  </li>
+                  <li>
+                    Can be <code class="code-term">Dynamic</code> (default,
+                    assigned when VM starts) or
+                    <code class="code-term">Static</code> (persists across VM
+                    restarts/deallocations). Static is recommended for servers
+                    providing services (e.g., domain controllers, DNS servers).
+                  </li>
+                </ul>
+              </li>
+              <li style="margin-top: 10px">
+                <i class="fa-li fas fa-globe"></i
+                ><strong>Public IP Addresses (PIP):</strong>
+                <ul>
+                  <li>
+                    Allows inbound internet traffic to reach the VM (if NSG
+                    rules permit).
+                  </li>
+                  <li>
+                    Enables outbound internet connectivity for the VM (by
+                    default).
+                  </li>
+                  <li>
+                    Can be associated with a VM NIC, Load Balancer, Application
+                    Gateway, etc.
+                  </li>
+                  <li>
+                    <strong>SKUs:</strong>
+                    <code class="code-term">Basic</code> (older, fewer features,
+                    not zone-redundant) and
+                    <code class="code-term">Standard</code> (recommended,
+                    zone-redundant option, more features, secure by default -
+                    requires NSG for inbound).
+                  </li>
+                  <li>
+                    <strong>Assignment:</strong> Can be
+                    <code class="code-term">Dynamic</code> (assigned at
+                    creation, may change if VM is stopped/deallocated - Basic
+                    SKU only) or <code class="code-term">Static</code> (persists
+                    - Standard SKU is always static, Basic can be static).
+                    Static recommended for internet-facing services.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <h4>
+              <i
+                class="fas fa-search-location"
+                style="color: var(--success-color)"
+              ></i
+              >3. Domain Name System (DNS)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cloud"></i
+                ><strong>Azure-provided DNS (Default):</strong>
+                <ul>
+                  <li>
+                    Azure automatically provides internal DNS name resolution
+                    for VMs within the same VNet and for public DNS resolution.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-cogs"></i
+                ><strong>Custom DNS Servers:</strong>
+                <ul>
+                  <li>
+                    Can configure custom DNS servers at the VNet level (applies
+                    to all VMs) or per NIC.
+                  </li>
+                  <li>
+                    Needed for Active Directory domain resolution or specific
+                    on-premises DNS requirements.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-signature"></i
+                ><strong>Public DNS Name Label:</strong>
+                <ul>
+                  <li>
+                    For Public IP addresses, you can configure a DNS name label
+                    (e.g.,
+                    <code class="code-term">myvm.eastus.cloudapp.azure.com</code
+                    >).
+                  </li>
+                  <li>
+                    Creates an A record in Azure-managed DNS zones. Provides a
+                    friendly name to access the VM.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <h4>
+              <i
+                class="fas fa-shield-alt"
+                style="color: var(--warning-color)"
+              ></i
+              >4. Network Security Groups (NSGs) - Recap
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-filter"></i>Act as a stateful firewall
+                for VMs.
+              </li>
+              <li>
+                <i class="fa-li fas fa-list-ol"></i>Contain inbound and outbound
+                security rules to allow or deny traffic based on
+                source/destination IP, port, and protocol.
+              </li>
+              <li>
+                <i class="fa-li fas fa-link"></i>Can be associated with a
+                <span class="key-point">NIC</span> or a
+                <span class="key-point">subnet</span> (or both). If both, rules
+                are processed in order.
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>For a detailed
+                understanding, refer to the
+                <a
+                  href="azure_network_security_tools_guide.html"
+                  target="_blank"
+                  style="color: var(--azure-blue-dark); font-weight: bold"
+                  >Network Security Tools Guide</a
+                >.
+              </li>
+            </ul>
+
+            <p style="margin-top: 15px"><strong>AZ-104 Focus:</strong></p>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-check"></i>Assigning static vs. dynamic
+                private IPs.
+              </li>
+              <li>
+                <i class="fa-li fas fa-check"></i>Purpose and SKUs of Public
+                IPs; assigning DNS name labels.
+              </li>
+              <li>
+                <i class="fa-li fas fa-check"></i>When to use Azure-provided vs.
+                custom DNS.
+              </li>
+              <li>
+                <i class="fa-li fas fa-check"></i>Role of NICs and how NSGs are
+                associated for traffic filtering.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Pillar 5: Management & Operations -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="pillar5-management-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="pillar5-management-toggle"
+            class="card-header"
+            style="background-color: var(--management-color)"
+          >
+            <!-- Using your management-color -->
+            <h2>
+              <i class="fas fa-tasks-alt"></i>Pillar 5: Management & Operations
+              (Day-to-Day, Summary)
+            </h2>
+            <!-- fas fa-tasks-alt is a Font Awesome 6 Pro icon, if not available, fas fa-tasks or fas fa-cogs can be used -->
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--management-color)">
+              <i class="fas fa-digital-tachograph"></i>Day-to-Day VM
+              Administration
+            </h3>
+            <p class="description">
+              Effectively managing your Azure VMs involves various operational
+              tasks, from connecting and controlling state to monitoring and
+              maintenance.
+            </p>
+
+            <h4>
+              <i class="fas fa-plug" style="color: var(--success-color)"></i>1.
+              Connecting to VMs
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fab fa-windows"></i
+                ><strong>Windows VMs (RDP):</strong>
+                <ul>
+                  <li>
+                    Use Remote Desktop Protocol (RDP) clients. Requires RDP port
+                    (default 3389) to be open in NSG and OS firewall.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fab fa-linux"></i
+                ><strong>Linux VMs (SSH):</strong>
+                <ul>
+                  <li>
+                    Use Secure Shell (SSH) clients (e.g., PuTTY, OpenSSH).
+                    Requires SSH port (default 22) to be open in NSG and OS
+                    firewall. Uses key-based or password authentication.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-shield-alt"></i
+                ><strong>Azure Bastion (PaaS Service):</strong>
+                <ul>
+                  <li>
+                    Provides secure RDP/SSH connectivity to your VMs directly in
+                    the Azure portal over SSL.
+                  </li>
+                  <li>
+                    Eliminates the need to expose RDP/SSH ports publicly on your
+                    VMs. Deployed in your VNet.
+                  </li>
+                  <li>
+                    <span class="key-point"
+                      >Highly recommended for improved security.</span
+                    >
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-terminal"></i
+                ><strong>Serial Console:</strong>
+                <ul>
+                  <li>
+                    Text-based console access for troubleshooting boot issues or
+                    interacting with the OS when network connectivity is lost.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <h4>
+              <i
+                class="fas fa-power-off"
+                style="color: var(--warning-color)"
+              ></i
+              >2. VM State Control
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-play-circle"></i
+                ><strong>Start:</strong> Powers on the VM. Compute charges
+                apply.
+              </li>
+              <li>
+                <i class="fa-li fas fa-stop-circle"></i
+                ><strong>Stop (Deallocate):</strong> Shuts down the VM and
+                <span class="key-point">releases compute resources</span> (CPU,
+                memory, dynamic IP). You stop paying for compute. Storage
+                charges for disks continue.
+              </li>
+              <li>
+                <i class="fa-li fas fa-ban"></i
+                ><strong>Stop (Without Deallocation - OS Shutdown):</strong>
+                Shuts down the OS but resources remain allocated. Compute
+                charges continue. Rarely used unless specific scenarios require
+                it.
+              </li>
+              <li>
+                <i class="fa-li fas fa-redo"></i
+                ><strong>Restart:</strong> Reboots the VM.
+              </li>
+              <li>
+                <i class="fa-li fas fa-trash-alt"></i
+                ><strong>Delete:</strong> Removes the VM. Associated resources
+                like NICs and OS disks are often deleted by default
+                (configurable), but data disks are typically not.
+              </li>
+            </ul>
+
+            <h4>
+              <i
+                class="fas fa-arrows-alt-v"
+                style="color: var(--info-color)"
+              ></i
+              >3. Resizing VMs
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-expand-arrows-alt"></i>Change the VM size
+                (CPU, RAM, temp storage, max disks/IOPS) to meet performance or
+                cost needs.
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>VM needs to be restarted
+                (usually). Some sizes can be resized without restart if the
+                current hardware cluster supports the new size.
+              </li>
+              <li>
+                <i class="fa-li fas fa-stop-circle"></i>If resizing to a size
+                not available on the current hardware cluster, the VM might need
+                to be
+                <span class="key-point">stopped (deallocated)</span> first, then
+                resized.
+              </li>
+              <li>
+                <i class="fa-li fas fa-check"></i>Ensure the target VM size is
+                available in the VM's region and Availability Zone (if
+                applicable).
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-desktop" style="color: var(--vm-color)"></i>4.
+              Monitoring VMs (Overview)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-tachometer-alt"></i
+                ><strong>Metrics:</strong> Host-level metrics (CPU, Network,
+                Disk) are collected by default.
+              </li>
+              <li>
+                <i class="fa-li fas fa-file-alt"></i
+                ><strong>Guest-Level Diagnostics:</strong> Enable via Azure
+                Monitor Agent (AMA) or legacy Log Analytics Agent to collect OS
+                performance counters and event logs.
+              </li>
+              <li>
+                <i class="fa-li fas fa-binoculars"></i
+                ><strong>Boot Diagnostics:</strong> For troubleshooting boot
+                failures (screenshot, serial log).
+              </li>
+              <li>
+                <i class="fa-li fas fa-bell"></i
+                ><strong>Alerts:</strong> Configure alerts based on metrics or
+                logs.
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>For comprehensive
+                details, refer to the
+                <a
+                  href="azure_monitor_maintenance_guide.html"
+                  target="_blank"
+                  style="color: var(--azure-blue-dark); font-weight: bold"
+                  >Azure Monitor & Maintenance Guide</a
+                >.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-wrench" style="color: #6c757d"></i>5. Patching &
+              Updates
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-user-shield"></i>You are responsible for
+                patching the guest OS and installed software on IaaS VMs.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sync-alt"></i
+                ><strong>Azure Update Management:</strong>
+                <ul>
+                  <li>
+                    A service in Azure Automation to assess and deploy OS
+                    updates for Windows and Linux VMs across Azure and hybrid
+                    environments.
+                  </li>
+                  <li>
+                    Requires Automation Account & Log Analytics Workspace.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>For more, see the
+                "Update Management" section in the
+                <a
+                  href="azure_monitor_maintenance_guide.html"
+                  target="_blank"
+                  style="color: var(--azure-blue-dark); font-weight: bold"
+                  >Azure Monitor & Maintenance Guide</a
+                >.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-save" style="color: var(--success-color)"></i>6.
+              Backup & Disaster Recovery (Basic Concepts for VMs)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-shield-alt"></i
+                ><strong>Azure Backup:</strong>
+                <ul>
+                  <li>
+                    Native service to back up Azure VMs. Uses Recovery Services
+                    Vaults.
+                  </li>
+                  <li>
+                    Supports application-consistent snapshots for Windows,
+                    file-system consistent for Linux.
+                  </li>
+                  <li>
+                    Restore options: entire VM, individual disks, file/folder
+                    level.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-route"></i
+                ><strong>Azure Site Recovery (ASR):</strong>
+                <ul>
+                  <li>
+                    For disaster recovery of VMs to another Azure region (or
+                    on-prem to Azure).
+                  </li>
+                  <li>Replicates VMs and orchestrates failover/failback.</li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>Detailed backup concepts
+                are in the "Azure Backup" section of the
+                <a
+                  href="azure_monitor_maintenance_guide.html"
+                  target="_blank"
+                  style="color: var(--azure-blue-dark); font-weight: bold"
+                  >Azure Monitor & Maintenance Guide</a
+                >. ASR is a broader topic.
+              </li>
+            </ul>
+
+            <h3 style="color: var(--azure-blue-dark); margin-top: 25px">
+              <i class="fas fa-check-double"></i>AZ-104 Key Takeaways
+            </h3>
+            <p class="description">
+              This guide covered key aspects of Azure Virtual Machines. Here's a
+              summary of critical points for your AZ-104 preparation:
+            </p>
+
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cloud"></i
+                ><strong>IaaS Foundation:</strong> Understand VMs as
+                Infrastructure as a Service, giving you OS control but also OS
+                management responsibility.
+              </li>
+              <li>
+                <i class="fa-li fas fa-map-signs"></i
+                ><strong>Planning is Key:</strong>
+                <ul>
+                  <li>
+                    Choose appropriate Regions and VM Sizes/Series (General
+                    Purpose, Compute Optimized, Memory Optimized, etc.) based on
+                    workload.
+                  </li>
+                  <li>
+                    Understand B-series (burstable) for cost savings on variable
+                    workloads.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-shield-alt"></i
+                ><strong>Availability:</strong>
+                <ul>
+                  <li>
+                    Differentiate
+                    <span class="key-point">Availability Sets</span> (protects
+                    against hardware failure in a DC) vs.
+                    <span class="key-point">Availability Zones</span> (protects
+                    against DC failure in a region).
+                  </li>
+                  <li>
+                    Know single VM SLA requirements (Premium SSD/Ultra Disk).
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-hdd"></i><strong>VM Storage:</strong>
+                <ul>
+                  <li>
+                    OS Disks, Data Disks, and the non-persistent Temporary Disk.
+                  </li>
+                  <li>
+                    Managed Disk types (Standard HDD/SSD, Premium SSD, Ultra
+                    Disk) and their use cases.
+                  </li>
+                  <li>
+                    Host Caching options (ReadOnly, ReadWrite, None) and
+                    implications.
+                  </li>
+                  <li>Understand Azure Disk Encryption (ADE) concepts.</li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-compact-disc"></i
+                ><strong>OS Images:</strong>
+                <ul>
+                  <li>Marketplace images vs. Custom Images (generalized).</li>
+                  <li>
+                    Purpose of Azure Compute Gallery (Shared Image Gallery) for
+                    image management.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-rocket"></i
+                ><strong>Deployment Methods:</strong>
+                <ul>
+                  <li>Familiarity with Portal, Azure CLI, Azure PowerShell.</li>
+                  <li>
+                    Understand ARM Templates for declarative, consistent
+                    deployments (IaC).
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-network-wired"></i
+                ><strong>VM Networking:</strong>
+                <ul>
+                  <li>
+                    NICs, Private IPs (static/dynamic), Public IPs (SKUs,
+                    static/dynamic, DNS labels).
+                  </li>
+                  <li>Azure-provided vs. Custom DNS.</li>
+                  <li>
+                    Role of NSGs in filtering traffic (associated with
+                    NICs/subnets).
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-tasks-alt"></i
+                ><strong>Management & Operations:</strong>
+                <!-- fas fa-tasks-alt is Pro, consider fas fa-tasks -->
+                <ul>
+                  <li>Connecting (RDP/SSH, Azure Bastion).</li>
+                  <li>VM states (Start, Stop (Deallocate), Restart).</li>
+                  <li>Resizing VMs and prerequisites.</li>
+                  <li>
+                    Basic monitoring, patching (Update Management), and backup
+                    (Azure Backup) concepts.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-layer-group"></i
+                ><strong>VM Scale Sets (VMSS):</strong> Understand their role
+                for auto-scaling and managing groups of VMs.
+              </li>
+            </ul>
+
+            <p
+              class="important-note"
+              style="
+                border-left-color: var(--azure-blue-dark);
+                background-color: #e0eaf3;
+              "
+            >
+              <i
+                class="fas fa-lightbulb"
+                style="color: var(--azure-blue-dark)"
+              ></i
+              ><strong>Best Practice:</strong> Always choose the most
+              appropriate VM size, availability option, and storage type for
+              your workload to balance performance, cost, and resilience.
+              Leverage automation (CLI, PowerShell, ARM Templates) for
+              repeatable tasks. Prioritize security using NSGs, Azure Bastion,
+              and timely patching.
+            </p>
+          </div>
+        </div>
+
+        <!-- To be continued with: VM Networking, Management, VMSS Recap etc. -->
+      </div>
+      <!-- End card-container -->
+    </div>
+    <!-- End main-container -->
+
+    <script>
+      document.querySelectorAll(".card-toggle").forEach((checkbox) => {
+        checkbox.addEventListener("change", (e) => {
+          /* CSS handles expand/collapse */
+        });
+      });
+    </script>
+  </body>
+</html>

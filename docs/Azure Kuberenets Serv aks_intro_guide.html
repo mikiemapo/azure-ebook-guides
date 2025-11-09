@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intro to Azure Kubernetes Service (AKS) Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #f3f2f1;
+            --code-border: #e0e0e0;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --k8s-color: #326ce5; /* Kubernetes Blue */
+            --aks-color: var(--azure-blue);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-dharmachakra { font-size: 1.1em; color: var(--k8s-color); } /* Kubernetes Wheel */
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--azure-blue-dark); }
+
+        /* --- Mind Map Diagram --- */
+        .mindmap-container {
+            background-color: var(--card-bg); border-radius: 8px; padding: 25px;
+            margin: 0 auto 30px auto; width: 100%; max-width: 750px;
+            box-shadow: 0 2px 8px var(--shadow-color); border: 1px solid var(--border-color);
+            position: relative; min-height: 320px; /* Taller for more elements */
+            display: flex; justify-content: center; align-items: center;
+        }
+        .mindmap-center {
+            background-color: var(--aks-color); color: var(--text-light); padding: 15px;
+            border-radius: 8px; text-align: center; font-weight: 600; font-size: 1.1em;
+            width: 180px; height: auto; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(0, 120, 212, 0.5);
+            z-index: 10;
+        }
+        .mindmap-center i { font-size: 1.6em; margin-bottom: 8px; }
+
+        .mindmap-branch {
+            position: absolute; background-color: var(--diagram-bg); padding: 8px 12px;
+            border-radius: 6px; font-size: 0.85em; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+            display: flex; align-items: center; gap: 6px; min-width: 120px;
+            z-index: 5;
+        }
+        .mindmap-branch i { color: var(--azure-blue-dark); font-size: 1em;}
+        .mindmap-branch.k8s i { color: var(--k8s-color); }
+        .mindmap-branch.aks i { color: var(--aks-color); }
+        .mindmap-branch.compute i { color: #605e5c; }
+        .mindmap-branch.workload i { color: var(--info-color); }
+        .mindmap-branch.network i { color: var(--success-color); }
+        .mindmap-branch.benefits i { color: #f7b20c; } /* Yellow/Gold */
+
+        /* Positioning */
+        .branch-k8s-def { top: 10px; left: 50%; transform: translateX(-50%); }
+        .branch-aks-def { top: 60px; left: 50%; transform: translateX(-50%); }
+
+        .branch-control-plane { top: 50%; left: 10px; transform: translateY(-50%); }
+        .branch-api-server { top: calc(50% - 50px); left: -70px; transform: rotate(-25deg);}
+        .branch-etcd { top: calc(50% + 0px); left: -80px; }
+        .branch-scheduler { top: calc(50% + 50px); left: -70px; transform: rotate(25deg);}
+
+        .branch-nodes { top: 50%; right: 10px; transform: translateY(-50%); }
+        .branch-node-pools { top: calc(50% - 50px); right: -90px; transform: rotate(25deg);}
+        .branch-kubelet { top: calc(50% + 0px); right: -70px; }
+        .branch-kube-proxy { top: calc(50% + 50px); right: -90px; transform: rotate(-25deg);}
+
+        .branch-workloads { bottom: 10px; left: 25%; transform: translateX(-50%); }
+        .branch-pods { bottom: 60px; left: 15%;}
+        .branch-deployments { bottom: 60px; left: 35%; }
+
+        .branch-networking { bottom: 10px; right: 25%; transform: translateX(50%); }
+        .branch-services { bottom: 60px; right: 25%; }
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1100px) {
+             .card-container { grid-template-columns: repeat(3, 1fr); }
+             .card.k8s-concepts-card { grid-column: span 2; } /* Make concepts wider */
+             .card.aks-components-card { grid-column: span 2; } /* Make components wider */
+        }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--azure-blue); color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid var(--azure-blue-dark);
+        }
+        .card-header.k8s-header { background-color: var(--k8s-color); border-bottom-color: #1e4aab;} /* K8s Blue Header */
+        .card-header.aks-header { background-color: var(--aks-color); border-bottom-color: var(--azure-blue-dark); }
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+        .card-header.k8s-header:hover { background-color: #1e4aab;}
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--azure-blue); font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--azure-blue); font-size: 0.9em;
+          }
+        /* Custom list icons */
+        .card-content li i.fa-boxes { color: var(--info-color); } /* Containers */
+        .card-content li i.fa-cogs { color: #605e5c; } /* Orchestration */
+        .card-content li i.fa-check { color: var(--success-color); }
+        .card-content li i.fa-bolt { color: #f7b20c;} /* Scaling/Speed */
+        .card-content li i.fa-heartbeat { color: var(--warning-color);} /* Self-healing */
+        .card-content li i.fa-shipping-fast { color: var(--info-color); } /* Portability */
+        .card-content li i.fa-cloud { color: var(--aks-color); } /* Azure */
+        .card-content li i.fa-user-shield { color: var(--success-color); } /* Security */
+        .card-content li i.fa-server { color: #605e5c; } /* Node */
+        .card-content li i.fa-box-open { color: var(--info-color); } /* Pod */
+        .card-content li i.fa-network-wired { color: var(--success-color); } /* Service */
+        .card-content li i.fa-copy { color: var(--k8s-color); } /* Deployment */
+        .card-content li i.fa-object-group { color: var(--info-color); } /* Namespace */
+        .card-content li i.fa-brain { color: var(--azure-blue-dark); } /* Control Plane */
+        .card-content li i.fa-layer-group { color: var(--info-color); } /* Node Pool */
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-vertical { flex-direction: column; align-items: stretch; gap: 10px;}
+        .diagram-box {
+            background-color: #fff; padding: 10px 15px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px;
+        }
+        .diagram-box i { font-size: 1.5em; color: var(--azure-blue); }
+        .diagram-box span { font-size: 0.85em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; }
+        .diagram-arrow-down { transform: rotate(90deg); margin: 5px 0; }
+        .diagram-label { font-size: 0.8em; color: #605e5c; font-style: italic; margin-top: -10px; margin-bottom: 10px;}
+
+        /* Specific Diagram Styles */
+        .k8s-concepts-diagram { justify-content: space-around; align-items: flex-start;}
+        .k8s-concepts-diagram .concept-group { display: flex; flex-direction: column; align-items: center; gap: 10px;}
+        .k8s-concepts-diagram .pod-container { display: flex; gap: 5px; margin-top: 5px;}
+        .k8s-concepts-diagram .pod-container i { font-size: 0.8em; color: #605e5c; }
+
+        .aks-components-diagram { display: flex; justify-content: space-around; align-items: stretch; gap: 20px;}
+        .component-section { flex: 1; border: 2px solid; border-radius: 6px; padding: 15px; display: flex; flex-direction: column; align-items: center;}
+        .component-section h4 { margin-top: 0; margin-bottom: 10px; font-size: 1em; text-align: center; }
+        .component-section ul { padding-left: 0; list-style: none; width: 100%; text-align: center;}
+        .component-section li { padding-left: 0; font-size: 0.9em; margin-bottom: 5px;}
+        .component-section li i { margin-right: 5px; color: var(--azure-blue-dark); }
+        .control-plane-section { border-color: var(--azure-blue-dark); background-color: #e6f2ff; }
+        .nodes-section { border-color: #605e5c; background-color: #f3f2f1;}
+        .managed-by { font-size: 0.75em; font-style: italic; color: #605e5c; margin-top: auto; padding-top: 10px; }
+
+        .how-it-works-diagram .diagram-box i { font-size: 1.3em; }
+
+        /* --- Code formatting --- */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: var(--code-bg);
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid var(--code-border); color: var(--k8s-color); /* Use K8s blue for code */
+        }
+        .code-term { font-weight: bold; }
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-dharmachakra"></i>Intro to Azure Kubernetes Service (AKS) Guide</h1>
+
+    <!-- Mind Map -->
+    <div class="mindmap-container">
+         <div class="mindmap-center"><i class="fab fa-microsoft"></i>Azure Kubernetes Service (AKS)</div>
+
+         <div class="mindmap-branch branch-k8s-def k8s"><i class="fas fa-info-circle"></i>What is K8s?</div>
+         <div class="mindmap-branch branch-aks-def aks"><i class="fas fa-cloud"></i>What is AKS?</div>
+
+         <div class="mindmap-branch branch-control-plane aks"><i class="fas fa-brain"></i>Control Plane</div>
+         <div class="mindmap-branch branch-api-server aks"><i class="fas fa-door-open"></i>API Server</div>
+         <div class="mindmap-branch branch-etcd aks"><i class="fas fa-database"></i>etcd</div>
+         <div class="mindmap-branch branch-scheduler aks"><i class="fas fa-calendar-alt"></i>Scheduler</div>
+
+         <div class="mindmap-branch branch-nodes compute"><i class="fas fa-server"></i>Nodes</div>
+         <div class="mindmap-branch branch-node-pools compute"><i class="fas fa-layer-group"></i>Node Pools</div>
+         <div class="mindmap-branch branch-kubelet compute"><i class="fas fa-cogs"></i>Kubelet</div>
+         <div class="mindmap-branch branch-kube-proxy compute"><i class="fas fa-route"></i>Kube-proxy</div>
+
+         <div class="mindmap-branch branch-workloads workload"><i class="fas fa-cubes"></i>Workloads</div>
+         <div class="mindmap-branch branch-pods workload"><i class="fas fa-box-open"></i>Pods</div>
+         <div class="mindmap-branch branch-deployments workload"><i class="fas fa-copy"></i>Deployments</div>
+
+         <div class="mindmap-branch branch-networking network"><i class="fas fa-network-wired"></i>Networking</div>
+         <div class="mindmap-branch branch-services network"><i class="fas fa-concierge-bell"></i>Services</div>
+    </div>
+
+    <p class="instructions">Understand the basics of containers, Kubernetes, and Azure's managed offering, AKS. <strong>Click/Tap</strong> headers to explore.</p>
+
+    <div class="card-container">
+
+        <!-- What is K8s? -->
+        <div class="card">
+            <input type="checkbox" id="whatk8s-toggle" class="card-toggle">
+            <label for="whatk8s-toggle" class="card-header k8s-header">
+                <h2><i class="fas fa-dharmachakra"></i>What is Kubernetes (K8s)?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-ship"></i>Container Orchestration</h3>
+                <p class="description">An open-source platform for automating deployment, scaling, and management of containerized applications.</p>
+                 <ul>
+                    <li><i class="fas fa-boxes fa-li"></i><strong>Containers First:</strong> Assumes applications are packaged into lightweight, portable containers (like Docker).</li>
+                    <li><i class="fas fa-cogs fa-li"></i><strong>Orchestration:</strong> Manages the lifecycle of containers across a cluster of machines (nodes).
+                        <ul>
+                            <li>Scheduling containers onto nodes.</li>
+                            <li>Handling failures (rescheduling).</li>
+                            <li>Scaling applications up or down.</li>
+                            <li>Managing network routing and service discovery.</li>
+                            <li>Orchestrating storage.</li>
+                        </ul>
+                    </li>
+                    <li><i class="fas fa-code fa-li"></i><strong>Declarative Configuration:</strong> You define the desired state (e.g., "run 3 replicas of my app") and Kubernetes works to achieve it.</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Why Use K8s? -->
+        <div class="card">
+            <input type="checkbox" id="whyk8s-toggle" class="card-toggle">
+            <label for="whyk8s-toggle" class="card-header k8s-header">
+                <h2><i class="fas fa-thumbs-up"></i>Why Use Kubernetes?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-star"></i>Core Benefits</h3>
+                <p class="description">Advantages provided by the Kubernetes platform.</p>
+                 <ul>
+                    <li><i class="fas fa-bolt fa-li"></i><strong>Scalability:</strong> Easily scale applications horizontally (more instances) or vertically (more resources per instance).</li>
+                    <li><i class="fas fa-heartbeat fa-li"></i><strong>Self-healing:</strong> Automatically restarts failed containers, replaces unresponsive nodes, and reschedules workloads.</li>
+                    <li><i class="fas fa-shipping-fast fa-li"></i><strong>Portability:</strong> Runs consistently across different environments (on-premises, various clouds).</li>
+                    <li><i class="fas fa-sync-alt fa-li"></i><strong>Automated Rollouts & Rollbacks:</strong> Manages application updates and can automatically roll back if issues occur.</li>
+                    <li><i class="fas fa-hdd fa-li"></i><strong>Storage Orchestration:</strong> Mount and manage various storage systems.</li>
+                     <li><i class="fas fa-cogs fa-li"></i><strong>Configuration Management:</strong> Manage application configuration and secrets separately from container images.</li>
+                 </ul>
+            </div>
+        </div>
+
+
+         <!-- What is AKS? -->
+        <div class="card">
+            <input type="checkbox" id="whataks-toggle" class="card-toggle">
+            <label for="whataks-toggle" class="card-header aks-header">
+                <h2><i class="fab fa-microsoft"></i>What is Azure Kubernetes Service (AKS)?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-cloud"></i>Managed Kubernetes on Azure</h3>
+                <p class="description">AKS simplifies deploying and managing Kubernetes clusters in Azure by handling operational overhead.</p>
+                <div class="diagram">
+                    <div class="diagram-box"><i class="fab fa-windows" style="color: var(--azure-blue)"></i><span>Azure Platform</span></div>
+                    <i class="fas fa-arrow-right diagram-arrow"></i>
+                    <div class="diagram-box" style="border-color: var(--aks-color)"><i class="fas fa-shield-alt" style="color: var(--aks-color)"></i><span>AKS (Managed K8s Control Plane)</span></div>
+                    <i class="fas fa-arrow-right diagram-arrow"></i>
+                    <div class="diagram-box"><i class="fas fa-cubes"></i><span>Your Containerized Applications</span></div>
+                </div>
+                 <ul>
+                    <li><i class="fas fa-brain fa-li"></i><strong>Managed Control Plane:</strong> Azure manages the complex Kubernetes control plane components (API server, etcd, scheduler, etc.) <span class="key-point">at no cost</span>.</li>
+                    <li><i class="fas fa-server fa-li"></i><strong>Agent Nodes:</strong> You manage and pay for the virtual machines (agent nodes) where your application containers run.</li>
+                    <li><i class="fas fa-check fa-li"></i><strong>Simplification:</strong> Handles tasks like health monitoring, patching, scaling (control plane), and upgrades for the control plane.</li>
+                    <li><i class="fas fa-cloud fa-li"></i><strong>Azure Integration:</strong> Seamlessly integrates with other Azure services (Azure AD, Monitor, Policy, Networking, Storage, etc.).</li>
+                 </ul>
+            </div>
+        </div>
+
+         <!-- AKS Benefits -->
+        <div class="card">
+            <input type="checkbox" id="aksbenefits-toggle" class="card-toggle">
+            <label for="aksbenefits-toggle" class="card-header aks-header">
+                <h2><i class="fas fa-plus-circle"></i>Benefits of AKS</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-cogs"></i>Why Choose Azure's Managed Offering</h3>
+                <p class="description">Advantages of using AKS over managing Kubernetes yourself.</p>
+                 <ul>
+                    <li><i class="fas fa-dollar-sign fa-li" style="color: var(--success-color);"></i><strong>Free Control Plane:</strong> Reduces operational cost and complexity.</li>
+                    <li><i class="fas fa-wrench fa-li"></i><strong>Simplified Operations:</strong> Azure handles patching, upgrades, scaling, and monitoring of the control plane.</li>
+                    <li><i class="fas fa-lock fa-li"></i><strong>Enhanced Security:</strong> Integration with Azure AD for RBAC, Azure Policy for governance, Azure Security Center.</li>
+                     <li><i class="fas fa-network-wired fa-li"></i><strong>Flexible Networking:</strong> Integrates with Azure Virtual Networks (VNet) using Azure CNI or Kubenet.</li>
+                     <li><i class="fas fa-chart-line fa-li"></i><strong>Monitoring:</strong> Easily integrate with Azure Monitor for containers for logging and metrics.</li>
+                     <li><i class="fas fa-layer-group fa-li"></i><strong>Node Pools:</strong> Support for multiple node pools (Windows/Linux, different VM sizes, GPU nodes).</li>
+                 </ul>
+            </div>
+        </div>
+
+         <!-- Core Kubernetes Concepts -->
+        <div class="card k8s-concepts-card">
+            <input type="checkbox" id="k8sconcepts-toggle" class="card-toggle">
+            <label for="k8sconcepts-toggle" class="card-header k8s-header">
+                <h2><i class="fas fa-puzzle-piece"></i>Core Kubernetes Concepts</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-drafting-compass"></i>Building Blocks of K8s Applications</h3>
+                <p class="description">Understanding the fundamental objects in Kubernetes.</p>
+                <div class="diagram k8s-concepts-diagram">
+                    <div class="concept-group">
+                        <div class="diagram-box"><i class="fas fa-server"></i><span>Node</span></div>
+                        <span class="diagram-label">(Worker Machine - VM)</span>
+                        <i class="fas fa-arrow-down diagram-arrow-down"></i>
+                        <div class="diagram-box"><i class="fas fa-box-open"></i><span>Pod</span></div>
+                         <div class="pod-container">
+                             <i class="fas fa-box"></i><span>Container 1</span>
+                             <i class="fas fa-box"></i><span>Container 2</span>
+                         </div>
+                         <span class="diagram-label">(Smallest unit, holds containers)</span>
+                    </div>
+                    <div class="concept-group">
+                        <div class="diagram-box" style="border-color: var(--success-color);"><i class="fas fa-concierge-bell" style="color: var(--success-color);"></i><span>Service</span></div>
+                         <span class="diagram-label">(Networking Abstraction)</span>
+                         <i class="fas fa-long-arrow-alt-down diagram-arrow" style="transform: rotate(-30deg); color: var(--success-color)"></i>
+                         <i class="fas fa-long-arrow-alt-up diagram-arrow" style="transform: rotate(210deg); color: var(--success-color)"></i>
+                     </div>
+                     <div class="concept-group">
+                         <div class="diagram-box" style="border-color: var(--k8s-color);"><i class="fas fa-copy" style="color: var(--k8s-color);"></i><span>Deployment</span></div>
+                         <span class="diagram-label">(Manages Pod Replicas)</span>
+                         <i class="fas fa-arrow-down diagram-arrow-down" style="color: var(--k8s-color)"></i>
+                         <div style="display: flex; gap: 5px;">
+                             <div class="diagram-box"><i class="fas fa-box-open"></i><span>Pod</span></div>
+                              <div class="diagram-box"><i class="fas fa-box-open"></i><span>Pod</span></div>
+                               <div class="diagram-box"><i class="fas fa-box-open"></i><span>Pod</span></div>
+                         </div>
+                     </div>
+                 </div>
+                <ul>
+                    <li><i class="fas fa-server fa-li"></i><strong>Node:</strong> A worker machine (VM or physical) where containers run. Managed by the control plane.</li>
+                    <li><i class="fas fa-box-open fa-li"></i><strong>Pod:</strong> The <span class="key-point">smallest deployable unit</span>. Represents a single instance of an application. Can contain one or more tightly coupled containers that share resources (network, storage).</li>
+                    <li><i class="fas fa-concierge-bell fa-li" style="color: var(--success-color)"></i><strong>Service:</strong> Provides a stable IP address and DNS name for a set of pods. Enables network connectivity and load balancing.</li>
+                    <li><i class="fas fa-copy fa-li" style="color: var(--k8s-color)"></i><strong>Deployment:</strong> Declaratively manages replica sets of pods. Handles scaling, updates, and rollbacks.</li>
+                    <li><i class="fas fa-object-group fa-li"></i><strong>Namespace:</strong> A way to logically divide cluster resources between multiple users, teams, or applications.</li>
+                 </ul>
+            </div>
+        </div>
+
+         <!-- Core AKS Components -->
+        <div class="card aks-components-card">
+            <input type="checkbox" id="akscomponents-toggle" class="card-toggle">
+            <label for="akscomponents-toggle" class="card-header aks-header">
+                <h2><i class="fas fa-cogs"></i>Core AKS Components</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-building"></i>Control Plane & Nodes</h3>
+                 <p class="description">Understanding the managed and user-managed parts of an AKS cluster.</p>
+                 <div class="diagram aks-components-diagram">
+                    <div class="component-section control-plane-section">
+                        <h4><i class="fas fa-brain"></i> Control Plane</h4>
+                        <ul>
+                            <li><i class="fas fa-door-open"></i>API Server</li>
+                            <li><i class="fas fa-database"></i>etcd (Cluster Store)</li>
+                            <li><i class="fas fa-calendar-alt"></i>Scheduler</li>
+                            <li><i class="fas fa-sync-alt"></i>Controller Manager</li>
+                        </ul>
+                        <span class="managed-by">Managed by Azure (Free)</span>
+                    </div>
+                    <div class="component-section nodes-section">
+                        <h4><i class="fas fa-server"></i> Agent Nodes / Node Pools</h4>
+                         <ul>
+                            <li><i class="fas fa-layer-group"></i>Node Pools (VM Scale Sets)</li>
+                            <li><i class="fas fa-cogs"></i>Kubelet (Agent)</li>
+                            <li><i class="fas fa-route"></i>Kube-proxy (Networking)</li>
+                            <li><i class="fas fa-box"></i>Container Runtime (e.g., containerd)</li>
+                        </ul>
+                         <span class="managed-by">Managed by User (Pay for VMs)</span>
+                    </div>
+                 </div>
+                 <ul>
+                    <li><i class="fas fa-brain fa-li"></i><strong>Control Plane:</strong> The core Kubernetes services making global decisions about the cluster (scheduling, responding to events). <span class="key-point">Managed by Azure in AKS.</span></li>
+                    <li><i class="fas fa-layer-group fa-li"></i><strong>Node Pools:</strong> Groups of nodes (VMs) with the same configuration. You create and manage these (VM size, OS, count). Backed by Virtual Machine Scale Sets (VMSS).</li>
+                    <li><i class="fas fa-cogs fa-li"></i><strong>Kubelet:</strong> Agent running on each node that ensures containers described in PodSpecs are running and healthy. Communicates with the control plane.</li>
+                     <li><i class="fas fa-route fa-li"></i><strong>Kube-proxy:</strong> Network proxy running on each node, maintaining network rules and enabling communication for Services.</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- How AKS Works (Simplified) -->
+        <div class="card">
+            <input type="checkbox" id="how-toggle" class="card-toggle">
+            <label for="how-toggle" class="card-header aks-header">
+                <h2><i class="fas fa-project-diagram"></i>How AKS Works (Simplified)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-sync-alt"></i>Basic Workflow</h3>
+                 <p class="description">A high-level view of deploying an application.</p>
+                 <div class="diagram how-it-works-diagram">
+                     <div class="diagram-box"> <i class="fas fa-user"></i><span>User / CI/CD</span> </div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"> <i class="fas fa-terminal"></i><span>kubectl / API Request</span> </div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"> <i class="fas fa-door-open"></i><span>API Server (Control Plane)</span> </div>
+                     <i class="fas fa-arrow-down diagram-arrow-down"></i>
+                     <div class="diagram-box"> <i class="fas fa-calendar-alt"></i><span>Scheduler (Control Plane)</span> </div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"> <i class="fas fa-server"></i><span>Node Assigned</span> </div>
+                     <i class="fas fa-arrow-down diagram-arrow-down"></i>
+                     <div class="diagram-box"> <i class="fas fa-cogs"></i><span>Kubelet (on Node)</span> </div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                      <div class="diagram-box"> <i class="fas fa-box-open"></i><span>Creates Pod / Runs Container(s)</span> </div>
+                 </div>
+                <ol style="padding-left: 20px;">
+                    <li>User (or CI/CD) defines application state (e.g., Deployment YAML).</li>
+                    <li>Sends request to the <code class="code-term">API Server</code> (control plane entry point).</li>
+                    <li>Control plane components process the request (e.g., <code class="code-term">Scheduler</code> finds a suitable node).</li>
+                    <li><code class="code-term">API Server</code> updates node's <code class="code-term">Kubelet</code>.</li>
+                    <li><code class="code-term">Kubelet</code> pulls container image(s) and starts the Pod.</li>
+                    <li><code class="code-term">Kube-proxy</code> updates network rules for discoverability (if a Service is defined).</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Use Cases -->
+        <div class="card">
+            <input type="checkbox" id="usecases-toggle" class="card-toggle">
+            <label for="usecases-toggle" class="card-header">
+                <h2><i class="fas fa-lightbulb"></i>Common Use Cases</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-check"></i>Where AKS Shines</h3>
+                 <p class="description">Typical scenarios benefiting from Kubernetes and AKS.</p>
+                 <ul>
+                    <li><i class="fas fa-microchip fa-li"></i><strong>Microservices Architectures:</strong> Easily deploy, scale, and manage independent services.</li>
+                    <li><i class="fas fa-server fa-li"></i><strong>Lift and Shift to Containers:</strong> Modernize existing applications by containerizing them.</li>
+                    <li><i class="fas fa-rocket fa-li"></i><strong>CI/CD Pipelines:</strong> Automate building, testing, and deploying applications reliably.</li>
+                    <li><i class="fas fa-tasks fa-li"></i><strong>Batch Processing:</strong> Run short-lived jobs and scale nodes based on workload.</li>
+                    <li><i class="fas fa-brain fa-li"></i><strong>Machine Learning:</strong> Deploy and scale ML models for training or inference.</li>
+                    <li><i class="fas fa-globe fa-li"></i><strong>Web Applications:</strong> Run scalable and resilient web frontends and APIs.</li>
+                 </ul>
+            </div>
+        </div>
+
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

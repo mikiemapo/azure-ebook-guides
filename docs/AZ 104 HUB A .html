@@ -1,0 +1,1374 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>My Dynamic AZ-104 Study Hub</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-color: #f0f4f8;
+        color: #333;
+      }
+      .container {
+        max-width: 900px;
+        margin: auto;
+        background-color: #fff;
+        padding: 20px 30px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #0078d4;
+        text-align: center;
+        border-bottom: 2px solid #0078d4;
+        padding-bottom: 15px;
+        margin-bottom: 25px;
+      }
+      h1 i {
+        margin-right: 10px;
+      }
+
+      .category-title {
+        font-size: 1.6em; /* slightly bigger */
+        font-weight: 700; /* bolder for standout */
+        color: #003766; /* darker blue for contrast */
+        margin-top: 30px;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #0078d4; /* thicker underline */
+        padding-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); /* subtle pop effect */
+      }
+
+      .topic-list {
+        list-style: none;
+        padding: 0;
+      }
+      .topic-list li {
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        padding: 5px 0;
+      }
+      .category-description {
+        color: #1a1a1a; /* darker for readability */
+        background-color: #dff0ff; /* subtle highlight behind text */
+        padding: 12px 16px;
+        border-left: 6px solid #0078d4;
+        border-radius: 5px;
+        font-size: 1em;
+        font-weight: 500;
+        line-height: 1.5em;
+        margin-bottom: 12px;
+      }
+      .topic-list input[type="checkbox"] {
+        margin-right: 12px;
+        transform: scale(1.3);
+        cursor: pointer;
+        accent-color: #0078d4;
+      }
+      .topic-list a {
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: #004a8f; /* darker, richer blue */
+        background-color: #e0f0ff; /* softer highlight for quick scanning */
+        padding: 14px 20px; /* slightly larger padding */
+        border-radius: 6px;
+        transition: background-color 0.2s ease, transform 0.1s ease,
+          opacity 0.3s ease;
+        font-size: 1.1em; /* slightly larger */
+        font-weight: 500; /* medium weight for clarity */
+        border-left: 6px solid #0078d4; /* thicker left bar for visual separation */
+      }
+      .topic-list a:hover {
+        background-color: #cce4ff;
+        transform: translateX(3px);
+      }
+      .topic-list li.reviewed a {
+        background-color: #e8f5e9;
+        border-left-color: #4caf50;
+        opacity: 0.7;
+      }
+      .topic-list li.reviewed a i {
+        color: #4caf50;
+      }
+      .topic-list li.reviewed a:hover {
+        opacity: 1;
+        background-color: #dceddd;
+      }
+
+      .quiz-link i {
+        color: #107c10 !important;
+      }
+      .sorter-link i {
+        color: #ffb900 !important;
+      }
+      .personalized-link i {
+        color: #d83b01 !important;
+      }
+
+      #progress-summary {
+        text-align: center;
+        font-size: 1.1em;
+        font-weight: bold;
+        margin-top: 30px;
+        margin-bottom: 15px;
+        padding: 10px;
+        background-color: #f8f9fa;
+        border: 1px solid #d1d1d1;
+        border-radius: 5px;
+      }
+      #progress-summary i {
+        color: #0078d4;
+        margin-right: 8px;
+      }
+
+      #study-topics-container {
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1><i class="fas fa-graduation-cap"></i>My Dynamic AZ-104 Study Hub</h1>
+      <div id="progress-summary">Loading progress...</div>
+
+      <!-- Study Assistant: reads mergedQuizScores from personalized review and surfaces weak domains -->
+      <div id="study-assistant" style="display: block; margin-top: 12px">
+        <div
+          style="
+            background: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            border: 1px solid #e1e4e8;
+          "
+        >
+          <strong>Study Assistant</strong>
+          <div
+            id="study-assistant-content"
+            style="margin-top: 8px; color: #333"
+          >
+            Checking for saved performance data…
+          </div>
+          <div style="margin-top: 10px">
+            <button
+              id="study-assistant-refresh"
+              class="btn"
+              style="font-size: 0.85rem; padding: 0.25rem 0.5rem"
+            >
+              Refresh
+            </button>
+            <a
+              id="study-assistant-open-personalized"
+              href="azure_personalized_review_guide.html"
+              class="btn"
+              style="
+                font-size: 0.85rem;
+                padding: 0.25rem 0.5rem;
+                margin-left: 8px;
+                background: #0078d4;
+                color: #fff;
+                border-radius: 4px;
+                text-decoration: none;
+              "
+              >Open Personalized Review</a
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- Placeholder for dynamically generated topic lists -->
+      <div id="study-topics-container"></div>
+    </div>
+
+    <script>
+      const studyTopics = [
+        // === Personalized Study Tools (NEW CATEGORY) ===
+        {
+          id: "guide-personalized-review",
+          title: "Personalized Review: Weak Spot Focus",
+          filename: "azure_personalized_review_guide.html",
+          category: "Personalized Study Tools",
+          icon: "fas fa-bullseye",
+          type: "guide",
+        },
+        // === Lab Reviews & Practical ===
+        {
+          id: "guide-lab-webapp-up-cli",
+          title: "Lab: Deploy Static HTML with `az webapp up`",
+          filename: "az104_webapp_up_lab_guide.html",
+          category: "Lab Reviews & Practical",
+          icon: "fas fa-cloud-upload-alt",
+          type: "guide",
+        },
+        {
+          id: "flashcard-event-grid-storage",
+          title: "Flashcard: Event Grid Subscription to Blob Storage (Lab)",
+          filename: "flashcard_event_grid_storage.html",
+          category: "Lab Reviews & Practical",
+          icon: "fas fa-bolt",
+          type: "guide",
+        },
+        {
+          id: "guide-lab-vm-cli",
+          title: "Lab Review: VM CLI & Networking",
+          filename: "az104_vm_cli_lab_guide.html",
+          category: "Lab Reviews & Practical",
+          icon: "fas fa-vial",
+          type: "guide",
+        },
+        {
+          id: "guide-lab-linux-disk-ade",
+          title: "Lab: Linux VM Disk Prep & Conceptual ADE",
+          filename: "az104_linux_vm_add_disk_ade_guide.html",
+          category: "Lab Reviews & Practical",
+          icon: "fab fa-linux",
+          type: "guide",
+        },
+        {
+          id: "guide-lab-windows-vm-image",
+          title: "Lab Review: Windows VM, Web Server & Image Capture",
+          filename: "az104_windows_vm_image_lab_guide.html",
+          category: "Lab Reviews & Practical",
+          icon: "fas fa-flask",
+          type: "guide",
+        },
+        {
+          id: "guide-lab-vm-resize-cli",
+          title: "Lab: Resizing an Azure VM (CLI)",
+          filename: "az104_vm_resize_lab_guide.html",
+          category: "Lab Reviews & Practical",
+          icon: "fas fa-arrows-alt-v",
+          type: "guide",
+        },
+        {
+          id: "guide-lab-vnet-peering-cli",
+          title: "Lab Review: VNet Peering with Azure CLI",
+          filename: "az104_vnet_peering_cli_lab_guide.html",
+          category: "Lab Reviews & Practical",
+          icon: "fas fa-link",
+          type: "guide",
+        },
+        // === Interactive Sorters ===
+        {
+          id: "sorter-compute-scenarios",
+          title: "Azure Compute - Scenario Sorter",
+          filename: "azure_compute_scenario_sorter.html",
+          category: "Interactive Sorters",
+          icon: "fas fa-random",
+          type: "sorter",
+        },
+        {
+          id: "sorter-network-components",
+          title: "Azure Networking - Purpose Sorter",
+          filename: "azure_network_components_sorter.html",
+          category: "Interactive Sorters",
+          icon: "fas fa-project-diagram",
+          type: "sorter",
+        },
+        {
+          id: "sorter-nat-vs-firewall",
+          title: "NAT Gateway vs. Azure Firewall Sorter",
+          filename: "azure_nat_vs_firewall_sorter.html",
+          category: "Interactive Sorters",
+          icon: "fas fa-exchange-alt",
+          type: "sorter",
+        },
+        {
+          id: "sorter-load-balancing",
+          title: "Load Balancing Options Sorter",
+          filename: "azure_load_balancing_sorter.html",
+          category: "Interactive Sorters",
+          icon: "fas fa-balance-scale-right",
+          type: "sorter",
+        },
+        // === Azure Core & Governance ===
+        {
+          id: "guide-shared-responsibility-sorter",
+          title: "Shared Responsibility Sorter",
+          filename: "shared_responsibility_sorter.html",
+          category: "Azure Core & Governance",
+          icon: "fas fa-people-arrows",
+          type: "sorter",
+          description:
+            "Entra ID, RBAC, management groups, resource groups, policy enforcement, locks, Key Vault. Key mnemonics: RBAC = Right Bucket Access Control.",
+        },
+        {
+          id: "shared-responsibility_guide",
+          title: "Shared Responsibility Guide",
+          filename: "AZ-104_shared_responsibility_guide.html",
+          category: "Azure Core & Governance",
+          icon: "fas fa-handshake",
+          type: "guide",
+          description:
+            "Entra ID, RBAC, management groups, resource groups, policy enforcement, locks, Key Vault. Key mnemonics: RBAC = Right Bucket Access Control.",
+        },
+        {
+          id: "guide-policy",
+          title: "Azure Policy Guide",
+          filename: "azure_policy_guide.html",
+          category: "Azure Core & Governance",
+          icon: "fas fa-balance-scale",
+          type: "guide",
+          description:
+            "Entra ID, RBAC, management groups, resource groups, policy enforcement, locks, Key Vault. Key mnemonics: RBAC = Right Bucket Access Control.",
+        },
+        {
+          id: "guide-policy-gov",
+          title: "Azure Policy: Governance & Compliance",
+          filename: "Azure Policy- Governance and Compliance Management.html",
+          category: "Azure Core & Governance",
+          icon: "fas fa-balance-scale-left",
+          type: "guide",
+          description:
+            "Entra ID, RBAC, management groups, resource groups, policy enforcement, locks, Key Vault. Key mnemonics: RBAC = Right Bucket Access Control.",
+        },
+        {
+          id: "guide-keyvault",
+          title: "Azure Key Vault Guide",
+          filename: "Azure-key_vault_guide.html",
+          category: "Azure Core & Governance",
+          icon: "fas fa-key",
+          type: "guide",
+          description:
+            "Entra ID, RBAC, management groups, resource groups, policy enforcement, locks, Key Vault. Key mnemonics: RBAC = Right Bucket Access Control.",
+        },
+        {
+          id: "guide-entra-id-concepts",
+          title: "Microsoft Entra ID Core Concepts",
+          filename: "microsoft_entra_id_concepts_guide.html",
+          category: "Azure Core & Governance",
+          icon: "fas fa-id-card",
+          type: "guide",
+          description:
+            "Entra ID, RBAC, management groups, resource groups, policy enforcement, locks, Key Vault. Key mnemonics: RBAC = Right Bucket Access Control.",
+        },
+        // === Azure CLI, PowerShell & ARM ===
+        {
+          id: "guide-cli-ps",
+          title: "Azure CLI & PowerShell Guide",
+          filename: "azure_cli_ps_guide.html",
+          category: "Azure CLI, PowerShell & ARM",
+          icon: "fas fa-laptop-code",
+          type: "guide",
+        },
+        {
+          id: "guide-arm",
+          title: "ARM Templates Guide",
+          filename: "arm_template_concise_guide.html",
+          category: "Azure CLI, PowerShell & ARM",
+          icon: "fas fa-file-code",
+          type: "guide",
+        },
+        {
+          id: "guide-terraform-basics",
+          title: "Terraform Basics for Azure (AZ-104 Lab Prep)",
+          filename: "azure_terraform_basics_guide.html",
+          category: "Azure CLI, PowerShell & ARM",
+          icon: "fab fa-terraform",
+          type: "guide",
+        },
+        {
+          id: "guide-arm-concise",
+          title: "ARM Templates Concise Guide",
+          filename: "azure_arm_templates_concise_guide.html",
+          category: "Azure CLI, PowerShell & ARM",
+          icon: "fas fa-file-alt",
+          type: "guide",
+        },
+        // === Azure Storage ===
+        {
+          id: "guide-storage-overview",
+          title: "Storage Account Overview",
+          filename: "Study Guide Azure Storage Account Overview.html",
+          category: "Azure Storage",
+          icon: "fas fa-server",
+          type: "guide",
+        },
+        {
+          id: "guide-storage-options",
+          title: "Storage Options & Architecture",
+          filename: "Study Guide Azure Storage Options and Architecture.html",
+          category: "Azure Storage",
+          icon: "fas fa-cubes",
+          type: "guide",
+        },
+        {
+          id: "guide-storage-arch",
+          title: "Storage Architecture Guide",
+          filename: "azure_storage_architecture_guide.html",
+          category: "Azure Storage",
+          icon: "fas fa-building",
+          type: "guide",
+        },
+        {
+          id: "guide-storage-flashcards",
+          title: "Storage Redundancy Flashcards",
+          filename: "azure_storage_flashcards.html",
+          category: "Azure Storage",
+          icon: "fas fa-clone",
+          type: "guide",
+        },
+        {
+          id: "guide-redundancy",
+          title: "Storage Redundancy Guide",
+          filename: "redundancy_study_guide.html",
+          category: "Azure Storage",
+          icon: "fas fa-sync-alt",
+          type: "guide",
+        },
+        {
+          id: "guide-lifecycle-tiers",
+          title: "Blob Lifecycle & Tiers Guide",
+          filename: "Azure_storage_lifecycle_tiers_guide.html",
+          category: "Azure Storage",
+          icon: "fas fa-recycle",
+          type: "guide",
+        },
+        {
+          id: "guide-versioning-lifecycle",
+          title: "Blob Versioning & Lifecycle",
+          filename: "blob_versioning_lifecycle_guide.html",
+          category: "Azure Storage",
+          icon: "fas fa-project-diagram",
+          type: "guide",
+        },
+        {
+          id: "guide-immutable",
+          title: "Immutable Storage Guide",
+          filename: "immutable_storage_guide.html",
+          category: "Azure Storage",
+          icon: "fas fa-lock",
+          type: "guide",
+        },
+        {
+          id: "guide-blob-concepts",
+          title: "Blob Storage Concepts",
+          filename: "azure study guide Blob Storage Concepts.html",
+          category: "Azure Storage",
+          icon: "fas fa-file-invoice",
+          type: "guide",
+        },
+        {
+          id: "guide-azcopy",
+          title: "AzCopy v10 Guide",
+          filename: "AzCopy v10.html",
+          category: "Azure Storage",
+          icon: "fas fa-terminal",
+          type: "guide",
+        },
+        // === Azure Networking ===
+
+        {
+          id: "guide-gateway-lb",
+          title: "Azure Gateway Load Balancer Deep Dive",
+          filename: "azure_gateway_load_balancer_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-route", // Using fa-route icon for GWLB
+          type: "guide",
+          description:
+            "VNets, subnets, NSGs, peering, VPN/ExpressRoute, Load Balancers, Firewall, DNS, hub-spoke & mesh topologies.",
+        },
+        {
+          id: "guide-nsg",
+          title: "Network Security Groups (NSGs) Explained",
+          filename: "azure_network_security_groups_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-user-shield",
+          type: "guide",
+        },
+        {
+          id: "guide-load-balancing",
+          title: "Azure Load Balancing Services Explained",
+          filename: "azure_load_balancing_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-balance-scale-right",
+          type: "guide",
+        },
+        {
+          id: "guide-azure-dns",
+          title: "Azure DNS Services Explained",
+          filename: "azure_dns_services_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-globe-americas",
+          type: "guide",
+        },
+        {
+          id: "guide-vpn-gateway",
+          title: "Azure VPN Gateway Explained",
+          filename: "azure_vpn_gateway_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-dungeon",
+          type: "guide",
+        },
+        {
+          id: "guide-app-gateway",
+          title: "Azure Application Gateway Deep Dive",
+          filename: "azure_application_gateway_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-globe",
+          type: "guide",
+        },
+        {
+          id: "guide-vnet-deep-dive",
+          title: "Azure Virtual Networks (VNets) Deep Dive",
+          filename: "azure_vnet_deep_dive_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-network-wired",
+          type: "guide",
+        },
+        {
+          id: "guide-networking-components",
+          title: "Networking Components Guide",
+          filename: "azure_networking_components_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-sitemap",
+          type: "guide",
+        },
+        {
+          id: "guide-network-security-tools",
+          title: "Network Security Tools Guide",
+          filename: "azure_network_security_tools_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-shield-alt",
+          type: "guide",
+        },
+        {
+          id: "guide-azure-firewall",
+          title: "Azure Firewall Deep Dive",
+          filename: "azure_firewall_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-fire-alt",
+          type: "guide",
+        },
+        {
+          id: "guide-network-topologies",
+          title: "Azure Network Topologies: Mesh vs. Hub-Spoke",
+          filename: "azure_network_topologies_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-project-diagram",
+          type: "guide",
+        },
+        {
+          id: "guide-expressroute",
+          title: "Azure ExpressRoute Explained",
+          filename: "azure_expressroute_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-globe-route",
+          type: "guide",
+        },
+        {
+          id: "guide-lb-troubleshooting",
+          title: "Lab Review: Azure Load Balancer Troubleshooting",
+          filename: "azure_load_balancer_troubleshooting_guide.html",
+          category: "Azure Networking",
+          icon: "fas fa-exclamation-triangle", // Icon for troubleshooting
+          type: "guide",
+        },
+        // === Azure Compute & Containers ===
+        {
+          id: "guide-aks-intro",
+          title: "AKS Introduction Guide",
+          filename: "Azure Kuberenets Serv aks_intro_guide.html",
+          category: "Azure Compute & Containers",
+          icon: "fas fa-dharmachakra",
+          type: "guide",
+        },
+        {
+          id: "guide-docker-concepts",
+          title: "Docker Concepts & Role in Azure",
+          filename: "azure_docker_concepts_guide.html",
+          category: "Azure Compute & Containers",
+          icon: "fab fa-docker",
+          type: "guide",
+        },
+        {
+          id: "guide-compute-options",
+          title: "Comparing Azure Compute Options Guide",
+          filename: "azure_compute_options_guide.html",
+          category: "Azure Compute & Containers",
+          icon: "fas fa-cogs",
+          type: "guide",
+        },
+        {
+          id: "guide-aci-container-groups",
+          title: "Azure Containers: ACI & Container Groups Guide",
+          filename: "azure_aci_container_groups_guide.html",
+          category: "Azure Compute & Containers",
+          icon: "fas fa-boxes",
+          type: "guide",
+        },
+        {
+          id: "guide-vms-deep-dive-main",
+          title: "Azure VMs Deep Dive (Incl. Disks & ADE)",
+          filename: "azure_vms_deep_dive_guide.html",
+          category: "Azure Compute & Containers",
+          icon: "fas fa-server",
+          type: "guide",
+        },
+        {
+          id: "guide-vmss",
+          title: "Azure Virtual Machine Scale Sets (VMSS) Guide",
+          filename: "azure_vmss_guide.html",
+          category: "Azure Compute & Containers",
+          icon: "fas fa-layer-group",
+          type: "guide",
+        },
+        {
+          id: "guide-trusted-launch",
+          title: "Azure Trusted Launch for Gen2 VMs Guide",
+          filename: "azure_trusted_launch_guide.html",
+          category: "Azure Compute & Containers",
+          icon: "fas fa-user-shield",
+          type: "guide",
+        },
+        {
+          id: "guide-app-service",
+          title: "Azure App Service: Web Apps & Scaling Guide",
+          filename: "azure_app_service_guide.html",
+          category: "Azure Compute & Containers",
+          icon: "fas fa-rocket",
+          type: "guide",
+        },
+        // === Azure Monitoring & Management ===
+        {
+          id: "guide-lb-troubleshooting",
+          title: "Lab Review: Azure Load Balancer Troubleshooting",
+          filename: "azure_load_balancer_troubleshooting_guide.html",
+          category: "Azure Monitoring & Management", // Placing under Azure Networking
+          icon: "fas fa-exclamation-triangle", // Icon for troubleshooting
+          type: "guide",
+        },
+        {
+          id: "guide-monitor-maintenance",
+          title: "Azure Monitor & Maintenance Guide",
+          filename: "azure_monitor_maintenance_guide.html",
+          category: "Azure Monitoring & Management",
+          icon: "fas fa-desktop",
+          type: "guide",
+        },
+        // === Quizzes ===
+        {
+          id: "quiz-storage-aks-arm",
+          title: "Storage, AKS & ARM Quiz (Planned)",
+          filename: "azure_storage_aks_arm_quiz.html",
+          category: "Quizzes",
+          icon: "fas fa-tasks",
+          type: "quiz",
+        },
+        {
+          id: "quiz-redundancy-arm-aks",
+          title: "Redundancy, ARM & AKS Quiz",
+          filename: "azure_redundancy_arm_aks_quiz.html",
+          category: "Quizzes",
+          icon: "fas fa-sync-alt",
+          type: "quiz",
+        },
+        {
+          id: "quiz-networking-components",
+          title: "Azure Networking Components Quiz",
+          filename: "azure_networking_quiz.html",
+          category: "Quizzes",
+          icon: "fas fa-project-diagram",
+          type: "quiz",
+        },
+        {
+          id: "quiz-compute-enhanced",
+          title: "Enhanced Azure Compute Quiz",
+          filename: "azure_compute_enhanced_quiz.html",
+          category: "Quizzes",
+          icon: "fas fa-brain",
+          type: "quiz",
+        },
+        {
+          id: "quiz-storage-governance-enhanced",
+          title: "Enhanced Storage & Governance Quiz",
+          filename: "azure_storage_governance_enhanced_quiz.html",
+          category: "Quizzes",
+          icon: "fas fa-landmark",
+          type: "quiz",
+        },
+        {
+          id: "quiz-compute-enhanced-2",
+          title: "Enhanced Azure Compute Quiz (Part 2)",
+          filename: "azure_compute_enhanced_quiz_2.html",
+          category: "Quizzes",
+          icon: "fas fa-brain",
+          type: "quiz",
+        },
+        {
+          id: "quiz-compute-vca",
+          title: "Compute Quiz: VMs, Containers & App Services",
+          filename: "azure_compute_vca_quiz.html",
+          category: "Quizzes",
+          icon: "fas fa-laptop-code",
+          type: "quiz",
+        },
+        {
+          id: "quiz-app-service-detailed",
+          title: "Detailed Azure App Service Quiz",
+          filename: "azure_app_service_detailed_quiz.html",
+          category: "Quizzes",
+          icon: "fas fa-rocket",
+          type: "quiz",
+        },
+        {
+          id: "quiz-dns-concepts",
+          title: "Azure DNS Concepts Quiz",
+          filename: "azure_dns_quiz.html",
+          category: "Quizzes",
+          icon: "fas fa-globe-americas",
+          type: "quiz",
+        },
+      ];
+      // --- END OF YOUR TOPIC DATA ---
+
+      // runtime dedupe: remove later duplicates (keep first occurrence by id)
+      (function dedupeStudyTopics() {
+        const seen = new Set();
+        const deduped = [];
+        studyTopics.forEach((t) => {
+          if (!t || !t.id) return;
+          if (!seen.has(t.id)) {
+            deduped.push(t);
+            seen.add(t.id);
+          }
+        });
+        studyTopics.length = 0;
+        deduped.forEach((t) => studyTopics.push(t));
+      })();
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const topicsContainer = document.getElementById(
+          "study-topics-container"
+        );
+        const progressSummaryEl = document.getElementById("progress-summary");
+        const categories = {};
+
+        studyTopics.forEach((topic) => {
+          if (!categories[topic.category]) {
+            categories[topic.category] = [];
+          }
+          categories[topic.category].push(topic);
+        });
+
+        // Define the desired order of categories
+        const categoryOrder = [
+          "Personalized Study Tools", // NEW CATEGORY ADDED HERE
+          "Lab Reviews & Practical",
+          "Interactive Sorters",
+          "Azure Core & Governance",
+          "Azure CLI, PowerShell & ARM",
+          "Azure Storage",
+          "Azure Networking",
+          "Azure Compute & Containers",
+          "Azure Monitoring & Management",
+          "Quizzes",
+        ];
+
+        // Iterate over categories in the desired order
+        categoryOrder.forEach((categoryName) => {
+          if (categories[categoryName]) {
+            const categoryIcon = getCategoryIcon(categoryName);
+
+            // Category title
+            const categoryTitleEl = document.createElement("h2");
+            categoryTitleEl.classList.add("category-title");
+            categoryTitleEl.innerHTML = `<i class="${categoryIcon}"></i>${categoryName}`;
+            topicsContainer.appendChild(categoryTitleEl);
+
+            // Add category description if available
+            // Find the first non-empty description in this category
+            // Predefine descriptions per category
+            const categoryDescriptions = {
+              "Personalized Study Tools":
+                "Focus on weak spots first; review high-priority exam objectives quickly.",
+              "Lab Reviews & Practical":
+                "Practical hands-on exercises to reinforce Azure CLI, VMs, storage, networking, and App Services.",
+              "Interactive Sorters":
+                "Scenario-based exercises to solidify understanding of Azure components and decision-making.",
+              "Azure Core & Governance":
+                "Entra ID, RBAC, management groups, resource groups, policy enforcement, locks, Key Vault. Key mnemonics: RBAC = Right Bucket Access Control.",
+              "Azure CLI, PowerShell & ARM":
+                "Azure CLI and PowerShell commands, ARM templates, Bicep, Terraform basics; repeatable deployments and automation.",
+              "Azure Storage":
+                "Storage account types, blob/file/queue/table, replication (LRS/ZRS/GRS/RA-GRS), soft delete, snapshots, immutable blobs.",
+              "Azure Networking":
+                "VNets, subnets, NSGs, peering, VPN/ExpressRoute, Load Balancers, Firewall, DNS, hub-spoke & mesh topologies.",
+              "Azure Compute & Containers":
+                "VMs, VMSS, App Services, Containers (ACI & AKS), high availability, Trusted Launch, IaaS vs PaaS differences.",
+              "Azure Monitoring & Management":
+                "Azure Monitor, VM Insights, Network Watcher, log analytics, alerts, action groups, cost management.",
+              Quizzes:
+                "Assessment quizzes covering all AZ-104 topics to reinforce learning and readiness.",
+            };
+
+            const categoryDescription = categoryDescriptions[categoryName];
+            if (categoryDescription) {
+              const descEl = document.createElement("p");
+              descEl.classList.add("category-description");
+              descEl.style.fontStyle = "italic";
+              descEl.style.marginBottom = "12px";
+              descEl.textContent = categoryDescription;
+              topicsContainer.appendChild(descEl);
+            }
+
+            // Topic list
+            const topicListEl = document.createElement("ul");
+            topicListEl.classList.add("topic-list");
+
+            categories[categoryName].forEach((topic) => {
+              const listItem = document.createElement("li");
+
+              const checkbox = document.createElement("input");
+              checkbox.type = "checkbox";
+              checkbox.id = topic.id;
+              checkbox.dataset.linkId = `link-${topic.id}`;
+
+              const link = document.createElement("a");
+              link.href = topic.filename;
+              link.id = `link-${topic.id}`;
+              link.innerHTML = `<i class="${topic.icon}"></i>${topic.title}`;
+
+              if (topic.type === "quiz") {
+                link.classList.add("quiz-link");
+              } else if (topic.type === "sorter") {
+                link.classList.add("sorter-link");
+              } else if (topic.category === "Personalized Study Tools") {
+                link.classList.add("personalized-link");
+              }
+
+              listItem.appendChild(checkbox);
+              listItem.appendChild(link);
+              topicListEl.appendChild(listItem);
+            });
+
+            topicsContainer.appendChild(topicListEl);
+          }
+        });
+
+        const allCheckboxes = topicsContainer.querySelectorAll(
+          '.topic-list input[type="checkbox"]'
+        );
+
+        function updateLinkStyle(checkbox) {
+          const linkId = checkbox.dataset.linkId;
+          const linkElement = document.getElementById(linkId);
+          if (linkElement) {
+            const parentLi = checkbox.closest("li");
+            if (checkbox.checked) {
+              parentLi.classList.add("reviewed");
+            } else {
+              parentLi.classList.remove("reviewed");
+            }
+          }
+        }
+
+        function updateProgressDisplay() {
+          const totalTopics = allCheckboxes.length;
+          let completedTopics = 0;
+          allCheckboxes.forEach((cb) => {
+            if (cb.checked) {
+              completedTopics++;
+            }
+          });
+          if (progressSummaryEl) {
+            progressSummaryEl.innerHTML = `<i class="fas fa-check-double"></i> Progress: ${completedTopics} of ${totalTopics} topics reviewed.`;
+          }
+        }
+
+        allCheckboxes.forEach((checkbox) => {
+          const savedState = localStorage.getItem(checkbox.id);
+          if (savedState === "true") {
+            checkbox.checked = true;
+          }
+          updateLinkStyle(checkbox);
+
+          checkbox.addEventListener("change", () => {
+            localStorage.setItem(checkbox.id, checkbox.checked);
+            updateLinkStyle(checkbox);
+            updateProgressDisplay();
+          });
+        });
+        updateProgressDisplay();
+      });
+
+      function getCategoryIcon(categoryName) {
+        const lowerCategoryName = categoryName.toLowerCase();
+        switch (lowerCategoryName) {
+          case "personalized study tools":
+            return "fas fa-bullseye";
+          case "lab reviews & practical":
+            return "fas fa-vial";
+          case "azure core & governance":
+            return "fas fa-cloud";
+          case "azure cli, powershell & arm":
+            return "fas fa-tools";
+          case "azure storage":
+            return "fas fa-database";
+          case "azure networking":
+            return "fas fa-network-wired";
+          case "azure compute & containers":
+            return "fas fa-server";
+          case "azure monitoring & management":
+            return "fas fa-chart-bar";
+          case "quizzes":
+            return "fas fa-question-circle";
+          case "interactive sorters":
+            return "fas fa-th-list";
+          default:
+            return "fas fa-folder"; // Fallback icon
+        }
+      }
+
+      // --- Study Assistant logic: read mergedQuizScores from localStorage (or inline JSON if later extended)
+      (function () {
+        const saContent = () =>
+          document.getElementById("study-assistant-content");
+
+        function readMergedScores() {
+          try {
+            const raw = localStorage.getItem("mergedQuizScores");
+            if (!raw) return null;
+            return JSON.parse(raw);
+          } catch (e) {
+            console.warn("Study Assistant: failed to read mergedQuizScores", e);
+            return null;
+          }
+        }
+
+        function computeWeakDomains(merged) {
+          if (!merged) return [];
+          // merged is domainKey -> { correct, total }
+          const arr = Object.keys(merged).map((k) => {
+            const v = merged[k] || { correct: 0, total: 0 };
+            const percent = v.total ? v.correct / v.total : 0;
+            return { domain: k, percent, correct: v.correct, total: v.total };
+          });
+          arr.sort((a, b) => a.percent - b.percent); // weakest first
+          return arr.slice(0, 5);
+        }
+
+        // small mapping table: domainKey -> array of topic ids that map to it explicitly
+        const domainToTopicMap = {
+          storage: [
+            "guide-storage-flashcards",
+            "guide-storage-arch",
+            "guide-redundancy",
+          ],
+          networking: [
+            "guide-networking-components",
+            "guide-vnet-deep-dive",
+            "guide-lb-troubleshooting",
+          ],
+          compute: [
+            "guide-vms-deep-dive-main",
+            "guide-app-service",
+            "guide-aci-container-groups",
+          ],
+          policy: ["guide-policy", "guide-policy-gov"],
+          keyvault: ["guide-keyvault"],
+          aks: ["guide-aks-intro"],
+        };
+
+        function findTopicsForDomain(domainKey) {
+          const key = domainKey.toLowerCase();
+          // preferred: check mapping table keys (exact or contains)
+          for (const mapKey of Object.keys(domainToTopicMap)) {
+            if (key.includes(mapKey) || mapKey.includes(key)) {
+              const ids = domainToTopicMap[mapKey];
+              const mapped = ids
+                .map((id) => studyTopics.find((t) => t.id === id))
+                .filter(Boolean);
+              if (mapped.length) return mapped.slice(0, 3);
+            }
+          }
+
+          // fallback: substring match against id or title
+          const matches = studyTopics.filter(
+            (t) =>
+              (t.id && t.id.toLowerCase().includes(key)) ||
+              (t.title && t.title.toLowerCase().includes(key))
+          );
+          return matches.slice(0, 3);
+        }
+
+        function render() {
+          const contentEl = saContent();
+          const merged = readMergedScores();
+          if (!contentEl) return;
+          if (!merged) {
+            contentEl.innerHTML =
+              'No committed performance data found. Use the Personalized Review "Save" to commit scores.';
+            return;
+          }
+          const weak = computeWeakDomains(merged);
+          if (!weak.length) {
+            contentEl.innerHTML = "No domain scores available.";
+            return;
+          }
+          let out = '<ol style="margin:0 0 8px 18px; padding:0;">';
+          weak.forEach((w) => {
+            out += `<li style="margin-bottom:.4rem"><strong>${
+              w.domain
+            }</strong> — ${Math.round(w.percent * 100)}% (${w.correct}/${
+              w.total
+            })`;
+            const topics = findTopicsForDomain(w.domain);
+            if (topics && topics.length) {
+              out +=
+                '<div style="font-size:.9rem; margin-top:.25rem;">Recommended: ';
+              out += topics
+                .map(
+                  (t) =>
+                    `<a href="${t.filename}" style="margin-right:.6rem">${t.title}</a>`
+                )
+                .join("");
+              out += "</div>";
+            }
+            out += "</li>";
+          });
+          out += "</ol>";
+          contentEl.innerHTML = out;
+        }
+
+        // initial render - show quickly, but long-running updates are throttled later
+        document.addEventListener("DOMContentLoaded", () => {
+          try {
+            render();
+          } catch (e) {}
+          const btn = document.getElementById("study-assistant-refresh");
+          if (btn)
+            btn.addEventListener("click", () => {
+              try {
+                if (typeof renderThrottled === "function") renderThrottled();
+                else render();
+              } catch (e) {}
+            });
+        });
+
+        // Helper: safe render that prefers throttled wrappers if available (will be defined later)
+        function safeRender() {
+          try {
+            if (typeof renderThrottled === "function") renderThrottled();
+            else render();
+          } catch (e) {}
+        }
+
+        // listen for storage events from other windows
+        window.addEventListener("storage", (ev) => {
+          if (ev.key === "mergedQuizScores") safeRender();
+        });
+
+        // also listen for same-window custom event dispatched by personalized review when saving
+        window.addEventListener("mergedQuizScoresUpdated", (ev) => {
+          safeRender();
+        });
+
+        // --- Retention Trends (READ-ONLY) ---
+        function readMergedQuizHistory() {
+          try {
+            const raw = localStorage.getItem("mergedQuizHistory");
+            if (!raw) return [];
+            const parsed = JSON.parse(raw);
+            if (!Array.isArray(parsed)) return [];
+            // Safety cap to avoid heavy renders in constrained hosts
+            const MAX_HISTORY = 30;
+            if (parsed.length > MAX_HISTORY) return parsed.slice(-MAX_HISTORY);
+            return parsed;
+          } catch (e) {
+            console.warn("Failed to read mergedQuizHistory", e);
+            return [];
+          }
+        }
+
+        function buildDomainSeries(history, domainKey) {
+          const series = [];
+          history.forEach((snap) => {
+            const merged = snap && snap.merged ? snap.merged : snap;
+            if (!merged) {
+              series.push(null);
+              return;
+            }
+            const v = merged[domainKey] || { correct: 0, total: 0 };
+            const pct = v.total ? v.correct / v.total : 0;
+            series.push(pct);
+          });
+          return series;
+        }
+
+        function makeSparklineSvg(values, opts = {}) {
+          const w = opts.width || 120;
+          const h = opts.height || 28;
+          const pad = 2;
+          const pts = [];
+          const cleaned = values.map((v) => (v == null ? 0 : v));
+          const min = Math.min(...cleaned);
+          const max = Math.max(...cleaned);
+          const range = Math.max(1e-6, max - min);
+          cleaned.forEach((v, i) => {
+            const x =
+              (i / Math.max(1, cleaned.length - 1)) * (w - pad * 2) + pad;
+            const y = h - pad - ((v - min) / range) * (h - pad * 2);
+            pts.push(`${x},${y}`);
+          });
+          const poly = pts.join(" ");
+          // also draw a baseline and fill for subtle visual
+          return `\n            <svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="trend sparkline">\n              <polyline fill="none" stroke="#0078d4" stroke-width="1.5" points="${poly}" />\n            </svg>\n          `;
+        }
+
+        function renderRetentionTrendsHub() {
+          const containerRoot = document.getElementById("study-assistant");
+          if (!containerRoot) return;
+          // create or reuse container
+          let card = document.getElementById("retention-trends-card");
+          if (!card) {
+            card = document.createElement("div");
+            card.id = "retention-trends-card";
+            card.style.marginTop = "12px";
+            card.style.background = "#fff";
+            card.style.padding = "12px";
+            card.style.borderRadius = "6px";
+            card.style.border = "1px solid #e1e4e8";
+            containerRoot.parentNode.insertBefore(
+              card,
+              containerRoot.nextSibling
+            );
+          }
+
+          const history = readMergedQuizHistory();
+          if (!history || !history.length) {
+            card.innerHTML =
+              '<strong>Retention Trends</strong><div style="margin-top:8px;color:#666">No retention history found. Snapshots are created on the Personalized Review page (Apply / Save or Re-evaluate when autosave is enabled).</div>';
+            return;
+          }
+
+          // If history is large or viewer is constrained, show a compact text-only summary
+          const MAX_SPARKLINES_HISTORY = 12; // above this, prefer compact textual summary
+          if (history.length > MAX_SPARKLINES_HISTORY) {
+            // derive weakest domains from last snapshot and show top 3 with textual delta
+            const last =
+              history[history.length - 1].merged || history[history.length - 1];
+            const domainKeys = Object.keys(last || {}).sort((a, b) => {
+              const pa =
+                last[a] && last[a].total ? last[a].correct / last[a].total : 0;
+              const pb =
+                last[b] && last[b].total ? last[b].correct / last[b].total : 0;
+              return pa - pb; // weakest first
+            });
+            const pick = domainKeys.slice(0, 3);
+            let out = "<strong>Retention Trends (compact)</strong>";
+            out +=
+              '<div style="margin-top:8px;color:#666;font-size:0.95rem">History is long — showing compact summary to improve performance.</div>';
+            out += '<ol style="margin-top:8px;padding-left:18px">';
+            pick.forEach((dk) => {
+              const series = buildDomainSeries(history, dk);
+              const lastPct = series[series.length - 1] || 0;
+              const prevPct =
+                series.length > 1 ? series[series.length - 2] || 0 : null;
+              const delta = prevPct == null ? 0 : (lastPct - prevPct) * 100;
+              const deltaText =
+                prevPct == null
+                  ? "(initial)"
+                  : `${delta >= 0 ? "+" : ""}${delta.toFixed(1)}%`;
+              out += `<li style="margin-bottom:6px"><strong>${dk}</strong> — ${Math.round(
+                lastPct * 100
+              )}% ${deltaText}</li>`;
+            });
+            out += "</ol>";
+            card.innerHTML = out;
+            return;
+          }
+
+          // use last snapshot to choose domains to show (weakest first)
+          const last =
+            history[history.length - 1].merged || history[history.length - 1];
+          const domainKeys = Object.keys(last || {}).sort((a, b) => {
+            const pa =
+              last[a] && last[a].total ? last[a].correct / last[a].total : 0;
+            const pb =
+              last[b] && last[b].total ? last[b].correct / last[b].total : 0;
+            return pa - pb; // weakest first
+          });
+
+          const pick = domainKeys.slice(0, 6);
+
+          let out = "<strong>Retention Trends (read-only)</strong>";
+          out +=
+            '<div style="margin-top:8px;color:#666;font-size:0.95rem">Snapshots created on the Personalized Review page.</div>';
+          out += '<div style="margin-top:8px">';
+          pick.forEach((dk) => {
+            const series = buildDomainSeries(history, dk);
+            const lastPct = series[series.length - 1] || 0;
+            const prevPct =
+              series.length > 1 ? series[series.length - 2] || 0 : null;
+            const delta = prevPct == null ? 0 : (lastPct - prevPct) * 100;
+            const deltaText =
+              prevPct == null
+                ? "(initial)"
+                : `${delta >= 0 ? "+" : ""}${delta.toFixed(1)}%`;
+            out += `<div style="display:flex;align-items:center;justify-content:space-between;margin:6px 0;padding:6px 0;border-top:1px dashed #eee">`;
+            out += `<div style="flex:1;min-width:120px">`;
+            out += `<div style="font-weight:600;color:#003766;text-transform:capitalize">${dk.replace(
+              /[-_]/g,
+              " "
+            )}</div>`;
+            out += `<div style="font-size:0.9rem;color:#333;margin-top:2px">${Math.round(
+              lastPct * 100
+            )}% ${deltaText}</div>`;
+            out += `</div>`;
+            out += `<div style="width:130px;margin-left:12px">${makeSparklineSvg(
+              series
+            )}</div>`;
+            out += `</div>`;
+          });
+          out += "</div>";
+
+          card.innerHTML = out;
+        }
+
+        // use throttled renders and a safer polling cadence to avoid heavy work in constrained viewers
+        document.addEventListener("DOMContentLoaded", () => {
+          // initial render (throttled wrappers will invoke immediately)
+          renderThrottled();
+          renderRetentionThrottled();
+          // start polling fallback for environments (like Readle) where storage events
+          // or cross-context notifications may not fire reliably.
+          startMergedQuizPolling();
+        });
+
+        // last-seen serialized values to avoid unnecessary re-renders
+        let _lastSeenMergedQuizScores = null;
+        let _lastSeenMergedQuizHistory = null;
+
+        // Poll less frequently by default; avoid hammering rendering in embedded viewers
+        const POLL_INTERVAL_MS = 3000; // 3s fallback poll
+        let _pollTimer = null;
+
+        // Simple throttle to limit how often heavy render functions run.
+        function makeThrottled(fn, ms) {
+          let running = false;
+          let queued = false;
+          return function throttled() {
+            if (running) {
+              queued = true;
+              return;
+            }
+            running = true;
+            try {
+              fn();
+            } catch (e) {
+              console.warn("throttled fn failed", e);
+            }
+            setTimeout(() => {
+              running = false;
+              if (queued) {
+                queued = false;
+                throttled();
+              }
+            }, ms);
+          };
+        }
+
+        // create throttled wrappers for render functions
+        const renderThrottled = makeThrottled(render, 800);
+        const renderRetentionThrottled = makeThrottled(
+          renderRetentionTrendsHub,
+          900
+        );
+
+        function pollAndRenderIfChanged() {
+          try {
+            const curScores = localStorage.getItem("mergedQuizScores");
+            const curHistory = localStorage.getItem("mergedQuizHistory");
+
+            const scoresChanged = curScores !== _lastSeenMergedQuizScores;
+            const historyChanged = curHistory !== _lastSeenMergedQuizHistory;
+
+            if (scoresChanged) {
+              _lastSeenMergedQuizScores = curScores;
+              try {
+                renderThrottled();
+              } catch (e) {
+                console.warn("render() failed during poll", e);
+              }
+            }
+
+            if (historyChanged) {
+              _lastSeenMergedQuizHistory = curHistory;
+              try {
+                renderRetentionThrottled();
+              } catch (e) {
+                console.warn(
+                  "renderRetentionTrendsHub() failed during poll",
+                  e
+                );
+              }
+            }
+          } catch (e) {
+            // localStorage may be inaccessible in some sandboxes; silently ignore
+          }
+        }
+
+        function startMergedQuizPolling() {
+          if (_pollTimer) return;
+          // seed last-seen values
+          try {
+            _lastSeenMergedQuizScores =
+              localStorage.getItem("mergedQuizScores");
+            _lastSeenMergedQuizHistory =
+              localStorage.getItem("mergedQuizHistory");
+          } catch (e) {}
+          _pollTimer = setInterval(() => {
+            if (document.hidden) return; // avoid work when not visible
+            pollAndRenderIfChanged();
+          }, POLL_INTERVAL_MS);
+        }
+
+        function stopMergedQuizPolling() {
+          if (_pollTimer) {
+            clearInterval(_pollTimer);
+            _pollTimer = null;
+          }
+        }
+
+        // storage events may work in some hosts; still listen but guard by comparing
+        window.addEventListener("storage", (ev) => {
+          try {
+            const key = ev.key;
+            if (key === "mergedQuizScores") {
+              const cur = localStorage.getItem("mergedQuizScores");
+              if (cur !== _lastSeenMergedQuizScores) {
+                _lastSeenMergedQuizScores = cur;
+                renderThrottled();
+              }
+            } else if (key === "mergedQuizHistory") {
+              const cur = localStorage.getItem("mergedQuizHistory");
+              if (cur !== _lastSeenMergedQuizHistory) {
+                _lastSeenMergedQuizHistory = cur;
+                renderRetentionThrottled();
+              }
+            }
+          } catch (e) {}
+        });
+
+        // pause polling when hidden to save CPU in embedded viewers
+        document.addEventListener("visibilitychange", () => {
+          if (document.hidden) stopMergedQuizPolling();
+          else startMergedQuizPolling();
+        });
+      })();
+    </script>
+  </body>
+</html>

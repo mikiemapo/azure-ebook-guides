@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terraform Basics for Azure (AZ-104 Lab Prep)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors for Terraform Guide */
+            --terraform-color: #623F87; /* HashiCorp purple */
+            --ia-c-color: #34495e; /* Dark grey for IaC */
+            --structure-color: #27ae60; /* Green for structure */
+            --commands-color: #e67e22; /* Orange for commands */
+            --use-case-color: #0078d4; /* Azure blue for use case */
+            --relevance-color: #ffc107; /* Gold for relevance */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6; 
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--terraform-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-terminal { font-size: 1.1em; } 
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--terraform-color); }
+
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; } 
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+            background-color: var(--terraform-color);
+            border-bottom-color: #4d326a;
+        }
+        .card-header:hover { background-color: #4d326a; }
+        .card-header.summary-header { /* For the final summary card */
+            background-color: var(--azure-blue-dark); 
+            border-bottom-color: #004578;
+        }
+        .card-header.summary-header:hover { background-color: #004578; }
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+ 
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; 
+            padding: 0 18px; 
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); 
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 1000px; /* Adjusted for shorter, flashcard-style content */
+            opacity: 1;
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            overflow-y: auto;
+        }
+
+        .card-content h3, .card-content h4 {
+             color: var(--azure-blue-dark); margin-top: 15px; margin-bottom: 10px; font-size: 1.1em;
+             font-weight: 600; padding-bottom: 6px;
+             display: flex; align-items: center; gap: 8px;
+         }
+        .card-content h3 { border-bottom: 1px solid #eee; font-size: 1.15em; margin-top: 0;}
+        .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+        .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+        .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--terraform-color); /* Default icon color */
+          }
+        
+        .key-point { font-weight: 600; color: var(--terraform-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+        
+        .mnemonic-box { 
+            background-color: #fff3cd; 
+            border-left: 5px solid #ffc107; 
+            padding: 10px 15px; 
+            margin: 15px 0; 
+            font-size: 1em; 
+            font-weight: bold;
+            color: #856404;
+            text-align: center;
+        }
+        .mnemonic-box i { margin-right: 8px; color: #ffc107;}
+        
+        /* Custom styling for specific bullet points (Key Points, Use Case, etc.) */
+        .card-content h4.sub-heading {
+            color: var(--azure-blue-dark); /* Using azure-blue-dark for these sub-headings */
+            font-size: 1em;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            padding-bottom: 3px;
+            border-bottom: 1px dotted #ccc;
+        }
+        .card-content h4.sub-heading i {
+            color: var(--azure-blue-dark);
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+
+        .key-points-icon { color: var(--ia-c-color); }
+        .structure-icon { color: var(--structure-color); }
+        .commands-icon { color: var(--commands-color); }
+        .use-case-icon { color: var(--use-case-color); }
+        .relevance-icon { color: var(--relevance-color); }
+
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-terminal"></i>Terraform Basics for Azure</h1>
+        <p class="instructions">Concise guide to Terraform's role in Azure Infrastructure as Code, especially for AZ-104 lab preparation. <strong>Click/Tap</strong> headers.</p>
+        
+        <div class="card-container">
+
+            <!-- Card 1: Terraform Overview -->
+            <div class="card">
+                <input type="checkbox" id="terraform-overview-toggle" class="card-toggle" checked> 
+                <label for="terraform-overview-toggle" class="card-header">
+                    <h2><i class="fas fa-info-circle"></i>Terraform Overview</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h4 class="sub-heading"><i class="fas fa-brain key-points-icon"></i>Key Points:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-code"></i><span class="key-point">Terraform</span> = Infrastructure as Code (IaC) tool by HashiCorp.</li>
+                        <li><i class="fa-li fas fa-file-alt"></i>Uses HashiCorp Configuration Language (<span class="key-point">HCL</span>) to define infrastructure.</li>
+                        <li><i class="fa-li fas fa-cogs"></i><span class="key-point">Declarative language:</span> You define the *desired end-state* of your Azure resources, and Terraform figures out how to achieve it.</li>
+                        <li><i class="fa-li fas fa-plug"></i><span class="key-point">Provider-based:</span> Uses specific "providers" (like `azurerm` for Azure) to interact with cloud APIs.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 2: Common Structure -->
+            <div class="card">
+                <input type="checkbox" id="common-structure-toggle" class="card-toggle"> 
+                <label for="common-structure-toggle" class="card-header">
+                    <h2><i class="fas fa-folder-open"></i>Common Structure</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h4 class="sub-heading"><i class="fas fa-sitemap structure-icon"></i>Typical Terraform Files:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-file-code"></i><span class="code-term">`main.tf`</span>: Defines your actual Azure resources (e.g., `azurerm_storage_account`, `azurerm_resource_group`).</li>
+                        <li><i class="fa-li fas fa-key"></i><span class="code-term">`provider.tf`</span>: Configures the cloud provider(s) and authentication (e.g., `provider "azurerm"` block).</li>
+                        <li><i class="fa-li fas fa-sliders-h"></i><span class="code-term">`variables.tf`</span>: Defines input variables for customization (e.g., resource group name, location).</li>
+                        <li><i class="fa-li fas fa-database"></i><span class="code-term">`terraform.tfstate`</span>: A crucial file that Terraform uses to keep track of the deployed infrastructure's state. <span class="key-point">Do NOT manually edit this file!</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 3: Essential Commands -->
+            <div class="card">
+                <input type="checkbox" id="essential-commands-toggle" class="card-toggle"> 
+                <label for="essential-commands-toggle" class="card-header">
+                    <h2><i class="fas fa-terminal"></i>Essential Commands</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h4 class="sub-heading"><i class="fas fa-cogs commands-icon"></i>Core Workflow:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-hammer"></i><span class="code-term">`terraform init`</span>: Initializes a new or existing Terraform project. Downloads providers (e.g., `azurerm`) and sets up backend state.</li>
+                        <li><i class="fa-li fas fa-eye"></i><span class="code-term">`terraform plan`</span>: Previews the actions Terraform will take to achieve the desired state. Shows what will be created, modified, or destroyed.</li>
+                        <li><i class="fa-li fas fa-cloud-upload-alt"></i><span class="code-term">`terraform apply`</span>: Executes the planned actions to deploy or update infrastructure in Azure. Requires confirmation.</li>
+                        <li><i class="fa-li fas fa-trash-alt"></i><span class="code-term">`terraform destroy`</span>: Tears down all resources managed by the current Terraform configuration. Use with extreme caution!</li>
+                    </ul>
+                    <div class="mnemonic-box"><i class="fas fa-lightbulb"></i>Mnemonic: "T.I.P.A" – **T**erraform **I**nits, **P**lans, **A**pplies (and Destroys).</div>
+                </div>
+            </div>
+
+            <!-- Card 4: Use Case & Relevance -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="use-case-relevance-toggle" class="card-toggle"> 
+                <label for="use-case-relevance-toggle" class="card-header">
+                    <h2><i class="fas fa-tag"></i>Use Case & AZ-104 Relevance</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h4 class="sub-heading"><i class="fas fa-toolbox use-case-icon"></i>Typical Use Case:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-cloud-arrow-up"></i>Provision an Azure Storage Account (or any other Azure resource) as part of repeatable, version-controlled deployments. Ensures consistency across environments.</li>
+                    </ul>
+
+                    <h4 class="sub-heading"><i class="fas fa-graduation-cap relevance-icon"></i>AZ-104 Relevance:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-check"></i>Understand Terraform basics as part of Infrastructure as Code (IaC) and automation for Azure deployments.</li>
+                        <li><i class="fa-li fas fa-vial"></i><span class="key-point">Not a core exam topic, but highly helpful for hands-on labs</span> and general DevOps awareness in a cloud environment. It demonstrates efficient, scalable cloud management.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Final Summary Card (Optional, but good for consistent structure) -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="terraform-summary-toggle" class="card-toggle" checked>
+                <label for="terraform-summary-toggle" class="card-header summary-header">
+                    <h2><i class="fas fa-star"></i>Terraform for AZ-104: Quick Recap</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-blue-dark);"><i class="fas fa-check-double"></i>Key Takeaways:</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-code"></i>Terraform is an IaC tool (HCL, Declarative).</li>
+                        <li><i class="fa-li fas fa-folder"></i>Core files: `main.tf`, `provider.tf`, `variables.tf`, `terraform.tfstate`.</li>
+                        <li><i class="fa-li fas fa-terminal"></i>Key commands: `init`, `plan`, `apply`, `destroy`.</li>
+                        <li><i class="fa-li fas fa-flask"></i>Useful for labs & general Azure automation, even if not directly tested on the AZ-104 theory.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => { /* CSS :checked handles expand/collapse */ });
+            });
+        });
+    </script>
+</body>
+</html>

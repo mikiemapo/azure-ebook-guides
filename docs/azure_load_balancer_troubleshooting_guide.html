@@ -1,0 +1,311 @@
+html_content = """<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Load Balancer Troubleshooting Lab (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors for Load Balancer Troubleshooting Guide */
+            --troubleshoot-main-color: #D83B01; /* Orange for troubleshooting focus */
+            --definition-color: #0078d4; /* Azure Blue for LB basics */
+            --setup-color: #34495E; /* Dark Grey for setup */
+            --problem-color: #E74C3C; /* Red for identifying problem */
+            --solution-color: #27AE60; /* Green for solution */
+            --takeaways-color: #9C27B0; /* Deep Purple for takeaways */
+            --lab-review-color: #4CAF50; /* Green for lab review */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6; 
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--troubleshoot-main-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-exclamation-triangle { font-size: 1.1em; } 
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--troubleshoot-main-color); }
+
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; } 
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+            background-color: var(--troubleshoot-main-color);
+            border-bottom-color: #a4262c;
+        }
+        .card-header:hover { background-color: #a4262c; }
+        .card-header.summary-header { /* For the final summary card */
+            background-color: var(--azure-blue-dark); 
+            border-bottom-color: #004578;
+        }
+        .card-header.summary-header:hover { background-color: #004578; }
+
+        /* Specific card header colors */
+        .card-header.lab-review-header { background-color: var(--lab-review-color); border-bottom-color: #388e3c; }
+        .card-header.lab-review-header:hover { background-color: #388e3c; }
+        .card-header.definition-header { background-color: var(--definition-color); border-bottom-color: #005a9e; }
+        .card-header.definition-header:hover { background-color: #005a9e; }
+        .card-header.setup-header { background-color: var(--setup-color); border-bottom-color: #26333e; }
+        .card-header.setup-header:hover { background-color: #26333e; }
+        .card-header.problem-header { background-color: var(--problem-color); border-bottom-color: #b03a2e; }
+        .card-header.problem-header:hover { background-color: #b03a2e; }
+        .card-header.solution-header { background-color: var(--solution-color); border-bottom-color: #1e8449; }
+        .card-header.solution-header:hover { background-color: #1e8449; }
+        .card-header.takeaways-header { background-color: var(--takeaways-color); border-bottom-color: #791e87; }
+        .card-header.takeaways-header:hover { background-color: #791e87; }
+
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+ 
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; 
+            padding: 0 18px; 
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); 
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2000px; /* Adjusted for content */
+            opacity: 1;
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            overflow-y: auto;
+        }
+
+        .card-content h3, .card-content h4 {
+             color: var(--azure-blue-dark); margin-top: 15px; margin-bottom: 10px; font-size: 1.1em;
+             font-weight: 600; padding-bottom: 6px;
+             display: flex; align-items: center; gap: 8px;
+         }
+        .card-content h3 { border-bottom: 1px solid #eee; font-size: 1.15em; margin-top: 0;}
+        .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+        .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+        .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--troubleshoot-main-color); /* Default icon color */
+          }
+        
+        .key-point { font-weight: 600; color: var(--troubleshoot-main-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+        
+        .important-note { background-color: #fcebeb; border-left: 4px solid var(--troubleshoot-main-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--troubleshoot-main-color); margin-right: 8px; }
+
+        /* Custom styling for sub-headings */
+        .card-content h4.sub-heading {
+            color: var(--azure-blue-dark);
+            font-size: 1em;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            padding-bottom: 3px;
+            border-bottom: 1px dotted #ccc;
+        }
+        .card-content h4.sub-heading i {
+            color: var(--azure-blue-dark);
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+
+        .definition-icon { color: var(--definition-color); }
+        .setup-icon { color: var(--setup-color); }
+        .problem-icon { color: var(--problem-color); }
+        .solution-icon { color: var(--solution-color); }
+        .takeaways-icon { color: var(--takeaways-color); }
+        
+        /* For lab review card-specific icons */
+        .lab-review-card li i.fa-li { color: var(--lab-review-color); }
+
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-exclamation-triangle"></i>Azure Load Balancer Troubleshooting Lab</h1>
+        <p class="instructions">Master diagnosing and resolving common misconfigurations in Azure Load Balancer to ensure high availability and proper traffic distribution. Essential for AZ-104 troubleshooting scenarios.</p>
+        
+        <div class="card-container">
+
+            <!-- Card 1: Introduction to Azure Load Balancer Troubleshooting -->
+            <div class="card">
+                <input type="checkbox" id="intro-troubleshooting-toggle" class="card-toggle" checked> 
+                <label for="intro-troubleshooting-toggle" class="card-header definition-header">
+                    <h2><i class="fas fa-info-circle"></i>What is Azure Load Balancer?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h4 class="sub-heading"><i class="fas fa-balance-scale-right definition-icon"></i>Load Balancer Basics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-random"></i>Azure Load Balancer is a <span class="key-point">Layer 4 (TCP/UDP)</span> service that distributes inbound and outbound traffic across multiple virtual machines or instances.</li>
+                        <li><i class="fa-li fas fa-check-double"></i>It ensures <span class="key-point">high availability, redundancy, and scalability</span> for your applications.</li>
+                        <li><i class="fa-li fas fa-heartbeat"></i>Utilizes <span class="key-point">health probes</span> to monitor backend resources, routing traffic only to healthy instances.</li>
+                        <li><i class="fa-li fas fa-globe"></i>Supports both public-facing applications and internal workloads.</li>
+                    </ul>
+                    <p class="description">This lab focuses on common configuration pitfalls that can prevent proper load distribution, even when all components appear healthy.</p>
+                </div>
+            </div>
+
+            <!-- Card 2: Lab Review: Azure Load Balancer Troubleshooting -->
+            <div class="card lab-review-card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="troubleshooting-lab-review-toggle" class="card-toggle" checked>
+                <label for="troubleshooting-lab-review-toggle" class="card-header lab-review-header">
+                    <h2><i class="fas fa-vial"></i>Lab Review: Load Balancer Troubleshooting</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-wrench"></i>Diagnosing Uneven Traffic Distribution</h3>
+                    <p class="description">This lab simulated a common performance issue: internet traffic not being evenly distributed across two web servers behind an Azure Load Balancer. It emphasized understanding configuration nuances to resolve such problems.</p>
+
+                    <h4 class="sub-heading"><i class="fas fa-cubes setup-icon"></i>1. Core Resources Setup Highlights:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-network-wired"></i>**Virtual Network (`myWhizVNet`):** Provided the network foundation.</li>
+                        <li><i class="fa-li fas fa-sitemap"></i>**Subnet (`myWhizBackendSubnet`):** Hosted our web servers.</li>
+                        <li><i class="fa-li fas fa-cloud-upload-alt"></i>**NAT Gateway (`MyWhizNATGateway`):** Enabled outbound internet connectivity for VMs.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i>**Network Security Group (`myWhizNSG`):** Configured to allow all traffic (for initial testing purposes).</li>
+                        <li><i class="fa-li fas fa-balance-scale-right"></i>**Load Balancer (`myWhizLoadBalancer`):** Set up with a frontend IP, backend pool, and health probe.</li>
+                        <li><i class="fa-li fas fa-server"></i>**Virtual Machines (`myWhizVM1` and `myWhizVM2`):** Windows Servers with IIS, serving custom "Hello World from VM1/VM2" pages.</li>
+                    </ul>
+
+                    <h4 class="sub-heading" style="margin-top:20px;"><i class="fas fa-code"></i>2. Installing IIS and Custom Pages:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-terminal"></i>Installed IIS server role via PowerShell: `Install-WindowsFeature -name Web-Server -IncludeManagementTools`.</li>
+                        <li><i class="fa-li fas fa-file-code"></i>Replaced default IIS page with custom ones on each VM to easily identify which server was responding (e.g., "Hello World from VM1", "Hello World from VM2").</li>
+                    </ul>
+
+                    <h4 class="sub-heading" style="margin-top:20px;"><i class="fas fa-bug problem-icon"></i>3. Identifying the Performance Issue:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-globe"></i>**Problem:** Browsing to the Load Balancer's frontend IP and refreshing the page consistently hit the *same server* instead of alternating.</li>
+                        <li><i class="fa-li fas fa-search"></i>**Initial Troubleshooting:** Verified VMs running, NSG rules open for port 80, both VMs in the backend pool, and frontend IP reachable. All looked correct, indicating a deeper configuration issue.</li>
+                    </ul>
+
+                    <h4 class="sub-heading" style="margin-top:20px;"><i class="fas fa-lightbulb solution-icon"></i>4. Root Cause & Resolution:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-clipboard-question"></i>**Root Cause:** The Load Balancer rule's <span class="key-point">Session persistence</span> setting was configured to **"Client IP and protocol."** This setting ensures all requests from the same client IP address stick to the same backend server.</li>
+                        <li><i class="fa-li fas fa-check-circle"></i>**Fix:** Updated the Load Balancer rule, changing Session persistence to **"None."** This allows new requests to be distributed across all available backend servers regardless of the client IP.</li>
+                    </ul>
+
+                    <h4 class="sub-heading" style="margin-top:20px;"><i class="fas fa-check-double takeaways-icon"></i>5. Validation & Key Takeaways:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-chart-line"></i>**Result:** Refreshing the browser now showed alternating responses ("Hello World from VM1" then "Hello World from VM2"), confirming correct traffic distribution.</li>
+                        <li><i class="fa-li fas fa-exclamation-triangle"></i>**Key Learning:** <span class="key-point">Session persistence</span> is a critical setting. Use it for stateful workloads (like shopping carts) where a client must stick to the same server, but disable it ("None") for stateless web apps (like static content or API endpoints) to achieve even distribution and maximize resource utilization.</li>
+                        <li><i class="fa-li fas fa-magnifying-glass-chart"></i>**Troubleshooting Approach:** A systematic approach (checking VMs, NSGs, backend pools, probes, and finally load balancing rules/settings) is vital for quickly identifying misconfigurations.</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--lab-review-color); background-color: #e8f5e9;">
+                        <i class="fas fa-lightbulb" style="color:var(--lab-review-color);"></i>**Exam Tip:** Be prepared for scenarios involving Load Balancer traffic distribution. If traffic isn't balanced as expected, <span class="key-point">Session persistence</span> is often the culprit in exam questions.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Final Summary Card -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="troubleshooting-summary-toggle" class="card-toggle" checked>
+                <label for="troubleshooting-summary-toggle" class="card-header summary-header">
+                    <h2><i class="fas fa-graduation-cap"></i>LB Troubleshooting: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-check-double"></i>Exam Essentials & Troubleshooting Principles</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-balance-scale-right"></i>**Azure Load Balancer Role:** Distributes L4 (TCP/UDP) traffic, ensuring high availability and scalability via health probes.</li>
+                        <li><i class="fa-li fas fa-sticky-note"></i>**Session Persistence:** This setting controls how client connections are handled.
+                            <ul>
+                                <li>**`None` (Default):** Distributes new connections to any healthy backend instance. Ideal for stateless applications.</li>
+                                <li>**`Client IP` (2-tuple/3-tuple):** Directs subsequent connections from the same client IP to the same backend instance. Useful for stateful applications.</li>
+                                <li>**`Client IP and protocol` (5-tuple):** Similar to Client IP but also considers the protocol.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-exclamation-triangle"></i>**Common Troubleshooting Scenario:** If traffic isn't evenly distributed or repeatedly hits the same backend, check the **Session persistence** setting first. For stateless web applications, it should typically be `None`.</li>
+                        <li><i class="fa-li fas fa-tasks"></i>**Troubleshooting Steps:** Systematically check VM status, NSG rules, Load Balancer health probes, backend pool registration, and critically, the load balancing rule configuration (especially persistence).</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--troubleshoot-main-color); background-color: #fcebeb;">
+                        <i class="fas fa-lightbulb" style="color:var(--troubleshoot-main-color);"></i>**Exam Tip:** Scenario questions about traffic distribution or sticky sessions on a Load Balancer almost always point to the "Session persistence" setting as the key diagnostic point.
+                    </p>
+                </div>
+            </div>
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => { /* CSS :checked handles expand/collapse */ });
+            });
+        });
+    </script>
+</body>
+</html>"""
+
+file_name = "azure_load_balancer_troubleshooting_guide.html"
+try:
+    with open(file_name, "w", encoding="utf-8") as f:
+        f.write(html_content)
+    print(f"File '{file_name}' created successfully in your current directory.")
+except Exception as e:
+    print(f"Error creating file '{file_name}': {e}")

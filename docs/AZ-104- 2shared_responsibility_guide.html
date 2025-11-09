@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Shared Responsibility Sorter (with Hints)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01; /* For incorrect placements */
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Category Colors */
+            --customer-color: var(--azure-blue);
+            --microsoft-color: #605e5c; /* Grey */
+            --shared-color: #ffb900; /* Gold/Yellow */
+            --hint-color: #777;
+        }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .sorter-container {
+            max-width: 1100px; /* Wider for hints */
+            width: 100%;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark);
+            text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        h1 i { margin-right: 10px; color: var(--shared-color); }
+
+        .instructions {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            background-color: var(--diagram-bg);
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .main-layout {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .draggable-items-pool {
+            flex-basis: 30%; /* Adjusted for wider content */
+            padding: 15px;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            background-color: var(--diagram-bg);
+            min-height: 300px;
+            max-height: 600px; /* Prevent excessive height */
+            overflow-y: auto; /* Scroll if many items */
+        }
+        .draggable-items-pool h3 {
+            margin-top: 0;
+            text-align: center;
+            color: var(--azure-blue-dark);
+            font-size: 1.1em;
+        }
+
+        .drop-zones {
+            flex-basis: 65%; /* Adjusted */
+            display: flex;
+            justify-content: space-around;
+            gap: 15px;
+        }
+
+        .drop-zone {
+            flex: 1;
+            padding: 15px;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            min-height: 300px;
+            max-height: 600px; /* Match pool height */
+            overflow-y: auto; /* Scroll if many items */
+            transition: background-color 0.2s ease;
+        }
+        .drop-zone h3 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .drop-zone.customer-zone { border-color: var(--customer-color); }
+        .drop-zone.customer-zone h3 { color: var(--customer-color); }
+        .drop-zone.microsoft-zone { border-color: var(--microsoft-color); }
+        .drop-zone.microsoft-zone h3 { color: var(--microsoft-color); }
+        .drop-zone.shared-zone { border-color: var(--shared-color); }
+        .drop-zone.shared-zone h3 { color: var(--shared-color); }
+
+
+        .draggable {
+            background-color: var(--card-bg);
+            padding: 10px 15px; /* Increased padding */
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: grab;
+            box-shadow: 0 1px 2px var(--shadow-color);
+        }
+        .draggable-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .draggable-content i.item-icon {
+            color: var(--azure-blue);
+            font-size: 1.2em; /* Slightly larger icon */
+        }
+        .draggable-text-container {
+            display: flex;
+            flex-direction: column;
+        }
+        .item-text {
+            font-size: 0.95em; /* Slightly larger text */
+            font-weight: 600;
+        }
+        .item-hint {
+            font-size: 0.8em;
+            color: var(--hint-color);
+            font-style: italic;
+            margin-top: 3px;
+        }
+        .draggable i.feedback-icon {
+            margin-left: auto; /* Push feedback icon to the right */
+            font-size: 1.1em;
+        }
+
+        .draggable.dragging {
+            opacity: 0.6;
+            cursor: grabbing;
+            border-style: dashed;
+        }
+
+        /* Highlight when dragging over */
+        .drop-zone.drag-over {
+            background-color: #e6f2ff; /* Light blue */
+            border-style: solid;
+        }
+
+        /* Feedback styles after checking */
+        .draggable.correct {
+            border-left: 5px solid var(--success-color) !important;
+            background-color: #e7f3e7;
+        }
+        .draggable.incorrect {
+            border-left: 5px solid var(--warning-color) !important;
+            background-color: #fdeceb;
+        }
+        .draggable.correct i.feedback-icon::before {
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            content: "\f00c"; /* Checkmark */
+            color: var(--success-color);
+        }
+        .draggable.incorrect i.feedback-icon::before {
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            content: "\f00d"; /* X mark */
+            color: var(--warning-color);
+        }
+
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 30px auto 10px auto;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-light);
+            background-color: var(--success-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .submit-button:hover { background-color: #0d6a0d; }
+        .submit-button:disabled { background-color: #94d3a2; cursor: not-allowed; }
+
+        #result-message {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        #result-message.success { background-color: #dff0d8; border: 1px solid var(--success-color); color: var(--success-color);}
+        #result-message.some-incorrect { background-color: #fcf8e3; border: 1px solid #f0ad4e; color: #8a6d3b;}
+
+
+    </style>
+</head>
+<body>
+
+    <div class="sorter-container">
+        <h1><i class="fas fa-handshake"></i>Azure Shared Responsibility Sorter (with Hints)</h1>
+        <p class="instructions">Drag each responsibility item to the column representing who primarily manages it. Use the hints to guide you. Click "Check Answers" when done.</p>
+
+        <div class="main-layout">
+            <div id="items-pool" class="draggable-items-pool">
+                <h3><i class="fas fa-list-ul"></i> Unsorted Responsibilities</h3>
+                <!-- Draggable items will be populated by JS -->
+            </div>
+
+            <div class="drop-zones">
+                <div id="customer-managed" class="drop-zone customer-zone" data-zone="customer">
+                    <h3><i class="fas fa-user"></i> Customer Manages</h3>
+                </div>
+                <div id="microsoft-managed" class="drop-zone microsoft-zone" data-zone="microsoft">
+                    <h3><i class="fas fa-cloud"></i> Microsoft Manages</h3>
+                </div>
+                <div id="shared-depends" class="drop-zone shared-zone" data-zone="shared">
+                    <h3><i class="fas fa-balance-scale"></i> Shared / Depends on Service Model</h3>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="check-answers-btn" class="submit-button">Check Answers</button>
+        <div id="result-message"></div>
+    </div>
+
+    <script>
+        const responsibilities = [
+            { id: 'data_info', text: 'Information and Data', hint: 'Who owns and is accountable for the data itself?', correctZone: 'customer', icon: 'fa-database' },
+            { id: 'client_endpoints', text: 'Client Endpoints & Devices', hint: 'Securing the laptops, phones accessing cloud services.', correctZone: 'customer', icon: 'fa-mobile-alt' },
+            { id: 'account_access', text: 'Account & Access Management', hint: 'Managing users, groups, and their permissions.', correctZone: 'customer', icon: 'fa-id-card' },
+            { id: 'physical_dc', text: 'Physical Datacenter Security', hint: 'Security of the buildings, power, cooling.', correctZone: 'microsoft', icon: 'fa-building' },
+            { id: 'physical_network', text: 'Physical Network Hardware', hint: 'Cables, routers, switches in the datacenter.', correctZone: 'microsoft', icon: 'fa-ethernet' },
+            { id: 'physical_hosts', text: 'Physical Compute Hosts', hint: 'The actual servers running virtualization software.', correctZone: 'microsoft', icon: 'fa-server' },
+            { id: 'os_iaas', text: 'Operating System (IaaS VM)', hint: 'Patching and configuring the OS on a virtual machine.', correctZone: 'customer', icon: 'fa-window-maximize' },
+            { id: 'network_controls_iaas', text: 'Network Controls (IaaS NSGs, VNet Firewalls)', hint: 'Defining firewall rules, NSGs for VMs in a VNet.', correctZone: 'customer', icon: 'fa-shield-alt' },
+            { id: 'applications_iaas_paas', text: 'Applications (Code, Logic)', hint: 'Developing, deploying, and securing your own application code.', correctZone: 'customer', icon: 'fa-laptop-code' },
+            { id: 'virtualization_layer', text: 'Virtualization Layer (Hypervisor)', hint: 'The software that creates and manages VMs on physical hosts.', correctZone: 'microsoft', icon: 'fa-layer-group' },
+            { id: 'os_paas', text: 'Operating System (PaaS Service)', hint: 'The OS underlying a PaaS service like App Service or Azure SQL.', correctZone: 'microsoft', icon: 'fa-window-maximize' },
+            { id: 'runtime_middleware_paas', text: 'Runtime & Middleware (PaaS Service)', hint: 'E.g., .NET runtime, Java JDK for an App Service.', correctZone: 'microsoft', icon: 'fa-cogs' },
+            { id: 'network_fabric_platform', text: 'Network Fabric (Platform)', hint: 'The underlying Azure network that PaaS/SaaS services run on.', correctZone: 'microsoft', icon: 'fa-cloud-meatball' }, // Using a generic cloud icon
+            { id: 'data_config_saas', text: 'Data Configuration & Usage (SaaS)', hint: 'How you configure and use data within a SaaS app like M365.', correctZone: 'customer', icon: 'fa-cog' },
+            { id: 'app_saas', text: 'Application Software (SaaS)', hint: 'The SaaS application itself (e.g., Outlook, Teams).', correctZone: 'microsoft', icon: 'fa-cloud-upload-alt' },
+            { id: 'identity_directory_infra', text: 'Identity & Directory Infrastructure (Azure AD)', hint: 'The core Azure AD service providing identity.', correctZone: 'microsoft', icon: 'fa-users-cog' },
+            { id: 'network_traffic_filtering', text: 'Network Traffic Filtering', hint: 'Depends: NSGs (Cust), Azure Firewall (Cust config, MSFT service), WAF (Cust config, MSFT service)', correctZone: 'shared', icon: 'fa-filter' },
+            { id: 'security_monitoring', text: 'Security Monitoring & Response', hint: 'Depends: Cust monitors their resources/apps, MSFT monitors platform.', correctZone: 'shared', icon: 'fa-shield-virus' }
+        ];
+
+        const itemsPool = document.getElementById('items-pool');
+        const dropZones = document.querySelectorAll('.drop-zone');
+        const checkAnswersBtn = document.getElementById('check-answers-btn');
+        const resultMessage = document.getElementById('result-message');
+        let draggedItem = null;
+
+        // Populate draggable items
+        responsibilities.forEach(item => {
+            const div = document.createElement('div');
+            div.classList.add('draggable');
+            div.setAttribute('draggable', true);
+            div.id = item.id;
+            div.dataset.correctZone = item.correctZone; // Store correct zone
+
+            // Structure for icon, text, and hint
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('draggable-content');
+
+            const iconEl = document.createElement('i');
+            iconEl.className = `fas ${item.icon} item-icon`;
+
+            const textContainer = document.createElement('div');
+            textContainer.classList.add('draggable-text-container');
+
+            const itemText = document.createElement('span');
+            itemText.classList.add('item-text');
+            itemText.textContent = item.text;
+
+            const itemHint = document.createElement('span');
+            itemHint.classList.add('item-hint');
+            itemHint.textContent = `Hint: ${item.hint}`;
+
+            const feedbackIcon = document.createElement('i');
+            feedbackIcon.classList.add('feedback-icon'); // This will be populated by FontAwesome CSS via ::before
+
+            textContainer.appendChild(itemText);
+            textContainer.appendChild(itemHint);
+
+            contentDiv.appendChild(iconEl);
+            contentDiv.appendChild(textContainer);
+            contentDiv.appendChild(feedbackIcon); // Add feedback icon placeholder to the right
+            div.appendChild(contentDiv);
+
+            itemsPool.appendChild(div);
+
+            div.addEventListener('dragstart', (e) => {
+                draggedItem = e.target.closest('.draggable'); // Ensure we get the draggable div
+                setTimeout(() => draggedItem.classList.add('dragging'), 0);
+            });
+
+            div.addEventListener('dragend', (e) => {
+                if (draggedItem) {
+                    draggedItem.classList.remove('dragging');
+                }
+                draggedItem = null;
+            });
+        });
+
+        dropZones.forEach(zone => {
+            zone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                zone.classList.add('drag-over');
+            });
+
+            zone.addEventListener('dragleave', () => {
+                zone.classList.remove('drag-over');
+            });
+
+            zone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (draggedItem) {
+                    zone.appendChild(draggedItem);
+                    // Clear feedback if item is moved
+                    draggedItem.classList.remove('correct', 'incorrect');
+                    const feedbackIconEl = draggedItem.querySelector('.feedback-icon');
+                    if (feedbackIconEl) { // Should always exist
+                        // The ::before pseudo-element will clear automatically when classes are removed
+                    }
+                }
+                zone.classList.remove('drag-over');
+            });
+        });
+
+        checkAnswersBtn.addEventListener('click', () => {
+            let correctCount = 0;
+            let totalSortedOrInPool = 0;
+
+            // Clear all previous feedback visuals first
+            document.querySelectorAll('.draggable').forEach(item => {
+                item.classList.remove('correct', 'incorrect');
+            });
+
+            dropZones.forEach(zone => {
+                const zoneType = zone.dataset.zone;
+                zone.querySelectorAll('.draggable').forEach(item => {
+                    totalSortedOrInPool++;
+                    const correctZone = item.dataset.correctZone;
+                    if (zoneType === correctZone) {
+                        item.classList.add('correct');
+                        correctCount++;
+                    } else {
+                        item.classList.add('incorrect');
+                    }
+                });
+            });
+
+            itemsPool.querySelectorAll('.draggable').forEach(item => {
+                totalSortedOrInPool++; // Count items left in the pool
+                item.classList.add('incorrect'); // Items left in pool are considered unsorted/incorrect
+            });
+
+            resultMessage.style.display = 'block';
+             if (totalSortedOrInPool === 0 && responsibilities.length > 0) { // All items still in pool, or no items at all
+                 resultMessage.textContent = 'Please drag items to the zones first!';
+                 resultMessage.className = 'some-incorrect';
+            } else if (correctCount === responsibilities.length) {
+                resultMessage.textContent = `Excellent! All ${correctCount} items sorted correctly!`;
+                resultMessage.className = 'success';
+            } else {
+                let unsortedCount = responsibilities.length - totalSortedOrInPool;
+                if (itemsPool.querySelectorAll('.draggable').length > 0) {
+                     unsortedCount = itemsPool.querySelectorAll('.draggable').length;
+                }
+
+                resultMessage.textContent = `You got ${correctCount} out of ${responsibilities.length} correct. ${unsortedCount > 0 ? unsortedCount + ' item(s) still unsorted.' : ''} Review the highlights.`;
+                resultMessage.className = 'some-incorrect';
+            }
+            checkAnswersBtn.disabled = true;
+            checkAnswersBtn.textContent = 'Answers Checked';
+        });
+
+    </script>
+</body>
+</html>

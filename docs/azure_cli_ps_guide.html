@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure CLI & PowerShell Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-blue-light: #3b9ff5;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f0f9ff;
+            --code-bg: #1e1e1e;
+            --code-text-color: #d4d4d4;
+            --code-border: #3c3c3c;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --info-color: #3b82f6;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --shadow-hover: rgba(0, 0, 0, 0.2);
+            /* Tool-Specific Colors */
+            --cli-color: #0078d4;
+            --cli-light: #50a6e8;
+            --ps-color: #012456;
+            --ps-light: #1e5fa8;
+            --shared-color: #6f42c1;
+            --shared-light: #9570d8;
+            --scripting-color: #059669;
+            --scripting-light: #34d399;
+            --exam-color: #8b5cf6;
+            --exam-light: #a78bfa;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e0e7ef 100%);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-dark);
+            line-height: 1.7;
+        }
+
+        .back-to-hub-container {
+            width: 100%;
+            max-width: 1100px;
+            margin-bottom: 15px;
+        }
+        .back-to-hub {
+            display: inline-block;
+        }
+        .back-to-hub a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 18px;
+            background: linear-gradient(135deg, var(--azure-blue) 0%, var(--azure-blue-dark) 100%);
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95em;
+            box-shadow: 0 2px 8px rgba(0, 120, 212, 0.3);
+            transition: all 0.3s ease;
+        }
+        .back-to-hub a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 120, 212, 0.4);
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 1100px;
+        }
+
+        h1 {
+            color: var(--azure-blue-dark);
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 2.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px var(--shadow-color);
+            border: 2px solid rgba(0, 120, 212, 0.1);
+        }
+        h1 i {
+            font-size: 1em;
+            color: var(--shared-color);
+        }
+
+        .instructions {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            padding: 18px 24px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 1em;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 3px 12px var(--shadow-color);
+            line-height: 1.6;
+        }
+        .instructions strong {
+            color: var(--shared-color);
+            font-weight: 700;
+        }
+
+        /* Quick Jump Navigation */
+        .quick-jump {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 16px var(--shadow-color);
+            border: 2px solid var(--border-color);
+        }
+        .quick-jump h3 {
+            margin: 0 0 18px 0;
+            color: var(--azure-blue-dark);
+            font-size: 1.3em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .quick-jump h3 i {
+            color: var(--shared-color);
+        }
+        .quick-jump-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .quick-jump-links a {
+            flex: 1 1 calc(25% - 12px);
+            min-width: 200px;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--azure-blue) 0%, var(--azure-blue-light) 100%);
+            color: var(--text-light);
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 2px 8px rgba(0, 120, 212, 0.3);
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+        .quick-jump-links a:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 16px rgba(0, 120, 212, 0.5);
+        }
+        .quick-jump-links a i {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        /* Card Container */
+        .card-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 24px;
+            width: 100%;
+        }
+        @media (min-width: 768px) {
+            .card-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1024px) {
+            .card-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* Cards */
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px var(--shadow-color);
+            overflow: hidden;
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        .card:hover {
+            box-shadow: 0 8px 24px var(--shadow-hover);
+            transform: translateY(-2px);
+            border-color: var(--azure-blue-light);
+        }
+        .card-toggle { display: none; }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, var(--azure-blue) 0%, var(--azure-blue-light) 100%);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+            position: relative;
+        }
+        .card-header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                rgba(255,255,255,0.3) 0%, 
+                rgba(255,255,255,0.6) 50%, 
+                rgba(255,255,255,0.3) 100%);
+        }
+        .card-header:hover {
+            background: linear-gradient(135deg, var(--azure-blue-light) 0%, var(--azure-blue) 100%);
+        }
+        .card-header.cli-header {
+            background: linear-gradient(135deg, var(--cli-color) 0%, var(--cli-light) 100%);
+        }
+        .card-header.ps-header {
+            background: linear-gradient(135deg, var(--ps-color) 0%, var(--ps-light) 100%);
+        }
+        .card-header.shared-header {
+            background: linear-gradient(135deg, var(--shared-color) 0%, var(--shared-light) 100%);
+        }
+        .card-header.scripting-header {
+            background: linear-gradient(135deg, var(--scripting-color) 0%, var(--scripting-light) 100%);
+        }
+        .card-header.exam-header {
+            background: linear-gradient(135deg, var(--exam-color) 0%, var(--exam-light) 100%);
+        }
+
+        .card-header h2 {
+            margin: 0;
+            font-size: 1.25em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+        .card-header h2 i {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+        .card-header .toggle-icon {
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+            filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+        }
+        .card-content {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            padding: 0 20px;
+            transition: max-height 0.5s ease-out, opacity 0.4s ease-in, padding 0.5s ease-out;
+            background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+            flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header .toggle-icon {
+            transform: rotate(180deg);
+        }
+        .card-toggle:checked ~ .card-content {
+            max-height: 5000px;
+            opacity: 1;
+            padding: 20px;
+            border-top: 2px solid var(--border-color);
+            overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+            color: var(--azure-blue-dark);
+            margin-top: 0;
+            margin-bottom: 14px;
+            font-size: 1.15em;
+            font-weight: 700;
+            border-bottom: 2px solid var(--azure-blue-light);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-content h3 i {
+            font-size: 1em;
+            color: var(--azure-blue-light);
+        }
+        .card-content h4 {
+            color: var(--text-dark);
+            margin-top: 18px;
+            margin-bottom: 12px;
+            font-size: 1.05em;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-content h4 i {
+            color: var(--shared-color);
+        }
+        .card-content p {
+            margin: 0 0 14px 0;
+            line-height: 1.7;
+        }
+        .card-content ul {
+            font-size: 0.98em;
+            padding-left: 0;
+            margin-top: 8px;
+            margin-bottom: 18px;
+            list-style: none;
+        }
+        .card-content li {
+            margin-bottom: 10px;
+            position: relative;
+            padding-left: 28px;
+            line-height: 1.6;
+        }
+        .card-content li i.fa-li {
+            position: absolute;
+            left: 0;
+            top: 4px;
+            width: 20px;
+            text-align: center;
+            font-size: 1em;
+            background: var(--azure-blue-light);
+            color: #fff !important;
+            width: 26px;
+            height: 26px;
+            line-height: 26px;
+            border-radius: 50%;
+            font-size: 0.85em;
+            top: 0.35em;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+            transition: background 0.3s ease, transform 0.3s ease;
+        }
+        .card-content li:hover i.fa-li {
+            transform: scale(1.08);
+        }
+
+        /* Diagram Styles */
+        .diagram {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px dashed var(--azure-blue-light);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .diagram-box {
+            background: #ffffff;
+            padding: 14px 18px;
+            border-radius: 8px;
+            border: 2px solid var(--border-color);
+            box-shadow: 0 2px 6px var(--shadow-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            min-width: 120px;
+            transition: all 0.3s ease;
+        }
+        .diagram-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px var(--shadow-hover);
+        }
+        .diagram-box i {
+            font-size: 2em;
+            color: var(--azure-blue);
+        }
+        .diagram-box span {
+            font-size: 0.9em;
+            font-weight: 600;
+            color: var(--text-dark);
+            text-align: center;
+        }
+        .diagram-arrow {
+            font-size: 2em;
+            color: var(--azure-blue-light);
+        }
+
+        /* Code Blocks */
+        pre {
+            background-color: var(--code-bg);
+            border: 2px solid var(--code-border);
+            border-radius: 8px;
+            padding: 18px;
+            overflow-x: auto;
+            font-size: 0.9em;
+            color: var(--code-text-color);
+            margin: 16px 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            font-family: "Consolas", "Monaco", "Courier New", monospace;
+            line-height: 1.6;
+        }
+        pre code {
+            background: none;
+            border: none;
+            padding: 0;
+            display: block;
+            white-space: pre;
+            color: var(--code-text-color);
+        }
+        code {
+            font-family: "Consolas", "Monaco", "Courier New", monospace;
+            background-color: #e0f2fe;
+            color: var(--azure-blue-dark);
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
+            font-size: 0.9em;
+            border: 1px solid #bae6fd;
+            font-weight: 500;
+        }
+        .comment {
+            color: #6a9955;
+            font-style: italic;
+        }
+        .param {
+            color: #4ec9b0;
+            font-weight: 600;
+        }
+        .value {
+            color: #ce9178;
+        }
+        .keyword {
+            color: #569cd6;
+            font-weight: 600;
+        }
+
+        /* Comparison Table */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px var(--shadow-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .comparison-table th,
+        .comparison-table td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .comparison-table th {
+            background: linear-gradient(135deg, var(--azure-blue) 0%, var(--azure-blue-light) 100%);
+            color: var(--text-light);
+            font-weight: 700;
+            text-align: center;
+        }
+        .comparison-table td {
+            background-color: #ffffff;
+        }
+        .comparison-table tr:last-child td {
+            border-bottom: none;
+        }
+        .comparison-table tr:hover td {
+            background-color: #f8f9fa;
+        }
+
+        /* Special Boxes */
+        .az104-tip {
+            background: linear-gradient(135deg, #fef3c7 0%, #fef9e7 100%);
+            border-left: 5px solid var(--warning-color);
+            padding: 16px 22px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(245, 158, 11, 0.15);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        .az104-tip i {
+            color: var(--warning-color);
+            font-size: 1.3em;
+            margin-top: 2px;
+        }
+        .az104-tip strong {
+            color: #92400e;
+            font-weight: 700;
+        }
+        .example-box {
+            background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+            border: 2px solid var(--success-color);
+            border-radius: 10px;
+            padding: 18px 24px;
+            margin: 20px 0;
+            box-shadow: 0 3px 10px rgba(16, 185, 129, 0.15);
+        }
+        .example-box strong {
+            color: var(--success-color);
+            font-weight: 700;
+        }
+        .mnemonic-box {
+            background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+            border-left: 5px solid var(--azure-blue);
+            padding: 18px 24px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 3px 10px rgba(0, 120, 212, 0.15);
+        }
+        .mnemonic-box strong {
+            color: var(--azure-blue);
+            font-weight: 700;
+        }
+
+        .key-point {
+            font-weight: 700;
+            color: var(--azure-blue);
+        }
+
+        /* Mobile & Accessibility */
+        @media (max-width: 767px) {
+            body {
+                padding: 12px;
+            }
+            h1 {
+                font-size: 1.75em;
+                padding: 20px;
+            }
+            .card-header h2 {
+                font-size: 1.05em;
+            }
+            .quick-jump-links {
+                flex-direction: column;
+            }
+            .quick-jump-links a {
+                width: 100%;
+                flex: 1 1 100%;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+                animation: none !important;
+                scroll-behavior: auto !important;
+            }
+        }
+        .quick-jump-links a:focus-visible,
+        .card-header:focus-visible {
+            outline: 3px solid var(--azure-blue);
+            outline-offset: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1>
+            <i class="fas fa-terminal"></i>
+            Azure CLI & PowerShell Guide (AZ-104)
+        </h1>
+
+        <div class="instructions">
+            <strong>Master command-line management for Azure.</strong> Compare Azure CLI and PowerShell syntax, authentication, resource management, and scripting. Click any section to expand.
+        </div>
+
+        <!-- Quick Jump Menu -->
+        <div class="quick-jump">
+            <h3><i class="fas fa-bolt"></i> Quick Jump</h3>
+            <div class="quick-jump-links">
+                <a href="#pillar1"><i class="fas fa-info-circle"></i> Introduction</a>
+                <a href="#pillar2"><i class="fas fa-key"></i> Authentication</a>
+                <a href="#pillar3"><i class="fas fa-cogs"></i> Core Tasks</a>
+                <a href="#pillar4"><i class="fas fa-filter"></i> Output & Query</a>
+                <a href="#pillar5"><i class="fas fa-file-code"></i> Scripting</a>
+                <a href="#pillar6"><i class="fas fa-balance-scale"></i> When to Use Which</a>
+                <a href="#pillar7"><i class="fas fa-graduation-cap"></i> Exam Essentials</a>
+            </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="card-container">
+
+            <!-- Pillar 1: Introduction -->
+            <div class="card" id="pillar1">
+                <input type="checkbox" id="pillar1-toggle" class="card-toggle" checked>
+                <label for="pillar1-toggle" class="card-header">
+                    <h2><i class="fas fa-info-circle"></i> Introduction to Azure CLI & PowerShell</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-terminal"></i> Command-Line Tools for Azure Management</h3>
+                    <p>Azure CLI and Azure PowerShell are cross-platform command-line tools for creating, managing, and automating Azure resources. Both provide powerful alternatives to the Azure Portal for scripting, automation, and DevOps workflows.</p>
+
+                    <div class="diagram">
+                        <div class="diagram-box">
+                            <i class="fas fa-user"></i>
+                            <span>You (Admin)</span>
+                        </div>
+                        <div class="diagram-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="diagram-box">
+                            <i class="fas fa-terminal" style="color: var(--cli-color);"></i>
+                            <span>CLI / PowerShell</span>
+                        </div>
+                        <div class="diagram-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="diagram-box">
+                            <i class="fas fa-cloud" style="color: var(--azure-blue);"></i>
+                            <span>Azure Resource Manager</span>
+                        </div>
+                        <div class="diagram-arrow"><i class="fas fa-arrow-right"></i></div>
+                        <div class="diagram-box">
+                            <i class="fas fa-server" style="color: var(--success-color);"></i>
+                            <span>Azure Resources</span>
+                        </div>
+                    </div>
+
+                    <h4><i class="fas fa-terminal" style="color: var(--cli-color);"></i> Azure CLI</h4>
+                    <ul>
+                        <li><i class="fas fa-code fa-li"></i><strong>Syntax:</strong> Uses <code>az &lt;group&gt; &lt;subgroup&gt; &lt;command&gt; --parameter value</code> structure</li>
+                        <li><i class="fas fa-globe fa-li"></i><strong>Cross-Platform:</strong> Runs on Windows, macOS, Linux, Docker, Azure Cloud Shell</li>
+                        <li><i class="fas fa-database fa-li"></i><strong>Output:</strong> JSON by default; supports table, TSV, YAML formats</li>
+                        <li><i class="fas fa-bolt fa-li"></i><strong>Querying:</strong> Uses JMESPath query language for filtering JSON output</li>
+                        <li><i class="fas fa-check fa-li"></i><strong>Best For:</strong> Bash scripting, Linux environments, concise syntax</li>
+                    </ul>
+
+                    <h4><i class="fab fa-windows" style="color: var(--ps-color);"></i> Azure PowerShell</h4>
+                    <ul>
+                        <li><i class="fas fa-code fa-li"></i><strong>Syntax:</strong> Uses <code>Verb-AzNoun</code> cmdlet structure (e.g., <code>Get-AzVM</code>, <code>New-AzResourceGroup</code>)</li>
+                        <li><i class="fas fa-laptop fa-li"></i><strong>Cross-Platform:</strong> PowerShell Core 7+ runs on Windows, macOS, Linux</li>
+                        <li><i class="fas fa-cube fa-li"></i><strong>Output:</strong> Returns .NET objects (not text), enabling powerful pipeline manipulation</li>
+                        <li><i class="fas fa-filter fa-li"></i><strong>Querying:</strong> Uses <code>Where-Object</code>, <code>Select-Object</code>, and object properties</li>
+                        <li><i class="fas fa-check fa-li"></i><strong>Best For:</strong> Windows environments, complex scripting, object-oriented workflows</li>
+                    </ul>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>Cloud Shell Advantage:</strong> Both tools are pre-installed in Azure Cloud Shell (accessible from portal or shell.azure.com), eliminating local installation and providing authenticated sessions automatically.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 2: Authentication -->
+            <div class="card" id="pillar2">
+                <input type="checkbox" id="pillar2-toggle" class="card-toggle">
+                <label for="pillar2-toggle" class="card-header shared-header">
+                    <h2><i class="fas fa-key"></i> Authentication</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-sign-in-alt"></i> Connecting to Azure</h3>
+                    <p>Both tools authenticate via Azure Active Directory (AAD). After login, you can manage resources in your authorized subscriptions.</p>
+
+                    <h4><i class="fas fa-terminal" style="color: var(--cli-color);"></i> Azure CLI Authentication</h4>
+                    <p><strong>Interactive Browser Login:</strong></p>
+                    <pre><code><span class="comment"># Opens browser for AAD authentication</span>
+az login
+
+<span class="comment"># Login with specific tenant</span>
+az login <span class="param">--tenant</span> <span class="value">&lt;TENANT_ID&gt;</span>
+
+<span class="comment"># Check current account</span>
+az account show</code></pre>
+
+                    <p><strong>Service Principal (for automation):</strong></p>
+                    <pre><code>az login <span class="param">--service-principal</span> \
+  <span class="param">-u</span> <span class="value">&lt;APP_ID&gt;</span> \
+  <span class="param">-p</span> <span class="value">&lt;PASSWORD_OR_CERT_PATH&gt;</span> \
+  <span class="param">--tenant</span> <span class="value">&lt;TENANT_ID&gt;</span></code></pre>
+
+                    <p><strong>Switch Subscriptions:</strong></p>
+                    <pre><code><span class="comment"># List subscriptions</span>
+az account list <span class="param">--output</span> <span class="value">table</span>
+
+<span class="comment"># Set active subscription</span>
+az account set <span class="param">--subscription</span> <span class="value">"My Subscription Name"</span></code></pre>
+
+                    <h4><i class="fab fa-windows" style="color: var(--ps-color);"></i> PowerShell Authentication</h4>
+                    <p><strong>Interactive Login:</strong></p>
+                    <pre><code><span class="comment"># Opens browser for AAD authentication</span>
+Connect-AzAccount
+
+<span class="comment"># Login with specific tenant</span>
+Connect-AzAccount <span class="param">-Tenant</span> <span class="value">&lt;TENANT_ID&gt;</span>
+
+<span class="comment"># Check current context</span>
+Get-AzContext</code></pre>
+
+                    <p><strong>Service Principal:</strong></p>
+                    <pre><code>$credential = Get-Credential <span class="comment"># Enter App ID as username, password/secret</span>
+Connect-AzAccount <span class="param">-ServicePrincipal</span> \
+  <span class="param">-Credential</span> $credential \
+  <span class="param">-Tenant</span> <span class="value">&lt;TENANT_ID&gt;</span></code></pre>
+
+                    <p><strong>Switch Subscriptions:</strong></p>
+                    <pre><code><span class="comment"># List subscriptions</span>
+Get-AzSubscription
+
+<span class="comment"># Set active subscription</span>
+Set-AzContext <span class="param">-SubscriptionId</span> <span class="value">&lt;SUBSCRIPTION_ID&gt;</span></code></pre>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>AZ-104 Focus:</strong> Know the difference between <code>az login</code> vs <code>Connect-AzAccount</code>. For exam scenarios involving automation, recognize when service principal authentication is required (CI/CD pipelines, unattended scripts).
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 3: Core Resource Management Tasks -->
+            <div class="card" id="pillar3">
+                <input type="checkbox" id="pillar3-toggle" class="card-toggle">
+                <label for="pillar3-toggle" class="card-header cli-header">
+                    <h2><i class="fas fa-cogs"></i> Core Resource Management Tasks</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-tools"></i> Common Operations: CLI vs PowerShell</h3>
+                    <p>Side-by-side examples for managing Resource Groups, Storage, VMs, and VNets.</p>
+
+                    <h4><i class="fas fa-object-group"></i> Resource Groups</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>Azure CLI</th>
+                                <th>Azure PowerShell</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Create</strong></td>
+                                <td><code>az group create --name MyRG --location eastus</code></td>
+                                <td><code>New-AzResourceGroup -Name MyRG -Location eastus</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>List</strong></td>
+                                <td><code>az group list --output table</code></td>
+                                <td><code>Get-AzResourceGroup | Format-Table</code></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Delete</strong></td>
+                                <td><code>az group delete --name MyRG --yes</code></td>
+                                <td><code>Remove-AzResourceGroup -Name MyRG -Force</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4><i class="fas fa-database"></i> Storage Accounts</h4>
+                    <p><strong>CLI:</strong></p>
+                    <pre><code><span class="comment"># Create (name must be globally unique, 3-24 lowercase letters/numbers)</span>
+az storage account create \
+  <span class="param">--name</span> <span class="value">mystorageacct123</span> \
+  <span class="param">--resource-group</span> <span class="value">MyRG</span> \
+  <span class="param">--location</span> <span class="value">eastus</span> \
+  <span class="param">--sku</span> <span class="value">Standard_LRS</span>
+
+<span class="comment"># List account keys</span>
+az storage account keys list \
+  <span class="param">--account-name</span> <span class="value">mystorageacct123</span> \
+  <span class="param">--resource-group</span> <span class="value">MyRG</span></code></pre>
+
+                    <p><strong>PowerShell:</strong></p>
+                    <pre><code><span class="comment"># Create</span>
+New-AzStorageAccount <span class="param">`
+  -ResourceGroupName</span> <span class="value">MyRG</span> <span class="param">`
+  -Name</span> <span class="value">mystorageacct123</span> <span class="param">`
+  -Location</span> <span class="value">eastus</span> <span class="param">`
+  -SkuName</span> <span class="value">Standard_LRS</span>
+
+<span class="comment"># List keys</span>
+Get-AzStorageAccountKey <span class="param">`
+  -ResourceGroupName</span> <span class="value">MyRG</span> <span class="param">`
+  -Name</span> <span class="value">mystorageacct123</span></code></pre>
+
+                    <h4><i class="fas fa-server"></i> Virtual Machines</h4>
+                    <p><strong>CLI:</strong></p>
+                    <pre><code><span class="comment"># Create Linux VM with SSH keys</span>
+az vm create \
+  <span class="param">--resource-group</span> <span class="value">MyRG</span> \
+  <span class="param">--name</span> <span class="value">MyVM</span> \
+  <span class="param">--image</span> <span class="value">Ubuntu2204</span> \
+  <span class="param">--admin-username</span> <span class="value">azureuser</span> \
+  <span class="param">--generate-ssh-keys</span> \
+  <span class="param">--size</span> <span class="value">Standard_B2s</span>
+
+<span class="comment"># Stop VM (deallocate to stop billing)</span>
+az vm deallocate <span class="param">--resource-group</span> <span class="value">MyRG</span> <span class="param">--name</span> <span class="value">MyVM</span>
+
+<span class="comment"># Get public IP</span>
+az vm show <span class="param">-g</span> <span class="value">MyRG</span> <span class="param">-n</span> <span class="value">MyVM</span> <span class="param">-d</span> <span class="param">--query</span> <span class="value">publicIps</span> <span class="param">-o</span> <span class="value">tsv</span></code></pre>
+
+                    <p><strong>PowerShell:</strong></p>
+                    <pre><code><span class="comment"># Create Windows VM</span>
+$cred = Get-Credential <span class="comment"># Prompts for admin username/password</span>
+New-AzVm <span class="param">`
+  -ResourceGroupName</span> <span class="value">"MyRG"</span> <span class="param">`
+  -Name</span> <span class="value">"MyVM"</span> <span class="param">`
+  -Location</span> <span class="value">"East US"</span> <span class="param">`
+  -Image</span> <span class="value">"Win2022Datacenter"</span> <span class="param">`
+  -Size</span> <span class="value">"Standard_B2s"</span> <span class="param">`
+  -Credential</span> $cred
+
+<span class="comment"># Stop VM</span>
+Stop-AzVM <span class="param">-ResourceGroupName</span> <span class="value">MyRG</span> <span class="param">-Name</span> <span class="value">MyVM</span> <span class="param">-Force</span>
+
+<span class="comment"># Get public IP</span>
+(Get-AzPublicIpAddress <span class="param">-ResourceGroupName</span> <span class="value">MyRG</span>).IpAddress</code></pre>
+
+                    <h4><i class="fas fa-network-wired"></i> Virtual Networks</h4>
+                    <p><strong>CLI:</strong></p>
+                    <pre><code>az network vnet create \
+  <span class="param">-g</span> <span class="value">MyRG</span> \
+  <span class="param">-n</span> <span class="value">MyVNet</span> \
+  <span class="param">--address-prefix</span> <span class="value">10.0.0.0/16</span> \
+  <span class="param">--subnet-name</span> <span class="value">MySubnet</span> \
+  <span class="param">--subnet-prefix</span> <span class="value">10.0.1.0/24</span></code></pre>
+
+                    <p><strong>PowerShell:</strong></p>
+                    <pre><code><span class="comment"># Create subnet configuration first</span>
+$subnet = New-AzVirtualNetworkSubnetConfig <span class="param">`
+  -Name</span> <span class="value">MySubnet</span> <span class="param">`
+  -AddressPrefix</span> <span class="value">"10.0.1.0/24"</span>
+
+<span class="comment"># Create VNet with subnet</span>
+New-AzVirtualNetwork <span class="param">`
+  -ResourceGroupName</span> <span class="value">MyRG</span> <span class="param">`
+  -Name</span> <span class="value">MyVNet</span> <span class="param">`
+  -Location</span> <span class="value">eastus</span> <span class="param">`
+  -AddressPrefix</span> <span class="value">"10.0.0.0/16"</span> <span class="param">`
+  -Subnet</span> $subnet</code></pre>
+
+                    <div class="mnemonic-box">
+                        <strong><i class="fas fa-brain"></i> Syntax Mnemonic - "CAP":</strong> CLI uses <span class="key-point">Commands</span> with dashes (<code>az group create</code>). PowerShell uses <span class="key-point">Actions</span> with verb-noun (<code>New-AzResourceGroup</code>). Both use <span class="key-point">Parameters</span> (CLI: <code>--name</code>, PS: <code>-Name</code>).
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 4: Output & Querying -->
+            <div class="card" id="pillar4">
+                <input type="checkbox" id="pillar4-toggle" class="card-toggle">
+                <label for="pillar4-toggle" class="card-header ps-header">
+                    <h2><i class="fas fa-filter"></i> Output Formatting & Querying</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-search"></i> Controlling Command Output</h3>
+                    <p>Both tools offer powerful filtering and formatting, but use different approaches.</p>
+
+                    <h4><i class="fas fa-terminal" style="color: var(--cli-color);"></i> Azure CLI Output</h4>
+                    <ul>
+                        <li><i class="fas fa-list fa-li"></i><strong>Output Formats:</strong>
+                            <ul>
+                                <li><code>--output json</code> (default): Machine-readable JSON</li>
+                                <li><code>--output table</code>: Human-readable table view</li>
+                                <li><code>--output tsv</code>: Tab-separated values (script-friendly)</li>
+                                <li><code>--output yaml</code>: YAML format</li>
+                            </ul>
+                        </li>
+                        <li><i class="fas fa-code fa-li"></i><strong>JMESPath Querying:</strong> Use <code>--query</code> flag with JMESPath expressions</li>
+                    </ul>
+
+                    <p><strong>Examples:</strong></p>
+                    <pre><code><span class="comment"># List VMs in East US region only</span>
+az vm list <span class="param">--query</span> <span class="value">"[?location=='eastus'].{Name:name, RG:resourceGroup}"</span> <span class="param">-o</span> <span class="value">table</span>
+
+<span class="comment"># Get first storage account name</span>
+az storage account list <span class="param">--query</span> <span class="value">"[0].name"</span> <span class="param">-o</span> <span class="value">tsv</span>
+
+<span class="comment"># Filter by tag</span>
+az resource list <span class="param">--query</span> <span class="value">"[?tags.Environment=='Production'].name"</span></code></pre>
+
+                    <h4><i class="fab fa-windows" style="color: var(--ps-color);"></i> PowerShell Output</h4>
+                    <ul>
+                        <li><i class="fas fa-cube fa-li"></i><strong>Object Pipeline:</strong> Cmdlets return .NET objects (not text), enabling property access and method calls</li>
+                        <li><i class="fas fa-filter fa-li"></i><strong>Filtering:</strong> <code>Where-Object</code> (alias: <code>where</code>, <code>?</code>)</li>
+                        <li><i class="fas fa-columns fa-li"></i><strong>Selection:</strong> <code>Select-Object</code> (alias: <code>select</code>) to pick properties</li>
+                        <li><i class="fas fa-table fa-li"></i><strong>Formatting:</strong> <code>Format-Table</code> (alias: <code>ft</code>), <code>Format-List</code> (alias: <code>fl</code>)</li>
+                    </ul>
+
+                    <p><strong>Examples:</strong></p>
+                    <pre><code><span class="comment"># Filter VMs by location and select properties</span>
+Get-AzVM | Where-Object {$_.Location <span class="param">-eq</span> <span class="value">'eastus'</span>} | Select-Object Name, ResourceGroupName
+
+<span class="comment"># Get storage accounts with Premium SKU</span>
+Get-AzStorageAccount | Where-Object {$_.Sku.Name <span class="param">-like</span> <span class="value">'Premium*'</span>}
+
+<span class="comment"># Sort and format</span>
+Get-AzVM | Sort-Object Name | Format-Table Name, Location, <span class="param">@{Label=</span><span class="value">"Size"</span>; <span class="param">Expression=</span>{$_.HardwareProfile.VmSize}}</code></pre>
+
+                    <div class="example-box">
+                        <strong><i class="fas fa-lightbulb"></i> Real-World Scenario:</strong> Find all VMs that are running but not in the "Production" resource group:
+                        <br><strong>CLI:</strong> <code>az vm list -d --query "[?powerState=='VM running' && resourceGroup!='Production'].name"</code>
+                        <br><strong>PS:</strong> <code>Get-AzVM -Status | Where {$_.PowerState -eq 'VM running' -and $_.ResourceGroupName -ne 'Production'} | Select Name</code>
+                    </div>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>Exam Tip:</strong> CLI queries return <span class="key-point">JSON text</span> filtered by JMESPath. PowerShell returns <span class="key-point">.NET objects</span> filtered by Where-Object. Know which output format is best: <code>table</code> for humans, <code>json/tsv</code> for scripts.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 5: Scripting & Variables -->
+            <div class="card" id="pillar5">
+                <input type="checkbox" id="pillar5-toggle" class="card-toggle">
+                <label for="pillar5-toggle" class="card-header scripting-header">
+                    <h2><i class="fas fa-file-code"></i> Scripting & Automation</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-code-branch"></i> Automating Azure Tasks</h3>
+                    <p>Both tools excel at automation. Use variables, loops, and error handling to create robust scripts.</p>
+
+                    <h4><i class="fas fa-terminal" style="color: var(--cli-color);"></i> Bash Scripting with CLI</h4>
+                    <pre><code><span class="comment">#!/bin/bash</span>
+<span class="comment"># Script: create-dev-environment.sh</span>
+
+<span class="keyword">set</span> -e  <span class="comment"># Exit on error</span>
+
+<span class="comment"># Variables</span>
+RG_NAME=<span class="value">"DevEnvironment"</span>
+LOCATION=<span class="value">"eastus"</span>
+VM_NAME=<span class="value">"DevVM"</span>
+VM_IMAGE=<span class="value">"Ubuntu2204"</span>
+
+<span class="comment"># Create resource group</span>
+echo <span class="value">"Creating resource group $RG_NAME..."</span>
+az group create <span class="param">--name</span> <span class="value">$RG_NAME</span> <span class="param">--location</span> <span class="value">$LOCATION</span>
+
+<span class="comment"># Create VM</span>
+echo <span class="value">"Creating VM $VM_NAME..."</span>
+az vm create \
+  <span class="param">--resource-group</span> <span class="value">$RG_NAME</span> \
+  <span class="param">--name</span> <span class="value">$VM_NAME</span> \
+  <span class="param">--image</span> <span class="value">$VM_IMAGE</span> \
+  <span class="param">--admin-username</span> <span class="value">azureuser</span> \
+  <span class="param">--generate-ssh-keys</span>
+
+<span class="comment"># Get public IP</span>
+PUBLIC_IP=$(az vm show <span class="param">-g</span> <span class="value">$RG_NAME</span> <span class="param">-n</span> <span class="value">$VM_NAME</span> <span class="param">-d</span> <span class="param">--query</span> <span class="value">publicIps</span> <span class="param">-o</span> <span class="value">tsv</span>)
+echo <span class="value">"VM created! Public IP: $PUBLIC_IP"</span></code></pre>
+
+                    <h4><i class="fab fa-windows" style="color: var(--ps-color);"></i> PowerShell Scripting</h4>
+                    <pre><code><span class="comment"># Script: Create-DevEnvironment.ps1</span>
+
+<span class="keyword">param</span>(
+    [<span class="keyword">string</span>]$ResourceGroupName = <span class="value">"DevEnvironment"</span>,
+    [<span class="keyword">string</span>]$Location = <span class="value">"East US"</span>
+)
+
+<span class="keyword">$ErrorActionPreference</span> = <span class="value">"Stop"</span>  <span class="comment"># Exit on error</span>
+
+<span class="keyword">try</span> {
+    <span class="comment"># Create resource group</span>
+    Write-Host <span class="value">"Creating resource group $ResourceGroupName..."</span> <span class="param">-ForegroundColor</span> <span class="value">Cyan</span>
+    New-AzResourceGroup <span class="param">`
+        -Name</span> $ResourceGroupName <span class="param">`
+        -Location</span> $Location
+
+    <span class="comment"># Create storage account</span>
+    $StorageAccountName = <span class="value">"devstorage$(Get-Random -Maximum 9999)"</span>
+    Write-Host <span class="value">"Creating storage account $StorageAccountName..."</span> <span class="param">-ForegroundColor</span> <span class="value">Cyan</span>
+    $storage = New-AzStorageAccount <span class="param">`
+        -ResourceGroupName</span> $ResourceGroupName <span class="param">`
+        -Name</span> $StorageAccountName <span class="param">`
+        -Location</span> $Location <span class="param">`
+        -SkuName</span> <span class="value">Standard_LRS</span>
+
+    Write-Host <span class="value">"Environment created successfully!"</span> <span class="param">-ForegroundColor</span> <span class="value">Green</span>
+    Write-Host <span class="value">"Storage Account: $($storage.StorageAccountName)"</span>
+}
+<span class="keyword">catch</span> {
+    Write-Error <span class="value">"Failed to create environment: $_"</span>
+    <span class="keyword">exit</span> <span class="value">1</span>
+}</code></pre>
+
+                    <h4><i class="fas fa-repeat"></i> Loops & Iteration</h4>
+                    <p><strong>CLI (Bash loop):</strong></p>
+                    <pre><code><span class="comment"># Create multiple storage accounts</span>
+<span class="keyword">for</span> i <span class="keyword">in</span> {1..3}; <span class="keyword">do</span>
+  az storage account create \
+    <span class="param">--name</span> <span class="value">"mystorage${i}$(date +%s)"</span> \
+    <span class="param">--resource-group</span> <span class="value">MyRG</span> \
+    <span class="param">--location</span> <span class="value">eastus</span> \
+    <span class="param">--sku</span> <span class="value">Standard_LRS</span>
+<span class="keyword">done</span></code></pre>
+
+                    <p><strong>PowerShell (ForEach loop):</strong></p>
+                    <pre><code><span class="comment"># Create VMs in multiple regions</span>
+$regions = <span class="value">@("East US", "West US", "Central US")</span>
+<span class="keyword">foreach</span> ($region <span class="keyword">in</span> $regions) {
+    $vmName = <span class="value">"VM-$($region.Replace(' ', ''))"</span>
+    New-AzVm <span class="param">`
+        -ResourceGroupName</span> <span class="value">"MultiRegionRG"</span> <span class="param">`
+        -Name</span> $vmName <span class="param">`
+        -Location</span> $region <span class="param">`
+        -Image</span> <span class="value">"Win2022Datacenter"</span>
+}</code></pre>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>Integration Tip:</strong> Use Azure CLI/PowerShell scripts in <strong>Azure DevOps Pipelines</strong> or <strong>GitHub Actions</strong> for CI/CD automation. Both tools integrate with <strong>ARM templates</strong> and <strong>Bicep</strong> for infrastructure deployment.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 6: When to Use Which -->
+            <div class="card" id="pillar6">
+                <input type="checkbox" id="pillar6-toggle" class="card-toggle">
+                <label for="pillar6-toggle" class="card-header shared-header">
+                    <h2><i class="fas fa-balance-scale"></i> When to Use Which Tool?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-question-circle"></i> Decision Guide</h3>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Criteria</th>
+                                <th>Azure CLI</th>
+                                <th>Azure PowerShell</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Syntax Style</strong></td>
+                                <td>Command-based (<code>az group create</code>)</td>
+                                <td>Verb-Noun cmdlets (<code>New-AzResourceGroup</code>)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Output Type</strong></td>
+                                <td>JSON text (parseable with JMESPath)</td>
+                                <td>.NET objects (use properties/methods)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Scripting Strength</strong></td>
+                                <td>Bash/Linux scripting, concise one-liners</td>
+                                <td>Complex workflows, object manipulation, error handling</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Learning Curve</strong></td>
+                                <td>Lower (familiar to Linux admins)</td>
+                                <td>Moderate (PowerShell knowledge helpful)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Platform Preference</strong></td>
+                                <td>Linux, macOS, cross-platform teams</td>
+                                <td>Windows environments, .NET developers</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Cloud Shell</strong></td>
+                                <td>✅ Pre-installed (Bash mode)</td>
+                                <td>✅ Pre-installed (PowerShell mode)</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Community & Docs</strong></td>
+                                <td>Extensive (Microsoft Learn, GitHub)</td>
+                                <td>Extensive (Microsoft Learn, PowerShell Gallery)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4><i class="fas fa-terminal" style="color: var(--cli-color);"></i> Choose Azure CLI When...</h4>
+                    <ul>
+                        <li><i class="fas fa-check fa-li"></i>Working in Linux/Unix environments or Docker containers</li>
+                        <li><i class="fas fa-check fa-li"></i>Need concise, script-friendly commands for CI/CD pipelines</li>
+                        <li><i class="fas fa-check fa-li"></i>Prefer JSON output and JMESPath querying</li>
+                        <li><i class="fas fa-check fa-li"></i>Quick interactive commands in Cloud Shell (Bash mode)</li>
+                        <li><i class="fas fa-check fa-li"></i>Integrating with Bash scripts, Ansible, or Terraform</li>
+                    </ul>
+
+                    <h4><i class="fab fa-windows" style="color: var(--ps-color);"></i> Choose Azure PowerShell When...</h4>
+                    <ul>
+                        <li><i class="fas fa-check fa-li"></i>Working in Windows environments or have PowerShell expertise</li>
+                        <li><i class="fas fa-check fa-li"></i>Need complex object manipulation and pipeline filtering</li>
+                        <li><i class="fas fa-check fa-li"></i>Building enterprise automation with error handling and logging</li>
+                        <li><i class="fas fa-check fa-li"></i>Integrating with existing PowerShell scripts or modules</li>
+                        <li><i class="fas fa-check fa-li"></i>Leveraging .NET framework capabilities</li>
+                    </ul>
+
+                    <div class="mnemonic-box">
+                        <strong><i class="fas fa-brain"></i> Decision Mnemonic - "BOTH":</strong> <span class="key-point">B</span>ash users → CLI. <span class="key-point">O</span>bject-oriented needs → PowerShell. <span class="key-point">T</span>eam preference matters. <span class="key-point">H</span>ybrid approach is fine—use both!
+                    </div>
+
+                    <div class="example-box">
+                        <strong><i class="fas fa-users"></i> Team Collaboration Tip:</strong> Many organizations use <strong>both</strong> tools. CLI for quick commands and Linux-based automation, PowerShell for Windows-centric workflows and complex scripts. Azure Cloud Shell supports both—switch with <code>pwsh</code> (PowerShell) or <code>bash</code> commands.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pillar 7: Exam Essentials -->
+            <div class="card" id="pillar7">
+                <input type="checkbox" id="pillar7-toggle" class="card-toggle">
+                <label for="pillar7-toggle" class="card-header exam-header">
+                    <h2><i class="fas fa-graduation-cap"></i> AZ-104 Exam Essentials</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-clipboard-check"></i> Key Exam Focus Areas</h3>
+
+                    <h4><i class="fas fa-list-ol"></i> Command Recognition</h4>
+                    <ul>
+                        <li><i class="fas fa-terminal fa-li"></i><strong>CLI Syntax:</strong> <code>az &lt;service&gt; &lt;command&gt; --parameter value</code> (e.g., <code>az vm create</code>, <code>az storage account list</code>)</li>
+                        <li><i class="fab fa-windows fa-li"></i><strong>PS Syntax:</strong> <code>Verb-AzNoun</code> (e.g., <code>New-AzVM</code>, <code>Get-AzStorageAccount</code>)</li>
+                        <li><i class="fas fa-exclamation-triangle fa-li"></i><strong>Common Trap:</strong> Mixing syntaxes—CLI uses <code>--name</code>, PowerShell uses <code>-Name</code></li>
+                    </ul>
+
+                    <h4><i class="fas fa-key"></i> Authentication Scenarios</h4>
+                    <ul>
+                        <li><i class="fas fa-user fa-li"></i><strong>Interactive:</strong> <code>az login</code> / <code>Connect-AzAccount</code> for browser-based AAD auth</li>
+                        <li><i class="fas fa-robot fa-li"></i><strong>Service Principal:</strong> Required for unattended automation (CI/CD pipelines)</li>
+                        <li><i class="fas fa-cloud fa-li"></i><strong>Cloud Shell:</strong> Pre-authenticated—no login required</li>
+                        <li><i class="fas fa-exchange-alt fa-li"></i><strong>Subscription Switch:</strong> <code>az account set</code> / <code>Set-AzContext</code></li>
+                    </ul>
+
+                    <h4><i class="fas fa-database"></i> Common Resource Operations</h4>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Resource</th>
+                                <th>CLI Create Command</th>
+                                <th>PowerShell Create Cmdlet</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Resource Group</td>
+                                <td><code>az group create</code></td>
+                                <td><code>New-AzResourceGroup</code></td>
+                            </tr>
+                            <tr>
+                                <td>Storage Account</td>
+                                <td><code>az storage account create</code></td>
+                                <td><code>New-AzStorageAccount</code></td>
+                            </tr>
+                            <tr>
+                                <td>Virtual Machine</td>
+                                <td><code>az vm create</code></td>
+                                <td><code>New-AzVM</code></td>
+                            </tr>
+                            <tr>
+                                <td>Virtual Network</td>
+                                <td><code>az network vnet create</code></td>
+                                <td><code>New-AzVirtualNetwork</code></td>
+                            </tr>
+                            <tr>
+                                <td>App Service Plan</td>
+                                <td><code>az appservice plan create</code></td>
+                                <td><code>New-AzAppServicePlan</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h4><i class="fas fa-filter"></i> Output & Query</h4>
+                    <ul>
+                        <li><i class="fas fa-terminal fa-li"></i><strong>CLI:</strong> JSON by default; use <code>--query</code> (JMESPath) + <code>--output table/tsv</code></li>
+                        <li><i class="fab fa-windows fa-li"></i><strong>PowerShell:</strong> Objects; filter with <code>Where-Object</code>, select with <code>Select-Object</code></li>
+                        <li><i class="fas fa-question fa-li"></i><strong>Exam Question:</strong> "Which output format is best for scripts?" Answer: <code>json</code> or <code>tsv</code> (CLI), objects (PS)</li>
+                    </ul>
+
+                    <h4><i class="fas fa-shield-alt"></i> RBAC via CLI/PowerShell</h4>
+                    <p><strong>CLI:</strong></p>
+                    <pre><code><span class="comment"># Assign Contributor role</span>
+az role assignment create \
+  <span class="param">--assignee</span> <span class="value">user@example.com</span> \
+  <span class="param">--role</span> <span class="value">"Contributor"</span> \
+  <span class="param">--resource-group</span> <span class="value">MyRG</span></code></pre>
+
+                    <p><strong>PowerShell:</strong></p>
+                    <pre><code><span class="comment"># Assign Contributor role</span>
+New-AzRoleAssignment <span class="param">`
+  -SignInName</span> <span class="value">user@example.com</span> <span class="param">`
+  -RoleDefinitionName</span> <span class="value">"Contributor"</span> <span class="param">`
+  -ResourceGroupName</span> <span class="value">MyRG</span></code></pre>
+
+                    <div class="mnemonic-box">
+                        <strong><i class="fas fa-brain"></i> Master Mnemonic - "CLI = JSON / PS = Object":</strong>
+                        <ul style="margin-top: 10px; margin-bottom: 0;">
+                            <li><strong>C</strong>ommand structure: CLI dash-based, PS verb-noun</li>
+                            <li><strong>L</strong>ogin: <code>az login</code> vs <code>Connect-AzAccount</code></li>
+                            <li><strong>I</strong>nput/output: CLI JSON text, PS .NET objects</li>
+                            <li><strong>J</strong>MESPath for CLI, pipeline for PS</li>
+                            <li><strong>S</strong>ervice principal for automation</li>
+                            <li><strong>O</strong>utput formats: table/tsv/json vs Format-Table/List</li>
+                            <li><strong>N</strong>aming: CLI lowercase with dashes, PS PascalCase</li>
+                        </ul>
+                    </div>
+
+                    <h4><i class="fas fa-exclamation-triangle"></i> Common Exam Traps</h4>
+                    <ul>
+                        <li><i class="fas fa-times fa-li"></i>Confusing <code>--name</code> (CLI) with <code>-Name</code> (PowerShell)—case and dashes matter!</li>
+                        <li><i class="fas fa-times fa-li"></i>Forgetting <code>az login</code> before running commands (except in Cloud Shell)</li>
+                        <li><i class="fas fa-times fa-li"></i>Not knowing which tool uses JSON vs objects for output</li>
+                        <li><i class="fas fa-times fa-li"></i>Mixing Azure CLI with Azure PowerShell <strong>module names</strong> (Az vs AzureRM—use Az!)</li>
+                        <li><i class="fas fa-times fa-li"></i>Assuming CLI only works on Linux—it's cross-platform!</li>
+                    </ul>
+
+                    <div class="az104-tip">
+                        <i class="fas fa-lightbulb"></i>
+                        <div>
+                            <strong>Final Exam Tip:</strong> The exam may show you a command and ask which tool it belongs to. Look for <span class="key-point">verb-noun</span> (PowerShell) vs <span class="key-point">dash-separated</span> (CLI). Also, know that <strong>Cloud Shell has both pre-installed</strong>—switch with <code>pwsh</code> or <code>bash</code>.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- End card-container -->
+
+    </div> <!-- End main-container -->
+
+    <script>
+        // Smooth scroll for Quick Jump links
+        document.querySelectorAll('.quick-jump-links a').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetCard = document.getElementById(targetId);
+                if (targetCard) {
+                    targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    const checkbox = targetCard.querySelector('.card-toggle');
+                    if (checkbox && !checkbox.checked) {
+                        checkbox.checked = true;
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--shared-cmd-color); font-size: 0.9em;
+          }
+        /* Custom list icons */
+        .card-content li i.fa-terminal { color: var(--cli-color); }
+        .card-content li i.fa-windows { color: var(--ps-color); } /* Assuming PS icon for PowerShell */
+        .card-content li i.fa-sign-in-alt { color: var(--auth-color); }
+        .card-content li i.fa-cog { color: #605e5c; }
+        .card-content li i.fa-server { color: var(--azure-blue); }
+        .card-content li i.fa-network-wired { color: var(--info-color); }
+        .card-content li i.fa-database { color: var(--azure-blue-dark); }
+        .card-content li i.fa-filter { color: var(--info-color); }
+        .card-content li i.fa-code { color: var(--code-bg); }
+        .card-content li i.fa-check { color: var(--success-color); }
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-box {
+            background-color: #fff; padding: 10px 15px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px;
+        }
+        .diagram-box i { font-size: 1.5em; color: var(--azure-blue); }
+        .diagram-box span { font-size: 0.85em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; }
+
+        /* Specific Diagram Styles */
+        .command-flow .fa-user, .command-flow .fa-terminal { color: #605e5c; }
+        .command-flow .fa-cloud { color: var(--azure-blue); }
+        .command-flow .fa-cogs { color: var(--shared-cmd-color); font-size: 1.3em;}
+
+        /* --- Code formatting --- */
+        code.cmd-example, .code-term {
+            font-family: "Consolas", "Courier New", monospace;
+            background-color: var(--code-bg);
+            color: var(--code-text-color);
+            padding: 0.2em 0.5em;
+            border-radius: 4px;
+            font-size: 0.9em;
+            border: 1px solid var(--code-border);
+            display: inline-block; /* For better spacing */
+            margin: 2px 0;
+        }
+        .code-term { font-weight: bold; color: #9cdcfe; } /* Light blue for terms in dark bg */
+        pre {
+             background-color: var(--code-bg);
+             border: 1px solid var(--code-border);
+             padding: 15px;
+             border-radius: 4px;
+             overflow-x: auto;
+             font-size: 0.9em; /* Slightly larger for pre */
+             color: var(--code-text-color);
+             margin-top: 10px;
+        }
+        pre code.cmd-example { background: none; border: none; padding: 0; display: block; white-space: pre; }
+        .param { color: #4ec9b0; } /* Teal for parameters */
+        .value { color: #ce9178; } /* Orange for values */
+        .comment { color: #6a9955; font-style: italic; } /* Green for comments */
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--shared-cmd-color); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .warning-text { color: var(--warning-color); font-weight: 600; }
+        .important-note { background-color: #e6f2ff; border-left: 4px solid var(--shared-cmd-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--shared-cmd-color); margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-laptop-code"></i>Azure CLI & PowerShell Cmdlets Guide</h1>
+
+    <!-- Mind Map -->
+    <div class="mindmap-container">
+         <div class="mindmap-center"><i class="fas fa-tools"></i>Command-Line Tools</div>
+
+         <div class="mindmap-branch branch-cli cli"><i class="fas fa-terminal"></i>Azure CLI</div>
+         <div class="mindmap-branch branch-ps ps"><i class="fab fa-windows"></i>Azure PowerShell</div>
+
+         <div class="mindmap-branch branch-auth auth"><i class="fas fa-key"></i>Authentication</div>
+         <div class="mindmap-branch branch-auth-az auth"><i class="fas fa-sign-in-alt"></i>az login</div>
+         <div class="mindmap-branch branch-auth-connect auth"><i class="fas fa-plug"></i>Connect-AzAccount</div>
+
+         <div class="mindmap-branch branch-core core"><i class="fas fa-cogs"></i>Core Tasks</div>
+         <div class="mindmap-branch branch-core-rg core"><i class="fas fa-object-group"></i>Resource Groups</div>
+         <div class="mindmap-branch branch-core-vm core"><i class="fas fa-server"></i>VMs / Storage</div>
+
+         <div class="mindmap-branch branch-output output"><i class="fas fa-filter"></i>Output/Query</div>
+    </div>
+
+    <p class="instructions">Master Azure administration using the command line with Azure CLI and Azure PowerShell. <strong>Click/Tap</strong> headers to explore fundamental commands and concepts.</p>
+
+    <div class="card-container">
+
+        <!-- What are CLI & PowerShell? -->
+        <div class="card cli-card">
+            <input type="checkbox" id="what-cli-toggle" class="card-toggle" checked>
+            <label for="what-cli-toggle" class="card-header cli-header">
+                <h2><i class="fas fa-terminal"></i>What is Azure CLI?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-mouse-pointer"></i>Cross-Platform Command Line</h3>
+                <p class="description">A command-line tool for creating and managing Azure resources, installable on Windows, macOS, and Linux, or usable via Azure Cloud Shell.</p>
+                 <ul>
+                    <li><i class="fa-li fas fa-code"></i><strong>Syntax:</strong> Uses a <code class="code-term">az &lt;group&gt; &lt;subgroup&gt; &lt;command&gt; --parameter &lt;value&gt;</code> structure.</li>
+                    <li><i class="fa-li fas fa-globe"></i><strong>Cross-Platform:</strong> Consistent experience across different operating systems.</li>
+                    <li><i class="fa-li fas fa-terminal"></i><strong>Shells:</strong> Works in Bash, PowerShell, cmd.exe.</li>
+                    <li><i class="fa-li fas fa-bolt"></i>Often preferred for its concise syntax and ease of scripting in Bash/Linux environments.</li>
+                 </ul>
+            </div>
+        </div>
+        <div class="card ps-card">
+            <input type="checkbox" id="what-ps-toggle" class="card-toggle" checked>
+            <label for="what-ps-toggle" class="card-header ps-header">
+                <h2><i class="fab fa-windows"></i>What is Azure PowerShell?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-scroll"></i>Cmdlets for Azure Management</h3>
+                <p class="description">A set of cmdlets (lightweight commands) for managing Azure resources directly from PowerShell, now cross-platform with PowerShell Core.</p>
+                 <ul>
+                    <li><i class="fa-li fas fa-code"></i><strong>Syntax:</strong> Uses a <code class="code-term">Verb-AzNoun</code> structure (e.g., `Get-AzResourceGroup`, `New-AzVM`).</li>
+                    <li><i class="fa-li fas fa-object-group"></i><strong>Object-Oriented:</strong> Cmdlets often return .NET objects, allowing for powerful scripting and pipelining.</li>
+                    <li><i class="fa-li fas fa-cogs"></i><strong>Modules:</strong> Functionality is organized into modules (e.g., `Az.Compute`, `Az.Storage`).</li>
+                    <li><i class="fa-li fas fa-desktop"></i>Traditionally strong in Windows environments, now available on macOS and Linux.</li>
+                 </ul>
+            </div>
+        </div>
+        <div class="card auth-card">
+            <input type="checkbox" id="auth-toggle" class="card-toggle">
+            <label for="auth-toggle" class="card-header shared-header">
+                <h2><i class="fas fa-key"></i>Authentication</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-sign-in-alt"></i>Connecting to Azure</h3>
+                <p class="description">How to authenticate to your Azure subscription.</p>
+                 <div class="diagram command-flow">
+                     <div class="diagram-box"> <i class="fas fa-user"></i><span>You</span> </div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"> <i class="fas fa-terminal"></i><span>CLI: `az login`<br/>PS: `Connect-AzAccount`</span> </div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"> <i class="fas fa-cloud"></i><span>Azure AD Authentication</span> </div>
+                     <i class="fas fa-arrow-down diagram-arrow-down"></i>
+                     <div class="diagram-box"> <i class="fas fa-check-circle"></i><span>Session Established</span> </div>
+                 </div>
+                <h4><i class="fas fa-terminal" style="color:var(--cli-color)"></i> Azure CLI:</h4>
+                <pre><code class="cmd-example language-bash">az login <span class="comment"># Interactive browser login</span>
+az login --service-principal -u &lt;APP_ID&gt; -p &lt;PASSWORD_OR_CERT&gt; --tenant &lt;TENANT_ID&gt;</code></pre>
+                <h4><i class="fab fa-windows" style="color:var(--ps-color)"></i> Azure PowerShell:</h4>
+                <pre><code class="cmd-example language-powershell">Connect-AzAccount <span class="comment"># Interactive browser login</span>
+Connect-AzAccount -ServicePrincipal -ApplicationId &lt;APP_ID&gt; -Credential (Get-Credential) -TenantId &lt;TENANT_ID&gt;</code></pre>
+                <ul>
+                    <li><i class="fa-li fas fa-list-ol"></i>You can select a specific subscription if you have access to multiple:
+                        <ul>
+                            <li>CLI: `az account set --subscription "<subscription_id_or_name>"`</li>
+                            <li>PS: `Set-AzContext -SubscriptionId "<subscription_id_or_name>"`</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Common Tasks -->
+        <div class="card common-tasks-card">
+            <input type="checkbox" id="common-tasks-toggle" class="card-toggle" checked>
+            <label for="common-tasks-toggle" class="card-header shared-header">
+                <h2><i class="fas fa-cogs"></i>Common Resource Management Tasks</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-tools"></i>Managing RGs, Storage, VMs, VNets</h3>
+                <p class="description">Examples of frequent operations using both tools.</p>
+
+                <h4><i class="fas fa-object-group" style="color:var(--azure-blue-dark)"></i> Resource Groups:</h4>
+                <p><strong>CLI:</strong></p>
+                <pre><code class="cmd-example language-bash"><span class="comment"># Create</span>
+az group create <span class="param">--name</span> MyResourceGroup <span class="param">--location</span> <span class="value">eastus</span>
+<span class="comment"># List</span>
+az group list <span class="param">--output</span> <span class="value">table</span>
+<span class="comment"># Show</span>
+az group show <span class="param">--name</span> MyResourceGroup
+<span class="comment"># Delete</span>
+az group delete <span class="param">--name</span> MyResourceGroup <span class="param">--yes</span> <span class="comment"># --yes skips confirmation</span></code></pre>
+                 <p><strong>PowerShell:</strong></p>
+                <pre><code class="cmd-example language-powershell"><span class="comment"># Create</span>
+New-AzResourceGroup <span class="param">-Name</span> MyResourceGroup <span class="param">-Location</span> <span class="value">eastus</span>
+<span class="comment"># List</span>
+Get-AzResourceGroup | Format-Table
+<span class="comment"># Show</span>
+Get-AzResourceGroup <span class="param">-Name</span> MyResourceGroup
+<span class="comment"># Delete</span>
+Remove-AzResourceGroup <span class="param">-Name</span> MyResourceGroup <span class="param">-Force</span> <span class="comment"># -Force skips confirmation</span></code></pre>
+
+                <h4 style="margin-top:20px;"><i class="fas fa-database" style="color:var(--azure-blue)"></i> Storage Accounts:</h4>
+                 <p><strong>CLI:</strong></p>
+                <pre><code class="cmd-example language-bash"><span class="comment"># Create (name must be globally unique, lowercase)</span>
+az storage account create <span class="param">--name</span> mystorageacct123 <span class="param">--resource-group</span> MyResourceGroup <span class="param">--location</span> <span class="value">eastus</span> <span class="param">--sku</span> <span class="value">Standard_LRS</span>
+<span class="comment"># List Keys</span>
+az storage account keys list <span class="param">--account-name</span> mystorageacct123 <span class="param">--resource-group</span> MyResourceGroup</code></pre>
+                 <p><strong>PowerShell:</strong></p>
+                <pre><code class="cmd-example language-powershell"><span class="comment"># Create</span>
+New-AzStorageAccount <span class="param">-ResourceGroupName</span> MyResourceGroup <span class="param">-Name</span> <span class="value">mystorageacct123</span> <span class="param">-Location</span> <span class="value">eastus</span> <span class="param">-SkuName</span> <span class="value">Standard_LRS</span>
+<span class="comment"># List Keys</span>
+Get-AzStorageAccountKey <span class="param">-ResourceGroupName</span> MyResourceGroup <span class="param">-Name</span> <span class="value">mystorageacct123</span></code></pre>
+
+                <h4 style="margin-top:20px;"><i class="fas fa-server" style="color:var(--success-color)"></i> Virtual Machines (Simple Example):</h4>
+                 <p><strong>CLI:</strong></p>
+                <pre><code class="cmd-example language-bash"><span class="comment"># Create (many more parameters for real-world)</span>
+az vm create <span class="param">--resource-group</span> MyResourceGroup <span class="param">--name</span> MyVM <span class="param">--image</span> <span class="value">UbuntuLTS</span> <span class="param">--admin-username</span> <span class="value">azureuser</span> <span class="param">--generate-ssh-keys</span>
+<span class="comment"># Stop</span>
+az vm stop <span class="param">--resource-group</span> MyResourceGroup <span class="param">--name</span> MyVM
+<span class="comment"># Get IP</span>
+az vm show <span class="param">-g</span> MyResourceGroup <span class="param">-n</span> MyVM <span class="param">-d</span> <span class="param">--query</span> <span class="value">publicIps</span> <span class="param">-o</span> <span class="value">tsv</span></code></pre>
+                 <p><strong>PowerShell:</strong></p>
+                <pre><code class="cmd-example language-powershell"><span class="comment"># Create (simplified - requires more config typically)</span>
+New-AzVm <span class="param">-ResourceGroupName</span> MyResourceGroup <span class="param">-Name</span> <span class="value">"MyVM"</span> <span class="param">-Location</span> <span class="value">"East US"</span> <span class="comment"># ... more config needed</span>
+<span class="comment"># Stop</span>
+Stop-AzVM <span class="param">-ResourceGroupName</span> MyResourceGroup <span class="param">-Name</span> MyVM <span class="param">-Force</span>
+<span class="comment"># Get IP</span>
+(Get-AzPublicIpAddress <span class="param">-ResourceGroupName</span> MyResourceGroup <span class="param">-Name</span> <span class="value">MyVMPublicIP</span>).IpAddress</code></pre>
+
+                <h4 style="margin-top:20px;"><i class="fas fa-network-wired" style="color:var(--info-color)"></i> Virtual Networks:</h4>
+                 <p><strong>CLI:</strong></p>
+                <pre><code class="cmd-example language-bash">az network vnet create <span class="param">-g</span> MyResourceGroup <span class="param">-n</span> MyVNet <span class="param">--address-prefix</span> <span class="value">10.0.0.0/16</span>
+az network vnet subnet create <span class="param">-g</span> MyResourceGroup <span class="param">--vnet-name</span> MyVNet <span class="param">-n</span> MySubnet <span class="param">--address-prefixes</span> <span class="value">10.0.1.0/24</span></code></pre>
+                 <p><strong>PowerShell:</strong></p>
+                <pre><code class="cmd-example language-powershell">$vnet = New-AzVirtualNetwork <span class="param">-ResourceGroupName</span> MyResourceGroup <span class="param">-Name</span> <span class="value">MyVNet</span> <span class="param">-Location</span> <span class="value">eastus</span> <span class="param">-AddressPrefix</span> <span class="value">"10.0.0.0/16"</span>
+Add-AzVirtualNetworkSubnetConfig <span class="param">-Name</span> MySubnet <span class="param">-VirtualNetwork</span> $vnet <span class="param">-AddressPrefix</span> <span class="value">"10.0.1.0/24"</span> | Set-AzVirtualNetwork</code></pre>
+            </div>
+        </div>
+
+        <!-- Output Formatting & Querying -->
+        <div class="card">
+            <input type="checkbox" id="output-toggle" class="card-toggle">
+            <label for="output-toggle" class="card-header shared-header">
+                <h2><i class="fas fa-filter"></i>Output & Querying</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-search"></i>Controlling Command Output</h3>
+                 <p><strong>CLI:</strong></p>
+                 <ul>
+                    <li><i class="fa-li fas fa-code"></i><code class="code-term">--output table</code>: Human-readable table format.</li>
+                    <li><i class="fa-li fas fa-code"></i><code class="code-term">--output json</code>: Default, machine-readable JSON.</li>
+                    <li><i class="fa-li fas fa-code"></i><code class="code-term">--output tsv</code>: Tab-separated values (good for scripting).</li>
+                    <li><i class="fa-li fas fa-code"></i><code class="code-term">--query "<JMESPath_expression>"</code>: Filter and shape JSON output using JMESPath queries. Example: `az vm list --query "[?location=='eastus'].name"`</li>
+                 </ul>
+                 <p><strong>PowerShell:</strong></p>
+                 <ul>
+                    <li><i class="fa-li fas fa-code"></i><code class="code-term">Format-Table</code> (or `ft`): Displays output as a table. Use `-Property` to select columns.</li>
+                    <li><i class="fa-li fas fa-code"></i><code class="code-term">Format-List</code> (or `fl`): Displays output as a list of properties.</li>
+                    <li><i class="fa-li fas fa-code"></i><code class="code-term">Select-Object</code> (or `select`): Select specific properties.</li>
+                    <li><i class="fa-li fas fa-code"></i><code class="code-term">Where-Object</code> (or `where` or `?`): Filter objects.</li>
+                     <li>Example: `Get-AzVM | Where-Object {$_.Location -eq 'eastus'} | Select-Object Name, ResourceGroupName`</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Scripting & Variables -->
+        <div class="card">
+            <input type="checkbox" id="scripting-toggle" class="card-toggle">
+            <label for="scripting-toggle" class="card-header shared-header">
+                <h2><i class="fas fa-file-code"></i>Scripting & Variables</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-code-branch"></i>Automation Basics</h3>
+                 <p><strong>CLI (Bash Example):</strong></p>
+                <pre><code class="cmd-example language-bash"><span class="comment">#!/bin/bash</span>
+RG_NAME=<span class="value">"ScriptedRG"</span>
+LOCATION=<span class="value">"westus2"</span>
+
+az group create <span class="param">--name</span> <span class="value">$RG_NAME</span> <span class="param">--location</span> <span class="value">$LOCATION</span>
+echo <span class="value">"Resource Group $RG_NAME created in $LOCATION"</span></code></pre>
+                 <p><strong>PowerShell Example:</strong></p>
+                <pre><code class="cmd-example language-powershell">$ResourceGroupName = <span class="value">"ScriptedRG"</span>
+$Location = <span class="value">"westus2"</span>
+
+New-AzResourceGroup <span class="param">-Name</span> $ResourceGroupName <span class="param">-Location</span> $Location
+Write-Host <span class="value">"Resource Group $ResourceGroupName created in $Location"</span></code></pre>
+                <ul>
+                    <li><i class="fa-li fas fa-check"></i>Both tools are powerful for automating repetitive tasks.</li>
+                    <li><i class="fa-li fas fa-code"></i>Use variables to store reusable values.</li>
+                    <li><i class="fa-li fas fa-info-circle"></i>Always add error handling and logging in real-world scripts.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- When to Use Which -->
+        <div class="card">
+            <input type="checkbox" id="whentouse-toggle" class="card-toggle">
+            <label for="whentouse-toggle" class="card-header shared-header">
+                <h2><i class="fas fa-balance-scale-right"></i>When to Use Which?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-question"></i>Choosing the Right Tool</h3>
+                 <ul>
+                    <li><i class="fa-li fas fa-terminal"></i><strong>Azure CLI:</strong>
+                        <ul>
+                            <li>Often preferred by those comfortable with Bash/Linux environments.</li>
+                            <li>Concise syntax can be quicker for simple commands.</li>
+                            <li>Excellent JMESPath querying for JSON output.</li>
+                        </ul>
+                    </li>
+                     <li><i class="fa-li fab fa-windows"></i><strong>Azure PowerShell:</strong>
+                        <ul>
+                            <li>Strong in Windows environments, integrates well with existing PowerShell scripts.</li>
+                            <li>Object-oriented nature is powerful for complex scripting and data manipulation.</li>
+                            <li>Mature module ecosystem.</li>
+                        </ul>
+                    </li>
+                    <li><i class="fa-li fas fa-info-circle"></i><strong>Both are cross-platform now.</strong> Choice often comes down to personal preference, existing scripting skills, and team standards.</li>
+                     <li><i class="fa-li fas fa-check"></i>Both can be used in Azure Cloud Shell without local installation.</li>
+                 </ul>
+            </div>
+        </div>
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

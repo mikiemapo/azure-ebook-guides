@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure ExpressRoute Explained (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors for ExpressRoute Guide */
+            --expressroute-color: #005A9E; /* Darker Azure Blue */
+            --circuit-color: #2980B9;
+            --peering-color: #27AE60;
+            --hybrid-color: #E67E22;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6; 
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--expressroute-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-globe-route { font-size: 1.1em; } /* Icon for routing/connectivity */
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--expressroute-color); }
+
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; } 
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+        }
+        .card-header.er-header { background-color: var(--expressroute-color); border-bottom-color: #00437a;}
+        .card-header.er-header:hover { background-color: #00437a;}
+        .card-header.default-summary-header { background-color: var(--azure-blue-dark); border-bottom-color: #004578;}
+        .card-header.default-summary-header:hover { background-color: #004578;}
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+ 
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; 
+            padding: 0 18px; 
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); 
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 3000px; opacity: 1;
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            overflow-y: auto;
+        }
+
+        .card-content h3, .card-content h4 {
+             color: var(--azure-blue-dark); margin-top: 15px; margin-bottom: 10px; font-size: 1.1em;
+             font-weight: 600; padding-bottom: 6px;
+             display: flex; align-items: center; gap: 8px;
+         }
+        .card-content h3 { border-bottom: 1px solid #eee; font-size: 1.15em;}
+        .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+        .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+        .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--expressroute-color); 
+          }
+        
+        .key-point { font-weight: 600; color: var(--expressroute-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em;}
+        .comparison-table th, .comparison-table td { border: 1px solid var(--border-color); padding: 6px 8px; text-align: left; vertical-align: top;}
+        .comparison-table th { background-color: var(--diagram-bg); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-globe-route"></i>Azure ExpressRoute Explained</h1>
+        <p class="instructions">Explore Azure ExpressRoute for dedicated, private connectivity between your on-premises network and Azure. A critical hybrid solution for AZ-104.</p>
+
+        <div class="card-container">
+
+            <!-- Card 1: What is Azure ExpressRoute? -->
+            <div class="card">
+                <input type="checkbox" id="what-is-er-toggle" class="card-toggle" checked> 
+                <label for="what-is-er-toggle" class="card-header er-header">
+                    <h2><i class="fas fa-info-circle"></i>What is Azure ExpressRoute?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--expressroute-color);"><i class="fas fa-bolt"></i>Private, High-Bandwidth Hybrid Connectivity</h3>
+                    <p class="description">Azure ExpressRoute allows you to create private connections between your on-premises infrastructure and Microsoft cloud services (like Azure and Microsoft 365). Unlike site-to-site VPNs, ExpressRoute connections do not go over the public internet.</p>
+
+                    <h4>Core Purpose & Benefits:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-lock"></i><strong>Private Connectivity:</strong> Traffic travels over a private connection, offering enhanced security compared to internet-based VPNs.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i><strong>Higher Bandwidth & Lower Latency:</strong> Designed for high-throughput, mission-critical applications and large data transfers between on-premises and Azure.</li>
+                        <li><i class="fa-li fas fa-cloud-download-alt"></i><strong>Consistent Performance:</strong> Provides more predictable performance and bandwidth than VPNs over the internet.</li>
+                        <li><i class="fa-li fas fa-cogs"></i><strong>Direct to Microsoft Network:</strong> Connections are established directly with Microsoft's global network, typically through an ExpressRoute connectivity provider.</li>
+                        <li><i class="fa-li fas fa-microchip"></i><strong>Layer 3 Connectivity:</strong> Provides Layer 3 (network layer) connectivity between your on-premises network and Microsoft cloud services.</li>
+                    </ul>
+
+                    <div class="diagram">
+                        <div class="diagram-box">
+                           <i class="fas fa-building" style="color:var(--text-dark)"></i>
+                           <strong>Your On-Premises Network</strong>
+                           <span>Router / Edge Device</span>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 10px;">
+                             <i class="fas fa-arrows-alt-h" style="color:var(--expressroute-color)"></i>
+                             <span style="font-size:0.8em; font-weight:bold;">Private Connection (Provider)</span>
+                        </div>
+                         <div class="diagram-box" style="border-color:var(--expressroute-color);">
+                           <i class="fas fa-cloud" style="color:var(--expressroute-color); font-size:1.8em;"></i>
+                           <strong>Microsoft Azure Network</strong>
+                           <span>ExpressRoute Circuit</span>
+                        </div>
+                    </div>
+                    <span class="diagram-label">Traffic flow over a private connection, bypassing the internet.</span>
+                    
+                    <p><strong>AZ-104 Focus:</strong> Understand ExpressRoute as a dedicated, private, and high-performance alternative to VPN for hybrid connectivity. Know its key advantages (security, bandwidth, latency) over internet-based VPNs.</p>
+                </div>
+            </div>
+
+                        <!-- Card 2: ExpressRoute Connectivity Models -->
+            <div class="card">
+                <input type="checkbox" id="er-models-toggle" class="card-toggle">
+                <label for="er-models-toggle" class="card-header" style="background-color: var(--circuit-color);">
+                    <h2><i class="fas fa-plug-fresnel"></i>ExpressRoute Connectivity Models</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--circuit-color);"><i class="fas fa-bezier-curve"></i>How You Connect to Microsoft Cloud</h3>
+                    <p class="description">ExpressRoute supports several ways to connect your on-premises network to the Microsoft cloud, providing flexibility based on your existing infrastructure and connectivity provider.</p>
+
+                    <h4>Models:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-cloud-arrow-down"></i><strong>CloudExchange Colocation:</strong>
+                            <ul>
+                                <li>You colocate your devices at a cloud exchange provider facility.</li>
+                                <li>Your network connects to Microsoft cloud directly through the exchange provider's network.</li>
+                                <li><span class="key-point">Benefits:</span> High scalability, ability to connect to multiple cloud providers.</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top:10px;"><i class="fa-li fas fa-ethernet"></i><strong>Point-to-Point Ethernet Connection:</strong>
+                            <ul>
+                                <li>Your on-premises sites are connected to Microsoft cloud through a dedicated point-to-point Ethernet link from a connectivity provider.</li>
+                                <li><span class="key-point">Benefits:</span> Direct private connection, often for specific high-bandwidth needs.</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top:10px;"><i class="fa-li fas fa-sitemap"></i><strong>Any-to-Any (IPVPN) Networks:</strong>
+                            <ul>
+                                <li>Your wide area network (WAN) is integrated with Microsoft cloud.</li>
+                                <li>Typically uses an IP VPN network (like MPLS VPN) managed by a service provider.</li>
+                                <li><span class="key-point">Benefits:</span> Connect multiple branch offices to Azure easily via your existing WAN.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Be aware of these three high-level connection models and understand that ExpressRoute involves a connectivity provider.</p>
+                </div>
+            </div>
+
+            <!-- Card 3: ExpressRoute Circuits & Peerings -->
+            <div class="card">
+                <input type="checkbox" id="er-circuits-peerings-toggle" class="card-toggle">
+                <label for="er-circuits-peerings-toggle" class="card-header" style="background-color: var(--peering-color);">
+                    <h2><i class="fas fa-plug"></i>ExpressRoute Circuits & Peerings</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--peering-color);"><i class="fas fa-bezier-curve"></i>The Path to Azure Services</h3>
+                    <p class="description">An ExpressRoute circuit is the logical connection between your on-premises network and Microsoft cloud services. It's provisioned by your connectivity provider.</p>
+
+                    <h4><i class="fas fa-circuit"></i>ExpressRoute Circuit:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-link"></i>A logical connection between your on-premises infrastructure and Microsoft cloud services, typically delivered by a connectivity provider.</li>
+                        <li><i class="fa-li fas fa-sync"></i>Each circuit has a unique ID (Service Key) and is composed of two connections for high availability.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i>Defined by a specific <span class="key-point">bandwidth (e.g., 50 Mbps, 1 Gbps, 10 Gbps)</span>.</li>
+                        <li><i class="fa-li fas fa-map-marker-alt"></i>Circuits are provisioned at <span class="key-point">peering locations</span> (e.g., Equinix, Telehouse).</li>
+                    </ul>
+
+                    <h4><i class="fas fa-link"></i>ExpressRoute Peerings:</h4>
+                    <p>Within each circuit, you establish routing paths to different Microsoft services. These are called peerings.</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-cloud"></i><strong>Azure Private Peering:</strong>
+                            <ul>
+                                <li>Connects to your <span class="key-point">Azure Virtual Networks</span> (VNets) through ExpressRoute.</li>
+                                <li>Traffic uses private IP addresses and stays entirely on the Microsoft backbone.</li>
+                                <li>Ideal for hybrid workloads (on-prem servers talking to Azure VMs or private PaaS endpoints).</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top:10px;"><i class="fa-li fab fa-microsoft"></i><strong>Microsoft Peering:</strong>
+                            <ul>
+                                <li>Connects to public Azure services (e.g., Azure Storage, Azure SQL Database - via their public IPs, but traffic still traverses the ExpressRoute private circuit).</li>
+                                <li>Also connects to Microsoft 365 services.</li>
+                                <li><span class="key-point">Important Note:</span> Requires NAT to translate your private IPs to public IPs for Microsoft services.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand the concept of an ExpressRoute circuit as the logical connection. Differentiate between Azure Private Peering (for your VNets) and Microsoft Peering (for public Azure services & M365).</p>
+                </div>
+            </div>
+
+            <!-- Card 4: Differentiator: ExpressRoute vs. VPN Gateway -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="er-vs-vpn-toggle" class="card-toggle">
+                <label for="er-vs-vpn-toggle" class="card-header" style="background-color: var(--hybrid-color); color:var(--text-dark);">
+                    <h2><i class="fas fa-balance-scale-right"></i>Differentiator: ExpressRoute vs. VPN Gateway</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--hybrid-color);"><i class="fas fa-question-circle"></i>Choosing Your Hybrid Connection</h3>
+                    <p class="description">Both ExpressRoute and VPN Gateway connect your on-premises network to Azure, but they cater to very different requirements. This is a common AZ-104 differentiator.</p>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Feature</th>
+                                <th style="color:var(--expressroute-color);">ExpressRoute</th>
+                                <th style="color:var(--vpn-gateway-color);">VPN Gateway</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Connectivity</strong></td>
+                                <td><span class="key-point" style="color:var(--expressroute-color);">Private connection</span> (via connectivity provider). Traffic does NOT traverse the public internet.</td>
+                                <td><span class="key-point" style="color:var(--vpn-gateway-color);">Encrypted tunnel over the public internet</span>.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Bandwidth</strong></td>
+                                <td>High (up to 100 Gbps). Dedicated bandwidth.</td>
+                                <td>Lower (up to 10 Gbps for high-end SKUs). Shared bandwidth, depends on internet connection.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Latency</strong></td>
+                                <td>Lower and more consistent.</td>
+                                <td>Higher and less consistent (due to internet path).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Security</strong></td>
+                                <td>Enhanced (private connection).</td>
+                                <td>Secure (IPsec/SSL encryption), but over public medium.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>SLA</strong></td>
+                                <td>Higher (e.g., 99.9% for ExpressRoute circuit availability).</td>
+                                <td>Typically lower (e.g., 99.9% for single gateway, 99.95% for active-active).</td>
+                            </tr>
+                             <tr>
+                                <td><strong>Cost</strong></td>
+                                <td>Generally higher (due to dedicated circuit and provider costs).</td>
+                                <td>Generally lower (pay for gateway and data transfer).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Typical Use Case</strong></td>
+                                <td>Mission-critical applications, large data transfers, datacenter extension, strict compliance.</td>
+                                <td>Dev/test, small-to-medium production workloads, cost-sensitive, individual client access (P2S).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p class="important-note" style="border-left-color: var(--hybrid-color); background-color: #fcece0;">
+                        <i class="fas fa-lightbulb" style="color:var(--hybrid-color);"></i><strong>Exam Tip:</strong> If the scenario mentions **private connection, high bandwidth, low latency, or strict compliance/datacenter extension**, think **ExpressRoute**. If it mentions **cost-effectiveness, internet, or individual client access**, think **VPN Gateway**.
+                    </p>
+                    <p><strong>AZ-104 Focus:</strong> This is a key differentiator. Understand the trade-offs (cost, performance, security) between these two hybrid connectivity solutions.</p>
+                </div>
+            </div>
+
+            <!-- Card 5: ExpressRoute High Availability & Resiliency -->
+            <div class="card">
+                <input type="checkbox" id="er-ha-toggle" class="card-toggle">
+                <label for="er-ha-toggle" class="card-header er-header">
+                    <h2><i class="fas fa-shield-alt"></i>ExpressRoute High Availability</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--expressroute-color);"><i class="fas fa-clone"></i>Ensuring Continuous Hybrid Connectivity</h3>
+                    <p class="description">ExpressRoute circuits are designed for high availability, with resiliency built in. You can further enhance this with redundant configurations.</p>
+
+                    <h4>Built-in Redundancy:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-network-wired"></i>Every ExpressRoute circuit consists of <span class="key-point">two connections</span> to two different routers at the peering location for redundancy.</li>
+                        <li><i class="fa-li fas fa-map-pin"></i>Microsoft deploys redundant network components for high availability.</li>
+                    </ul>
+
+                    <h4>Enhancing Redundancy:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-building"></i><strong>Zone-Redundant Gateways:</strong> When connecting your VNet to ExpressRoute, deploy a zone-redundant Virtual Network Gateway (ExpressRoute Gateway) across Availability Zones. This protects against datacenter-level failures.</li>
+                        <li><i class="fa-li fas fa-route"></i><strong>ExpressRoute Global Reach:</strong> Connect your on-premises networks across different geographic regions via Microsoft's global network backbone.</li>
+                        <li><i class="fa-li fas fa-cloud-arrow-down"></i><strong>VPN Gateway as a Failover:</strong> As discussed, configure a Site-to-Site VPN connection (over the public internet) as a backup path. If your ExpressRoute circuit fails, traffic can automatically switch to the VPN tunnel. This provides continuous connectivity but with reduced performance compared to ER.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand that ExpressRoute has built-in redundancy (two connections). Know the options for enhancing HA: zone-redundant gateways and using a VPN Gateway as a failover path.</p>
+                </div>
+            </div>
+
+            <!-- Card 6: ExpressRoute: AZ-104 Key Takeaways (Final Summary) -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="er-summary-toggle" class="card-toggle" checked>
+                <label for="er-summary-toggle" class="card-header default-summary-header">
+                    <h2><i class="fas fa-graduation-cap"></i>ExpressRoute: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-blue-dark);"><i class="fas fa-check-double"></i>Exam Essentials & Differentiators</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-network-wired"></i><strong>Private Connection:</strong> ExpressRoute establishes a dedicated, private connection between on-premises and Azure, *bypassing the public internet*.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i><strong>High Performance:</strong> Offers significantly **higher bandwidth** and **lower, more consistent latency** compared to VPNs.</li>
+                        <li><i class="fa-li fas fa-plug"></i><strong>Connectivity Models:</strong> Understand Cloud Exchange Colocation, Point-to-Point, and Any-to-Any (IPVPN) models.</li>
+                        <li><i class="fa-li fas fa-bezier-curve"></i><strong>Circuits & Peerings:</strong> Consists of a **circuit** (logical connection) with **Azure Private Peering** (for VNets) and **Microsoft Peering** (for public Azure services/M365).</li>
+                        <li><i class="fa-li fas fa-balance-scale-left"></i><strong>Key Differentiator vs. VPN Gateway:</strong> Focus on the private vs. internet, higher vs. lower performance, and cost tradeoffs.</li>
+                        <li><i class="fa-li fas fa-shield-alt"></i><strong>High Availability:</strong> Built-in redundancy (two connections). Can be further enhanced with **Zone-Redundant gateways** and using a **VPN Gateway as a failover path**.</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--warning-color); background-color: #fcf8e3;">
+                        <i class="fas fa-exclamation-triangle" style="color:var(--warning-color);"></i><strong>Exam Tip:</strong> If a scenario requires **guaranteed bandwidth, strict compliance, or direct private network extension**, **ExpressRoute** is the answer. If cost is a primary driver or individual remote access is needed, **VPN Gateway** might be appropriate.
+                    </p>
+                </div>
+            </div>
+
+            <!-- More cards for ExpressRoute Guide will be appended here -->
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => { /* CSS :checked handles expand/collapse */ });
+            });
+        });
+    </script>
+</body>
+</html>

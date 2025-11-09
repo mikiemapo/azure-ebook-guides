@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Monitor: Alerting & Management (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #2d2d2d;
+            --code-text-color: #dcdcdc;
+            --code-border: #444;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors for Azure Monitor Guide */
+            --monitor-main-color: #038387; /* Distinct dark green/teal */
+            --alert-type-color: #E67E22; /* Orange for alert types overview */
+            --metric-alert-color: #0078d4; /* Azure blue for Metric Alerts */
+            --log-alert-color: #4CAF50; /* Green for Log Alerts */
+            --activity-alert-color: #9B59B6; /* Purple for Activity Alerts */
+            --components-actions-color: #34495E; /* Dark grey for components & actions */
+            --processing-rules-color: #F39C12; /* Gold for processing rules */
+            --lab-review-color: #6A0DAD; /* Deep purple for lab review/CLI */
+            --vm-insights-color: #2ECC71; /* Another green for VM Insights */
+            --network-monitor-color: #00A1F1; /* Light blue for Network Monitoring */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6; 
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--monitor-main-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-desktop { font-size: 1.1em; } 
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--monitor-main-color); }
+
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; } 
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+        }
+        .card-header.monitor-header { background-color: var(--monitor-main-color); border-bottom-color: #015254;}
+        .card-header.monitor-header:hover { background-color: #015254;}
+        .card-header.default-summary-header { background-color: var(--azure-blue-dark); border-bottom-color: #004578;}
+        .card-header.default-summary-header:hover { background-color: #004578;}
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+ 
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; 
+            padding: 0 18px; 
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); 
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 5000px; /* Increased max-height for comprehensive cards */
+            opacity: 1;
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            overflow-y: auto;
+        }
+
+        .card-content h3, .card-content h4 {
+             color: var(--azure-blue-dark); margin-top: 15px; margin-bottom: 10px; font-size: 1.1em;
+             font-weight: 600; padding-bottom: 6px;
+             display: flex; align-items: center; gap: 8px;
+         }
+        .card-content h3 { border-bottom: 1px solid #eee; font-size: 1.15em; margin-top: 0;}
+        .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+        .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+        .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--monitor-main-color); 
+          }
+        
+        .key-point { font-weight: 600; color: var(--monitor-main-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em;}
+        .comparison-table th, .comparison-table td { border: 1px solid var(--border-color); padding: 6px 8px; text-align: left; vertical-align: top;}
+        .comparison-table th { background-color: var(--diagram-bg); font-weight: 600; }
+        .mnemonic { 
+            background-color: #fff3cd; 
+            border-left: 5px solid #ffc107; 
+            padding: 10px 15px; 
+            margin: 15px 0; 
+            font-size: 1em; 
+            font-weight: bold;
+            color: #856404;
+            text-align: center;
+        }
+        .mnemonic i { margin-right: 8px; color: #ffc107;}
+        .important-note { background-color: #e7f3e7; border-left: 4px solid var(--monitor-main-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--monitor-main-color); margin-right: 8px; }
+
+        /* Custom colors for list items/icons for specific sections */
+        .metric-alert-card li i.fa-li { color: var(--metric-alert-color); }
+        .log-alert-card li i.fa-li { color: var(--log-alert-color); }
+        .activity-alert-card li i.fa-li { color: var(--activity-alert-color); }
+        .vm-insights-card li i.fa-li { color: var(--vm-insights-color); }
+        .network-monitor-card li i.fa-li { color: var(--network-monitor-color); }
+
+        .cli-code-block {
+            background-color: var(--code-bg); 
+            border: 1px solid var(--code-border);
+            padding: 15px; 
+            border-radius: 4px; 
+            overflow-x: auto; 
+            font-size: 0.9em; 
+            color: var(--code-text-color); 
+            margin-top: 10px;
+            white-space: pre-wrap; /* Allows long lines to wrap */
+            word-wrap: break-word; /* Breaks long words if needed */
+        }
+        .cli-code-block code { 
+            background: none; 
+            border: none; 
+            padding: 0; 
+            font-size: 1em; 
+            color: var(--code-text-color); 
+        }
+        .cli-code-block .comment { color: #6a9955; font-style: italic; }
+        .cli-code-block .param { color: #4ec9b0; }
+        .cli-code-block .value { color: #ce9178; }
+
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-desktop"></i>Azure Monitor: Alerting & Management</h1>
+        <p class="instructions">Master Azure Monitor's capabilities for collecting telemetry, detecting issues with various alert types, and automating responses. Essential for AZ-104.</p>
+
+        <div class="card-container">
+
+            <!-- Card 1: What is Azure Monitor? -->
+            <div class="card">
+                <input type="checkbox" id="what-is-monitor-toggle" class="card-toggle" checked> 
+                <label for="what-is-monitor-toggle" class="card-header monitor-header">
+                    <h2><i class="fas fa-chart-bar"></i>What is Azure Monitor?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--monitor-main-color);"><i class="fas fa-cloud"></i>Comprehensive Telemetry for Cloud & On-Premises</h3>
+                    <p class="description">Azure Monitor is a native Azure service designed for collecting, analyzing, and acting on telemetry data from your cloud and on-premises environments. It helps you understand the performance and availability of your applications and infrastructure.</p>
+
+                    <h4>Key Features & Availability:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-check-circle"></i><strong>Immediate Availability:</strong> Azure Monitor is immediately available when you create an Azure subscription.</li>
+                        <li><i class="fa-li fas fa-stream"></i><strong>Built-in Data:</strong>
+                            <ul>
+                                <li><span class="key-point">Activity Log:</span> Automatically collects events about activity in your Azure subscription (e.g., VM creation, deletions).</li>
+                                <li><span class="key-point">Platform Metrics:</span> Automatically collected for any Azure resources you create, providing numerical time-sensitive values (e.g., CPU, memory usage).</li>
+                                <li>Metrics explorer is available to analyze this data right out of the box.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-cogs"></i><strong>Requires Configuration:</strong>
+                            <ul>
+                                <li><span class="key-point">Diagnostic Settings:</span> Needed to collect detailed logs and metrics from resources and send them to destinations like Log Analytics or Storage Accounts.</li>
+                                <li><span class="key-point">Alerts:</span> Must be configured to notify you when important conditions are met (e.g., high CPU, errors).</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-tools"></i><strong>Access & Configuration Methods:</strong>
+                            <ul>
+                                <li>Azure Portal (via the central "Monitor" menu or "Monitoring" section within specific service menus).</li>
+                                <li>Azure CLI, PowerShell, and REST API for automation and scripting.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand Azure Monitor as the central monitoring service. Differentiate between features available out-of-the-box (Activity Log, Platform Metrics) and those requiring configuration (Diagnostic Settings, Alerts).</p>
+                </div>
+            </div>
+
+            <!-- Card 2: Azure Monitor Data & Alert Signal Types -->
+            <div class="card">
+                <input type="checkbox" id="monitor-data-types-toggle" class="card-toggle">
+                <label for="monitor-data-types-toggle" class="card-header" style="background-color: var(--alert-type-color);">
+                    <h2><i class="fas fa-chart-pie"></i>Data & Alert Signal Types</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--alert-type-color);"><i class="fas fa-signal"></i>Signals Driving Your Alerts</h3>
+                    <p class="description">Azure Monitor collects various types of telemetry. The nature of the resource dictates which data types are available for monitoring and alerting.</p>
+
+                    <h4>Data Types in Azure Monitor:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-tachometer-alt" style="color:var(--metric-alert-color);"></i><strong>Metrics:</strong>
+                            <ul>
+                                <li>Numerical, time-sensitive values representing an aspect of the target resource.</li>
+                                <li>Focus: <span class="key-point">Real-time performance</span> (e.g., CPU percentage, network in/out).</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-file-alt" style="color:var(--log-alert-color);"></i><strong>Logs:</strong>
+                            <ul>
+                                <li>Content data held in structured, record-based log files.</li>
+                                <li>Focus: <span class="key-point">Historical trends and patterns</span> (e.g., web server access logs, application errors). Requires Log Analytics Workspace.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-history" style="color:var(--activity-alert-color);"></i><strong>Activity Log:</strong>
+                            <ul>
+                                <li>Records events that occur in the Azure subscription, like resource creation, deletion, or configuration changes.</li>
+                                <li>Focus: <span class="key-point">Changes to resources or service health events</span>.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4>Primary Alert Types (based on Signal Type):</h4>
+                    <p>Azure Monitor supports three main signal types that can be used to monitor your environment and trigger alerts:</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-bell" style="color:var(--metric-alert-color);"></i><strong>Metric Alerts:</strong> Trigger based on <span class="key-point">real-time numeric thresholds</span> (e.g., CPU > 90%, disk I/O exceeding a limit).</li>
+                        <li><i class="fa-li fas fa-search" style="color:var(--log-alert-color);"></i><strong>Log Search Alerts:</strong> Trigger based on <span class="key-point">queries over log data</span> stored in Log Analytics (e.g., more than 500 HTTP 404 errors in the past hour, repeated failed login attempts).</li>
+                        <li><i class="fa-li fas fa-clipboard-list" style="color:var(--activity-alert-color);"></i><strong>Activity Log Alerts:</strong> Trigger on <span class="key-point">Azure resource events</span> recorded in the Activity Log (e.g., a Virtual Machine is deleted, a new role assignment occurs).</li>
+                    </ul>
+                    <div class="mnemonic">
+                        <i class="fas fa-brain"></i>
+                        Metric = Real-time threshold (CPU, memory)<br>
+                        Log = Trends/patterns from logs (500 errors, login attempts)<br>
+                        Activity Log = Change detection (resource events)
+                    </div>
+                    <p><strong>AZ-104 Focus:</strong> Be able to differentiate the three main alert types based on their underlying data source and their best use cases (real-time, historical analysis, or resource changes).</p>
+                </div>
+            </div>
+
+            <!-- Card 3: Metric Alerts (Deep Dive) -->
+            <div class="card metric-alert-card">
+                <input type="checkbox" id="metric-alerts-toggle" class="card-toggle">
+                <label for="metric-alerts-toggle" class="card-header" style="background-color: var(--metric-alert-color);">
+                    <h2><i class="fas fa-chart-line"></i>Metric Alerts</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--metric-alert-color);"><i class="fas fa-bell"></i>Monitoring Real-time Numerical Data</h3>
+                    <p class="description">Metric alerts are used for regular threshold monitoring of Azure resources. They send notifications when predefined numeric conditions are met on metric values.</p>
+
+                    <h4>Condition Types:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-cogs"></i><strong>Static Thresholds:</strong>
+                            <ul>
+                                <li>You define a <span class="key-point">fixed threshold</span> (e.g., "if CPU > 85%").</li>
+                                <li>The alert triggers when the metric value crosses this static threshold for a specified duration.</li>
+                                <li>Example: "if CPU > 85% for 10 minutes, trigger."</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-robot"></i><strong>Dynamic Thresholds:</strong>
+                            <ul>
+                                <li>Uses <span class="key-point">machine learning</span> to adapt thresholds based on historical metric behavior.</li>
+                                <li>No fixed threshold; the system learns normal patterns and alerts on significant deviations.</li>
+                                <li>Parameters like <span class="key-point">"look-back period"</span> (how many previous periods to evaluate) and <span class="key-point">"number of violations"</span> (how many deviations before firing) define the sensitivity.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4>Scope & Dimensions:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-layer-group"></i><strong>Dimensions:</strong> Allow you to monitor data from <span class="key-point">multiple target instances</span> with a single metric alert rule.
+                            <ul>
+                                <li>Example: Monitor CPU utilization for all VMs in a group by using the asterisk (*) wildcard, or by naming specific instances.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-arrows-alt-v"></i><strong>Scaling Metric Alerts:</strong> Apply one metric alert rule across many resources (e.g., all virtual machines in a subscription or resource group). A single alert rule can monitor resources within one Azure region.</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--metric-alert-color); background-color: #e6f2ff;">
+                        <i class="fas fa-info-circle" style="color:var(--metric-alert-color);"></i><strong>Use Cases:</strong> Ideal for real-time performance monitoring like high CPU usage, low disk space, high network latency, or exceeding request rates on a web app.
+                    </p>
+                    <p><strong>AZ-104 Focus:</strong> Differentiate static vs. dynamic thresholds. Understand how dimensions enable monitoring multiple instances with a single rule. Recognize metric alerts as the primary choice for real-time numeric performance issues.</p>
+                </div>
+            </div>
+
+            <!-- Card 4: Log Search Alerts (Deep Dive) -->
+            <div class="card log-alert-card">
+                <input type="checkbox" id="log-search-alerts-toggle" class="card-toggle">
+                <label for="log-search-alerts-toggle" class="card-header" style="background-color: var(--log-alert-color);">
+                    <h2><i class="fas fa-scroll"></i>Log Search Alerts</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--log-alert-color);"><i class="fas fa-magnifying-glass"></i>Detecting Patterns & Trends in Log Data</h3>
+                    <p class="description">Log search alerts trigger based on Kusto Query Language (KQL) queries over log data stored in a Log Analytics Workspace. They are ideal for detecting historical trends or specific patterns in your application and infrastructure logs.</p>
+
+                    <h4>Use Cases:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-history"></i>Detecting patterns in <span class="key-point">historical data</span>, such as repeated 500 errors from a web server.</li>
+                        <li><i class="fa-li fas fa-user-times"></i>Spotting security events like multiple failed login attempts from a single IP.</li>
+                        <li><i class="fa-li fas fa-bug"></i>Analyzing complex application errors that appear across multiple log entries.</li>
+                    </ul>
+
+                    <h4>Rule Components:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-code"></i><strong>Log Query:</strong> The KQL query that runs periodically.</li>
+                        <li><i class="fa-li fas fa-clock"></i><strong>Time Period:</strong> The time range over which the query evaluates data (e.g., "in the last 30 minutes").</li>
+                        <li><i class="fa-li fas fa-redo"></i><strong>Frequency:</strong> How often the log query should run (e.g., "every 5 minutes").</li>
+                        <li><i class="fa-li fas fa-bullseye"></i><strong>Threshold:</strong> The trigger point for an alert to be created.</li>
+                    </ul>
+
+                    <h4>Types of Log Search Alerts:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-list-ol"></i><strong>Number of Records:</strong> Triggers if the query returns a certain number of records within the time period (e.g., "if query returns > 5 failed logins").</li>
+                        <li><i class="fa-li fas fa-calculator"></i><strong>Metric Measurement:</strong> Aggregates values from the query results and triggers based on a numeric threshold (e.g., "if average CPU usage (from logs) > 80%"). This type can also use:
+                            <ul>
+                                <li><span class="key-point">Aggregate Function:</span> Calculation (count, average).</li>
+                                <li><span class="key-point">Group Field:</span> How results are grouped (e.g., by computer name).</li>
+                                <li><span class="key-point">Interval:</span> Time aggregation window.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4>Stateful vs. Stateless:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-toggle-off"></i><strong>Stateless:</strong> Alerts fire each time the condition is met, even if fired previously (can lead to alert spam if not handled carefully).</li>
+                        <li><i class="fa-li fas fa-toggle-on"></i><strong>Stateful:</strong> Alerts fire when the conditions are met but will not fire again or trigger more actions until the conditions are resolved.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand log search alerts are for historical data analysis and patterns. Know the key rule components (query, time period, frequency, threshold). Differentiate between "Number of Records" and "Metric Measurement" types.</p>
+                </div>
+            </div>
+
+            <!-- Card 5: Activity Log Alerts (Deep Dive) -->
+            <div class="card activity-alert-card">
+                <input type="checkbox" id="activity-log-alerts-toggle" class="card-toggle">
+                <label for="activity-log-alerts-toggle" class="card-header" style="background-color: var(--activity-alert-color);">
+                    <h2><i class="fas fa-user-clock"></i>Activity Log Alerts</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--activity-alert-color);"><i class="fas fa-bell"></i>Detecting Resource Changes & Service Health Events</h3>
+                    <p class="description">Activity log alerts notify users of specific events within an Azure subscription, such as resource changes or service health issues. They are based on events recorded in the Azure Activity Log.</p>
+
+                    <h4>Purpose & Alert Types:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-undo"></i><strong>Purpose:</strong> Detect <span class="key-point">changes to Azure resources</span> or important service health notifications.</li>
+                        <li><i class="fa-li fas fa-cogs"></i><strong>Specific Operations:</strong> Triggers when an Azure resource undergoes a specific operation.
+                            <ul>
+                                <li>Example: A VM is created, deleted, powered off, or a new role is assigned to a user.</li>
+                                <li>Scope can be subscription, resource group, or individual resource level.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-medkit"></i><strong>Service Health Events:</strong> Notifies about incidents, planned maintenance, health advisories, or security advisories impacting Azure services in a particular region or globally.</li>
+                    </ul>
+
+                    <h4>Trigger Conditions:</h4>
+                    <p>You can configure alerts based on various properties of Activity Log events:</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-tag"></i><strong>Category:</strong> (e.g., Administrative, Service Health, Autoscale, Policy, Recommendation).</li>
+                        <li><i class="fa-li fas fa-sitemap"></i><strong>Resource Type:</strong> (e.g., `Microsoft.Compute/virtualMachines`).</li>
+                        <li><i class="fa-li fas fa-folder-open"></i><strong>Operation Name:</strong> (e.g., `Microsoft.Compute/virtualMachines/delete`).</li>
+                        <li><i class="fa-li fas fa-exclamation-circle"></i><strong>Level:</strong> (e.g., Verbose, Informational, Warning, Error, Critical).</li>
+                        <li><i class="fa-li fas fa-check"></i><strong>Status:</strong> (e.g., Started, Failed, Succeeded).</li>
+                        <li><i class="fa-li fas fa-user"></i><strong>Event Initiated By:</strong> (e.g., the email address or Microsoft Entra ID of the user who initiated the event).</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--activity-alert-color); background-color: #f7ebfc;">
+                        <i class="fas fa-info-circle" style="color:var(--activity-alert-color);"></i><strong>Key Point:</strong> Activity log alerts monitor events only in the subscription where they are created. Service health alerts are typically for a whole region, so no specific resource selection is needed for them.
+                    </p>
+                    <p><strong>AZ-104 Focus:</strong> Understand Activity Log alerts are for monitoring resource changes and service health. Know key trigger conditions like operation name, resource type, and event initiator. Differentiate them from metric and log alerts.</p>
+                </div>
+            </div>
+
+            <!-- Card 6: Alert Rule Components & Management -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="alert-rule-components-toggle" class="card-toggle">
+                <label for="alert-rule-components-toggle" class="card-header" style="background-color: var(--components-actions-color);">
+                    <h2><i class="fas fa-list-alt"></i>Alert Rule Components & Management</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--components-actions-color);"><i class="fas fa-tasks"></i>The Anatomy of an Alert Rule</h3>
+                    <p class="description">Every alert or notification in Azure Monitor is the product of an alert rule. The composition of an alert rule remains consistent across all alert types.</p>
+
+                    <h4>Core Alert Rule Components:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-server"></i><strong>Resource (Scope):</strong> The target resource(s) being monitored by the alert rule (e.g., a specific VM, a resource group, a subscription). You can assign multiple target resources to a single alert rule. The resource type defines the available signal types.</li>
+                        <li><i class="fa-li fas fa-check-square"></i><strong>Condition:</strong>
+                            <ul>
+                                <li>The <span class="key-point">signal type</span> used to assess the rule (Metric, Log, or Activity Log).</li>
+                                <li>The <span class="key-point">alert logic</span> applied to the data supplied by the signal type (e.g., `CPU > 80%`, `query results > 5`).</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-bolt"></i><strong>Actions:</strong> What happens when the alert fires. Typically points to an <span class="key-point">Action Group</span>.</li>
+                        <li><i class="fa-li fas fa-info-circle"></i><strong>Alert Details:</strong>
+                            <ul>
+                                <li><span class="key-point">Alert Name + Description:</span> Define the alert's purpose.</li>
+                                <li><span class="key-point">Severity Level:</span> Indicates the criticality of the alert. (0: Critical, 1: Error, 2: Warning, 3: Informational, 4: Verbose).</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4>Managing Alert Rules:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-play-circle"></i>Alert rules can be <span class="key-point">enabled or disabled</span> as needed (e.g., disable alerts during a planned deployment).</li>
+                        <li><i class="fa-li fas fa-desktop"></i>The <span class="key-point">Alerts summary view</span> in the Azure portal provides a central place to see all fired alerts, filter them by subscription, severity, condition, or time range.</li>
+                    </ul>
+
+                    <h4>Alert Condition States:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-fire"></i>When an alert triggers, its monitor condition is set to <span class="key-point">"Fired."</span></li>
+                        <li><i class="fa-li fas fa-thumbs-up"></i>After the underlying condition that caused the alert to fire clears, the monitor condition is set to <span class="key-point">"Resolved."</span></li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Know the five core components of any alert rule. Understand the five severity levels. Be familiar with managing alert rules (enable/disable) and the "Fired" vs. "Resolved" states.</p>
+                </div>
+            </div>
+
+            <!-- Card 7: Action Groups -->
+            <div class="card">
+                <input type="checkbox" id="action-groups-toggle" class="card-toggle">
+                <label for="action-groups-toggle" class="card-header" style="background-color: var(--components-actions-color);">
+                    <h2><i class="fas fa-users-gear"></i>Action Groups</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--components-actions-color);"><i class="fas fa-hand-fist"></i>What Happens When an Alert Fires</h3>
+                    <p class="description">An Action Group is a reusable collection of notification preferences and actions that can be triggered by any Azure Monitor alert (Metric, Log Search, Activity Log, Azure Service Health, Azure Advisor alerts).</p>
+
+                    <h4>Definition & Reusability:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-bullseye"></i>A <span class="key-point">reusable group</span> of recipients and actions.</li>
+                        <li><i class="fa-li fas fa-recycle"></i>Once created, an action group can be <span class="key-point">reused across multiple alert rules</span>, simplifying management.</li>
+                        <li><i class="fa-li fas fa-plus-circle"></i>You can add an action group to an alert rule during its creation or by editing an existing alert.</li>
+                    </ul>
+
+                    <h4>Examples of Actions:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-envelope"></i><strong>Notifications:</strong> Send an email, SMS message, push notification to Azure mobile app, or make a voice call.</li>
+                        <li><i class="fa-li fas fa-terminal"></i><strong>Automation:</strong> Trigger a Logic App, Azure Function, Webhook, Azure Automation Runbook (e.g., to restart a VM or scale a VM).</li>
+                        <li><i class="fa-li fas fa-ticket-alt"></i><strong>Integration:</strong> Create an IT Service Management (ITSM) ticket.</li>
+                    </ul>
+                    <div class="mnemonic">
+                        <i class="fas fa-brain"></i>
+                        Action Group = What happens next
+                    </div>
+                    <p><strong>AZ-104 Focus:</strong> Understand Action Groups as reusable sets of notifications and automation actions. Know common examples of actions (email, webhook, runbook, Logic App).</p>
+                </div>
+            </div>
+
+            <!-- Card 8: Alert Processing Rules -->
+            <div class="card">
+                <input type="checkbox" id="alert-processing-rules-toggle" class="card-toggle">
+                <label for="alert-processing-rules-toggle" class="card-header" style="background-color: var(--processing-rules-color); color:var(--text-dark);">
+                    <h2><i class="fas fa-sliders-h"></i>Alert Processing Rules</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--processing-rules-color);"><i class="fas fa-ban"></i>Modifying Alert Behavior at Scale</h3>
+                    <p class="description">Alert Processing Rules allow you to modify the normal behavior of alerts *after* they are fired. They are used to add or suppress action groups, enabling alert management at scale.</p>
+
+                    <h4>Purpose & Use Cases:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-eye-slash"></i><strong>Suppress Notifications:</strong> The most common use case is to suppress notifications during <span class="key-point">planned maintenance windows</span> to prevent alert storms.</li>
+                        <li><i class="fa-li fas fa-plus-square"></i><strong>Add Actions:</strong> Add an action group to alerts that match certain criteria (e.g., send all critical alerts for a specific application to a dedicated paging system).</li>
+                        <li><i class="fa-li fas fa-filter"></i><strong>Apply Filters:</strong> Apply rules to specific resource scopes (single resource, resource group, entire subscription) or filter by alert properties (e.g., apply only to alerts with Severity 0).</li>
+                        <li><i class="fa-li fas fa-calendar-alt"></i><strong>Scheduling:</strong> Rules can be configured with a one-time or recurring schedule (e.g., suppress notifications every Sunday 2 AM - 4 AM for database maintenance). By default, rules are always active.</li>
+                    </ul>
+                    <div class="mnemonic">
+                        <i class="fas fa-brain"></i>
+                        Processing Rule = Override behavior (suppress, reroute)
+                    </div>
+                    <p class="important-note" style="border-left-color: var(--processing-rules-color); background-color: #fef7ec;">
+                        <i class="fas fa-info-circle" style="color:var(--processing-rules-color);"></i><strong>Key Distinction:</strong> Alert rules *trigger* alerts when conditions are met. Alert processing rules *modify* those alerts as they are being fired.
+                    </p>
+                    <p><strong>AZ-104 Focus:</strong> Understand Alert Processing Rules' primary function (suppression during maintenance, adding/removing actions at scale). Know they operate *after* an alert is fired and support scheduling/filters.</p>
+                </div>
+            </div>
+
+            <!-- Card 9: VM Insights (Azure Monitor) -->
+            <div class="card vm-insights-card">
+                <input type="checkbox" id="vm-insights-toggle" class="card-toggle">
+                <label for="vm-insights-toggle" class="card-header" style="background-color: var(--vm-insights-color);">
+                    <h2><i class="fas fa-microchip"></i>VM Insights (Azure Monitor)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--vm-insights-color);"><i class="fas fa-server"></i>Deeper Monitoring for Virtual Machines</h3>
+                    <p class="description">VM Insights is a feature of Azure Monitor that provides a comprehensive view of the performance and health of your Azure virtual machines (VMs) and Virtual Machine Scale Sets (VMSS). It works across Azure, hybrid environments, and even other clouds.</p>
+
+                    <h4>How VM Insights Works:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-cloud-download-alt"></i><strong>Agent Deployment:</strong> Deploys the <span class="key-point">Azure Monitor Agent (AMA)</span> to your VMs. Optionally, the <span class="key-point">Dependency Agent</span> is deployed to enable the "Map" view (showing process and network dependencies).</li>
+                        <li><i class="fa-li fas fa-database"></i><strong>Data Collection Rules (DCRs):</strong> Uses Data Collection Rules, which are tied to a <span class="key-point">Log Analytics workspace</span>, to define what performance data and logs are collected from the VMs.</li>
+                    </ul>
+
+                    <h4>What You Get (Key Insights):</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-chart-area"></i><strong>Prebuilt Performance Charts:</strong> Visualizations for key performance counters like CPU utilization, available memory, logical disk performance, and network I/O. Helps quickly spot anomalies and bottlenecks.</li>
+                        <li><i class="fa-li fas fa-project-diagram"></i><strong>Service Map & Dependency Visuals:</strong> Provides a visual map of interconnected processes and active network connections on and between your VMs. Crucial for understanding application dependencies and troubleshooting connectivity.</li>
+                        <li><i class="fa-li fas fa-laptop-code"></i><strong>Guest OS Health:</strong> Monitors the health of the guest operating system and the processes running within it.</li>
+                    </ul>
+
+                    <h4>Enablement:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-portal"></i>From the Azure portal, navigate to <span class="key-point">"Monitor" > "Virtual Machines"</span>.</li>
+                        <li><i class="fa-li fas fa-toggle-on"></i>You can then enable monitoring directly for "Not Monitored" VMs.</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--vm-insights-color); background-color: #e7f3e7;">
+                        <i class="fas fa-info-circle" style="color:var(--vm-insights-color);"></i><strong>AZ-104 Relevance:</strong> Knowing VM Insights is essential for deeper VM monitoring capabilities, configuring performance alerts, and understanding application dependencies through the Service Map. Exam expects awareness of enabling it, agent deployment, and the types of insights it provides.
+                    </p>
+                    <p><strong>AZ-104 Focus:</strong> Understand VM Insights as a specialized Azure Monitor feature for VMs. Know it uses AMA/Dependency Agent and DCRs tied to Log Analytics. Be familiar with its benefits (performance charts, Service Map).</p>
+                </div>
+            </div>
+
+            <!-- Card 10: Network Monitoring & Troubleshooting (Network Watcher Tools) -->
+            <div class="card network-monitor-card">
+                <input type="checkbox" id="network-monitoring-toggle" class="card-toggle">
+                <label for="network-monitoring-toggle" class="card-header" style="background-color: var(--network-monitor-color);">
+                    <h2><i class="fas fa-network-wired"></i>Network Monitoring & Troubleshooting</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--network-monitor-color);"><i class="fas fa-search-plus"></i>Diagnosing Network Health & Connectivity</h3>
+                    <p class="description">Azure provides tools within Azure Monitor (Network Insights) and dedicated Network Watcher services to help you monitor, diagnose, and troubleshoot network performance and connectivity issues across your Azure infrastructure.</p>
+
+                    <h4><i class="fas fa-chart-line"></i>Network Insights (in Monitor Blade):</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i>Shows high-level health and metrics for various networking resources.</li>
+                        <li><i class="fa-li fas fa-filter"></i>Filters by resource type (NICs, NSGs, Route Tables, Public IPs, Load Balancers, Virtual Networks) and health state (Available, Degraded, Unavailable, Unknown).</li>
+                        <li><i class="fa-li fas fa-signal"></i>Displays connectivity metrics, especially for hybrid VMs if the Azure Monitor agent is installed.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-tools"></i>Network Watcher Tools (Essential for AZ-104):</h4>
+                    <p>Network Watcher offers a suite of diagnostic and visualization tools for your Azure network.</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-magnifying-glass"></i><strong>1. IP Flow Verify:</strong>
+                            <ul>
+                                <li>Tests if a TCP or UDP packet is <span class="key-point">allowed or denied by NSG rules</span>.</li>
+                                <li>Crucially, it shows the <span class="key-point">blocking rule</span> and its name if traffic is denied.</li>
+                                <li>Used for quick checks of network access configuration.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-plug"></i><strong>2. Connection Troubleshoot:</strong>
+                            <ul>
+                                <li>Checks end-to-end connectivity (TCP/ICMP) between a source VM and a destination (another VM, IP address, FQDN, or URI).</li>
+                                <li>Diagnoses the root cause of connection failures (e.g., NSG, User Defined Routes (UDRs), firewall, DNS resolution issues).</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-route"></i><strong>3. Next Hop:</strong>
+                            <ul>
+                                <li>Reveals the next hop IP address and type for a packet destined for a specific IP address from a given VM.</li>
+                                <li>Helps determine the routing path (VNet local, UDR, Internet, Virtual Appliance).</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-shield-alt"></i><strong>4. Effective Security Rules:</strong>
+                            <ul>
+                                <li>Aggregates all NSG rules (from both the NIC and subnet NSGs) applied to a specific network interface.</li>
+                                <li>Shows the <span class="key-point">actual security posture</span> for a VM, helping to understand effective allow/deny rules.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-file-invoice"></i><strong>5. Packet Capture:</strong>
+                            <ul>
+                                <li>Captures raw network packets from a VM's Network Interface (NIC).</li>
+                                <li>The captured data is downloadable as a <span class="key-point">.pcap file</span> for deep analysis with tools like Wireshark.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-dungeon"></i><strong>6. VPN Troubleshoot:</strong>
+                            <ul>
+                                <li>Diagnoses common VPN Gateway errors and checks tunnel health.</li>
+                                <li>Provides metrics like packet drops and bandwidth usage for VPN connections.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-sitemap"></i><strong>7. Topology:</strong>
+                            <ul>
+                                <li>Generates a visual network diagram.</li>
+                                <li>Shows the interconnections between resources like VNets, subnets, NSGs, NICs, VMs, and VNet peering, aiding visual understanding of your network layout.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--network-monitor-color); background-color: #e6f2ff;">
+                        <i class="fas fa-info-circle" style="color:var(--network-monitor-color);"></i><strong>AZ-104 Relevance:</strong> Network Watcher tools are crucial. IP Flow Verify and Connection Troubleshoot are frequently tested for diagnosing connectivity issues. Understanding all listed tools and their primary use cases is important for the exam.
+                    </p>
+                    <p><strong>AZ-104 Focus:</strong> Recognize Network Watcher as the go-to service for network diagnostics. Know the purpose of each key tool, especially IP Flow Verify, Connection Troubleshoot, Next Hop, and Effective Security Rules.</p>
+                </div>
+            </div>
+
+            <!-- Card 11: CLI Example: Create VM + Metric Alert -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="cli-example-toggle" class="card-toggle">
+                <label for="cli-example-toggle" class="card-header" style="background-color: var(--lab-review-color);">
+                    <h2><i class="fas fa-terminal"></i>CLI Example: Create VM + Metric Alert (CPU > 80%)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--lab-review-color);"><i class="fas fa-vial"></i>Hands-on: Stressing a VM & Alerting on CPU</h3>
+                    <p class="description">This example demonstrates how to create a Linux VM that stresses its CPU, and then set up a metric alert using Azure CLI to notify you when CPU usage exceeds a threshold.</p>
+
+                    <h4>1. Create cloud-init.txt for VM Stressing:</h4>
+                    <p>This script installs `stress` and runs it to generate high CPU utilization.</p>
+                    <div class="cli-code-block"><code>cat <<EOF > cloud-init.txt
+#cloud-config
+package_upgrade: true
+packages:
+- stress
+runcmd:
+- sudo stress --cpu 1
+EOF</code></div>
+
+                    <h4>2. Create the Linux VM:</h4>
+                    <p>Deploys an Ubuntu VM and attaches the `cloud-init.txt` script.</p>
+                    <div class="cli-code-block"><code>az vm create \
+  --resource-group <span class="value">"YOUR_RESOURCE_GROUP"</span> \
+  --name <span class="value">vm1</span> \
+  --location <span class="value">eastus</span> \
+  --image <span class="value">Ubuntu2204</span> \
+  --custom-data <span class="value">cloud-init.txt</span> \
+  --generate-ssh-keys</code></div>
+
+                    <h4>3. Obtain VM Resource ID:</h4>
+                    <p>The alert command requires the full Azure Resource ID of the VM.</p>
+                    <div class="cli-code-block"><code>VMID=$(az vm show --resource-group <span class="value">"YOUR_RESOURCE_GROUP"</span> --name <span class="value">vm1</span> --query id -o tsv)</code></div>
+
+                    <h4>4. Create a Metric Alert for CPU Usage:</h4>
+                    <p>This command creates a metric alert named "Cpu80PercentAlert" that triggers when the VM's CPU percentage (max aggregation) exceeds 80% for at least 1 minute, evaluated every 1 minute, with a severity of 3 (Informational).</p>
+                    <div class="cli-code-block"><code>az monitor metrics alert create \
+  -n <span class="value">"Cpu80PercentAlert"</span> \
+  --resource-group <span class="value">"YOUR_RESOURCE_GROUP"</span> \
+  --scopes <span class="value">$VMID</span> \
+  --condition <span class="value">"max percentage CPU > 80"</span> \
+  --description <span class="value">"Virtual machine is running at or greater than 80% CPU utilization"</span> \
+  --evaluation-frequency <span class="value">1m</span> \
+  --window-size <span class="value">1m</span> \
+  --severity <span class="value">3</span></code></div>
+                    
+                    <h4>5. View Alerts in Azure Monitor:</h4>
+                    <p>After a few minutes, as the VM's CPU gets stressed, you should see the alert fire in the Azure portal:</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-mouse-pointer"></i>Navigate to <span class="key-point">Monitor > Alerts</span> in the Azure portal.</li>
+                        <li><i class="fa-li fas fa-eye"></i>You will see "Cpu80PercentAlert" (and potentially a "Cpu90PercentAlert" if you configured that in the portal as per the full lab).</li>
+                        <li><i class="fa-li fas fa-chart-line"></i>The alert condition will change from "New" to "<span class="key-point">Fired</span>" once the CPU threshold is breached.</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--lab-review-color); background-color: #f7ebfc;">
+                        <i class="fas fa-exclamation-triangle" style="color:var(--lab-review-color);"></i><strong>Note:</strong> It can take up to 10 minutes for a new metric alert rule to become active and for the alert to show up after the condition is met.
+                    </p>
+                    <p><strong>AZ-104 Focus:</strong> Practice translating alert requirements into CLI commands. Understand the parameters for `az monitor metrics alert create` (name, scopes, condition, description, evaluation frequency, window size, severity).</p>
+                </div>
+            </div>
+
+            <!-- Card 11: Azure Monitor: AZ-104 Key Takeaways -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="monitor-summary-toggle" class="card-toggle" checked>
+                <label for="monitor-summary-toggle" class="card-header default-summary-header">
+                    <h2><i class="fas fa-graduation-cap"></i>Azure Monitor: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-blue-dark);"><i class="fas fa-check-double"></i>Exam Essentials & Alerting Strategy</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-chart-bar" style="color:var(--monitor-main-color);"></i><strong>Azure Monitor Basics:</strong> It's Azure's native monitoring service. Activity Log & Platform Metrics are built-in; Diagnostic Settings & Alerts require configuration.</li>
+                        <li><i class="fa-li fas fa-bell" style="color:var(--alert-type-color);"></i><strong>Three Main Alert Types & Use Cases:</strong>
+                            <ul>
+                                <li><span class="key-point">Metric Alerts:</span> Real-time numerical data (CPU, memory). Use static or dynamic thresholds.</li>
+                                <li><span class="key-point">Log Search Alerts:</span> Historical trends/patterns in log data (500 errors, failed logins). Requires KQL queries.</li>
+                                <li><span class="key-point">Activity Log Alerts:</span> Changes to Azure resources or service health events (VM deleted, new role assignment).</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-list-alt" style="color:var(--components-actions-color);"></i><strong>Alert Rule Components:</strong> Resource (scope), Condition (signal type + logic), Actions (Action Group), Severity (0-4), Name/Description.</li>
+                        <li><i class="fa-li fas fa-users-gear" style="color:var(--components-actions-color);"></i><strong>Action Groups:</strong> Reusable collection of notifications (email, SMS, voice) and actions (Logic App, Webhook, Runbook) to be triggered by an alert. Remember: <span class="key-point">"Action Group = What happens next."</span></li>
+                        <li><i class="fa-li fas fa-sliders-h" style="color:var(--processing-rules-color);"></i><strong>Alert Processing Rules:</strong> Modify behavior of *fired* alerts (e.g., suppress notifications during maintenance, add/remove actions globally). They *override* normal behavior. Remember: <span class="key-point">"Processing Rule = Override behavior (suppress, reroute)."</span></li>
+                        <li><i class="fa-li fas fa-microchip" style="color:var(--vm-insights-color);"></i><strong>VM Insights:</strong> A key Azure Monitor feature for VMs and VMSS. Uses Azure Monitor Agent (AMA) and Data Collection Rules (DCRs) with Log Analytics. Provides performance charts and Service Map (for dependencies). Essential for deeper VM monitoring.</li>
+                        <li><i class="fa-li fas fa-network-wired" style="color:var(--network-monitor-color);"></i><strong>Network Monitoring & Troubleshooting:</strong> Utilizes Network Insights for high-level health and Network Watcher tools (IP Flow Verify, Connection Troubleshoot, Next Hop, Effective Security Rules, Packet Capture, VPN Troubleshoot, Topology) for in-depth diagnostics. Crucial for network connectivity and security validation.</li>
+                        <li><i class="fa-li fas fa-terminal" style="color:var(--lab-review-color);"></i><strong>CLI Usage:</strong> Be familiar with creating VMs with custom data (`cloud-init.txt`) and configuring metric alerts (`az monitor metrics alert create`) via CLI.</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--monitor-main-color); background-color: #e7f3e7;">
+                        <i class="fas fa-lightbulb" style="color:var(--monitor-main-color);"></i>**Exam Tip:** Pay close attention to the *scenario* when deciding which alert type to use. Is it a live performance issue (Metric)? A historical pattern (Log Search)? A resource configuration change (Activity Log)? Or a network connectivity issue (Network Watcher)?
+                    </p>
+                </div>
+            </div>
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => { /* CSS :checked handles expand/collapse */ });
+            });
+        });
+    </script>
+</body>
+</html>

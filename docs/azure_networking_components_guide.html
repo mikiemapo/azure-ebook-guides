@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Networking Components Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors */
+            --network-color: var(--azure-blue);
+            --security-color: #a4262c; /* Dark Red for security components */
+            --connectivity-color: var(--success-color);
+            --access-color: #ffb900; /* Gold/Yellow for access */
+            --routing-color: #6f42c1; /* Purple for routing */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-network-wired { font-size: 1.1em; color: var(--network-color); }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--network-color); }
+
+        /* --- Mind Map Diagram (Simplified for this topic) --- */
+        .mindmap-container {
+            background-color: var(--card-bg); border-radius: 8px; padding: 20px;
+            margin: 0 auto 30px auto; width: 100%; max-width: 600px; /* Smaller */
+            box-shadow: 0 2px 8px var(--shadow-color); border: 1px solid var(--border-color);
+            display: flex; flex-wrap: wrap; justify-content: space-around; align-items: center; gap: 15px;
+        }
+        .mindmap-item {
+            background-color: var(--diagram-bg); padding: 10px 15px;
+            border-radius: 6px; font-size: 0.9em; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            width: calc(33.33% - 20px); /* Approx 3 items per row */
+            min-width: 120px;
+        }
+        .mindmap-item i { font-size: 1.5em; margin-bottom: 5px; }
+        .mindmap-item span { font-weight: 600; }
+        /* Specific item colors */
+        .mindmap-item.nsg i { color: var(--security-color); }
+        .mindmap-item.firewall i { color: var(--security-color); }
+        .mindmap-item.vpn i { color: var(--connectivity-color); }
+        .mindmap-item.bastion i { color: var(--access-color); }
+        .mindmap-item.private-endpoint i { color: var(--info-color); }
+        .mindmap-item.appgw i { color: var(--network-color); }
+        .mindmap-item.route-table i { color: var(--routing-color); }
+
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1100px) { .card-container { grid-template-columns: repeat(3, 1fr); } }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--network-color); color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid var(--azure-blue-dark);
+        }
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+        /* Custom header colors per component type */
+        .card-header.security-header { background-color: var(--security-color); border-bottom-color: #7c1c22;}
+        .card-header.security-header:hover { background-color: #7c1c22;}
+        .card-header.connectivity-header { background-color: var(--connectivity-color); border-bottom-color: #0d6a0d;}
+        .card-header.connectivity-header:hover { background-color: #0d6a0d;}
+        .card-header.access-header { background-color: var(--access-color); border-bottom-color: #c88f00; color: var(--text-dark);}
+        .card-header.access-header:hover { background-color: #e0a800;}
+        .card-header.routing-header { background-color: var(--routing-color); border-bottom-color: #4a2c87;}
+        .card-header.routing-header:hover { background-color: #4a2c87;}
+
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;} /* Slightly larger icon in header */
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--network-color); font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em;
+          }
+        /* Custom list icons per component type */
+        .card.security-card li i.fa-li { color: var(--security-color); }
+        .card.connectivity-card li i.fa-li { color: var(--connectivity-color); }
+        .card.access-card li i.fa-li { color: var(--access-color); }
+        .card.routing-card li i.fa-li { color: var(--routing-color); }
+        .card.loadbalancing-card li i.fa-li { color: var(--network-color); }
+        .card.paas-access-card li i.fa-li { color: var(--info-color); }
+
+
+        /* Icons for specific points */
+        .card-content li i.fa-filter { color: var(--info-color); }
+        .card-content li i.fa-shield-alt { color: var(--success-color); }
+        .card-content li i.fa-link { color: var(--azure-blue); }
+        .card-content li i.fa-lock { color: #605e5c; }
+        .card-content li i.fa-desktop { color: var(--azure-blue-dark); }
+        .card-content li i.fa-user-secret { color: var(--access-color); }
+        .card-content li i.fa-sitemap { color: var(--routing-color); }
+        .card-content li i.fa-globe { color: var(--info-color); }
+        .card-content li i.fa-code { color: #605e5c; }
+        .card-content li i.fa-exchange-alt { color: var(--success-color); }
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-vertical { flex-direction: column; align-items: stretch; gap: 10px;}
+        .diagram-box {
+            background-color: #fff; padding: 10px 15px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px;
+        }
+        .diagram-box i { font-size: 1.5em; color: var(--azure-blue); }
+        .diagram-box span { font-size: 0.85em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; }
+        .diagram-arrow-down { transform: rotate(90deg); margin: 5px 0; }
+        .diagram-label { font-size: 0.8em; color: #605e5c; font-style: italic; margin-top: -10px; margin-bottom: 10px;}
+
+        /* Specific Diagram Styles */
+        .nsg-diagram .fa-server, .nsg-diagram .fa-network-wired { color: #605e5c; }
+        .nsg-diagram .fa-user-shield { color: var(--security-color); font-size: 1.8em;}
+        .nsg-diagram .rule-box { font-size: 0.8em; padding: 5px 8px; background-color: #eef1f5; border-radius: 3px; margin-top: 5px;}
+
+        .firewall-diagram .fa-fire-alt { color: var(--security-color); font-size: 2em;}
+        .firewall-diagram .fa-globe { color: var(--info-color); }
+
+        .vpn-diagram .fa-user, .vpn-diagram .fa-building { color: #605e5c; }
+        .vpn-diagram .fa-shield-alt { color: var(--connectivity-color); font-size: 1.8em;}
+        .vpn-diagram .fa-lock { color: var(--success-color); }
+
+        .bastion-diagram .fa-user-secret { color: var(--access-color); font-size: 1.8em;}
+        .bastion-diagram .fa-desktop { color: var(--azure-blue-dark); }
+        .bastion-diagram .fa-eye-slash { color: var(--warning-color); }
+
+        .private-endpoint-diagram .fa-plug { color: var(--info-color); font-size: 1.8em;}
+        .private-endpoint-diagram .fa-database, .private-endpoint-diagram .fa-cubes { color: var(--azure-blue); }
+
+        .appgw-diagram .fa-exchange-alt { color: var(--network-color); font-size: 1.8em;}
+        .appgw-diagram .fa-shield-virus { color: var(--security-color); font-size: 1.3em;}
+
+        .route-table-diagram .fa-route { color: var(--routing-color); font-size: 1.8em;}
+        .route-table-diagram .fa-directions { color: #605e5c; }
+
+
+        /* --- Code formatting --- */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: var(--code-bg);
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid var(--code-border); color: var(--info-color);
+        }
+        .code-term { font-weight: bold; }
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .warning-text { color: var(--warning-color); font-weight: 600; }
+        .important-note { background-color: #e6f2ff; border-left: 4px solid var(--network-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--network-color); margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-network-wired"></i>Azure Networking Components Guide</h1>
+
+    <!-- Mind Map -->
+    <div class="mindmap-container">
+         <div class="mindmap-item nsg"><i class="fas fa-user-shield"></i><span>NSG</span></div>
+         <div class="mindmap-item firewall"><i class="fas fa-fire-alt"></i><span>Azure Firewall</span></div>
+         <div class="mindmap-item vpn"><i class="fas fa-shield-alt"></i><span>VPN Gateway</span></div>
+         <div class="mindmap-item bastion"><i class="fas fa-user-secret"></i><span>Azure Bastion</span></div>
+         <div class="mindmap-item private-endpoint"><i class="fas fa-plug"></i><span>Private Endpoints</span></div>
+         <div class="mindmap-item appgw"><i class="fas fa-exchange-alt"></i><span>App Gateway + WAF</span></div>
+         <div class="mindmap-item route-table"><i class="fas fa-route"></i><span>Route Tables</span></div>
+    </div>
+
+    <p class="instructions">Understand key Azure services for network filtering, connectivity, access, and routing. <strong>Click/Tap</strong> headers to explore each component.</p>
+
+    <div class="card-container">
+
+        <!-- NSG -->
+        <div class="card security-card">
+            <input type="checkbox" id="nsg-toggle" class="card-toggle">
+            <label for="nsg-toggle" class="card-header security-header">
+                <h2><i class="fas fa-user-shield"></i>NSG (Network Security Group)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-filter"></i>L3/L4 Traffic Filtering</h3>
+                <p class="description">Filters network traffic to and from Azure resources in an Azure Virtual Network (VNet).</p>
+                <div class="diagram nsg-diagram">
+                     <div class="diagram-box"> <i class="fas fa-globe"></i><span>Internet / On-Prem</span></div>
+                     <i class="fas fa-arrows-alt-h diagram-arrow"></i>
+                     <div class="diagram-box" style="border-color: var(--security-color)"> <i class="fas fa-user-shield"></i><span>NSG Rules</span>
+                        <span class="rule-box">Allow Port 80 Inbound</span>
+                        <span class="rule-box">Deny Port 22 Inbound</span>
+                     </div>
+                     <i class="fas fa-arrows-alt-h diagram-arrow"></i>
+                     <div class="diagram-box"><i class="fas fa-server"></i><span>VM NIC / <i class="fas fa-network-wired"></i> Subnet</span></div>
+                </div>
+                 <ul>
+                    <li><i class="fa-li fas fa-list-ol"></i><strong>Rule-Based:</strong> Contains security rules that allow or deny inbound/outbound traffic based on Source/Destination IP, Port, and Protocol (TCP/UDP/ICMP/Any).</li>
+                    <li><i class="fa-li fas fa-layer-group"></i><strong>Scope:</strong> Can be associated with Network Interfaces (NICs) or Subnets. If associated with both, subnet rules apply first, then NIC rules.</li>
+                    <li><i class="fa-li fas fa-retweet"></i><strong>Stateful (Mostly):</strong> For inbound rules that allow traffic, NSGs automatically allow the return traffic. Outbound rules are also stateful in this way. *However, for established TCP connections initiated outbound, return traffic is allowed regardless of inbound rules.*</li>
+                    <li><i class="fa-li fas fa-ban"></i><strong>Default Rules:</strong> Includes default rules (e.g., AllowVNetInBound, AllowAzureLoadBalancerInBound, DenyAllInBound). Custom rules have higher priority.</li>
+                 </ul>
+                 <p><strong>Use Cases:</strong> Basic firewalling for VMs and subnets, segmenting traffic within a VNet.</p>
+                 <p><strong>Implications:</strong> Essential for basic network security. Misconfiguration can block legitimate traffic or allow unwanted access.</p>
+            </div>
+        </div>
+
+        <!-- Azure Firewall -->
+        <div class="card security-card">
+            <input type="checkbox" id="firewall-toggle" class="card-toggle">
+            <label for="firewall-toggle" class="card-header security-header">
+                <h2><i class="fas fa-fire-alt"></i>Azure Firewall</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-shield-alt"></i>Centralized Network Security</h3>
+                <p class="description">A managed, cloud-native, stateful firewall service offering network and application level protection.</p>
+                <div class="diagram firewall-diagram">
+                     <div class="diagram-box"><i class="fas fa-network-wired"></i><span>Spoke VNets / On-Prem</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box" style="border-color: var(--security-color)"> <i class="fas fa-fire-alt"></i><span>Azure Firewall (Hub VNet)</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"><i class="fas fa-globe"></i><span>Internet / PaaS</span></div>
+                </div>
+                 <ul>
+                    <li><i class="fa-li fas fa-fire"></i><strong>Stateful Firewall as a Service:</strong> Centrally manages and logs all traffic.</li>
+                    <li><i class="fa-li fas fa-sitemap"></i><strong>Policy Types:</strong>
+                        <ul>
+                            <li><strong>Network Rules:</strong> L3/L4 filtering (Source/Dest IP, Port, Protocol).</li>
+                            <li><strong>Application Rules:</strong> Filter outbound HTTP/S traffic to specific Fully Qualified Domain Names (FQDNs).</li>
+                            <li><strong>NAT Rules (DNAT):</strong> Translate inbound traffic to internal resources.</li>
+                        </ul>
+                    </li>
+                     <li><i class="fa-li fas fa-bug"></i><strong>Threat Intelligence:</strong> Can block traffic to/from known malicious IPs/domains (Standard & Premium).</li>
+                     <li><i class="fa-li fas fa-shield-virus"></i><strong>Premium SKU Features:</strong> TLS inspection, IDPS (Intrusion Detection/Prevention), URL filtering, Web categories.</li>
+                    <li><i class="fa-li fas fa-expand-arrows-alt"></i><strong>High Availability & Scalability:</strong> Built-in.</li>
+                 </ul>
+                 <p><strong>Use Cases:</strong> Centralized egress/ingress filtering for VNets (Hub-Spoke), protecting against threats, filtering outbound web traffic.</p>
+                 <p><strong>Implications:</strong> More advanced and centralized than NSGs. Higher cost. Requires proper routing (UDRs) to force traffic through it.</p>
+            </div>
+        </div>
+
+        <!-- VPN Gateway -->
+        <div class="card connectivity-card">
+            <input type="checkbox" id="vpn-toggle" class="card-toggle">
+            <label for="vpn-toggle" class="card-header connectivity-header">
+                <h2><i class="fas fa-shield-alt"></i>VPN Gateway</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-lock"></i>Secure Cross-Premises Connectivity</h3>
+                <p class="description">Establishes encrypted tunnels between your Azure VNet and on-premises networks (Site-to-Site) or individual clients (Point-to-Site) over the public internet.</p>
+                 <div class="diagram vpn-diagram">
+                     <div class="diagram-box"><i class="fas fa-building"></i><span>On-Premises Network / <i class="fas fa-user"></i> User</span></div>
+                     <i class="fas fa-long-arrow-alt-right diagram-arrow" style="color: var(--success-color);"><i class="fas fa-lock" style="position:absolute; font-size:0.5em; top:-5px; left:45%;"></i></i>
+                     <div class="diagram-box" style="border-color: var(--connectivity-color)"> <i class="fas fa-shield-alt"></i><span>Azure VPN Gateway (in GatewaySubnet)</span></div>
+                     <i class="fas fa-long-arrow-alt-right diagram-arrow" style="color: var(--success-color);"><i class="fas fa-lock" style="position:absolute; font-size:0.5em; top:-5px; left:45%;"></i></i>
+                     <div class="diagram-box"><i class="fas fa-network-wired"></i><span>Azure VNet</span></div>
+                </div>
+                <ul>
+                    <li><i class="fa-li fas fa-route"></i><strong>Site-to-Site (S2S):</strong> Connects an on-premises VPN device to an Azure VPN Gateway. Uses IPsec/IKE.</li>
+                    <li><i class="fa-li fas fa-laptop"></i><strong>Point-to-Site (P2S):</strong> Connects individual client computers to an Azure VNet. Uses SSTP, OpenVPN, or IKEv2.</li>
+                    <li><i class="fa-li fas fa-network-wired"></i><strong>VNet-to-VNet:</strong> Connect Azure VNets (can be cross-region).</li>
+                    <li><i class="fa-li fas fa-shield-alt"></i><strong>Encrypted Tunnels:</strong> Secures traffic over the public internet.</li>
+                    <li><i class="fa-li fas fa-cog"></i><strong>SKUs & Performance:</strong> Various SKUs offer different throughput and connection limits.</li>
+                 </ul>
+                 <p><strong>Use Cases:</strong> Hybrid cloud connectivity, secure remote access for users, connecting VNets. Often part of a DR strategy.</p>
+                 <p><strong>Implications:</strong> Essential for hybrid scenarios. Requires a `GatewaySubnet` in your VNet. Performance depends on internet links and gateway SKU.</p>
+            </div>
+        </div>
+
+        <!-- Azure Bastion -->
+        <div class="card access-card">
+            <input type="checkbox" id="bastion-toggle" class="card-toggle">
+            <label for="bastion-toggle" class="card-header access-header">
+                <h2><i class="fas fa-user-secret"></i>Azure Bastion</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-desktop"></i>Secure RDP/SSH via Portal</h3>
+                <p class="description">A fully managed PaaS service that provides secure and seamless RDP and SSH connectivity to your virtual machines directly from the Azure portal over TLS, without needing public IPs on VMs.</p>
+                <div class="diagram bastion-diagram">
+                     <div class="diagram-box"><i class="fas fa-user"></i><span>Admin User</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"><i class="fas fa-laptop"></i><span>Azure Portal (Browser)</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box" style="border-color: var(--access-color)"> <i class="fas fa-user-secret"></i><span>Azure Bastion Host (AzureBastionSubnet)</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"><i class="fas fa-desktop"></i><span>VM (Private IP Only) <i class="fas fa-eye-slash"></i> No Public IP</span></div>
+                </div>
+                 <ul>
+                    <li><i class="fa-li fas fa-shield-alt"></i><strong>No Public IP Exposure:</strong> VMs do not require public IP addresses for RDP/SSH access.</li>
+                    <li><i class="fa-li fas fa-lock"></i><strong>TLS Encrypted Session:</strong> All traffic between your browser and Bastion, and Bastion to VM, is over TLS/SSL.</li>
+                    <li><i class="fa-li fas fa-user-circle"></i><strong>Azure AD Integration:</strong> Can integrate with Azure AD for authentication to VMs (depending on VM OS/config).</li>
+                    <li><i class="fa-li fas fa-network-wired"></i><strong>Deployed in VNet:</strong> Requires a dedicated subnet named `AzureBastionSubnet`.</li>
+                     <li><i class="fa-li fas fa-cogs"></i><strong>Managed Service:</strong> No need to manage bastion host VMs yourself.</li>
+                 </ul>
+                 <p><strong>Use Cases:</strong> Securely access VMs for management without exposing them to the internet. Reduce attack surface.</p>
+                 <p><strong>Implications:</strong> Improves security posture. Cost associated with the Bastion service. Simplifies RDP/SSH access management.</p>
+            </div>
+        </div>
+
+        <!-- Private Endpoints -->
+        <div class="card paas-access-card">
+            <input type="checkbox" id="privateendpoint-toggle" class="card-toggle">
+            <label for="privateendpoint-toggle" class="card-header">
+                <h2><i class="fas fa-plug" style="color:var(--info-color)"></i>Private Endpoints</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-network-wired"></i>Private Access to PaaS/Azure Services</h3>
+                <p class="description">Enables you to access Azure PaaS services (like Azure Storage, SQL Database) and your own services using a private IP address from your VNet. Traffic stays on the Microsoft network.</p>
+                <div class="diagram private-endpoint-diagram">
+                     <div class="diagram-box"><i class="fas fa-server"></i><span>VM in VNet</span></div>
+                     <i class="fas fa-long-arrow-alt-right diagram-arrow" style="color: var(--info-color);"><span style="font-size:0.6em;position:absolute;top:-10px;left:30%;">Private IP</span></i>
+                     <div class="diagram-box" style="border-color: var(--info-color)"> <i class="fas fa-plug"></i><span>Private Endpoint (in VNet Subnet)</span></div>
+                     <i class="fas fa-long-arrow-alt-right diagram-arrow" style="color: var(--info-color);"></i>
+                     <div class="diagram-box"><i class="fas fa-database"></i><span>Azure PaaS Service (e.g., Storage, SQL)</span></div>
+                </div>
+                 <ul>
+                    <li><i class="fa-li fas fa-lock"></i><strong>Private IP:</strong> Assigns a private IP from your VNet's address space to the PaaS service.</li>
+                    <li><i class="fa-li fas fa-shield-alt"></i><strong>No Public Internet Exposure:</strong> Traffic to the PaaS service does not traverse the public internet.</li>
+                    <li><i class="fa-li fas fa-link"></i><strong>Azure Private Link:</strong> Private Endpoints are a component of Azure Private Link service.</li>
+                    <li><i class="fa-li fas fa-sitemap"></i><strong>DNS Integration:</strong> Requires proper DNS configuration (e.g., Private DNS Zones) to resolve the PaaS service's FQDN to the private IP.</li>
+                 </ul>
+                 <p><strong>Use Cases:</strong> Securely accessing PaaS services from within a VNet or connected on-premises networks, data exfiltration protection.</p>
+                 <p><strong>Implications:</strong> Enhances security for PaaS services. Adds DNS management complexity. Cost for the Private Endpoint and data processed.</p>
+            </div>
+        </div>
+
+        <!-- Application Gateway + WAF -->
+        <div class="card loadbalancing-card">
+            <input type="checkbox" id="appgw-toggle" class="card-toggle">
+            <label for="appgw-toggle" class="card-header">
+                <h2><i class="fas fa-exchange-alt"></i>Application Gateway + WAF</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-globe"></i>Layer 7 Load Balancer & Web Protection</h3>
+                <p class="description">A web traffic load balancer that enables you to manage traffic to your web applications. The Web Application Firewall (WAF) SKU provides protection against common web exploits.</p>
+                 <div class="diagram appgw-diagram">
+                     <div class="diagram-box"><i class="fas fa-user"></i><span>User / Client</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box" style="border-color: var(--network-color)"> <i class="fas fa-exchange-alt"></i><span>App Gateway<br/>(<i class="fas fa-shield-virus" style="color:var(--security-color)"></i> WAF if enabled)</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div style="display: flex; flex-direction: column; gap:5px;">
+                        <div class="diagram-box"><i class="fas fa-server"></i><span>Web Server 1</span></div>
+                        <div class="diagram-box"><i class="fas fa-server"></i><span>Web Server 2</span></div>
+                     </div>
+                </div>
+                <ul>
+                    <li><i class="fa-li fas fa-layer-group"></i><strong>Layer 7 Load Balancing:</strong> Makes routing decisions based on HTTP/HTTPS attributes (URL path, host headers, cookies).</li>
+                    <li><i class="fa-li fas fa-lock-open"></i><strong>SSL/TLS Termination:</strong> Can offload SSL/TLS encryption/decryption from backend servers.</li>
+                    <li><i class="fa-li fas fa-sitemap"></i><strong>URL-based Routing:</strong> Route traffic to different backend pools based on URL paths.</li>
+                    <li><i class="fa-li fas fa-cookie-bite"></i><strong>Cookie-based Session Affinity:</strong> Directs client requests to the same backend server.</li>
+                    <li><i class="fa-li fas fa-shield-virus" style="color:var(--security-color)"></i><strong>Web Application Firewall (WAF):</strong> (Optional SKU) Protects against common web vulnerabilities (e.g., SQL injection, XSS) based on OWASP Core Rule Sets.</li>
+                 </ul>
+                 <p><strong>Use Cases:</strong> Load balancing HTTP/S traffic for web applications, SSL offloading, protecting web apps with WAF.</p>
+                 <p><strong>Implications:</strong> Provides advanced web traffic management and security. More complex and costly than basic load balancers.</p>
+            </div>
+        </div>
+
+        <!-- Route Tables (UDRs) -->
+        <div class="card routing-card">
+            <input type="checkbox" id="udr-toggle" class="card-toggle">
+            <label for="udr-toggle" class="card-header routing-header">
+                <h2><i class="fas fa-route"></i>Route Tables (UDRs)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-directions"></i>Custom Traffic Paths</h3>
+                <p class="description">User-Defined Routes (UDRs) allow you to override Azure's default routing behavior and control how network traffic is routed between subnets, VNets, or to/from on-premises via a Network Virtual Appliance (NVA).</p>
+                <div class="diagram route-table-diagram">
+                     <div class="diagram-box"><i class="fas fa-network-wired"></i><span>Subnet A</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box" style="border-color: var(--routing-color)"> <i class="fas fa-route"></i><span>Route Table (UDR)<br/>(Route to NVA)</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"><i class="fas fa-fire-alt" style="color:var(--security-color)"></i><span>NVA / Azure Firewall</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"><i class="fas fa-globe"></i><span>Internet</span></div>
+                </div>
+                 <ul>
+                    <li><i class="fa-li fas fa-map-signs"></i><strong>Override Default Routing:</strong> By default, Azure routes traffic based on its system routes. UDRs let you define custom next hops.</li>
+                    <li><i class="fa-li fas fa-random"></i><strong>Next Hop Types:</strong> Virtual Appliance (NVA), Virtual Network Gateway, Internet, VNet Peering, None.</li>
+                    <li><i class="fa-li fas fa-sitemap"></i><strong>Association:</strong> Route tables are associated with subnets. All traffic leaving that subnet will be evaluated against the routes in the table.</li>
+                    <li><i class="fa-li fas fa-fire-alt"></i><strong>Forcing Traffic:</strong> Commonly used to force traffic through an NVA (like Azure Firewall or a third-party firewall) for inspection.</li>
+                 </ul>
+                 <p><strong>Use Cases:</strong> Implementing Hub-Spoke topologies with centralized NVAs, forcing internet-bound traffic through a security appliance, custom routing between VNets.</p>
+                 <p><strong>Implications:</strong> Powerful for custom network architectures. Misconfiguration can lead to traffic black-holing or routing loops. Essential for NVA deployments.</p>
+            </div>
+        </div>
+
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

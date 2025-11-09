@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Guide: Resizing an Azure VM (CLI) - AZ-104</title>
+     <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #2d2d2d; 
+            --code-text-color: #dcdcdc; 
+            --code-border: #444;
+            --success-color: #107c10;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --vm-color: #0078FF; 
+            --cli-color: #444; 
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+       .main-container { width: 100%; max-width: 900px; }
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+         h1 i { color: var(--vm-color); }
+        .back-to-hub-container { 
+            width: 100%; max-width: 900px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+         .card.full-width-card { grid-column: 1 / -1; } /* For single wider card */
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--vm-color); color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid #0056b3;
+        }
+        .card-header:hover { background-color: #0056b3; }
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--vm-color); font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--vm-color); font-size: 0.9em;
+          }
+        .card-content li i.fa-terminal { color: var(--cli-color); }
+        .card-content li i.fa-server { color: var(--vm-color); }
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+        .card-content li i.fa-exclamation-triangle { color: var(--warning-color); }
+         pre {
+             background-color: var(--code-bg); border: 1px solid var(--code-border);
+             padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 0.9em; 
+             color: var(--code-text-color); margin-top: 10px;
+        }
+        pre code { background: none; border: none; padding: 0; font-size: 1em; color: var(--code-text-color); }
+        .param { color: #4ec9b0; } 
+        .value { color: #ce9178; } 
+        .comment { color: #6a9955; font-style: italic; } 
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+    <div class="main-container">
+        <h1><i class="fas fa-arrows-alt-v"></i>Lab Review: Resizing an Azure VM (CLI)</h1>
+        <p class="instructions">This guide covers the process of resizing an Azure Virtual Machine using the Azure CLI, based on your lab session.</p>
+        <div class="card-container">
+            <div class="card full-width-card">
+                <input type="checkbox" id="resize-lab-toggle" class="card-toggle" checked>
+                <label for="resize-lab-toggle" class="card-header">
+                    <h2><i class="fas fa-terminal"></i>VM Resize Operation with Azure CLI</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-cogs"></i>Changing VM Compute Capacity</h3>
+                    <p class="description">Your lab involved changing the size of an existing Linux VM (`SampleVM2`) to `Standard_D2s_v3`.</p>
+                    <h4>Command Used:</h4>
+                    <pre><code class="cmd-example language-bash">az vm resize <span class="param">--resource-group</span> <span class="value">"learn-b7d2ad8c-7fa5-42d3-ba82-3c11035a1962"</span> <span class="param">--name</span> SampleVM2 <span class="param">--size</span> Standard_D2s_v3</code></pre>
+                    
+                    <h4>Key Steps & Concepts:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-terminal"></i><strong>Command:</strong> <code class="code-term">az vm resize</code> is the Azure CLI command used to modify the size (SKU) of a virtual machine.</li>
+                        <li><i class="fa-li fas fa-server"></i><strong>Parameters:</strong>
+                            <ul>
+                                <li><code class="param">--resource-group</code> (or <code class="param">-g</code>): Specifies the resource group containing the VM.</li>
+                                <li><code class="param">--name</code> (or <code class="param">-n</code>): Specifies the name of the VM to resize.</li>
+                                <li><code class="param">--size</code>: Specifies the target new VM size (e.g., `Standard_D2s_v3`). You can find available sizes using `az vm list-sizes --location <region>`.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-power-off" style="color:var(--warning-color);"></i><strong>VM State & Restart:</strong>
+                            <ul>
+                                <li>To resize a VM, it typically needs to be in a running or stopped (deallocated) state.</li>
+                                <li>The resize operation will <span class="key-point">cause the VM to restart</span> if it's running, or it will start with the new size if it was deallocated. Plan for downtime.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-check-circle" style="color:var(--success-color);"></i><strong>Verification:</strong> After the command succeeds, the output JSON shows the updated `hardwareProfile.vmSize`. You can also verify using `az vm show -g <RG> -n <VMName> --query hardwareProfile.vmSize`.</li>
+                        <li><i class="fa-li fas fa-map-marker-alt"></i><strong>Regional Availability:</strong> Not all VM sizes are available in all Azure regions. Ensure the target size is available in your VM's region.</li>
+                        <li><i class="fa-li fas fa-object-group"></i><strong>Availability Sets/Zones:</strong> If the VM is part of an Availability Set or deployed to an Availability Zone, ensure the new size is supported by that configuration and available in the specific zone/hardware cluster.</li>
+                         <li><i class="fa-li fas fa-info-circle"></i><strong>Trusted Launch VMs:</strong> As noted in a previous lab, if resizing a Trusted Launch VM, ensure the new size also supports Trusted Launch to avoid issues.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Knowing how to resize VMs using CLI/PowerShell, understanding the restart implication, and awareness of regional/zonal availability of VM sizes.</p>
+                    <p><strong>Implication:</strong> Resizing allows you to scale compute resources up or down based on workload needs, impacting both performance and cost. It's a common administrative task.</p>
+                </div>
+            </div>
+        </div>
+                    <!-- Card: Lessons Learned & Troubleshooting from VM Resize Lab -->
+                    <div class="card">
+                        <input type="checkbox" id="resize-lessons-toggle" class="card-toggle">
+                        <label for="resize-lessons-toggle" class="card-header" style="background-color: var(--warning-color);">
+                            <h2><i class="fas fa-lightbulb"></i>Lab Lessons & Troubleshooting</h2>
+                            <i class="fas fa-chevron-down toggle-icon"></i>
+                        </label>
+                        <div class="card-content">
+                            <h3 style="color: var(--warning-color);"><i class="fas fa-bug"></i>Common Pitfalls & Corrections</h3>
+                            <p class="description">Reviewing mistakes made during the lab helps solidify understanding.</p>
+                            
+                            <h4>1. VM Naming Consistency (e.g., `SampleVM` vs. `SampleVM2`)</h4>
+                            <ul>
+                                <li><i class="fa-li fas fa-times-circle" style="color:var(--warning-color)"></i><strong>Mistake Observed:</strong> Your lab logs sometimes show commands referencing `SampleVM` when the VM being acted upon might have been `SampleVM2` (or vice-versa if you had multiple similarly named VMs from different labs).
+                                    <pre><code class="cmd-example language-bash"><span class="comment"># Example: If you intended to resize SampleVM2 but typed:</span>
+        az vm resize <span class="param">--resource-group</span> <span class="value">"learn-b7d2..."</span> <span class="param">--name</span> <span class="value">SampleVM</span> <span class="param">--size</span> Standard_D2s_v3 <span class="comment"># Incorrect VM name</span></code></pre>
+                                </li>
+                                <li><i class="fa-li fas fa-check-circle" style="color:var(--success-color)"></i><strong>Correction/Learning:</strong>
+                                    <ul>
+                                        <li>Azure commands are literal. They will only act on the resource with the <span class="key-point">exact name</span> you provide.</li>
+                                        <li><span class="key-point">Always double-check</span> the VM name, resource group name, and other identifiers in your commands, especially when working with multiple similar resources or in sandbox environments where names might be auto-generated or change between sessions.</li>
+                                        <li>Using variables (as you did with `$rgName` and `$vmName` in PowerShell for the ADE lab) helps reduce typos once the variable is set correctly.</li>
+                                    </ul>
+                                </li>
+                                <li><i class="fa-li fas fa-eye"></i><strong>Visual Cue:</strong> In the Azure portal or CLI output, always confirm the name of the resource you intend to modify.</li>
+                            </ul>
+        
+                            <h4 style="margin-top:20px;"><i class="fas fa-keyboard"></i>2. Typos in Commands or Resource Names</h4>
+                             <ul>
+                                <li><i class="fa-li fas fa-times-circle" style="color:var(--warning-color)"></i><strong>Mistake Type:</strong> General typos (e.g., `azvm` instead of `az vm`, or slight misspellings in resource names or parameters).</li>
+                                <li><i class="fa-li fas fa-check-circle" style="color:var(--success-color)"></i><strong>Correction/Learning:</strong>
+                                    <ul>
+                                        <li>CLI and PowerShell are <span class="key-point">case-sensitive for some parameters or values</span> (though often forgiving with command/group names). It's best practice to match case.</li>
+                                        <li>Utilize tab completion in Cloud Shell (Bash and PowerShell) to help auto-complete commands and resource names, reducing typos.</li>
+                                        <li>Carefully read error messages. They often point directly to the unrecognized command or parameter.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            
+                            <h4 style="margin-top:20px;"><i class="fas fa-terminal"></i>3. Bash vs. PowerShell Variable Assignment (From Previous Labs)</h4>
+                             <ul>
+                                <li><i class="fa-li fas fa-info-circle"></i><strong>Recap:</strong> In a previous lab log for adding a Linux disk, you initially used Bash-style variable assignment (`ipaddress=$(az vm show ...)`) in the PowerShell Cloud Shell environment, which failed.</li>
+                                <li><i class="fa-li fas fa-check-circle" style="color:var(--success-color)"></i><strong>Correction/Learning:</strong>
+                                    <ul>
+                                        <li>PowerShell variable assignment: <code class="code-term">$variableName = command_output</code></li>
+                                        <li>Bash variable assignment: <code class="code-term">variableName=$(command_output)</code> or <code class="code-term">variableName=`command_output`</code></li>
+                                        <li><span class="key-point">Be mindful of the shell environment</span> you are currently in (Cloud Shell defaults to Bash but can be switched to PowerShell). The prompt usually indicates the shell type.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                            <p style="margin-top:15px;"><strong>Overall Implication:</strong> Attention to detail, verifying names, and understanding the command syntax for the specific shell environment are crucial for successful Azure administration using command-line tools. These "small" errors are common when learning and are excellent opportunities to reinforce correct practices!</p>
+                        </div>
+                    </div>
+    </div>
+    <script>
+        document.querySelectorAll('.card-toggle').forEach(checkbox => {
+           checkbox.addEventListener('change', (e) => { /* CSS handles expand/collapse */ });
+        });
+    </script>
+</body>
+</html>

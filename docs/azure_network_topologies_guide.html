@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Network Topologies: Mesh vs. Hub-Spoke (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors for Network Topologies Guide */
+            --topology-main-color: #2980B9; /* Blue for overall guide */
+            --mesh-color: #E74C3C; /* Red for Mesh (complexity/limits) */
+            --hub-spoke-color: #27AE60; /* Green for Hub-Spoke (scalability) */
+            --hub-role-color: #8E44AD; /* Purple for Hub role */
+            --comparison-color: #F39C12; /* Gold for comparison */
+            --az104-tip-color: #ffc107; /* Gold for exam tips */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6; 
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--topology-main-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-project-diagram { font-size: 1.1em; } 
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--topology-main-color); }
+
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; } 
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+            background-color: var(--topology-main-color);
+            border-bottom-color: #21618D;
+        }
+        .card-header:hover { background-color: #21618D; }
+        .card-header.summary-header { /* For the final summary card */
+            background-color: var(--azure-blue-dark); 
+            border-bottom-color: #004578;
+        }
+        .card-header.summary-header:hover { background-color: #004578; }
+
+        /* Specific card header colors */
+        .card-header.mesh-header { background-color: var(--mesh-color); border-bottom-color: #B03A2E; }
+        .card-header.mesh-header:hover { background-color: #B03A2E; }
+        .card-header.hub-spoke-header { background-color: var(--hub-spoke-color); border-bottom-color: #1E8449; }
+        .card-header.hub-spoke-header:hover { background-color: #1E8449; }
+        .card-header.hub-role-header { background-color: var(--hub-role-color); border-bottom-color: #6e378c; }
+        .card-header.hub-role-header:hover { background-color: #6e378c; }
+        .card-header.comparison-header { background-color: var(--comparison-color); border-bottom-color: #c07a0c; }
+        .card-header.comparison-header:hover { background-color: #c07a0c; }
+
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+ 
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; 
+            padding: 0 18px; 
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); 
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2000px; /* Adjusted for content */
+            opacity: 1;
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            overflow-y: auto;
+        }
+
+        .card-content h3, .card-content h4 {
+             color: var(--azure-blue-dark); margin-top: 15px; margin-bottom: 10px; font-size: 1.1em;
+             font-weight: 600; padding-bottom: 6px;
+             display: flex; align-items: center; gap: 8px;
+         }
+        .card-content h3 { border-bottom: 1px solid #eee; font-size: 1.15em; margin-top: 0;}
+        .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+        .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+        .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--topology-main-color); /* Default icon color */
+          }
+        
+        .key-point { font-weight: 600; color: var(--topology-main-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+        
+        .mnemonic-box { 
+            background-color: #fff3cd; 
+            border-left: 5px solid var(--az104-tip-color); 
+            padding: 10px 15px; 
+            margin: 15px 0; 
+            font-size: 1em; 
+            font-weight: bold;
+            color: #856404;
+            text-align: center;
+        }
+        .mnemonic-box i { margin-right: 8px; color: var(--az104-tip-color);}
+        
+        .az104-tip {
+            background-color: #e6f2ff; border-left: 4px solid var(--topology-main-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; 
+        }
+        .az104-tip i { color: var(--topology-main-color); margin-right: 8px; }
+        .az104-tip.warning {
+            background-color: #fcf8e3; border-left-color: var(--warning-color); color: #8a6d3b;
+        }
+        .az104-tip.warning i { color: var(--warning-color); }
+
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap; 
+        }
+        .diagram-box {
+            background-color: #fff; padding: 8px 12px; border-radius: 4px; text-align: center; 
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 90px; font-size: 0.9em;
+        }
+        .diagram-box i { font-size: 1.5em; color: var(--azure-blue); } 
+        .diagram-box span { font-size: 0.8em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; margin: 0 5px; align-self: center;}
+        
+        .diagram.mesh-diagram .diagram-box { border-color: var(--mesh-color); }
+        .diagram.hub-spoke-diagram .diagram-box.hub { border-color: var(--hub-spoke-color); }
+        .diagram.hub-spoke-diagram .diagram-box.spoke { border-color: #ccc; }
+
+        .comparison-table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        .comparison-table th, .comparison-table td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; vertical-align: top;}
+        .comparison-table th { background-color: var(--diagram-bg); font-weight: 600; }
+
+        /* Icon colors for list items */
+        .card-content li i.fa-li.mesh-icon { color: var(--mesh-color); }
+        .card-content li i.fa-li.hub-spoke-icon { color: var(--hub-spoke-color); }
+        .card-content li i.fa-li.hub-role-icon { color: var(--hub-role-color); }
+        .card-content li i.fa-li.comparison-icon { color: var(--comparison-color); }
+
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-project-diagram"></i>Azure Network Topologies: Mesh vs. Hub-Spoke</h1>
+        <p class="instructions">Understand Mesh and Hub-Spoke network topologies in Azure, their use cases, scalability, and impact on security. Critical for AZ-104 network design. <strong>Click/Tap</strong> headers.</p>
+        
+        <div class="card-container">
+
+            <!-- Card 1: Introduction to Azure Network Topologies -->
+            <div class="card">
+                <input type="checkbox" id="intro-topologies-toggle" class="card-toggle" checked> 
+                <label for="intro-topologies-toggle" class="card-header">
+                    <h2><i class="fas fa-sitemap"></i>Introduction to Network Topologies</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-network-wired"></i>Structuring Your Azure Connectivity</h3>
+                    <p class="description">As your Azure footprint grows, efficiently connecting Virtual Networks (VNets) becomes crucial for scalability, security, and management. Network topologies define how your VNets are interconnected.</p>
+
+                    <h4>Why Network Topologies Matter:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-arrows-alt"></i>**Scalability:** How easily can you add more VNets without increasing complexity?</li>
+                        <li><i class="fa-li fas fa-user-shield"></i>**Security:** How effectively can you centralize inspection and control traffic flow?</li>
+                        <li><i class="fa-li fas fa-cogs"></i>**Management:** How simple is it to configure and troubleshoot connectivity?</li>
+                    </ul>
+                    <div class="az104-tip"><i class="fas fa-flask"></i>AZ-104 Focus: Designing scalable and secure network architectures is a key exam area. Understanding these topologies is foundational.</div>
+                </div>
+            </div>
+
+            <!-- Card 2: Mesh Network Topology -->
+            <div class="card">
+                <input type="checkbox" id="mesh-topology-toggle" class="card-toggle"> 
+                <label for="mesh-topology-toggle" class="card-header mesh-header">
+                    <h2><i class="fas fa-braille"></i>Mesh Network Topology</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-project-diagram mesh-icon"></i>Direct Peering Everywhere</h3>
+                    <p class="description">In a Mesh topology, every Virtual Network (VNet) is directly connected (peered) to every other VNet. This creates a fully interconnected network.</p>
+
+                    <h4>Key Characteristics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-link mesh-icon"></i>**Direct Peering:** Each VNet has a VNet peering connection to every other VNet.</li>
+                        <li><i class="fa-li fas fa-plug mesh-icon"></i>**Simple Connectivity (for small scale):** Resources in any VNet can directly communicate with resources in any other VNet using private IPs.</li>
+                    </ul>
+
+                    <h4>When to Use:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-cubes mesh-icon"></i>**Few VNets:** Ideal only for a <span class="key-point">very small number of VNets (e.g., 2-4)</span> where direct communication is paramount and complexity is low.</li>
+                        <li><i class="fa-li fas fa-check mesh-icon"></i>**Simple Requirements:** When centralized security or shared services are not a major concern.</li>
+                    </ul>
+                    <div class="diagram mesh-diagram" style="max-width:300px; display:flex; flex-wrap:wrap; justify-content:center;">
+                        <div class="diagram-box" style="width:100px; height:50px; margin:5px;"><i class="fas fa-network-wired"></i><span>VNet A</span></div>
+                        <div class="diagram-box" style="width:100px; height:50px; margin:5px;"><i class="fas fa-network-wired"></i><span>VNet B</span></div>
+                        <div class="diagram-box" style="width:100px; height:50px; margin:5px;"><i class="fas fa-network-wired"></i><span>VNet C</span></div>
+                        <div class="diagram-box" style="width:100px; height:50px; margin:5px;"><i class="fas fa-network-wired"></i><span>VNet D</span></div>
+                        <span class="diagram-label" style="width:100%;">All connected to all.</span>
+                    </div>
+
+                    <div class="mnemonic-box"><i class="fas fa-skull-crossbones"></i>Mnemonic: Mesh = Max Peerings, Mini Scale (scalability is its downfall).</div>
+                    <div class="az104-tip warning"><i class="fas fa-exclamation-triangle"></i>AZ-104 Critical Note: Mesh topology has significant scalability limitations. The number of peerings grows exponentially with the number of VNets using the formula: N * (N - 1) / 2. This quickly becomes unmanageable and costly.</div>
+                </div>
+            </div>
+
+            <!-- Card 3: Hub-Spoke Network Topology -->
+            <div class="card">
+                <input type="checkbox" id="hub-spoke-topology-toggle" class="card-toggle"> 
+                <label for="hub-spoke-topology-toggle" class="card-header hub-spoke-header">
+                    <h2><i class="fas fa-sitemap"></i>Hub-Spoke Network Topology</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-project-diagram hub-spoke-icon"></i>Centralized Control & Scalability</h3>
+                    <p class="description">The Hub-Spoke topology is the recommended and most common network design pattern in Azure. It features a central "hub" VNet that is peered with multiple "spoke" VNets.</p>
+
+                    <h4>Key Characteristics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-chart-line hub-spoke-icon"></i>**Scalability:** Easily add new spoke VNets by simply peering them to the central hub.</li>
+                        <li><i class="fa-li fas fa-link hub-spoke-icon"></i>**Simplified Peering:** Each spoke VNet only needs one peering connection (to the hub), reducing the total number of peerings dramatically compared to Mesh.</li>
+                        <li><i class="fa-li fas fa-check hub-spoke-icon"></i>**Centralized Services:** The hub VNet often hosts shared services and centralized security components.</li>
+                    </ul>
+
+                    <h4>When to Use:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-building hub-spoke-icon"></i>**Large, Complex Environments:** Ideal for enterprise deployments with many VNets, different departments, or diverse workloads.</li>
+                        <li><i class="fa-li fas fa-user-shield hub-spoke-icon"></i>**Centralized Security & Governance:** When you need strict control over traffic flow and a single point of inspection.</li>
+                        <li><i class="fa-li fas fa-share-alt hub-spoke-icon"></i>**Shared Services:** When multiple applications/teams can benefit from shared resources like VPN gateways, Azure Bastion, or DNS servers.</li>
+                    </ul>
+                    <div class="diagram hub-spoke-diagram" style="max-width:400px; display:flex; flex-direction:column; align-items:center;">
+                        <div class="diagram-box hub" style="width:120px; height:60px;"><i class="fas fa-star"></i><span>Hub VNet</span></div>
+                        <i class="fas fa-arrow-down diagram-arrow"></i>
+                        <div style="display:flex; justify-content:space-around; width:100%;">
+                            <div class="diagram-box spoke" style="width:100px; height:50px;"><i class="fas fa-network-wired"></i><span>Spoke A</span></div>
+                            <div class="diagram-box spoke" style="width:100px; height:50px;"><i class="fas fa-network-wired"></i><span>Spoke B</span></div>
+                            <div class="diagram-box spoke" style="width:100px; height:50px;"><i class="fas fa-network-wired"></i><span>Spoke C</span></div>
+                        </div>
+                        <span class="diagram-label" style="width:100%; margin-top:10px;">Each spoke connects only to the hub.</span>
+                    </div>
+                    <div class="mnemonic-box"><i class="fas fa-chess-king"></i>Mnemonic: Hub = Central Brain, Spoke = Branches (many branches connecting to one central brain).</div>
+                </div>
+            </div>
+
+            <!-- Card 4: The Strategic Role of the Hub VNet -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="hub-role-toggle" class="card-toggle"> 
+                <label for="hub-role-toggle" class="card-header hub-role-header">
+                    <h2><i class="fas fa-shield-alt"></i>The Strategic Role of the Hub VNet</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-lock hub-role-icon"></i>Centralizing Security & Shared Services</h3>
+                    <p class="description">The hub VNet is critical to a Hub-Spoke design, acting as the central point for network connectivity, shared services, and security enforcement for all connected spoke VNets.</p>
+
+                    <h4>Key Functions of the Hub:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-fire-alt hub-role-icon"></i>**Centralized Security:** Hosts Network Virtual Appliances (NVAs) like <span class="key-point">Azure Firewall</span> to inspect all traffic leaving or entering the hub.</li>
+                        <li><i class="fa-li fas fa-shield-alt hub-role-icon"></i>**Shared Gateways:** Contains VPN Gateway or ExpressRoute Gateway for <span class="key-point">hybrid connectivity</span> to on-premises networks. Spoke VNets can use these gateways via <span class="key-point">Gateway Transit</span>.</li>
+                        <li><i class="fa-li fas fa-desktop hub-role-icon"></i>**Secure Access:** Hosts <span class="key-point">Azure Bastion</span> for secure administrative access to VMs in both the hub and spoke VNets (if properly routed).</li>
+                        <li><i class="fa-li fas fa-share-alt hub-role-icon"></i>**Shared Services:** Can host shared DNS servers (e.g., Azure Private DNS Resolver, AD DNS servers), monitoring tools, or other shared utilities.</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--hub-role-color); background-color: #f7ebfc;">
+                        <i class="fas fa-exclamation-triangle" style="color:var(--hub-role-color);"></i>**AZ-104 Critical Note: Non-Transitive Peering!** VNet peering is non-transitive. If Spoke A is peered to the Hub, and Spoke B is peered to the Hub, Spoke A **CANNOT** directly communicate with Spoke B via the Hub *unless* specific routing (UDRs) is configured to force traffic through the Hub's firewall/NVA, or if Gateway Transit is enabled.
+                    </p>
+                    <div class="az104-tip"><i class="fas fa-flask"></i>AZ-104 Focus: Understand that the Hub *centralizes* security and connectivity services, offloading this from individual spoke VNets. Know the function of Azure Firewall, VPN Gateway, and Azure Bastion in the Hub.</div>
+                </div>
+            </div>
+
+            <!-- Card 5: Comparison: Mesh vs. Hub-Spoke -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="comparison-toggle" class="card-toggle" checked> 
+                <label for="comparison-toggle" class="card-header comparison-header">
+                    <h2><i class="fas fa-balance-scale-right"></i>Comparison: Mesh vs. Hub-Spoke</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-question-circle"></i>Choosing the Right Topology</h3>
+                    <p class="description">Selecting between Mesh and Hub-Spoke depends on your organization's size, security requirements, and long-term scalability needs.</p>
+
+                    <div class="table-responsive-wrapper">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Aspect</th>
+                                    <th style="color:var(--mesh-color);">Mesh Topology</th>
+                                    <th style="color:var(--hub-spoke-color);">Hub-Spoke Topology</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Connectivity</strong></td>
+                                    <td>Direct peering between *every* VNet.</td>
+                                    <td>All spokes peer only to a central hub.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Number of Peerings</strong></td>
+                                    <td>N * (N - 1) / 2 (grows exponentially).</td>
+                                    <td>N - 1 (for N spokes, plus Hub to each spoke) (grows linearly).</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Scalability</strong></td>
+                                    <td><span class="warning-text">Poor.</span> Becomes unmanageable for > 4-5 VNets.</td>
+                                    <td><span class="key-point">Excellent.</span> Easy to add new spokes.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Centralized Security</strong></td>
+                                    <td><span class="warning-text">Difficult.</span> Requires NSGs/NVAs in every VNet for consistent policy.</td>
+                                    <td><span class="key-point">Easy.</span> Firewall/NVA in hub inspects all traffic.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Shared Services</strong></td>
+                                    <td>Difficult to implement consistently.</td>
+                                    <td><span class="key-point">Easy.</span> Hub hosts shared gateways, Bastion, DNS.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Management Complexity</strong></td>
+                                    <td>High (many peerings to manage).</td>
+                                    <td>Low (linear growth of peerings).</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Routing Transitivity</strong></td>
+                                    <td>Direct (traffic is transitive).</td>
+                                    <td><span class="warning-text">Non-transitive (by default with peering alone).</span> Requires UDRs/Gateway Transit for spoke-to-spoke.</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Best Use Case</strong></td>
+                                    <td>Very small, self-contained environments.</td>
+                                    <td>Enterprise, large-scale, hybrid, secure environments.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6: AZ-104 Key Takeaways & Lab Connection -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="topologies-summary-toggle" class="card-toggle" checked>
+                <label for="topologies-summary-toggle" class="card-header summary-header">
+                    <h2><i class="fas fa-graduation-cap"></i>Network Topologies: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-check-double"></i>Exam Essentials & Design Principles</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-braille mesh-icon"></i>**Mesh Topology:** Every VNet peers with every other. Only for <span class="key-point">very few VNets (2-4)</span>. Scalability is its biggest weakness (N*(N-1)/2 peerings).</li>
+                        <li><i class="fa-li fas fa-sitemap hub-spoke-icon"></i>**Hub-Spoke Topology:** Central hub VNet connected to multiple spoke VNets. <span class="key-point">Recommended for scalability, centralized security, and shared services.</span></li>
+                        <li><i class="fa-li fas fa-lock hub-role-icon"></i>**Hub's Role:** The hub VNet centralizes crucial services: <span class="key-point">Azure Firewall</span> for inspection, <span class="key-point">VPN/ExpressRoute Gateways</span> for hybrid connectivity (with Gateway Transit for spokes), and <span class="key-point">Azure Bastion</span> for secure access.</li>
+                        <li><i class="fa-li fas fa-exclamation-triangle warning-text"></i>**VNet Peering is Non-Transitive:** Remember from our VNet peering lab that direct peering links two VNets only. In Hub-Spoke, Spoke A cannot talk to Spoke B via the Hub without explicit routing (UDRs forcing traffic through a firewall in the hub) or Gateway Transit configuration.</li>
+                    </ul>
+                    <div class="az104-tip warning"><i class="fas fa-exclamation-triangle"></i>**Exam Tip:** Expect scenario questions on when to choose Hub-Spoke over Mesh (scalability, security, shared services) and the non-transitive nature of VNet peering. Understand how UDRs are used to steer traffic in Hub-Spoke.</div>
+                </div>
+            </div>
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => { /* CSS :checked handles expand/collapse */ });
+            });
+        });
+    </script>
+</body>
+</html>

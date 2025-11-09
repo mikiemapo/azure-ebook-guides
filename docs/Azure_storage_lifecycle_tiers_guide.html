@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Blob Lifecycle & Tiers Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #f3f2f1;
+            --code-border: #e0e0e0;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Tier Colors */
+            --premium-color: #a80070; /* Magenta/Purple */
+            --hot-color: #d83b01;    /* Orange/Red */
+            --cool-color: #0078d4;    /* Azure Blue */
+            --cold-color: #005a9e;    /* Darker Azure Blue */
+            --archive-color: #797775; /* Neutral Grey */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 1000px; } /* Wider container */
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-recycle { font-size: 1.1em; color: var(--success-color); }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--azure-blue-dark); }
+
+        /* --- Mind Map Diagram --- */
+        .mindmap-container {
+            background-color: var(--card-bg); border-radius: 8px; padding: 25px;
+            margin: 0 auto 30px auto; width: 100%; max-width: 650px;
+            box-shadow: 0 2px 8px var(--shadow-color); border: 1px solid var(--border-color);
+            position: relative; min-height: 250px; /* Ensure space for elements */
+            display: flex; justify-content: center; align-items: center;
+        }
+        .mindmap-center {
+            background-color: var(--azure-blue); color: var(--text-light); padding: 15px 20px;
+            border-radius: 50%; text-align: center; font-weight: 600; font-size: 1.1em;
+            width: 160px; height: 160px; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(0, 120, 212, 0.5);
+            z-index: 10;
+        }
+        .mindmap-center i { font-size: 1.5em; margin-bottom: 5px; }
+
+        .mindmap-branch {
+            position: absolute; background-color: var(--diagram-bg); padding: 8px 12px;
+            border-radius: 20px; font-size: 0.85em; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+            display: flex; align-items: center; gap: 6px; min-width: 120px;
+            z-index: 5;
+        }
+        .mindmap-branch i { color: var(--azure-blue-dark); }
+        .mindmap-branch.tier i { color: var(--hot-color); }
+        .mindmap-branch.rule i { color: var(--success-color); }
+        .mindmap-branch.goal i { color: var(--info-color); }
+
+        /* Positioning - adjust percentages/pixels as needed */
+        .branch-tiers { top: 10px; left: 50%; transform: translateX(-50%); }
+        .branch-hot { top: 20px; left: calc(50% + 140px); }
+        .branch-cool { top: 70px; left: calc(50% + 180px); }
+        .branch-cold { top: 120px; left: calc(50% + 190px); }
+        .branch-archive { top: 170px; left: calc(50() + 180px); }
+
+        .branch-rules { bottom: 10px; left: 50%; transform: translateX(-50%); }
+        .branch-filters { bottom: 20px; left: calc(50% - 170px); }
+        .branch-actions { bottom: 70px; left: calc(50% - 210px); }
+
+        .branch-goal { top: 50%; left: 10px; transform: translateY(-50%); }
+        .branch-cost { top: calc(50% - 40px); left: -40px; transform: rotate(-30deg);}
+        .branch-manage { top: calc(50% + 20px); left: -40px; transform: rotate(30deg);}
+
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1100px) {
+             .card-container { grid-template-columns: repeat(3, 1fr); }
+             .card.tiers-card { grid-column: span 3; order: -1; } /* Make tiers card full width and first */
+        }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+
+        .card-toggle { display: none; }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--azure-blue); color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid var(--azure-blue-dark);
+        }
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--azure-blue); font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--azure-blue); font-size: 0.9em;
+          }
+         /* Custom list icons */
+         .card-content li i.fa-check { color: var(--success-color); }
+         .card-content li i.fa-dollar-sign { color: var(--success-color); }
+         .card-content li i.fa-clock { color: var(--warning-color); }
+         .card-content li i.fa-filter { color: var(--info-color); }
+         .card-content li i.fa-cogs { color: #605e5c; }
+         .card-content li i.fa-calendar-day { color: var(--info-color); }
+         .card-content li i.fa-tasks { color: var(--azure-blue-dark); }
+         .card-content li i.fa-layer-group { color: var(--info-color); }
+         .card-content li i.fa-exclamation-triangle { color: var(--warning-color); }
+         .card-content li i.fa-info-circle { color: var(--info-color); }
+
+         /* Tier specific icons */
+        .card-content .tier-icon { font-size: 1.1em; margin-right: 5px; }
+        .premium-icon { color: var(--premium-color); }
+        .hot-icon { color: var(--hot-color); }
+        .cool-icon { color: var(--cool-color); }
+        .cold-icon { color: var(--cold-color); }
+        .archive-icon { color: var(--archive-color); }
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-box {
+            background-color: #fff; padding: 10px 15px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px;
+        }
+        .diagram-box i { font-size: 1.5em; color: var(--azure-blue); }
+        .diagram-box span { font-size: 0.85em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; }
+
+        /* Tier comparison Diagram */
+        .tier-comparison { display: flex; flex-direction: column; gap: 10px; width: 100%;}
+        .tier-row { display: flex; align-items: center; gap: 10px; background-color: #fff; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border-color); }
+        .tier-row .tier-name { font-weight: 600; width: 80px; display: flex; align-items: center; gap: 5px;}
+        .tier-row .tier-bar-container { flex-grow: 1; height: 15px; background-color: var(--diagram-bg); border-radius: 10px; overflow: hidden; position: relative; }
+        .tier-row .tier-bar { height: 100%; background-color: var(--azure-blue); border-radius: 10px 0 0 10px; position: absolute; left:0; top: 0;}
+        .tier-row .cost .tier-bar { background-color: var(--success-color); }
+        .tier-row .latency .tier-bar { background-color: var(--warning-color); } /* Higher latency is "worse" */
+        /* Relative widths (adjust based on actual cost/latency relation) */
+        .tier-row.premium .cost .tier-bar { width: 95%; } .tier-row.premium .latency .tier-bar { width: 5%; }
+        .tier-row.hot .cost .tier-bar { width: 75%; } .tier-row.hot .latency .tier-bar { width: 15%; }
+        .tier-row.cool .cost .tier-bar { width: 50%; } .tier-row.cool .latency .tier-bar { width: 30%; }
+        .tier-row.cold .cost .tier-bar { width: 35%; } .tier-row.cold .latency .tier-bar { width: 50%; }
+        .tier-row.archive .cost .tier-bar { width: 10%; } .tier-row.archive .latency .tier-bar { width: 98%; } /* Very high latency */
+
+        /* --- Code formatting --- */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: var(--code-bg);
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid var(--code-border); color: #c50f1f;
+        }
+        .code-term { font-weight: bold; color: var(--azure-blue-dark); }
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .warning-text { color: var(--warning-color); font-weight: 600; }
+        .important-note { background-color: #fff8db; border-left: 4px solid #ffcc00; padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: #ffcc00; margin-right: 8px; }
+
+        /* Mindmap Lines (Simple CSS lines - requires adjustment for exact positioning) */
+        .mindmap-line { position: absolute; height: 2px; background-color: var(--border-color); z-index: 1; transform-origin: left center;}
+        /* Example Lines (Manually position these based on final element locations) */
+        .line-tiers { width: 140px; top: 30px; left: calc(50% + 80px); transform: rotate(0deg); } /* Center to Tiers branch */
+        .line-rules { width: 140px; top: calc(100% - 30px); left: calc(50% - 140px - 80px); transform: rotate(180deg);} /* Center to Rules branch */
+        .line-goal { width: 80px; top: 50%; left: 80px; transform: rotate(180deg);} /* Center to Goal branch */
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-recycle"></i>Azure Blob Lifecycle & Access Tiers Guide</h1>
+
+    <!-- Mind Map -->
+    <div class="mindmap-container">
+         <div class="mindmap-center"><i class="fas fa-cubes"></i>Blob Lifecycle & Tiers</div>
+
+         <!-- Branches (position manually or with more complex JS/SVG for perfect lines) -->
+         <div class="mindmap-branch branch-tiers tier"><i class="fas fa-layer-group"></i>Access Tiers</div>
+         <div class="mindmap-branch branch-hot tier"><i class="fas fa-fire hot-icon"></i>Hot</div>
+         <div class="mindmap-branch branch-cool tier"><i class="fas fa-thermometer-empty cool-icon"></i>Cool</div>
+         <div class="mindmap-branch branch-cold tier"><i class="fas fa-snowflake cold-icon"></i>Cold</div>
+         <div class="mindmap-branch branch-archive tier"><i class="fas fa-archive archive-icon"></i>Archive</div>
+
+         <div class="mindmap-branch branch-rules rule"><i class="fas fa-tasks"></i>Lifecycle Rules</div>
+         <div class="mindmap-branch branch-filters rule"><i class="fas fa-filter"></i>Filters</div>
+         <div class="mindmap-branch branch-actions rule"><i class="fas fa-play"></i>Actions</div>
+
+         <div class="mindmap-branch branch-goal goal"><i class="fas fa-bullseye"></i>Goal</div>
+         <div class="mindmap-branch branch-cost goal"><i class="fas fa-dollar-sign"></i>Cost Savings</div>
+         <div class="mindmap-branch branch-manage goal"><i class="fas fa-cogs"></i>Automation</div>
+
+         <!-- Simple Example Lines (adjust as needed) -->
+        <!-- <div class="mindmap-line line-tiers"></div>
+        <div class="mindmap-line line-rules"></div>
+        <div class="mindmap-line line-goal"></div> -->
+    </div>
+
+    <p class="instructions">Optimize storage costs and manage data automatically using Azure Blob Lifecycle Management and Access Tiers. <strong>Click/Tap</strong> headers to explore.</p>
+
+    <div class="card-container">
+
+         <!-- Access Tiers Card -->
+        <div class="card tiers-card">
+            <input type="checkbox" id="tiers-toggle" class="card-toggle">
+            <label for="tiers-toggle" class="card-header">
+                <h2><i class="fas fa-layer-group"></i>Blob Access Tiers Explained</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-tags"></i>Hot, Cool, Cold, Archive & Premium</h3>
+                <p class="description">Choose the right tier based on access frequency, retention period, and cost sensitivity.</p>
+                <div class="tier-comparison">
+                    <!-- Premium -->
+                    <div class="tier-row premium">
+                        <div class="tier-name"><i class="fas fa-bolt tier-icon premium-icon"></i>Premium</div>
+                        <div style="width: 100px; font-size: 0.8em; text-align: right;">Cost:</div>
+                        <div class="tier-bar-container cost"><div class="tier-bar"></div></div>
+                        <div style="width: 100px; font-size: 0.8em; text-align: right;">Latency:</div>
+                        <div class="tier-bar-container latency"><div class="tier-bar"></div></div>
+                    </div>
+                     <!-- Hot -->
+                    <div class="tier-row hot">
+                        <div class="tier-name"><i class="fas fa-fire tier-icon hot-icon"></i>Hot</div>
+                         <div style="width: 100px; font-size: 0.8em; text-align: right;">Cost:</div>
+                        <div class="tier-bar-container cost"><div class="tier-bar"></div></div>
+                         <div style="width: 100px; font-size: 0.8em; text-align: right;">Latency:</div>
+                        <div class="tier-bar-container latency"><div class="tier-bar"></div></div>
+                    </div>
+                     <!-- Cool -->
+                    <div class="tier-row cool">
+                        <div class="tier-name"><i class="fas fa-thermometer-empty tier-icon cool-icon"></i>Cool</div>
+                         <div style="width: 100px; font-size: 0.8em; text-align: right;">Cost:</div>
+                        <div class="tier-bar-container cost"><div class="tier-bar"></div></div>
+                         <div style="width: 100px; font-size: 0.8em; text-align: right;">Latency:</div>
+                        <div class="tier-bar-container latency"><div class="tier-bar"></div></div>
+                    </div>
+                     <!-- Cold -->
+                     <div class="tier-row cold">
+                        <div class="tier-name"><i class="fas fa-snowflake tier-icon cold-icon"></i>Cold</div>
+                         <div style="width: 100px; font-size: 0.8em; text-align: right;">Cost:</div>
+                        <div class="tier-bar-container cost"><div class="tier-bar"></div></div>
+                         <div style="width: 100px; font-size: 0.8em; text-align: right;">Latency:</div>
+                        <div class="tier-bar-container latency"><div class="tier-bar"></div></div>
+                    </div>
+                     <!-- Archive -->
+                     <div class="tier-row archive">
+                        <div class="tier-name"><i class="fas fa-archive tier-icon archive-icon"></i>Archive</div>
+                         <div style="width: 100px; font-size: 0.8em; text-align: right;">Cost:</div>
+                        <div class="tier-bar-container cost"><div class="tier-bar"></div></div>
+                         <div style="width: 100px; font-size: 0.8em; text-align: right;">Latency:</div>
+                        <div class="tier-bar-container latency"><div class="tier-bar"></div></div>
+                    </div>
+                 </div>
+
+                 <ul>
+                    <li><i class="fas fa-bolt fa-li premium-icon"></i><strong>Premium (Block Blobs):</strong> <span class="key-point">Lowest latency</span> (SSD), highest cost. For interactive workloads, high transaction rates. *Not a lifecycle target tier.*</li>
+                    <li><i class="fas fa-fire fa-li hot-icon"></i><strong>Hot:</strong> Optimized for <span class="key-point">frequent access</span>. Higher storage cost, lower access cost. Default tier.</li>
+                    <li><i class="fas fa-thermometer-empty fa-li cool-icon"></i><strong>Cool:</strong> For <span class="key-point">infrequent access</span> (min 30 days). Lower storage cost, higher access cost than Hot.</li>
+                     <li><i class="fas fa-snowflake fa-li cold-icon"></i><strong>Cold:</strong> For <span class="key-point">rare access</span> (min 90 days). Even lower storage cost, higher access cost than Cool.</li>
+                    <li><i class="fas fa-archive fa-li archive-icon"></i><strong>Archive:</strong> For <span class="key-point">long-term retention</span> (min 180 days), rarely accessed. Lowest storage cost, highest access cost. <span class="warning-text">High retrieval latency</span> (hours). Offline tier.</li>
+                </ul>
+                <p>Lifecycle management <span class="key-point">automates moving blobs</span> between Hot, Cool, Cold, and Archive tiers.</p>
+            </div>
+        </div>
+
+        <!-- What is Lifecycle Management? -->
+        <div class="card">
+            <input type="checkbox" id="what-toggle" class="card-toggle">
+            <label for="what-toggle" class="card-header">
+                <h2><i class="fas fa-cogs"></i>What is Lifecycle Management?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-robot"></i>Automating Storage Tiering & Deletion</h3>
+                <p class="description">Define rules to automatically transition blobs to cooler tiers or delete them based on conditions.</p>
+                 <ul>
+                    <li><i class="fas fa-tasks fa-li"></i><strong>Rule-Based Engine:</strong> You define policies with rules containing filters and actions.</li>
+                    <li><i class="fas fa-dollar-sign fa-li"></i><strong>Cost Optimization:</strong> Primary goal is to move less frequently accessed data to cheaper tiers.</li>
+                    <li><i class="fas fa-calendar-day fa-li"></i><strong>Data Retention:</strong> Automatically delete blobs, versions, or snapshots after a certain period.</li>
+                     <li><i class="fas fa-layer-group fa-li"></i><strong>Applies to:</strong> <span class="code-term">Block blobs</span> and <span class="code-term">Append blobs</span> within specific storage account types.</li>
+                </ul>
+                 <div class="diagram">
+                     <div class="diagram-box"> <i class="fas fa-file-alt hot-icon"></i> <span>Blob Created (Hot)</span> </div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"> <i class="fas fa-cogs"></i> <span>Lifecycle Rule Triggered</span> </div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"> <i class="fas fa-thermometer-empty cool-icon"></i> <span>Tiered to Cool/Cold/Archive or Deleted</span> </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Lifecycle Rules -->
+        <div class="card">
+            <input type="checkbox" id="rules-toggle" class="card-toggle">
+            <label for="rules-toggle" class="card-header">
+                <h2><i class="fas fa-list-alt"></i>Lifecycle Rules</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-check-square"></i>Filters + Actions</h3>
+                <p class="description">Each rule within a policy consists of a filter set and an action set.</p>
+                 <div class="diagram">
+                     <div class="diagram-box"> <i class="fas fa-filter" style="color: var(--info-color)"></i> <span>Filters<br/>(Select Blobs)</span> </div>
+                     <i class="fas fa-plus diagram-arrow" style="font-size: 1.5em;"></i>
+                     <div class="diagram-box"> <i class="fas fa-play" style="color: var(--success-color)"></i> <span>Actions<br/>(Tier/Delete)</span> </div>
+                     <i class="fas fa-equals diagram-arrow" style="font-size: 1.5em;"></i>
+                     <div class="diagram-box" style="border-color: var(--azure-blue)"> <i class="fas fa-tasks"></i> <span>Lifecycle Rule</span> </div>
+                </div>
+                <ul>
+                    <li><i class="fas fa-filter fa-li"></i><strong>Filter Set:</strong> Defines which blobs the rule applies to (e.g., based on prefix, tags, blob type).</li>
+                    <li><i class="fas fa-play fa-li" style="color: var(--success-color);"></i><strong>Action Set:</strong> Defines what happens to the filtered blobs when the condition (e.g., age) is met.</li>
+                    <li><i class="fas fa-layer-group fa-li"></i>A policy can contain <span class="key-point">multiple rules</span> (up to 100 per storage account).</li>
+                     <li><i class="fas fa-code fa-li"></i>Rules are defined in JSON format within the storage account's properties.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Rule Filters -->
+        <div class="card">
+            <input type="checkbox" id="filters-toggle" class="card-toggle">
+            <label for="filters-toggle" class="card-header">
+                <h2><i class="fas fa-filter"></i>Rule Filters</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-search"></i>Selecting Blobs for Actions</h3>
+                <p class="description">Conditions used to target specific blobs.</p>
+                 <ul>
+                    <li><i class="fas fa-folder-open fa-li"></i><strong>Prefix Match:</strong> Apply rule to blobs starting with a specific path (e.g., `container1/logs/`).</li>
+                    <li><i class="fas fa-tags fa-li" style="color: var(--info-color)"></i><strong>Blob Index Tags:</strong> Apply rule based on key-value index tags associated with blobs (e.g., `Project = 'Blue'`).</li>
+                    <li><i class="fas fa-cubes fa-li"></i><strong>Blob Type:</strong> Specify `blockBlob` or `appendBlob`.</li>
+                    <li><i class="fas fa-copy fa-li"></i><strong>Blob Subtype:</strong> Target base blobs, snapshots (`blobSnapshot`), or versions (`blobVersion`).</li>
+                </ul>
+                <p>Filters define the <span class="key-point">scope</span> of a rule's actions.</p>
+            </div>
+        </div>
+
+        <!-- Rule Actions & Conditions -->
+        <div class="card">
+            <input type="checkbox" id="actions-toggle" class="card-toggle">
+            <label for="actions-toggle" class="card-header">
+                <h2><i class="fas fa-play"></i>Rule Actions & Conditions</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-calendar-check"></i>Tiering and Deleting Based on Age</h3>
+                <p class="description">The operations performed when conditions are met.</p>
+                <h4>Common Actions:</h4>
+                <ul>
+                    <li><i class="fas fa-thermometer-empty fa-li cool-icon"></i><strong>TierToCool:</strong> Move blob to Cool tier.</li>
+                    <li><i class="fas fa-snowflake fa-li cold-icon"></i><strong>TierToCold:</strong> Move blob to Cold tier.</li>
+                    <li><i class="fas fa-archive fa-li archive-icon"></i><strong>TierToArchive:</strong> Move blob to Archive tier.</li>
+                    <li><i class="fas fa-trash fa-li" style="color: var(--warning-color)"></i><strong>Delete:</strong> Delete the base blob.</li>
+                    <li><i class="fas fa-trash fa-li" style="color: var(--warning-color)"></i><strong>DeleteBlobSnapshot:</strong> Delete previous blob snapshots.</li>
+                    <li><i class="fas fa-trash fa-li" style="color: var(--warning-color)"></i><strong>DeleteBlobVersion:</strong> Delete previous blob versions.</li>
+                </ul>
+                 <h4>Common Conditions (Age in days):</h4>
+                 <ul>
+                     <li><i class="fas fa-calendar-alt fa-li"></i><strong>daysAfterModificationGreaterThan:</strong> Based on <span class="key-point">last write</span> time.</li>
+                     <li><i class="fas fa-calendar-plus fa-li"></i><strong>daysAfterCreationGreaterThan:</strong> Based on blob creation time.</li>
+                     <li><i class="fas fa-calendar-check fa-li"></i><strong>daysAfterLastAccessTimeGreaterThan:</strong> <span class="key-point">Requires access tracking</span> to be enabled. Based on last read/write.</li>
+                 </ul>
+                 <p>Combine filters and actions/conditions to build your policy (e.g., "If blob prefix is 'archive/' AND last modified > 90 days, THEN TierToArchive").</p>
+                 <div class="important-note"><i class="fas fa-info-circle"></i> Enabling Last Access Time tracking incurs a small cost but provides more accurate tiering for read-heavy workloads.</div>
+            </div>
+        </div>
+
+         <!-- Rule Execution -->
+        <div class="card">
+            <input type="checkbox" id="execution-toggle" class="card-toggle">
+            <label for="execution-toggle" class="card-header">
+                <h2><i class="fas fa-stopwatch"></i>Rule Execution</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-sync-alt"></i>How and When Rules Run</h3>
+                 <p class="description">Lifecycle policies run automatically in the background.</p>
+                <ul>
+                    <li><i class="fas fa-calendar-day fa-li"></i><strong>Frequency:</strong> Rules run <span class="key-point">once per day</span>.</li>
+                    <li><i class="fas fa-clock fa-li"></i><strong>Timing:</strong> There's no SLA for the exact time rules run. It can take up to 24 hours for a rule run to complete across the entire account.</li>
+                    <li><i class="fas fa-layer-group fa-li"></i><strong>Policy Updates:</strong> If you update a policy, it can take up to 24 hours for the changes to take effect.</li>
+                    <li><i class="fas fa-check fa-li"></i><strong>Idempotent:</strong> If a rule fails (e.g., transient issue), it will retry on subsequent runs.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Supported Resources -->
+        <div class="card">
+            <input type="checkbox" id="supported-toggle" class="card-toggle">
+            <label for="supported-toggle" class="card-header">
+                <h2><i class="fas fa-check-circle"></i>Supported Resources</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-server"></i>Account & Blob Types</h3>
+                 <p class="description">Where lifecycle management policies can be applied.</p>
+                 <ul>
+                    <li><i class="fas fa-check fa-li"></i><strong>Account Types:</strong>
+                        <ul>
+                            <li>General-purpose v2 (GPv2)</li>
+                            <li>BlobStorage (legacy, block blobs only)</li>
+                            <li>Premium Block Blob</li>
+                         </ul>
+                    </li>
+                     <li><i class="fas fa-check fa-li"></i><strong>Blob Types:</strong>
+                         <ul>
+                            <li><span class="code-term">Block Blobs</span> (Most common)</li>
+                             <li><span class="code-term">Append Blobs</span></li>
+                         </ul>
+                     </li>
+                    <li><i class="fas fa-times-circle fa-li" style="color: var(--warning-color);"></i><strong>Not Supported:</strong> General-purpose v1 (GPv1), Page Blobs, Azure Files shares, Premium Page Blobs, Premium File Shares.</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Considerations -->
+        <div class="card">
+            <input type="checkbox" id="considerations-toggle" class="card-toggle">
+            <label for="considerations-toggle" class="card-header">
+                <h2><i class="fas fa-exclamation-triangle"></i>Considerations</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-info-circle"></i>Important Notes</h3>
+                <ul>
+                     <li><i class="fas fa-dollar-sign fa-li"></i><strong>Pricing:</strong>
+                        <ul>
+                            <li>Executing rules: Small cost per 10,000 rules executed.</li>
+                            <li>Tier changes: Per-transaction costs apply (Set Blob Tier).</li>
+                            <li>Access Tracking: Cost per 10,000 transactions if enabled.</li>
+                            <li>Early Deletion Fees: Apply for Cool, Cold, and Archive tiers if blobs deleted before minimum retention (30/90/180 days). Lifecycle deletion avoids this if age condition matches minimum.</li>
+                        </ul>
+                     </li>
+                    <li><i class="fas fa-history fa-li"></i><strong>Last Access Time Tracking:</strong> Must be explicitly enabled on the storage account if using `daysAfterLastAccessTimeGreaterThan`.</li>
+                    <li><i class="fas fa-lock fa-li" style="color: var(--lock-color)"></i><strong>Immutability Interaction:</strong> Lifecycle management cannot delete or transition an immutable blob until its policy expires / holds are cleared.</li>
+                     <li><i class="fas fa-trash-restore fa-li" style="color: var(--warning-color)"></i><strong>Soft Delete Interaction:</strong> Lifecycle deletion respects soft delete retention periods. The blob enters the soft-deleted state.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Load Balancing Options - Sorter (AZ-104)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --selected-item-bg: #cce4ff;
+            /* Feature Colors */
+            --l4-regional-color: #0078D4; /* Standard Blue */
+            --l7-regional-color: #107C10; /* Green */
+            --dns-global-color: #8E44AD; /* Purple */
+            --l7-global-color: #D83B01;  /* Orange/Red */
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: var(--azure-bg-light);
+            margin: 0; padding: 20px;
+            color: var(--text-dark); line-height: 1.6;
+            display: flex; flex-direction: column; align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sorter-container {
+            max-width: 1200px; width: 100%; margin: 20px auto; padding: 25px;
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 8px; box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark); text-align: center; border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px; margin-bottom: 25px;
+        }
+        h1 i { margin-right: 10px; color: var(--azure-blue); }
+
+        .back-to-hub { margin-bottom: 20px; padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: center; }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions { text-align: center; margin-bottom: 20px; font-size: 0.95em; background-color: var(--diagram-bg); padding: 10px; border-radius: 4px; }
+
+        .main-layout { display: flex; flex-direction: column; gap: 20px; }
+        @media (min-width: 900px) {
+            .main-layout { flex-direction: row; justify-content: space-between; }
+            .clickable-items-pool { flex-basis: 30%; }
+            .drop-zones-container { flex-basis: 65%; }
+        }
+
+        .clickable-items-pool, .drop-zone {
+            padding: 15px; border: 2px dashed var(--border-color); border-radius: 6px;
+            background-color: var(--diagram-bg); min-height: 100px; max-height: 600px; overflow-y: auto;
+        }
+        .clickable-items-pool h3, .drop-zone h3 {
+            margin-top: 0; text-align: center; font-size: 1em; display: flex; align-items: center;
+            justify-content: center; gap: 8px; min-height: 40px; padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color); margin-bottom: 15px;
+        }
+
+        .drop-zones-container { display: grid; grid-template-columns: 1fr; gap: 15px; }
+        @media (min-width: 600px) { .drop-zones-container { grid-template-columns: repeat(2, 1fr); } }
+
+        .drop-zone { cursor: pointer; transition: background-color 0.2s ease; }
+        .drop-zone:hover { background-color: #e9ecef; }
+        .drop-zone h3 { color: var(--text-dark); }
+        .drop-zone.l4-regional-zone { border-color: var(--l4-regional-color); }
+        .drop-zone.l4-regional-zone h3 { color: var(--l4-regional-color); }
+        .drop-zone.l7-regional-zone { border-color: var(--l7-regional-color); }
+        .drop-zone.l7-regional-zone h3 { color: var(--l7-regional-color); }
+        .drop-zone.dns-global-zone { border-color: var(--dns-global-color); }
+        .drop-zone.dns-global-zone h3 { color: var(--dns-global-color); }
+        .drop-zone.l7-global-zone { border-color: var(--l7-global-color); }
+        .drop-zone.l7-global-zone h3 { color: var(--l7-global-color); }
+
+        .clickable-item {
+            background-color: var(--card-bg); padding: 10px 15px; margin-bottom: 10px; border: 1px solid var(--border-color);
+            border-left: 5px solid var(--azure-blue); border-radius: 4px; cursor: pointer; box-shadow: 0 1px 2px var(--shadow-color);
+            transition: all 0.2s ease; display: flex; justify-content: space-between; align-items: center;
+        }
+        .clickable-item:hover { transform: scale(1.02); }
+        .clickable-item.selected {
+            background-color: var(--selected-item-bg); border: 2px solid var(--azure-blue-dark) !important;
+            box-shadow: 0 2px 5px rgba(0, 120, 212, 0.3);
+        }
+        .item-icon { font-size: 1.2em; width: 25px; text-align: center; margin-right: 10px; }
+        .item-text { font-size: 0.95em; font-weight: 600; }
+        .feedback-icon { font-size: 1.1em; min-width: 1.2em; text-align: right; }
+
+        .clickable-item.correct { border-left-color: var(--success-color) !important; background-color: #e7f3e7; }
+        .clickable-item.incorrect { border-left-color: var(--warning-color) !important; background-color: #fdeceb; }
+        .clickable-item.correct .feedback-icon::before { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f00c"; color: var(--success-color); }
+        .clickable-item.incorrect .feedback-icon::before { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f00d"; color: var(--warning-color); }
+
+        .submit-button {
+            display: block; width: 100%; max-width: 200px; margin: 30px auto 10px auto; padding: 12px 20px;
+            font-size: 1.1em; font-weight: 600; color: var(--text-light); background-color: var(--success-color);
+            border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease;
+        }
+        .submit-button:disabled { background-color: #94d3a2; cursor: not-allowed; }
+
+        #result-message { text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 20px; padding: 10px; border-radius: 4px; display: none; }
+        #result-message.success { background-color: #dff0d8; border: 1px solid var(--success-color); color: var(--success-color); }
+        #result-message.some-incorrect { background-color: #fcf8e3; border: 1px solid #f0ad4e; color: #8a6d3b; }
+    </style>
+</head>
+<body>
+    <div class="sorter-container">
+        <h1><i class="fas fa-balance-scale-right"></i>Azure Load Balancing Sorter</h1>
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+        <p class="instructions">Match the <strong>Azure Service</strong> to its primary **Load Balancing Category**.</p>
+
+        <div class="main-layout">
+            <div id="items-pool" class="clickable-items-pool drop-zone" data-zone="pool">
+                <h3><i class="fas fa-cubes"></i> Azure Services</h3>
+            </div>
+
+            <div class="drop-zones-container">
+                <div class="drop-zone l4-regional-zone" data-zone="l4_regional"><h3><i class="fas fa-map-pin"></i>Regional Layer 4 (TCP/UDP)</h3></div>
+                <div class="drop-zone l7-regional-zone" data-zone="l7_regional"><h3><i class="fas fa-map-pin"></i>Regional Layer 7 (HTTP/S)</h3></div>
+                <div class="drop-zone dns-global-zone" data-zone="dns_global"><h3><i class="fas fa-globe"></i>Global DNS Based</h3></div>
+                <div class="drop-zone l7-global-zone" data-zone="l7_global"><h3><i class="fas fa-globe"></i>Global Layer 7 (HTTP/S)</h3></div>
+            </div>
+        </div>
+
+        <button type="button" id="check-answers-btn" class="submit-button">Check Answers</button>
+        <div id="result-message"></div>
+    </div>
+
+    <script>
+        const services = [
+            { id: 'svc_lb', text: 'Azure Load Balancer', correctZone: 'l4_regional', icon: 'fa-project-diagram' },
+            { id: 'svc_app_gw', text: 'Application Gateway', correctZone: 'l7_regional', icon: 'fa-globe' },
+            { id: 'svc_tm', text: 'Traffic Manager', correctZone: 'dns_global', icon: 'fa-dns' },
+            { id: 'svc_fd', text: 'Azure Front Door', correctZone: 'l7_global', icon: 'fa-door-open' }
+        ];
+
+        const itemsPool = document.getElementById('items-pool');
+        const dropZoneElements = document.querySelectorAll('.drop-zone');
+        const checkAnswersBtn = document.getElementById('check-answers-btn');
+        const resultMessage = document.getElementById('result-message');
+        let activeSelectedItem = null;
+
+        function deselectCurrentItem() {
+            if (activeSelectedItem) {
+                activeSelectedItem.classList.remove('selected');
+                activeSelectedItem = null;
+            }
+        }
+        
+        services.sort(() => 0.5 - Math.random()).forEach(itemData => {
+            const div = document.createElement('div');
+            div.classList.add('clickable-item');
+            div.id = itemData.id;
+            div.dataset.correctZone = itemData.correctZone;
+
+            const iconEl = document.createElement('i');
+            iconEl.className = `fas ${itemData.icon} item-icon`;
+            div.appendChild(iconEl);
+            
+            const itemText = document.createElement('span');
+            itemText.classList.add('item-text');
+            itemText.textContent = itemData.text;
+            div.appendChild(itemText);
+            
+            const feedbackIcon = document.createElement('i');
+            feedbackIcon.classList.add('feedback-icon');
+            div.appendChild(feedbackIcon);
+
+            itemsPool.appendChild(div);
+
+            div.addEventListener('click', (e) => {
+                if (checkAnswersBtn.disabled) return;
+                const clickedItem = e.currentTarget;
+                if (activeSelectedItem === clickedItem) {
+                    deselectCurrentItem();
+                } else {
+                    deselectCurrentItem();
+                    activeSelectedItem = clickedItem;
+                    activeSelectedItem.classList.add('selected');
+                }
+                e.stopPropagation();
+            });
+        });
+
+        dropZoneElements.forEach(zone => {
+            zone.addEventListener('click', (e) => {
+                if (checkAnswersBtn.disabled) return;
+                if (activeSelectedItem && (e.target === zone || e.target.closest('.drop-zone') === zone)) {
+                    if (!e.target.closest('.clickable-item')) {
+                        zone.appendChild(activeSelectedItem);
+                        activeSelectedItem.classList.remove('correct', 'incorrect');
+                        deselectCurrentItem();
+                    }
+                }
+            });
+        });
+        
+        checkAnswersBtn.addEventListener('click', () => {
+            let correctCount = 0;
+            const allClickableItems = document.querySelectorAll('.clickable-item');
+            allClickableItems.forEach(item => item.classList.remove('correct', 'incorrect', 'selected'));
+            deselectCurrentItem();
+
+            dropZoneElements.forEach(zone => {
+                if (zone.id !== 'items-pool') {
+                    const zoneType = zone.dataset.zone;
+                    zone.querySelectorAll('.clickable-item').forEach(item => {
+                        if (zoneType === item.dataset.correctZone) {
+                            item.classList.add('correct');
+                            correctCount++;
+                        } else {
+                            item.classList.add('incorrect');
+                        }
+                    });
+                }
+            });
+
+            itemsPool.querySelectorAll('.clickable-item').forEach(item => item.classList.add('incorrect'));
+
+            resultMessage.style.display = 'block';
+            if (correctCount === services.length && itemsPool.children.length <= 1) {
+                resultMessage.textContent = `Perfect! All ${correctCount} services sorted correctly!`;
+                resultMessage.className = 'success';
+            } else {
+                resultMessage.textContent = `You've got ${correctCount} of ${services.length} correct. Review the highlights.`;
+                resultMessage.className = 'some-incorrect';
+            }
+            checkAnswersBtn.disabled = true;
+            checkAnswersBtn.textContent = 'Answers Checked';
+        });
+    </script>
+</body>
+</html>

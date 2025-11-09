@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure ARM Templates Study Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #f3f2f1; /* Light background for code */
+            --code-border: #e0e0e0;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 900px;
+        }
+
+        h1 {
+            color: var(--azure-blue-dark);
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+            display: flex; /* Align icon and text */
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Space between icon and text */
+        }
+        h1 .fa-file-code { /* Style title icon */
+             font-size: 1.2em;
+             color: var(--azure-blue);
+        }
+
+        .instructions {
+            background-color: var(--card-bg);
+            padding: 12px 18px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 0.95em;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--azure-blue-dark); }
+
+        /* --- Card Section --- */
+        .card-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            width: 100%;
+        }
+
+        @media (min-width: 768px) {
+            .card-container { grid-template-columns: repeat(2, 1fr); }
+        }
+        @media (min-width: 1100px) {
+             .card-container { grid-template-columns: repeat(3, 1fr); }
+             /* Make structure card span more columns on large screens */
+             .card.structure-card { grid-column: span 2; }
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 6px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: box-shadow 0.3s ease;
+            display: flex; /* Ensure card takes full height in grid cell */
+            flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+
+        .card-toggle { display: none; }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 18px; background-color: var(--azure-blue);
+            color: var(--text-light); cursor: pointer; transition: background-color 0.2s ease;
+            border-bottom: 1px solid var(--azure-blue-dark);
+        }
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; } /* Slightly smaller header */
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg);
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1; /* Allow content to fill space */
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2000px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color);
+            overflow-y: auto;
+        }
+
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px;
+             font-size: 1.1em; font-weight: 600;
+             border-bottom: 1px solid #eee; padding-bottom: 8px;
+         }
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul {
+             font-size: 0.95em; padding-left: 20px; margin-top: 5px; margin-bottom: 15px;
+             list-style: none; /* Remove default bullets */
+         }
+          .card-content li {
+             margin-bottom: 8px;
+             position: relative;
+             padding-left: 15px; /* Space for custom icon */
+          }
+          .card-content li::before { /* Custom bullet point with icon */
+              font-family: "Font Awesome 6 Free";
+              font-weight: 900; /* Solid style */
+              content: "\f00c"; /* Checkmark icon */
+              color: var(--success-color);
+              position: absolute;
+              left: 0;
+              top: 2px; /* Adjust vertical alignment */
+              font-size: 0.8em;
+          }
+           .card-content li.code-item::before { content: "\f121"; color: var(--azure-blue); } /* Code icon for code items */
+           .card-content li.scope-item::before { content: "\f57d"; color: var(--azure-blue-dark); } /* Target scope icon */
+           .card-content li.tool-item::before { content: "\f0ad"; color: #605e5c; } /* Wrench/tool icon */
+           .card-content li.deploy-item::before { content: "\f135"; color: var(--azure-blue-dark); } /* Rocket icon */
+
+        /* Diagram Styling */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 10px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            flex-direction: column; align-items: stretch; /* Align items full width */
+            gap: 8px;
+        }
+         .diagram-item {
+            background-color: #fff;
+            padding: 8px 12px;
+            border-radius: 3px;
+            border: 1px solid var(--code-border);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+         }
+          .diagram-item i {
+             color: var(--azure-blue);
+             width: 20px; /* Fixed width for icon */
+             text-align: center;
+          }
+         .diagram-item code {
+            font-weight: bold;
+            color: var(--azure-blue-dark);
+            background: none; /* Remove default code background */
+            padding: 0;
+         }
+         .diagram-item span { color: #605e5c; }
+
+         /* Scope Diagram Specifics */
+        .scope-diagram { padding-left: 0; list-style: none; }
+        .scope-diagram .scope-item { padding-left: 25px; border-left: 2px solid var(--border-color); position: relative;}
+        .scope-diagram .scope-item::before { /* Override default checkmark */
+             font-family: "Font Awesome 6 Free"; font-weight: 900;
+             position: absolute; left: 5px; top: 1px; font-size: 1em;
+             color: var(--azure-blue-dark);
+        }
+         .scope-diagram .tenant::before { content: "\f1ad"; } /* Building/Tenant */
+         .scope-diagram .mg::before { content: "\f0e8"; } /* Sitemap/MG */
+         .scope-diagram .sub::before { content: "\f0c2"; } /* Cloud/Subscription */
+         .scope-diagram .rg::before { content: "\f49e"; } /* Box/RG */
+
+        /* Code formatting */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace;
+            background-color: var(--code-bg);
+            padding: 0.1em 0.4em;
+            border-radius: 3px;
+            font-size: 0.9em;
+            border: 1px solid var(--code-border);
+            color: #c50f1f; /* Dark red for code terms */
+        }
+        .code-term {
+            font-weight: bold;
+            color: var(--azure-blue-dark); /* Use blue for specific terms */
+        }
+        pre {
+             background-color: var(--code-bg);
+             border: 1px solid var(--code-border);
+             padding: 15px;
+             border-radius: 4px;
+             overflow-x: auto; /* Allow horizontal scroll for long code */
+             font-size: 0.85em;
+        }
+        pre code { background: none; border: none; padding: 0; } /* Reset code style inside pre */
+
+         /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-file-code"></i>Azure ARM Templates Study Guide</h1>
+
+    <p class="instructions">Understand Azure Resource Manager (ARM) Templates for Infrastructure as Code. <strong>Click/Tap</strong> headers to explore.</p>
+
+    <div class="card-container">
+
+        <!-- What are ARM Templates? -->
+        <div class="card">
+            <input type="checkbox" id="what-toggle" class="card-toggle">
+            <label for="what-toggle" class="card-header">
+                <h2>What are ARM Templates?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>Infrastructure as Code for Azure</h3>
+                <p class="description">Define the Azure resources you need in a declarative JSON file.</p>
+                <ul>
+                    <li class="code-item"><strong>Declarative Syntax:</strong> You define <span class="key-point">what</span> you want to deploy, not the sequence of commands to create it.</li>
+                    <li class="code-item"><strong>JSON Format:</strong> Templates are JavaScript Object Notation (JSON) files.</li>
+                    <li class="code-item"><strong>Idempotent:</strong> Deploying the same template multiple times results in the same state. Azure Resource Manager handles creating, updating, or deleting resources to match the template.</li>
+                    <li class="code-item"><strong>Orchestration:</strong> Resource Manager orchestrates the deployment, handling dependencies and parallel deployments where possible.</li>
+                </ul>
+                <p>Think of it as a blueprint for your Azure environment.</p>
+            </div>
+        </div>
+
+        <!-- Why Use ARM Templates? -->
+        <div class="card">
+            <input type="checkbox" id="why-toggle" class="card-toggle">
+            <label for="why-toggle" class="card-header">
+                <h2>Why Use ARM Templates?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>Benefits of IaC</h3>
+                <p class="description">ARM Templates offer significant advantages for managing Azure resources.</p>
+                <ul>
+                    <li><strong>Consistency & Repeatability:</strong> Ensure environments are deployed identically every time, reducing errors.</li>
+                    <li><strong>Orchestration:</strong> Handles complex deployments involving multiple interdependent resources automatically.</li>
+                    <li><strong>Modularity:</strong> Break templates into smaller, reusable components using linked or nested templates.</li>
+                    <li><strong>CI/CD Integration:</strong> Automate infrastructure deployment as part of your DevOps pipeline.</li>
+                    <li><strong>Exportable Code:</strong> Export the template for existing resource groups to understand the JSON or reuse it.</li>
+                    <li><strong>Authoring Tools:</strong> Good tooling support (VS Code extension, Azure Portal).</li>
+                     <li><strong>Testability:</strong> Validate templates before deployment to catch errors early.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Template Structure -->
+        <div class="card structure-card"> <!-- Apply spanning class if needed -->
+            <input type="checkbox" id="structure-toggle" class="card-toggle">
+            <label for="structure-toggle" class="card-header">
+                <h2>Template Structure</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>File Format / Sections</h3>
+                <p class="description">ARM templates follow a specific JSON structure.</p>
+                <div class="diagram">
+                    <div class="diagram-item">
+                        <i class="fas fa-sitemap"></i>
+                        <code>"$schema"</code><span>: Location of the JSON schema file (defines structure & validation). Usually points to a Microsoft schema.</span>
+                    </div>
+                    <div class="diagram-item">
+                         <i class="fas fa-info-circle"></i>
+                        <code>"contentVersion"</code><span>: Version of your template (e.g., "1.0.0.0"). Required.</span>
+                    </div>
+                     <div class="diagram-item">
+                         <i class="fas fa-cloud"></i>
+                        <code>"apiProfile"</code><span>: (Optional) API version profile for Azure Stack environments.</span>
+                    </div>
+                     <div class="diagram-item">
+                        <i class="fas fa-sliders-h"></i>
+                        <code>"parameters"</code><span>: (Optional) Values provided during deployment to customize resources (e.g., VM name, size).</span>
+                    </div>
+                    <div class="diagram-item">
+                        <i class="fas fa-dollar-sign"></i>
+                        <code>"variables"</code><span>: (Optional) Values constructed and used within the template for simplification (e.g., concatenating names).</span>
+                    </div>
+                     <div class="diagram-item">
+                        <i class="fas fa-calculator"></i>
+                        <code>"functions"</code><span>: (Optional) User-defined functions to reuse complex expressions.</span>
+                    </div>
+                    <div class="diagram-item">
+                        <i class="fas fa-cogs"></i>
+                        <code>"resources"</code><span>: <span class="key-point">Core section</span> defining the Azure resources to deploy (VMs, storage, networks, etc.). Required.</span>
+                    </div>
+                     <div class="diagram-item">
+                         <i class="fas fa-sign-out-alt"></i>
+                        <code>"outputs"</code><span>: (Optional) Values returned after deployment (e.g., a public IP address, connection string).</span>
+                    </div>
+                </div>
+                 <pre><code>
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": { ... },
+  "variables": { ... },
+  "functions": [ ... ],
+  "resources": [ ... ],
+  "outputs": { ... }
+}
+                 </code></pre>
+            </div>
+        </div>
+
+         <!-- Key Elements (Parameters, Variables, Resources, Outputs) -->
+        <div class="card">
+            <input type="checkbox" id="elements-toggle" class="card-toggle">
+            <label for="elements-toggle" class="card-header">
+                <h2>Key Elements</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>Inside the Template</h3>
+                <p class="description">Understanding the main sections.</p>
+                <ul>
+                    <li class="code-item"><strong>Parameters:</strong> Define inputs needed at deployment time. Can have types (string, int, bool, etc.), default values, allowed values, descriptions.</li>
+                    <li class="code-item"><strong>Variables:</strong> Define values used internally. Useful for complex expressions, resource naming conventions, reducing repetition. Not meant for input.</li>
+                    <li class="code-item"><strong>Functions:</strong> Built-in functions (e.g., `concat()`, `resourceGroup()`, `uniqueString()`) and user-defined functions simplify expressions.</li>
+                    <li class="code-item"><strong>Resources:</strong> An array of resource objects. Each object specifies `type`, `apiVersion`, `name`, `location`, `properties`, and potentially `dependsOn` for ordering.</li>
+                    <li class="code-item"><strong>Outputs:</strong> Define values to return after deployment. Useful for chaining deployments or retrieving connection details.</li>
+                     <li class="code-item"><strong>Expressions:</strong> Use `[function()]` syntax within JSON strings to dynamically generate values.</li>
+                </ul>
+            </div>
+        </div>
+
+
+        <!-- Deployment Scopes -->
+        <div class="card">
+            <input type="checkbox" id="scope-toggle" class="card-toggle">
+            <label for="scope-toggle" class="card-header">
+                <h2>Deployment Scopes</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>Where You Can Deploy</h3>
+                <p class="description">Templates can target different levels of the Azure hierarchy.</p>
+                <ul class="scope-diagram">
+                    <li class="scope-item tenant"><strong>Tenant:</strong> Deploy resources like management groups or Azure AD policy assignments.</li>
+                    <li class="scope-item mg"><strong>Management Group:</strong> Deploy policies or role assignments across multiple subscriptions.</li>
+                    <li class="scope-item sub"><strong>Subscription:</strong> Deploy resource groups, policies, role assignments at the subscription level.</li>
+                    <li class="scope-item rg"><strong>Resource Group:</strong> <span class="key-point">Most common scope</span>. Deploy resources like VMs, storage accounts, VNets within a specific resource group.</li>
+                 </ul>
+                 <p>The `$schema` and API versions used might differ slightly depending on the scope.</p>
+            </div>
+        </div>
+
+         <!-- Authoring Tools -->
+        <div class="card">
+            <input type="checkbox" id="tools-toggle" class="card-toggle">
+            <label for="tools-toggle" class="card-header">
+                <h2>Authoring Tools</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>Creating Templates</h3>
+                <p class="description">Tools to help you write and manage ARM templates.</p>
+                <ul>
+                    <li class="tool-item"><strong>Visual Studio Code (VS Code):</strong> <span class="key-point">Recommended</span>. Use the Azure Resource Manager (ARM) Tools extension for intellisense, validation, snippets, and schema integration.</li>
+                    <li class="tool-item"><strong>Azure Portal:</strong> Export templates from existing resources or resource groups. Deploy templates directly. Limited authoring experience.</li>
+                    <li class="tool-item"><strong>Visual Studio:</strong> Provides Azure Resource Group project type with template authoring support.</li>
+                    <li class="tool-item"><strong>Plain Text Editor:</strong> Possible, but lacks validation and intellisense, making it error-prone.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Deployment Methods -->
+        <div class="card">
+            <input type="checkbox" id="deploy-toggle" class="card-toggle">
+            <label for="deploy-toggle" class="card-header">
+                <h2>Deployment Methods</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>Running Your Templates</h3>
+                <p class="description">Various ways to deploy your infrastructure using ARM templates.</p>
+                <ul>
+                    <li class="deploy-item"><strong>Azure Portal:</strong> Upload and deploy templates via the "Deploy a custom template" service.</li>
+                    <li class="deploy-item"><strong>Azure CLI:</strong> Use `az deployment group create` (for RG scope), `az deployment sub create`, etc.</li>
+                    <li class="deploy-item"><strong>Azure PowerShell:</strong> Use `New-AzResourceGroupDeployment` (for RG scope), `New-AzSubscriptionDeployment`, etc.</li>
+                    <li class="deploy-item"><strong>Azure SDKs:</strong> Programmatically deploy templates using languages like Python, .NET, Java, etc.</li>
+                    <li class="deploy-item"><strong>CI/CD Pipelines:</strong> Integrate deployment into Azure DevOps Pipelines, GitHub Actions, Jenkins, etc.</li>
+                    <li class="deploy-item"><strong>Azure Cloud Shell:</strong> Access CLI and PowerShell directly in the browser.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Bicep -->
+        <div class="card">
+             <input type="checkbox" id="bicep-toggle" class="card-toggle">
+            <label for="bicep-toggle" class="card-header">
+                <h2>Related: Bicep</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>A DSL for ARM</h3>
+                <p class="description">An abstraction layer on top of ARM Templates for a simpler authoring experience.</p>
+                 <ul>
+                    <li class="code-item"><strong>Domain-Specific Language (DSL):</strong> Provides a cleaner, more concise syntax compared to JSON.</li>
+                    <li class="code-item"><strong>Transpiles to ARM JSON:</strong> Bicep files are compiled into standard ARM Template JSON before deployment. All ARM capabilities are available.</li>
+                    <li class="code-item"><strong>Improved Type Safety & Validation:</strong> Better tooling support for catching errors during authoring.</li>
+                     <li class="code-item"><strong>Modularity:</strong> Easier module creation and referencing.</li>
+                </ul>
+                <p>If you find ARM JSON verbose, Bicep is often preferred for new development.</p>
+            </div>
+        </div>
+
+        <!-- Template Specs -->
+        <div class="card">
+            <input type="checkbox" id="specs-toggle" class="card-toggle">
+            <label for="specs-toggle" class="card-header">
+                <h2>Related: Template Specs</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>Storing Templates in Azure</h3>
+                <p class="description">A way to store ARM templates within Azure for easier sharing and reuse.</p>
+                <ul>
+                    <li><strong>Azure Resource:</strong> Template Specs are stored as resources within a subscription.</li>
+                    <li><strong>Versioning:</strong> Supports versioning of your templates.</li>
+                     <li><strong>RBAC Control:</strong> Use Azure Role-Based Access Control (RBAC) to manage who can access and deploy the templates.</li>
+                    <li><strong>Simplified Sharing:</strong> Easier to share standardized templates across an organization compared to managing JSON files in repos or storage accounts.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

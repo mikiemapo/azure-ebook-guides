@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Blob Object Replication & Versioning Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #f3f2f1;
+            --code-border: #e0e0e0;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors */
+            --versioning-color: #6f42c1; /* Purple */
+            --replication-color: #038387; /* Teal */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-copy { font-size: 1.1em; color: var(--replication-color); }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--azure-blue-dark); }
+
+        /* --- Mind Map Diagram --- */
+        .mindmap-container {
+            background-color: var(--card-bg); border-radius: 8px; padding: 25px;
+            margin: 0 auto 30px auto; width: 100%; max-width: 750px;
+            box-shadow: 0 2px 8px var(--shadow-color); border: 1px solid var(--border-color);
+            position: relative; min-height: 300px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .mindmap-center {
+            background-color: var(--replication-color); color: var(--text-light); padding: 15px;
+            border-radius: 8px; text-align: center; font-weight: 600; font-size: 1.05em; /* Adjusted font */
+            width: 160px; height: auto; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(3, 131, 135, 0.5);
+            z-index: 10;
+        }
+        .mindmap-center i { font-size: 1.5em; margin-bottom: 8px; }
+
+        .mindmap-branch {
+            position: absolute; background-color: var(--diagram-bg); padding: 8px 12px;
+            border-radius: 6px; font-size: 0.8em; text-align: center; /* Smaller font */
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+            display: flex; align-items: center; gap: 5px; min-width: 100px;
+            z-index: 5;
+        }
+        .mindmap-branch i { font-size: 0.9em; color: var(--azure-blue-dark); }
+        .mindmap-branch.purpose i { color: var(--info-color); }
+        .mindmap-branch.mechanism i { color: #605e5c; }
+        .mindmap-branch.versioning i { color: var(--versioning-color); }
+        .mindmap-branch.reqs i { color: var(--warning-color); }
+        .mindmap-branch.scope i { color: var(--azure-blue); }
+
+        /* Positioning */
+        .branch-purpose { top: 10px; left: 50%; transform: translateX(-50%); }
+        .branch-dr { top: 15px; left: calc(50% + 130px); }
+        .branch-latency { top: 65px; left: calc(50% + 140px); }
+
+        .branch-mechanism { bottom: 10px; left: 50%; transform: translateX(-50%); }
+        .branch-policy { bottom: 15px; left: calc(50% - 160px); }
+        .branch-async { bottom: 65px; left: calc(50% - 150px); }
+
+        .branch-versioning-link { top: 50%; left: 10px; transform: translateY(-50%); background-color: #e8dfff;} /* Highlight versioning */
+        .branch-versioning-prereq { top: calc(50% - 45px); left: -80px; transform: rotate(-25deg); color: var(--warning-color); font-weight: bold;}
+        .branch-versioning-copy { top: calc(50% + 25px); left: -80px; transform: rotate(25deg);}
+
+        .branch-reqs { top: 50%; right: 10px; transform: translateY(-50%); }
+        .branch-reqs-accounts { top: calc(50% - 45px); right: -80px; transform: rotate(25deg); }
+        .branch-reqs-versioning { top: calc(50% + 25px); right: -80px; transform: rotate(-25deg); }
+
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1100px) {
+            .card-container { grid-template-columns: repeat(3, 1fr); }
+            .card.interaction-card { grid-column: span 2; } /* Make interaction card wider */
+        }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--replication-color); color: var(--text-light); cursor: pointer; /* Teal Header */
+            transition: background-color 0.2s ease; border-bottom: 1px solid #026467; /* Darker Teal */
+        }
+        .card-header.versioning-header { background-color: var(--versioning-color); border-bottom-color: #4a2c87; } /* Purple Header */
+        .card-header:hover { background-color: #026467; }
+        .card-header.versioning-header:hover { background-color: #4a2c87; }
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--azure-blue); font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--azure-blue); font-size: 0.9em;
+          }
+        /* Custom list icons */
+        .card-content li i.fa-copy { color: var(--replication-color); }
+        .card-content li i.fa-history { color: var(--versioning-color); }
+        .card-content li i.fa-box { color: var(--azure-blue); }
+        .card-content li i.fa-file-alt { color: var(--info-color); }
+        .card-content li i.fa-sync-alt { color: var(--info-color); }
+        .card-content li i.fa-map-marker-alt { color: var(--success-color); }
+        .card-content li i.fa-shield-alt { color: var(--success-color); }
+        .card-content li i.fa-tachometer-alt { color: var(--info-color); }
+        .card-content li i.fa-tasks { color: var(--azure-blue-dark); }
+        .card-content li i.fa-server { color: #605e5c; }
+        .card-content li i.fa-check { color: var(--success-color); }
+        .card-content li i.fa-times { color: var(--warning-color); }
+        .card-content li i.fa-link { color: var(--azure-blue); }
+        .card-content li i.fa-exclamation-triangle { color: var(--warning-color); }
+        .card-content li i.fa-dollar-sign { color: var(--success-color); }
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-vertical { flex-direction: column; align-items: stretch; gap: 10px;}
+        .diagram-box {
+            background-color: #fff; padding: 10px 15px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px;
+        }
+        .diagram-box i { font-size: 1.5em; color: var(--azure-blue); }
+        .diagram-box span { font-size: 0.85em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; }
+        .diagram-arrow-down { transform: rotate(90deg); margin: 5px 0; }
+        .diagram-label { font-size: 0.8em; color: #605e5c; font-style: italic; margin-top: -10px; margin-bottom: 10px;}
+
+        /* Specific Diagram Styles */
+        .replication-flow i.fa-server { color: #605e5c; }
+        .replication-flow i.fa-tasks { color: var(--replication-color); }
+        .replication-flow i.fa-copy { color: var(--replication-color); font-size: 1.2em; }
+
+        .interaction-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em;}
+        .interaction-table th, .interaction-table td { border: 1px solid var(--border-color); padding: 8px; text-align: center; vertical-align: top;}
+        .interaction-table th { background-color: var(--diagram-bg); font-weight: 600; }
+        .interaction-table .action-col { width: 25%; }
+        .interaction-table .source-col, .interaction-table .dest-col { width: 37.5%; }
+        .interaction-table .blob-state { display: flex; flex-direction: column; align-items: center; gap: 3px;}
+        .interaction-table .blob-state i { font-size: 1.3em; }
+        .interaction-table .blob-state .version-id { font-size: 0.7em; color: #605e5c; font-style: italic;}
+        .interaction-table .fa-file-alt { color: var(--info-color); } /* Current blob */
+        .interaction-table .fa-history { color: var(--versioning-color); } /* Version */
+        .interaction-table .fa-trash { color: var(--warning-color); } /* Delete marker */
+        .interaction-table .replication-status { font-size: 0.8em; margin-top: 5px; color: var(--replication-color); font-weight: bold;}
+
+        /* --- Code formatting --- */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: var(--code-bg);
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid var(--code-border); color: var(--info-color);
+        }
+        .code-term { font-weight: bold; }
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .warning-text { color: var(--warning-color); font-weight: 600; }
+        .important-note { background-color: #fff8db; border-left: 4px solid #ffcc00; padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: #ffcc00; margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-copy"></i>Azure Blob Object Replication & Versioning Guide</h1>
+
+    <!-- Mind Map -->
+    <div class="mindmap-container">
+         <div class="mindmap-center"><i class="fas fa-sync-alt"></i>Object Replication</div>
+
+         <div class="mindmap-branch branch-purpose purpose"><i class="fas fa-bullseye"></i>Purpose</div>
+         <div class="mindmap-branch branch-dr purpose"><i class="fas fa-shield-alt"></i>Disaster Recovery</div>
+         <div class="mindmap-branch branch-latency purpose"><i class="fas fa-tachometer-alt"></i>Latency</div>
+
+         <div class="mindmap-branch branch-mechanism mechanism"><i class="fas fa-cogs"></i>Mechanism</div>
+         <div class="mindmap-branch branch-policy mechanism"><i class="fas fa-tasks"></i>Policy-Based</div>
+         <div class="mindmap-branch branch-async mechanism"><i class="fas fa-clock"></i>Asynchronous</div>
+
+         <div class="mindmap-branch branch-versioning-link versioning"><i class="fas fa-link"></i>Versioning Link</div>
+         <div class="mindmap-branch branch-versioning-prereq versioning"><i class="fas fa-exclamation-triangle"></i>Required!</div>
+         <div class="mindmap-branch branch-versioning-copy versioning"><i class="fas fa-history"></i>Copies Versions</div>
+
+         <div class="mindmap-branch branch-reqs reqs"><i class="fas fa-clipboard-check"></i>Requirements</div>
+         <div class="mindmap-branch branch-reqs-accounts reqs"><i class="fas fa-server"></i>Accounts (GPv2+)</div>
+         <div class="mindmap-branch branch-reqs-versioning reqs"><i class="fas fa-history"></i>Versioning ON</div>
+    </div>
+
+    <p class="instructions">Learn how Azure Blob Object Replication asynchronously copies data between accounts and its vital dependency on Blob Versioning. <strong>Click/Tap</strong> headers to explore.</p>
+
+    <div class="card-container">
+
+        <!-- Recap: Blobs & Containers -->
+        <div class="card">
+            <input type="checkbox" id="recap-toggle" class="card-toggle">
+            <label for="recap-toggle" class="card-header">
+                <h2><i class="fas fa-folder-open"></i>Recap: Blobs & Containers</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-object-group"></i>The Basics Revisited</h3>
+                <p class="description">Remember the "Files in Folders" analogy.</p>
+                 <ul>
+                    <li><i class="fas fa-database fa-li"></i><strong>Storage Account:</strong> Top-level namespace.</li>
+                    <li><i class="fas fa-box fa-li" style="color: var(--azure-blue)"></i><strong>Container:</strong> Like a <span class="key-point">folder</span>, organizes blobs.</li>
+                    <li><i class="fas fa-file-alt fa-li" style="color: var(--info-color)"></i><strong>Blob:</strong> Like a <span class="key-point">file</span> (specifically Block Blobs for replication). Stores data objects.</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Versioning Refresher -->
+        <div class="card">
+            <input type="checkbox" id="versioning-toggle" class="card-toggle">
+            <label for="versioning-toggle" class="card-header versioning-header">
+                <h2><i class="fas fa-history"></i>Blob Versioning Refresher</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-save"></i>Automatic History</h3>
+                <p class="description">Automatically saves previous states on modification/deletion.</p>
+                 <ul>
+                    <li><i class="fas fa-magic fa-li"></i><strong>Automatic Creation:</strong> When a blob is overwritten or deleted, the previous state becomes a distinct <span class="key-point">version</span> (a full copy).</li>
+                    <li><i class="fas fa-clock-rotate-left fa-li"></i><strong>Read-Only History:</strong> Previous versions can be read or restored but not modified.</li>
+                    <li><i class="fas fa-power-off fa-li"></i><strong>Account Level Setting:</strong> Enabled on the storage account.</li>
+                    <li><i class="fas fa-link fa-li"></i><span class="key-point">Crucial Prerequisite</span> for Object Replication.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- What is Object Replication? -->
+        <div class="card">
+            <input type="checkbox" id="what-replication-toggle" class="card-toggle">
+            <label for="what-replication-toggle" class="card-header">
+                <h2><i class="fas fa-question-circle"></i>What is Object Replication?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-sync-alt"></i>Asynchronous Blob Copying</h3>
+                <p class="description">Copies block blobs between a source and destination storage account.</p>
+                <div class="diagram replication-flow">
+                     <div class="diagram-box"> <i class="fas fa-server"></i> <span>Source Account</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box" style="border-color: var(--replication-color)"> <i class="fas fa-tasks"></i> <span>Replication Policy</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"> <i class="fas fa-server"></i> <span>Destination Account</span></div>
+                </div>
+                 <ul>
+                    <li><i class="fas fa-copy fa-li"></i><strong>Purpose:</strong> Create a secondary copy of your data in another account (same or different region).</li>
+                    <li><i class="fas fa-clock fa-li" style="color:var(--warning-color)"></i><strong>Asynchronous:</strong> Copying doesn't happen instantaneously. There's a delay (usually minutes, but depends on factors). Azure provides a replication lag SLA (99.9% within 15 mins, typically).</li>
+                    <li><i class="fas fa-tasks fa-li"></i><strong>Policy-Driven:</strong> You configure replication rules on the <span class="key-point">source</span> account specifying source/destination containers.</li>
+                    <li><i class="fas fa-cubes fa-li"></i><strong>Targets Block Blobs:</strong> Specifically designed for block blobs (including their versions).</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Why Use Object Replication? -->
+        <div class="card">
+            <input type="checkbox" id="why-replication-toggle" class="card-toggle">
+            <label for="why-replication-toggle" class="card-header">
+                <h2><i class="fas fa-thumbs-up"></i>Why Use Object Replication?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-star"></i>Benefits & Use Cases</h3>
+                <p class="description">Scenarios where object replication is valuable.</p>
+                 <ul>
+                    <li><i class="fas fa-shield-alt fa-li"></i><strong>Disaster Recovery (DR):</strong> Maintain a readable secondary copy in a different region in case the primary region fails.</li>
+                    <li><i class="fas fa-tachometer-alt fa-li"></i><strong>Minimize Latency:</strong> Serve read requests from a destination account geographically closer to users/compute.</li>
+                    <li><i class="fas fa-server fa-li"></i><strong>Optimize Compute Workloads:</strong> Process data locally in different regions without impacting the source.</li>
+                    <li><i class="fas fa-balance-scale fa-li"></i><strong>Compliance & Data Distribution:</strong> Meet requirements to store data copies in specific locations.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Requirements -->
+        <div class="card">
+            <input type="checkbox" id="reqs-toggle" class="card-toggle">
+            <label for="reqs-toggle" class="card-header">
+                <h2><i class="fas fa-clipboard-check"></i>Requirements (Prerequisites)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-exclamation-triangle" style="color:var(--warning-color)"></i>Must Haves Before You Start</h3>
+                <p class="description">Object replication won't work without these.</p>
+                <ul>
+                    <li><i class="fas fa-server fa-li"></i><strong>Account Types:</strong> Both source and destination accounts must be GPv2, Premium Block Blob, or ADLS Gen2.</li>
+                    <li><i class="fas fa-history fa-li" style="color:var(--versioning-color)"></i><span class="key-point warning-text">Blob Versioning MUST be enabled</span> on <span class="warning-text">BOTH</span> the source and destination accounts.</li>
+                    <li><i class="fas fa-file-alt fa-li"></i><strong>Blob Feed (Optional but Recommended):</strong> Enabling blob change feed on the source account can sometimes improve performance (dependency tracking).</li>
+                    <li><i class="fas fa-user-shield fa-li"></i><strong>RBAC Permissions:</strong> Appropriate roles needed on both source (to read data, configure policy) and destination (to write data) accounts.</li>
+                </ul>
+                <div class="important-note"><i class="fas fa-info-circle"></i>If versioning isn't enabled on both accounts, policy creation might fail or replication won't occur correctly.</div>
+            </div>
+        </div>
+
+        <!-- Replication Policy -->
+        <div class="card">
+            <input type="checkbox" id="policy-toggle" class="card-toggle">
+            <label for="policy-toggle" class="card-header">
+                <h2><i class="fas fa-tasks"></i>Replication Policy & Rules</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-map"></i>Defining the Copy Process</h3>
+                <p class="description">Configured on the source account to define what gets copied where.</p>
+                 <ul>
+                    <li><i class="fas fa-map-marker-alt fa-li"></i><strong>Source & Destination:</strong> Policy specifies the destination account and region.</li>
+                    <li><i class="fas fa-box fa-li"></i><strong>Rule Pairs:</strong> Each policy contains one or more rules defining source and destination containers.</li>
+                    <li><i class="fas fa-filter fa-li" style="color: var(--info-color)"></i><strong>Prefix Filtering (Optional):</strong> Within a rule, you can specify prefixes to only replicate blobs whose names start with that prefix (e.g., copy only `images/` from the source container).</li>
+                    <li><i class="fas fa-sync-alt fa-li"></i><strong>Configuration:</strong> Set up via Azure Portal, PowerShell, CLI, or ARM templates.</li>
+                 </ul>
+                 <pre><code>
+# Conceptual Policy Structure
+Policy on SourceAccount {
+  DestinationAccount: "destAccount"
+  Rules: [
+    {
+      SourceContainer: "container1"
+      DestinationContainer: "backup-container1"
+      Filters: { PrefixMatch: ["logs/", "archive/data"] } // Optional
+    },
+    {
+       SourceContainer: "container2"
+       DestinationContainer: "copy-container2"
+       // No filters -> copy all block blobs/versions
+    }
+  ]
+}
+                 </code></pre>
+            </div>
+        </div>
+
+        <!-- The Interaction (Crucial) -->
+        <div class="card interaction-card">
+            <input type="checkbox" id="interaction-toggle" class="card-toggle" checked> <!-- Start expanded -->
+            <label for="interaction-toggle" class="card-header">
+                <h2><i class="fas fa-link"></i>Interaction: Replication & Versioning (KEY!)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-project-diagram"></i>How They Work Together</h3>
+                <p class="description">Understanding this is critical for AZ-104. Replication copies <span class="key-point">NEW</span> versions created on the source.</p>
+
+                <table class="interaction-table">
+                    <thead>
+                        <tr>
+                            <th class="action-col">Action on Source</th>
+                            <th class="source-col">Source State After Action</th>
+                            <th class="dest-col">Destination State After Replication</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><i class="fas fa-plus-circle" style="color: var(--success-color)"></i> Create `blob1`</td>
+                            <td>
+                                <div class="blob-state"><i class="fas fa-file-alt"></i><span>blob1 (Current)</span></div>
+                            </td>
+                            <td>
+                                <div class="blob-state"><i class="fas fa-file-alt"></i><span>blob1 (Current)</span></div>
+                                <div class="replication-status"><i class="fas fa-copy"></i> Replicated</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><i class="fas fa-edit" style="color: var(--warning-color)"></i> Overwrite `blob1`</td>
+                             <td>
+                                <div class="blob-state"><i class="fas fa-file-alt"></i><span>blob1 (Current - New Data)</span></div>
+                                <div class="blob-state"><i class="fas fa-history"></i><span>blob1 (Version 1)</span><span class="version-id">(Old Data)</span></div>
+                            </td>
+                            <td>
+                                 <div class="blob-state"><i class="fas fa-file-alt"></i><span>blob1 (Current - New Data)</span></div>
+                                 <div class="blob-state"><i class="fas fa-history"></i><span>blob1 (Version 1)</span><span class="version-id">(Old Data)</span></div>
+                                 <div class="replication-status"><i class="fas fa-copy"></i> New Current Replicated</div>
+                            </td>
+                        </tr>
+                         <tr>
+                            <td><i class="fas fa-trash" style="color: var(--warning-color)"></i> Delete Current `blob1`</td>
+                            <td>
+                                <div class="blob-state"><i class="fas fa-trash"></i><span>(No Current Blob)</span></div>
+                                <div class="blob-state"><i class="fas fa-history"></i><span>blob1 (Version 2)</span><span class="version-id">(Previous Current Data, Marked Deleted)</span></div>
+                                <div class="blob-state"><i class="fas fa-history"></i><span>blob1 (Version 1)</span></div>
+                             </td>
+                             <td>
+                                <div class="blob-state"><i class="fas fa-trash"></i><span>(No Current Blob)</span></div>
+                                <div class="blob-state"><i class="fas fa-history"></i><span>blob1 (Version 2)</span><span class="version-id">(Replicated Delete Marker)</span></div>
+                                <div class="blob-state"><i class="fas fa-history"></i><span>blob1 (Version 1)</span></div>
+                                <div class="replication-status"><i class="fas fa-copy"></i> Delete Marker Version Replicated</div>
+                            </td>
+                        </tr>
+                         <tr>
+                            <td><i class="fas fa-ban" style="color: var(--warning-color)"></i> Delete Specific Version (e.g., Version 1)</td>
+                             <td>
+                                <div class="blob-state"><i class="fas fa-trash"></i><span>(No Current Blob)</span></div>
+                                <div class="blob-state"><i class="fas fa-history"></i><span>blob1 (Version 2)</span></div>
+                                <!-- Version 1 is GONE -->
+                             </td>
+                              <td>
+                                <div class="blob-state"><i class="fas fa-trash"></i><span>(No Current Blob)</span></div>
+                                <div class="blob-state"><i class="fas fa-history"></i><span>blob1 (Version 2)</span></div>
+                                <div class="blob-state"><i class="fas fa-history"></i><span>blob1 (Version 1)</span></div> <!-- Version 1 REMAINS on Dest -->
+                                <div class="replication-status"><i class="fas fa-times"></i> Version Deletion NOT Replicated</div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                 <ul>
+                    <li><i class="fas fa-link fa-li"></i><strong>Versioning is Key:</strong> Replication essentially monitors the source for <span class="key-point">new versions</span> (created by writes, overwrites, or deletes of the current blob) and copies those versions.</li>
+                    <li><i class="fas fa-copy fa-li"></i><strong>Overwrites = New Version Copy:</strong> When you overwrite a blob, the old state becomes a version, the new state is the current blob. *Both* the new current blob and the previous version exist on source and destination after replication.</li>
+                    <li><i class="fas fa-trash fa-li"></i><strong>Deletes = Delete Marker Version Copy:</strong> Deleting the *current* blob creates a new version that acts as a delete marker. This *delete marker version* is replicated. The destination account will then also show no current blob, but retains previous versions.</li>
+                    <li><i class="fas fa-times fa-li"></i><strong>Deleting Specific Versions is NOT Replicated:</strong> If you delete an older version directly on the source, that deletion action <span class="warning-text">does not</span> replicate to the destination. The destination will keep that specific version.</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- What IS / IS NOT Replicated -->
+        <div class="card">
+             <input type="checkbox" id="whatis-toggle" class="card-toggle">
+            <label for="whatis-toggle" class="card-header">
+                <h2><i class="fas fa-clipboard-list"></i>What IS / IS NOT Replicated</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-check"></i>Replicated:</h3>
+                 <ul>
+                    <li><i class="fas fa-plus-circle fa-li" style="color:var(--success-color)"></i>New Block Blobs (creates a current version).</li>
+                    <li><i class="fas fa-edit fa-li" style="color:var(--warning-color)"></i>Overwrites of Block Blobs (creates a new current version, previous state becomes a version - both end up replicated).</li>
+                     <li><i class="fas fa-trash fa-li" style="color:var(--warning-color)"></i>Deletes of current Block Blobs (creates a delete marker version which is replicated).</li>
+                     <li><i class="fas fa-file-alt fa-li"></i>Blob properties and metadata.</li>
+                     <li><i class="fas fa-lock fa-li" style="color: #777"></i>Blob-level immutability policies (Time-based/Legal Hold) *if configured*.</li>
+                 </ul>
+                 <h3 style="margin-top: 20px;"><i class="fas fa-times" style="color:var(--warning-color)"></i>NOT Replicated:</h3>
+                  <ul>
+                    <li><i class="fas fa-history fa-li"></i>Versions that existed <span class="key-point">before</span> the replication policy was configured.</li>
+                    <li><i class="fas fa-ban fa-li" style="color:var(--warning-color)"></i>Deletion of <span class="key-point">specific blob versions</span> on the source.</li>
+                    <li><i class="fas fa-file fa-li"></i>Append Blobs, Page Blobs.</li>
+                    <li><i class="fas fa-copy fa-li"></i>Blob Snapshots (use Versioning instead).</li>
+                    <li><i class="fas fa-box fa-li"></i>Container-level settings (metadata, ACLs, container immutability policies - must be set independently).</li>
+                     <li><i class="fas fa-trash-restore fa-li" style="color: var(--warning-color)"></i>Soft-deleted blobs (unless they are undeleted, creating a new 'current' version).</li>
+                     <li><i class="fas fa-tags fa-li"></i>Blob Index Tags (must be set separately on destination if needed).</li>
+                  </ul>
+            </div>
+        </div>
+
+        <!-- Status & Monitoring -->
+         <div class="card">
+            <input type="checkbox" id="status-toggle" class="card-toggle">
+            <label for="status-toggle" class="card-header">
+                <h2><i class="fas fa-tv"></i>Replication Status & Monitoring</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-binoculars"></i>Checking Progress</h3>
+                <p class="description">How to verify replication is working.</p>
+                 <ul>
+                     <li><i class="fas fa-file-alt fa-li"></i><strong>Blob Properties:</strong> Check the 'Object Replication Status' property for individual blobs on the <span class="key-point">source</span> account (Completed, Failed).</li>
+                     <li><i class="fas fa-tasks fa-li"></i><strong>Policy Status:</strong> View overall policy health and rule status in the Azure portal (source account -> Object Replication).</li>
+                     <li><i class="fas fa-chart-bar fa-li"></i><strong>Azure Monitor Metrics:</strong> Track `Blob Replication Lag Time` (preview) to monitor the delay between source write and destination completion.</li>
+                     <li><i class="fas fa-info-circle fa-li"></i>If status is 'Failed', check permissions, ensure versioning is enabled on both accounts, and verify container existence.</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Considerations -->
+        <div class="card">
+            <input type="checkbox" id="considerations-toggle" class="card-toggle">
+            <label for="considerations-toggle" class="card-header">
+                <h2><i class="fas fa-exclamation-triangle"></i>Considerations</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-info-circle"></i>Important Notes</h3>
+                <ul>
+                     <li><i class="fas fa-dollar-sign fa-li"></i><strong>Cost:</strong> Incur costs for:
+                        <ul>
+                            <li>Replication Transactions (per blob/version copied).</li>
+                            <li>Data Egress (if replicating cross-region).</li>
+                            <li>Storage costs on the destination account (including all replicated versions).</li>
+                         </ul>
+                     </li>
+                    <li><i class="fas fa-sync-alt fa-li"></i><strong>Asynchronous Nature:</strong> Not suitable for scenarios requiring zero data loss (RPO=0) on failover, as there will always be some replication lag.</li>
+                    <li><i class="fas fa-lock fa-li" style="color: #777"></i><strong>Immutability:</strong> Replication respects immutability on the destination. If a destination blob is immutable, replication of an overwrite/delete marker might fail until the policy allows it.</li>
+                    <li><i class="fas fa-trash fa-li"></i><strong>Lifecycle Management:</strong> Can be configured independently on source and destination accounts. You might want different policies (e.g., keep versions longer on destination DR account).</li>
+                     <li><i class="fas fa-times fa-li"></i><strong>One-Way:</strong> Replication is configured source -> destination. It doesn't automatically replicate changes made on the destination back to the source.</li>
+                </ul>
+            </div>
+        </div>
+
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

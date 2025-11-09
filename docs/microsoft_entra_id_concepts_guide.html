@@ -1,0 +1,1498 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Microsoft Entra ID Core Concepts (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Google Font Lexend (Optional - if you decide to use it globally later) -->
+    <!-- <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet"> -->
+    <style>
+      .visual-flow {
+        margin-top: 20px;
+        background: linear-gradient(135deg, #0a1a2f, #162a4f);
+        border-radius: 12px;
+        padding: 20px;
+        color: #e0ecff;
+        text-align: center;
+        box-shadow: 0 0 12px rgba(0, 150, 255, 0.2);
+      }
+
+      .flow-diagram {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .flow-item {
+        background-color: #112b44;
+        padding: 12px 18px;
+        border-radius: 10px;
+        box-shadow: 0 0 8px rgba(0, 120, 255, 0.3);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        min-width: 110px;
+      }
+
+      .flow-item strong {
+        color: #7cd7ff;
+        display: block;
+        font-size: 1.1em;
+      }
+
+      .arrow {
+        font-size: 1.5em;
+        color: #7cd7ff;
+      }
+      :root {
+        --azure-blue: #0078d4;
+        --azure-blue-dark: #005a9e;
+        --azure-bg-light: #f0f4f8;
+        --text-dark: #323130;
+        --text-light: #ffffff;
+        --border-color: #d1d1d1;
+        --card-bg: #ffffff;
+        --diagram-bg: #f8f9fa;
+        --success-color: #107c10;
+        --warning-color: #d83b01;
+        --info-color: #005a9e;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        /* Feature Colors for Entra ID */
+        --entra-id-color: #0072c6; /* A slightly different blue for Entra ID */
+        --user-color: #27ae60;
+        --group-color: #f39c12;
+        --tenant-color: #605e5c;
+        --mfa-color: #8e44ad;
+        --conditional-access-color: #c0392b;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        /* If using Lexend globally, uncomment font-family and line-height below */
+        /* font-family: "Lexend", "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; */
+        font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+          Helvetica, Arial, sans-serif; /* Default */
+        background-color: var(--azure-bg-light);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--text-dark);
+        /* line-height: 1.5; */ /* If using Lexend */
+        line-height: 1.6; /* Default */
+      }
+
+      .main-container {
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      h1 {
+        color: var(--entra-id-color);
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      h1 .fa-id-card {
+        font-size: 1.1em;
+      } /* Using fa-id-card for Entra ID */
+
+      .back-to-hub-container {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto 20px auto;
+        padding: 0 20px;
+        box-sizing: border-box;
+      }
+      .back-to-hub {
+        padding: 10px;
+        background-color: #e6f2ff;
+        border-radius: 5px;
+        text-align: left;
+        border: 1px solid var(--azure-blue);
+      }
+      .back-to-hub a {
+        text-decoration: none;
+        color: #005a9e;
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+      .back-to-hub a i {
+        margin-right: 8px;
+      }
+
+      .instructions {
+        background-color: var(--card-bg);
+        padding: 12px 18px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        text-align: center;
+        font-size: 0.95em;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px var(--shadow-color);
+      }
+      .instructions strong {
+        color: var(--entra-id-color);
+      }
+
+      /* --- Card Section --- */
+      .card-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        width: 100%;
+      }
+      @media (min-width: 768px) {
+        .card-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1200px) {
+        .card-container {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        /* Example: make a specific card span more columns if needed */
+        /* .card.some-wide-card { grid-column: span 3; } */
+      }
+
+      .card {
+        background-color: var(--card-bg);
+        border-radius: 6px;
+        box-shadow: 0 2px 5px var(--shadow-color);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+      }
+      .card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+      .card-toggle {
+        display: none;
+      } /* Checkbox used for toggling */
+
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        color: var(--text-light);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        border-bottom: 1px solid;
+      }
+      /* Specific header colors for Entra ID guide cards */
+      .card-header.entra-id-header {
+        background-color: var(--entra-id-color);
+        border-bottom-color: #005a9e;
+      }
+      .card-header.entra-id-header:hover {
+        background-color: #005a9e;
+      }
+      /* Add other header colors as we define cards: user-header, group-header, etc. */
+      .card-header.default-header {
+        background-color: var(--azure-blue-dark);
+        border-bottom-color: #004578;
+      } /* For summary or generic */
+      .card-header.default-header:hover {
+        background-color: #004578;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 1.2em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-header h2 i {
+        font-size: 1em;
+        opacity: 0.9;
+      }
+      .card-header .toggle-icon {
+        font-size: 1.1em;
+        transition: transform 0.3s ease;
+      }
+
+      /* Content area that expands/collapses */
+      .card-content {
+        max-height: 0; /* Collapsed by default */
+        opacity: 0; /* Hidden by default */
+        overflow: hidden;
+        padding: 0 18px; /* No padding when collapsed */
+        transition: max-height 0.4s ease-out, opacity 0.3s ease-in,
+          padding 0.4s ease-out, border-top 0.4s ease-out;
+        background-color: var(--card-bg);
+        border-top: 0px solid var(--border-color); /* No top border when collapsed */
+        flex-grow: 1;
+      }
+
+      /* When checkbox is checked, modify the header and expand content */
+      .card-toggle:checked + .card-header {
+        border-bottom-color: transparent; /* Remove border when content shown */
+      }
+      .card-toggle:checked + .card-header .toggle-icon {
+        transform: rotate(180deg);
+      }
+      .card-toggle:checked ~ .card-content {
+        max-height: 2500px; /* Large enough to fit content */
+        opacity: 1;
+        padding: 15px 18px; /* Add padding when expanded */
+        border-top: 1px solid var(--border-color); /* Add border when content shown */
+        overflow-y: auto;
+      }
+
+      .card-content h3 {
+        color: var(--azure-blue-dark);
+        margin-top: 0;
+        margin-bottom: 12px;
+        font-size: 1.1em;
+        font-weight: 600;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-content h3 i {
+        font-size: 0.9em;
+      }
+      .card-content ul {
+        font-size: 0.95em;
+        padding-left: 0;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        list-style: none;
+      }
+      .card-content li {
+        margin-bottom: 8px;
+        position: relative;
+        padding-left: 25px;
+      }
+      .card-content li i.fa-li {
+        position: absolute;
+        left: 0;
+        top: 3px;
+        width: 20px;
+        text-align: center;
+        font-size: 0.9em;
+        color: var(--entra-id-color);
+      }
+
+      /* Specific list icon colors as needed for different cards */
+      .user-card li i.fa-li {
+        color: var(--user-color);
+      }
+      .group-card li i.fa-li {
+        color: var(--group-color);
+      }
+      /* etc. */
+
+      .diagram {
+        border: 1px dashed var(--border-color);
+        padding: 15px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        background-color: var(--diagram-bg);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .diagram-box {
+        background-color: #fff;
+        padding: 8px 12px;
+        border-radius: 4px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 2px var(--shadow-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        min-width: 100px;
+        font-size: 0.9em;
+      }
+      .diagram-box i {
+        font-size: 1.6em;
+      }
+      .diagram-box strong {
+        font-size: 1em;
+        color: var(--azure-blue-dark);
+        margin-bottom: 3px;
+      }
+      .diagram-box span {
+        font-size: 0.85em;
+        color: var(--text-dark);
+      }
+      .diagram-arrow {
+        font-size: 1.8em;
+        color: #a19f9d;
+        margin: 0 5px;
+        align-self: center;
+      }
+
+      .key-point {
+        font-weight: 600;
+        color: var(--entra-id-color);
+      }
+      .description {
+        font-style: italic;
+        color: #605e5c;
+        margin-bottom: 15px;
+        display: block;
+      }
+      .important-note {
+        background-color: #e6f7ff;
+        border-left: 4px solid var(--entra-id-color);
+        padding: 10px 15px;
+        margin: 15px 0;
+        font-size: 0.9em;
+      }
+      .important-note i {
+        color: var(--entra-id-color);
+        margin-right: 8px;
+      }
+      code,
+      .code-term {
+        font-family: "Consolas", "Courier New", monospace;
+        background-color: #eef1f5;
+        padding: 0.1em 0.4em;
+        border-radius: 3px;
+        font-size: 0.9em;
+        border: 1px solid #ddd;
+        color: var(--azure-blue-dark);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="back-to-hub-container">
+      <div class="back-to-hub">
+        <a href="index.html"
+          ><i class="fas fa-arrow-left"></i>Back to Study Hub</a
+        >
+      </div>
+    </div>
+
+    <div class="main-container">
+      <h1><i class="fas fa-id-card"></i>Microsoft Entra ID Core Concepts</h1>
+      <p class="instructions">
+        Understanding identities, access management, and core features of
+        Microsoft Entra ID (formerly Azure AD). Essential for AZ-104.
+        <strong>Click/Tap</strong> headers to explore.
+      </p>
+
+      <div class="card-container">
+        <!-- Card 1: What is Microsoft Entra ID? -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="what-is-entra-toggle"
+            class="card-toggle"
+            checked
+          />
+          <!-- First card checked by default -->
+          <label for="what-is-entra-toggle" class="card-header entra-id-header">
+            <h2>
+              <i class="fas fa-cloud-lock"></i>What is Microsoft Entra ID?
+            </h2>
+            <!-- fas fa-cloud-lock is Pro, consider fas fa-cloud or fas fa-user-shield -->
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--entra-id-color)">
+              <i class="fas fa-building-user"></i>Cloud Identity & Access
+              Management
+            </h3>
+            <!-- fas fa-building-user is Pro, consider fas fa-users or fas fa-user-cog -->
+            <p class="description">
+              Microsoft Entra ID is a cloud-based identity and access management
+              (IAM) service provided by Microsoft. It helps organizations manage
+              and secure identities for users, applications, and devices.
+            </p>
+
+            <p class="important-note" style="font-size: 0.85em">
+              <i class="fas fa-info-circle"></i
+              ><strong>Formerly Known As:</strong> You may also see this service
+              referred to by its previous name,
+              <span class="key-point">Azure Active Directory (Azure AD)</span>.
+            </p>
+
+            <h4>Core Purpose:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-sign-in-alt"></i>Enable users to
+                <span class="key-point">sign in securely</span>.
+              </li>
+              <li>
+                <i class="fa-li fas fa-key"></i>Control
+                <span class="key-point">access to resources</span> based on
+                organizational policies.
+              </li>
+            </ul>
+
+            <h4>Resources Accessed via Entra ID:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-globe"></i>External SaaS apps (e.g.,
+                Microsoft 365, Salesforce, Dropbox).
+              </li>
+              <li>
+                <i class="fa-li fas fa-laptop-code"></i>Internal resources
+                (e.g., custom line-of-business cloud applications).
+              </li>
+              <li>
+                <i class="fa-li fas fa-cubes"></i>Azure portal and Azure
+                resources (via Azure RBAC).
+              </li>
+              <li>
+                <i class="fa-li fas fa-mobile-alt"></i>Windows devices
+                (Microsoft Entra join/hybrid join).
+              </li>
+            </ul>
+
+            <h4>Key Functions:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-users-cog"></i
+                ><strong>Identity Management:</strong> Creating and managing
+                users, groups, and service principals.
+              </li>
+              <li>
+                <i class="fa-li fas fa-user-check"></i
+                ><strong>Authentication:</strong> Verifying the identity of
+                users and devices (e.g., username/password, MFA).
+              </li>
+              <li>
+                <i class="fa-li fas fa-user-shield"></i
+                ><strong>Authorization:</strong> Granting or denying access to
+                applications and resources.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sync-alt"></i
+                ><strong>Single Sign-On (SSO):</strong> Allowing users to sign
+                in once and access multiple applications.
+              </li>
+            </ul>
+
+            <p>
+              <strong>AZ-104 Focus:</strong> Understand that Entra ID is the
+              core identity service for Azure and Microsoft cloud services. It's
+              crucial for managing users who access Azure resources.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 2: Microsoft Entra ID vs. Active Directory Domain Services (AD DS) -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="entra-vs-adds-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="entra-vs-adds-toggle"
+            class="card-header"
+            style="background-color: #5d6d7e"
+          >
+            <!-- Neutral Grey for comparison -->
+            <h2><i class="fas fa-balance-scale-left"></i>Entra ID vs. AD DS</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: #5d6d7e">
+              <i class="fas fa-exchange-alt"></i>Cloud IAM vs. On-Premises
+              Directory
+            </h3>
+            <p class="description">
+              It's crucial to understand that Microsoft Entra ID and traditional
+              Active Directory Domain Services (AD DS) serve different primary
+              purposes, though they can work together in hybrid scenarios.
+            </p>
+
+            <h4>
+              <i class="fas fa-cloud" style="color: var(--entra-id-color)"></i
+              >Microsoft Entra ID (Cloud-Native IAM)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-bullseye"></i
+                ><strong>Primary Purpose:</strong> Identity and Access
+                Management for
+                <span class="key-point">cloud applications</span> (SaaS, custom
+                cloud apps) and Azure resources.
+              </li>
+              <li>
+                <i class="fa-li fas fa-globe"></i
+                ><strong>Scope:</strong> Internet-facing, designed for modern
+                web protocols.
+              </li>
+              <li>
+                <i class="fa-li fas fa-shield-alt"></i
+                ><strong>Authentication Protocols:</strong> OAuth 2.0, OpenID
+                Connect (OIDC), SAML.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sitemap"></i
+                ><strong>Structure:</strong> Flat structure of users and groups
+                within a tenant.
+              </li>
+              <li>
+                <i class="fa-li fas fa-desktop"></i
+                ><strong>Device Join:</strong> Microsoft Entra joined, Microsoft
+                Entra hybrid joined (for cloud management of domain-joined
+                devices).
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>Not a direct replacement
+                for AD DS for authenticating on-premises servers or legacy apps
+                using Kerberos/LDAP.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-server" style="color: var(--text-dark)"></i
+              >Active Directory Domain Services (AD DS - On-Premises)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-bullseye"></i
+                ><strong>Primary Purpose:</strong> Directory services for
+                <span class="key-point">on-premises networks</span>. Manages
+                users, computers, groups, GPOs.
+              </li>
+              <li>
+                <i class="fa-li fas fa-network-wired"></i
+                ><strong>Scope:</strong> Primarily internal corporate networks.
+              </li>
+              <li>
+                <i class="fa-li fas fa-key"></i
+                ><strong>Authentication Protocols:</strong> Kerberos, NTLM,
+                LDAP.
+              </li>
+              <li>
+                <i class="fa-li fas fa-project-diagram"></i
+                ><strong>Structure:</strong> Hierarchical (Domains, Trees,
+                Forests, OUs).
+              </li>
+              <li>
+                <i class="fa-li fas fa-laptop"></i
+                ><strong>Device Join:</strong> Traditional domain join for
+                Windows clients and servers.
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>Often extended to Azure
+                by running AD DS domain controllers on Azure VMs.
+              </li>
+            </ul>
+
+            <h4 style="margin-top: 15px">Quick Comparison:</h4>
+            <table
+              class="comparison-table"
+              style="
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 10px;
+                font-size: 0.9em;
+              "
+            >
+              <thead>
+                <tr>
+                  <th
+                    style="
+                      border: 1px solid var(--border-color);
+                      padding: 8px;
+                      background-color: var(--diagram-bg);
+                    "
+                  >
+                    Feature
+                  </th>
+                  <th
+                    style="
+                      border: 1px solid var(--border-color);
+                      padding: 8px;
+                      background-color: var(--diagram-bg);
+                      color: var(--entra-id-color);
+                    "
+                  >
+                    Microsoft Entra ID
+                  </th>
+                  <th
+                    style="
+                      border: 1px solid var(--border-color);
+                      padding: 8px;
+                      background-color: var(--diagram-bg);
+                      color: var(--text-dark);
+                    "
+                  >
+                    AD DS (On-Premises)
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    Primary Use
+                  </td>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    Cloud applications & Azure resources IAM
+                  </td>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    On-premises network IAM, GPOs
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    Key Protocols
+                  </td>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    OAuth 2.0, OIDC, SAML
+                  </td>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    Kerberos, LDAP, NTLM
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    Structure
+                  </td>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    Flat (Tenant)
+                  </td>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    Hierarchical (Forests, Domains, OUs)
+                  </td>
+                </tr>
+                <tr>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    Device Management
+                  </td>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    Entra join, Hybrid join, MDM/MAM focus
+                  </td>
+                  <td
+                    style="border: 1px solid var(--border-color); padding: 8px"
+                  >
+                    Traditional Domain Join, Group Policy
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <p style="margin-top: 15px">
+              <i class="fas fa-sync-alt" style="color: var(--success-color)"></i
+              ><strong>Hybrid Identity:</strong> Microsoft Entra Connect is a
+              tool to synchronize identities from on-premises AD DS to Microsoft
+              Entra ID, enabling users to use the same credentials for both
+              on-prem and cloud resources (SSO).
+            </p>
+            <p>
+              <strong>AZ-104 Focus:</strong> Know the distinct purposes. Entra
+              ID is central to Azure identity. Understand that AD DS on Azure
+              VMs is for extending on-prem AD, not a cloud-native replacement by
+              Entra ID for traditional server auth.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 3: Managing Users in Microsoft Entra ID -->
+        <div class="card user-card">
+          <!-- Added user-card class for potential specific styling -->
+          <input type="checkbox" id="manage-users-toggle" class="card-toggle" />
+          <label
+            for="manage-users-toggle"
+            class="card-header"
+            style="background-color: var(--user-color)"
+          >
+            <h2><i class="fas fa-user-cog"></i>Managing Users</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--user-color)">
+              <i class="fas fa-users"></i>User Identities in Entra ID
+            </h3>
+            <p class="description">
+              User accounts are fundamental to controlling access. Entra ID
+              supports different types of user identities.
+            </p>
+
+            <h4>User Identity Types:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cloud"></i
+                ><strong>Cloud-Only (Cloud-Native):</strong> Users created
+                directly in Microsoft Entra ID. Live only in the cloud. Password
+                managed in Entra ID.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sync-alt"></i
+                ><strong>Synchronized:</strong> Users mastered in on-premises AD
+                DS and synchronized to Microsoft Entra ID using Entra Connect.
+                Can use same sign-on (SSO) methods like Password Hash Sync (PHS)
+                or Pass-Through Authentication (PTA).
+              </li>
+              <li>
+                <i class="fa-li fas fa-user-friends"></i
+                ><strong>Guest Users (B2B):</strong> External users (e.g.,
+                partners, vendors) invited into your Entra ID tenant to
+                collaborate or access specific resources.
+              </li>
+            </ul>
+
+            <h4>Creating & Managing Users:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-plus-circle"></i
+                ><strong>Creation Methods:</strong>
+                <ul>
+                  <li>Azure portal / Microsoft Entra admin center.</li>
+                  <li>
+                    Azure CLI (<code class="code-term">az ad user create</code
+                    >).
+                  </li>
+                  <li>
+                    Azure PowerShell (<code class="code-term">New-MgUser</code>
+                    - Microsoft Graph PowerShell).
+                  </li>
+                  <li>Microsoft Graph API.</li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-id-badge"></i
+                ><strong>User Principal Name (UPN):</strong> Primary login name,
+                typically
+                <code class="code-term">username@yourdomain.com</code>.
+              </li>
+              <li>
+                <i class="fa-li fas fa-key"></i
+                ><strong>Password Management:</strong> Resetting passwords,
+                setting temporary passwords, self-service password reset (SSPR)
+                options.
+              </li>
+              <li>
+                <i class="fa-li fas fa-tasks"></i
+                ><strong>Assigning Roles:</strong> Assign built-in Entra ID
+                roles (e.g., Global Administrator, User Administrator) or custom
+                roles for administrative tasks. (Azure RBAC roles are separate,
+                for Azure resource access).
+              </li>
+              <li>
+                <i class="fa-li fas fa-users"></i
+                ><strong>Bulk Operations:</strong> Can create, invite, or delete
+                users in bulk using CSV files (portal) or scripting.
+              </li>
+            </ul>
+            <p>
+              <strong>AZ-104 Focus:</strong> Know how to create users, basic
+              user management tasks (reset password), and differentiate user
+              types (cloud, sync, guest). Understand the concept of UPN.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 4: Managing Groups in Microsoft Entra ID -->
+        <div class="card group-card">
+          <!-- Added group-card class -->
+          <input
+            type="checkbox"
+            id="manage-groups-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="manage-groups-toggle"
+            class="card-header"
+            style="
+              background-color: var(--group-color);
+              color: var(--text-dark);
+            "
+          >
+            <h2><i class="fas fa-users-cog"></i>Managing Groups</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--group-color)">
+              <i class="fas fa-object-group"></i>Organizing Users & Assigning
+              Access
+            </h3>
+            <p class="description">
+              Groups in Microsoft Entra ID are used to manage collections of
+              users (or other principals) to simplify access management and role
+              assignments.
+            </p>
+
+            <h4>Group Types:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-shield-alt"></i
+                ><strong>Security Groups:</strong>
+                <ul>
+                  <li>
+                    Primary use is to manage access to resources (e.g.,
+                    applications, Azure resources via RBAC, SharePoint sites).
+                    Can contain users, devices, other groups, and service
+                    principals.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-envelope"></i
+                ><strong>Microsoft 365 Groups:</strong>
+                <ul>
+                  <li>
+                    Enable collaboration by providing members access to shared
+                    resources like a SharePoint team site, Exchange mailbox,
+                    Planner, OneNote. Always security-enabled. Can have dynamic
+                    membership.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <h4>Membership Types:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-user-plus"></i
+                ><strong>Assigned:</strong> Members are manually added and
+                removed. Most common type.
+              </li>
+              <li>
+                <i class="fa-li fas fa-cogs"></i
+                ><strong>Dynamic User:</strong> Membership is automatically
+                managed based on user attributes (e.g., department, location).
+                Requires Microsoft Entra ID P1 or P2 license.
+              </li>
+              <li>
+                <i class="fa-li fas fa-desktop"></i
+                ><strong>Dynamic Device:</strong> Membership is automatically
+                managed based on device attributes (e.g., OS type, device
+                model). Requires Microsoft Entra ID P1 or P2 license.
+              </li>
+            </ul>
+
+            <h4>Key Uses of Groups:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-key"></i>Assigning access to
+                applications.
+              </li>
+              <li>
+                <i class="fa-li fas fa-user-shield"></i>Assigning Entra ID roles
+                or Azure RBAC roles.
+              </li>
+              <li>
+                <i class="fa-li fas fa-id-card-alt"></i>Managing licenses
+                (group-based licensing). Requires P1/P2.
+              </li>
+              <li>
+                <i class="fa-li fas fa-mobile-alt"></i>Targeting for Conditional
+                Access policies or Intune policies.
+              </li>
+            </ul>
+            <p>
+              <strong>AZ-104 Focus:</strong> Differentiate Security vs. M365
+              groups. Understand assigned vs. dynamic membership concepts. Know
+              how groups are used for access assignments.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 5: Microsoft Entra Tenant & Custom Domains -->
+        <div class="card tenant-card">
+          <!-- Added tenant-card class -->
+          <input
+            type="checkbox"
+            id="tenant-domains-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="tenant-domains-toggle"
+            class="card-header"
+            style="background-color: var(--tenant-color)"
+          >
+            <h2><i class="fas fa-landmark"></i>Tenant & Custom Domains</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--tenant-color)">
+              <i class="fas fa-building"></i>Your Organization's Entra ID
+              Instance
+            </h3>
+            <p class="description">
+              Understanding the concept of a tenant and how to use custom
+              domains for branding and identity.
+            </p>
+
+            <h4>Microsoft Entra Tenant:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cloud"></i>A
+                <span class="key-point">dedicated and trusted instance</span> of
+                Microsoft Entra ID, automatically created when your organization
+                signs up for a Microsoft cloud service subscription (e.g.,
+                Azure, Microsoft 365).
+              </li>
+              <li>
+                <i class="fa-li fas fa-id-card"></i>Represents your organization
+                and acts as a container for users, groups, apps, and devices.
+              </li>
+              <li>
+                <i class="fa-li fas fa-globe-americas"></i>Globally unique, with
+                an initial domain name like
+                <code class="code-term">yourtenantname.onmicrosoft.com</code>.
+              </li>
+            </ul>
+
+            <h4>Custom Domains:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-signature"></i>You can add your
+                organization's
+                <span class="key-point">custom domain names</span> (e.g.,
+                <code class="code-term">contoso.com</code>) to your Entra ID
+                tenant.
+              </li>
+              <li>
+                <i class="fa-li fas fa-user-tag"></i>Allows users to sign in
+                with UPNs that match your corporate branding (e.g.,
+                <code class="code-term">user@contoso.com</code>).
+              </li>
+              <li>
+                <i class="fa-li fas fa-check-circle"></i
+                ><strong>Verification Process:</strong> To add a custom domain,
+                you must prove ownership by adding a specific DNS record (TXT or
+                MX) to your domain's public DNS zone.
+              </li>
+              <li>
+                <i class="fa-li fas fa-star"></i>One custom domain can be set as
+                the <span class="key-point">primary domain</span> for new user
+                creation.
+              </li>
+            </ul>
+            <p>
+              <strong>AZ-104 Focus:</strong> Know what a tenant is. Understand
+              the purpose of custom domains and the high-level verification
+              process (DNS record).
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 6: Introduction to Multi-Factor Authentication (MFA) -->
+        <div class="card mfa-card">
+          <!-- Added mfa-card class -->
+          <input type="checkbox" id="mfa-intro-toggle" class="card-toggle" />
+          <label
+            for="mfa-intro-toggle"
+            class="card-header"
+            style="background-color: var(--mfa-color)"
+          >
+            <h2>
+              <i class="fas fa-user-lock"></i>Intro to Multi-Factor
+              Authentication (MFA)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--mfa-color)">
+              <i class="fas fa-layer-group"></i>Adding Layers of Security
+            </h3>
+            <p class="description">
+              MFA is a security process requiring users to provide more than one
+              form of verification to prove their identity during sign-in.
+            </p>
+
+            <h4>Why MFA is Critical:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-key"></i>Passwords can be compromised
+                (phishing, breaches, weak passwords).
+              </li>
+              <li>
+                <i class="fa-li fas fa-shield-alt"></i>MFA provides
+                <span class="key-point">significantly stronger protection</span>
+                against unauthorized access, even if a password is stolen.
+                Microsoft states it blocks over 99.9% of identity compromise
+                attacks.
+              </li>
+            </ul>
+
+            <h4>Common MFA Factors (Something you know, have, or are):</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-mobile-alt"></i
+                ><strong>Microsoft Authenticator app:</strong> Push notification
+                approval or one-time passcode (OTP).
+                <span class="key-point">Recommended method.</span>
+              </li>
+              <li>
+                <i class="fa-li fas fa-sms"></i><strong>SMS:</strong> Code sent
+                via text message.
+              </li>
+              <li>
+                <i class="fa-li fas fa-phone-alt"></i
+                ><strong>Phone Call:</strong> Automated voice call.
+              </li>
+              <li>
+                <i class="fa-li fas fa-fingerprint"></i
+                ><strong>Biometrics:</strong> Windows Hello for Business, FIDO2
+                security keys.
+              </li>
+              <li>
+                <i class="fa-li fas fa-key"></i
+                ><strong>Hardware/Software OATH Tokens:</strong> Generate OTPs.
+              </li>
+            </ul>
+
+            <h4>Enabling MFA in Microsoft Entra ID:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-user-shield"></i
+                ><strong>Security Defaults:</strong> Basic MFA enforcement for
+                all users, especially admins. Enabled by default in newer
+                tenants.
+              </li>
+              <li>
+                <i class="fa-li fas fa-tasks"></i
+                ><strong>Conditional Access Policies:</strong>
+                <span class="key-point"
+                  >Preferred and most flexible method.</span
+                >
+                Allows granular control to require MFA based on conditions
+                (user, location, device, app, risk). Requires Entra ID P1/P2.
+              </li>
+              <li>
+                <i class="fa-li fas fa-users-cog"></i>Per-user MFA (legacy
+                method): Manually enable/enforce MFA for individual users. Not
+                recommended for broad deployment.
+              </li>
+            </ul>
+            <p>
+              <strong>AZ-104 Focus:</strong> Understand what MFA is, why it's
+              important, common methods, and that Conditional Access is the
+              primary way to enforce it strategically.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 7: Introduction to Conditional Access Policies -->
+        <div class="card conditional-access-card">
+          <!-- Added conditional-access-card class -->
+          <input
+            type="checkbox"
+            id="conditional-access-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="conditional-access-toggle"
+            class="card-header"
+            style="background-color: var(--conditional-access-color)"
+          >
+            <h2>
+              <i class="fas fa-traffic-light"></i>Intro to Conditional Access
+              Policies
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--conditional-access-color)">
+              <i class="fas fa-tasks"></i>If-Then Access Control
+            </h3>
+            <p class="description">
+              Conditional Access policies in Microsoft Entra ID are "if-then"
+              statements that bring signals together, to make decisions, and
+              enforce organizational access policies.
+            </p>
+            <p>Requires Microsoft Entra ID P1 or P2 licenses.</p>
+
+            <div class="diagram" style="align-items: flex-start">
+              <div
+                class="diagram-box"
+                style="border-color: var(--info-color); width: calc(40% - 10px)"
+              >
+                <i
+                  class="fas fa-satellite-dish"
+                  style="color: var(--info-color)"
+                ></i
+                ><strong>Signals (IF)</strong>
+                <span style="font-size: 0.8em"
+                  >User/Group, Location, Device, Application, Real-time
+                  Risk</span
+                >
+              </div>
+              <i
+                class="fas fa-arrow-right diagram-arrow"
+                style="align-self: center"
+              ></i>
+              <div
+                class="diagram-box"
+                style="
+                  border-color: var(--entra-id-color);
+                  width: calc(25% - 10px);
+                "
+              >
+                <i class="fas fa-cogs" style="color: var(--entra-id-color)"></i
+                ><strong>Policy Engine</strong>
+              </div>
+              <i
+                class="fas fa-arrow-right diagram-arrow"
+                style="align-self: center"
+              ></i>
+              <div
+                class="diagram-box"
+                style="
+                  border-color: var(--success-color);
+                  width: calc(35% - 10px);
+                "
+              >
+                <i
+                  class="fas fa-check-double"
+                  style="color: var(--success-color)"
+                ></i
+                ><strong>Decisions (THEN)</strong>
+                <span style="font-size: 0.8em"
+                  >Block, Grant (e.g., Require MFA, Compliant Device, Limited
+                  Access)</span
+                >
+              </div>
+            </div>
+
+            <h4>Common Signals (Conditions - "IF"):</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-user"></i
+                ><strong>User or group membership:</strong> Target specific
+                users or groups.
+              </li>
+              <li>
+                <i class="fa-li fas fa-map-marker-alt"></i
+                ><strong>IP Location:</strong> Based on public IP address ranges
+                (e.g., trusted corporate network, specific countries).
+              </li>
+              <li>
+                <i class="fa-li fas fa-desktop"></i
+                ><strong>Device:</strong> Device platform (Windows, iOS,
+                Android), device compliance state (via Intune).
+              </li>
+              <li>
+                <i class="fa-li fas fa-cubes"></i
+                ><strong>Application:</strong> Specific cloud app being
+                accessed.
+              </li>
+              <li>
+                <i class="fa-li fas fa-shield-virus"></i
+                ><strong>Real-time and calculated risk detection:</strong>
+                (Requires Entra ID P2 for Identity Protection features) e.g.,
+                sign-in from anonymous IP, atypical travel.
+              </li>
+            </ul>
+
+            <h4>Common Decisions (Access Controls - "THEN"):</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-ban"></i
+                ><strong>Block access:</strong> Highest restriction.
+              </li>
+              <li>
+                <i class="fa-li fas fa-unlock-alt"></i
+                ><strong>Grant access:</strong>
+                <ul>
+                  <li>But require MFA.</li>
+                  <li>But require device to be marked as compliant.</li>
+                  <li>But require Microsoft Entra hybrid joined device.</li>
+                  <li>But require approved client app.</li>
+                  <li>But require app protection policy (for mobile apps).</li>
+                  <li>
+                    (Session controls like limited experience can also apply).
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <p>
+              <strong>AZ-104 Focus:</strong> Understand the concept of
+              Conditional Access (if-then), common signals and decisions, and
+              its role as the primary tool for enforcing MFA and other access
+              requirements.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card: Understanding Roles & Layers of Control -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="entra-roles-layers-toggle"
+            class="card-toggle"
+          />
+          <label
+            for="entra-roles-layers-toggle"
+            class="card-header entra-id-header"
+          >
+            <h2>
+              <i class="fas fa-layer-group"></i>Understanding Roles & Layers of
+              Control (IAM vs RBAC vs NTFS)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--entra-id-color)">
+              <i class="fas fa-sitemap"></i>The Three Layers of Access Control
+            </h3>
+            <p class="description">
+              Azure organizes permissions across three core layers — each
+              managing a different level of access: who you are, what you can
+              manage, and what you can touch.
+            </p>
+
+            <div class="diagram">
+              <div class="diagram-box">
+                <i class="fas fa-id-card"></i><strong>Identity Layer</strong
+                ><span>Microsoft Entra ID</span>
+              </div>
+              <i class="fas fa-arrow-down diagram-arrow"></i>
+              <div class="diagram-box">
+                <i class="fas fa-cubes"></i><strong>Resource Layer</strong
+                ><span>Azure RBAC</span>
+              </div>
+              <i class="fas fa-arrow-down diagram-arrow"></i>
+              <div class="diagram-box">
+                <i class="fas fa-folder-open"></i><strong>Data Layer</strong
+                ><span>NTFS / ACLs</span>
+              </div>
+            </div>
+
+            <div class="visual-flow">
+              <h3>🔄 Access Control Flow</h3>
+              <p>Visualizing how Azure control layers connect:</p>
+              <div class="flow-diagram">
+                <div class="flow-item">
+                  <strong>1️⃣ Entra ID</strong><br />
+                  <span>Who you are 👤</span>
+                </div>
+                <div class="arrow">➡️</div>
+                <div class="flow-item">
+                  <strong>2️⃣ RBAC</strong><br />
+                  <span>What you can manage 🧱</span>
+                </div>
+                <div class="arrow">➡️</div>
+                <div class="flow-item">
+                  <strong>3️⃣ NTFS / Data Plane</strong><br />
+                  <span>What you can do inside 💾</span>
+                </div>
+              </div>
+            </div>
+
+            <ul>
+              <li>
+                <i class="fa-li fas fa-user-shield"></i
+                ><strong>Layer 1 – Entra ID (Identity):</strong> Defines
+                <em>who</em> the users and groups are. Roles like Global Admin,
+                User Admin, or Security Reader manage people and credentials.
+              </li>
+              <li>
+                <i class="fa-li fas fa-server"></i
+                ><strong>Layer 2 – Azure RBAC (Resource):</strong> Defines
+                <em>what</em> users can manage in Azure — such as VMs, networks,
+                or storage. Roles include Owner, Contributor, Reader, and
+                Storage Blob Data Contributor.
+              </li>
+              <li>
+                <i class="fa-li fas fa-database"></i
+                ><strong>Layer 3 – NTFS / ACLs (Data):</strong> Defines
+                <em>what actions</em> can occur inside files or folders once a
+                user has access — Read, Write, Modify, Delete. Works on joined
+                machines or Azure Files with AD DS.
+              </li>
+            </ul>
+
+            <div class="important-note">
+              <i class="fas fa-lightbulb"></i><strong>Mnemonics:</strong><br />
+              “IAM is who you are. RBAC is what you can manage. NTFS is what you
+              can touch.”<br />
+              “Global Admins rule people. Contributors rule resources. NTFS
+              rules files.”
+            </div>
+
+            <h4>Governance vs Control:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-compass"></i
+                ><strong>Governance:</strong> Policies, Blueprints, and Locks
+                that enforce compliance and prevent misconfigurations.
+              </li>
+              <li>
+                <i class="fa-li fas fa-key"></i
+                ><strong>Access Control:</strong> Entra, RBAC, and NTFS roles
+                that decide who can take which actions.
+              </li>
+            </ul>
+
+            <p>
+              <strong>AZ-104 Focus:</strong> Distinguish the three layers. Entra
+              = people. RBAC = Azure resources. NTFS = file-level permissions.
+              Understand how governance overlays them with rules and policies.
+            </p>
+
+            <h4 style="margin-top: 20px">Key Takeaway:</h4>
+            <p
+              class="important-note"
+              style="border-left-color: var(--entra-id-color)"
+            >
+              <i class="fas fa-brain"></i>For the AZ-104, know that permissions
+              flow downward:
+              <strong
+                >Entra defines identities → RBAC grants resource access → NTFS
+                defines data access</strong
+              >. Governance tools like Azure Policy set the guardrails that keep
+              all layers compliant.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card 8: Microsoft Entra ID: AZ-104 Key Takeaways -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="entra-summary-toggle"
+            class="card-toggle"
+          />
+          <label for="entra-summary-toggle" class="card-header default-header">
+            <!-- Using default-header for summary -->
+            <h2>
+              <i class="fas fa-graduation-cap"></i>Entra ID: AZ-104 Key
+              Takeaways
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--azure-blue-dark)">
+              <i class="fas fa-check-double"></i>Essential Concepts for the Exam
+            </h3>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cloud-lock"></i
+                ><strong>Microsoft Entra ID:</strong> Core cloud identity
+                service (formerly Azure AD). Key roles:
+                <code>Global Administrator</code>,
+                <code>User Administrator</code>,
+                <code>Security Administrator</code>, <code>Guest Inviter</code>.
+              </li>
+              <li>
+                <i class="fa-li fas fa-balance-scale"></i>
+                <strong>Azure RBAC:</strong> Controls access to resources. Key
+                roles: <code>Owner</code>, <code>Contributor</code>,
+                <code>Reader</code>, <code>Storage Account Contributor</code>,
+                <code>Storage Blob Data Contributor</code>,
+                <code>SMB Contributor</code>.
+              </li>
+              <li>
+                <i class="fa-li fas fa-database"></i>
+                <strong>NTFS / ACLs:</strong> File-level permissions inside
+                resources. Key permissions: <code>Full Control</code>,
+                <code>Modify</code>, <code>Read & Execute</code>,
+                <code>Read</code>, <code>Write</code>.
+              </li>
+              <li>
+                <i class="fa-li fas fa-user-cog"></i>Manage
+                <strong>users</strong> (cloud, synchronized, guest) and
+                <strong>groups</strong> (Security, M365; assigned, dynamic).
+              </li>
+              <li>
+                <i class="fa-li fas fa-landmark"></i>Understand
+                <strong>tenants</strong> and <strong>custom domains</strong>.
+              </li>
+              <li>
+                <i class="fa-li fas fa-user-lock"></i>Implement
+                <strong>MFA</strong> with methods such as Microsoft
+                Authenticator, SMS, Phone Call, Hardware Tokens, or Biometrics.
+              </li>
+              <li>
+                <i class="fa-li fas fa-traffic-light"></i>Use
+                <strong>Conditional Access policies</strong> to enforce security
+                based on signals and conditions (user, device, location, app,
+                risk).
+              </li>
+              <li>
+                <i class="fa-li fas fa-sync-alt"></i>Leverage
+                <strong>Microsoft Entra Connect</strong> for hybrid identity
+                synchronization between on-premises AD DS and Entra ID.
+              </li>
+            </ul>
+            <p
+              class="important-note"
+              style="border-left-color: var(--entra-id-color)"
+            >
+              <i
+                class="fas fa-lightbulb"
+                style="color: var(--entra-id-color)"
+              ></i
+              >For AZ-104, focus on practical administration tasks related to
+              users, groups, and understanding how MFA and Conditional Access
+              contribute to securing identities and access to Azure resources
+              and cloud applications.
+            </p>
+          </div>
+        </div>
+
+        <!-- More cards will be appended here -->
+      </div>
+      <!-- End card-container -->
+    </div>
+    <!-- End main-container -->
+
+    <script>
+      // Basic script to ensure checkboxes can toggle content if CSS :checked is primary method
+      // This script is minimal and mainly for compatibility if needed.
+      // Your existing card guides likely have this or a similar mechanism.
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".card-toggle").forEach((checkbox) => {
+          // The CSS :checked pseudo-class should handle the expand/collapse.
+          // This JS is mostly a fallback or for ensuring state if needed.
+          checkbox.addEventListener("change", (e) => {
+            // console.log(`Card ${e.target.id} toggled to ${e.target.checked}`);
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

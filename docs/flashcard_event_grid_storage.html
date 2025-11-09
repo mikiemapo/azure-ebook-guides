@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flashcard: Event Grid Subscription to Blob Storage (AZ-104)</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <style>
+      :root {
+        --azure-blue: #0078d4;
+        --azure-blue-dark: #005a9e;
+        --azure-bg-light: #f0f4f8;
+        --text-dark: #323130;
+        --text-light: #ffffff;
+        --border-color: #d1d1d1;
+        --card-bg: #ffffff;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        --code-bg: #2d2d2d;
+        --code-text-color: #dcdcdc;
+        --success-color: #107c10;
+        --warning-color: #d83b01;
+        --info-color: #005a9e;
+      }
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background-color: var(--azure-bg-light);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--text-dark);
+      }
+      .main-container {
+        width: 100%;
+        max-width: 1000px;
+      }
+      h1 {
+        color: var(--azure-blue-dark);
+        text-align: center;
+        margin-bottom: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      h1 i {
+        color: var(--azure-blue);
+      }
+      .back-to-hub {
+        margin-bottom: 20px;
+      }
+      .back-to-hub a {
+        display: inline-block;
+        padding: 10px;
+        background: #e6f2ff;
+        border-radius: 5px;
+        border: 1px solid var(--azure-blue);
+        text-decoration: none;
+        color: var(--azure-blue-dark);
+        font-weight: bold;
+      }
+      .card-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+      }
+      @media (min-width: 768px) {
+        .card-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1200px) {
+        .card-container {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .card.full-width-card {
+          grid-column: 1 / -1;
+        }
+      }
+      .card {
+        background: var(--card-bg);
+        border-radius: 6px;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 2px 5px var(--shadow-color);
+        overflow: hidden;
+      }
+      .card-header {
+        background-color: var(--azure-blue);
+        color: var(--text-light);
+        padding: 12px 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+      }
+      .card-header.lessons-header {
+        background-color: var(--warning-color);
+      }
+      .card-content {
+        padding: 15px 18px;
+        font-size: 0.95em;
+      }
+      pre {
+        background: var(--code-bg);
+        color: var(--code-text-color);
+        padding: 10px;
+        border-radius: 4px;
+        overflow-x: auto;
+      }
+      ul {
+        list-style: none;
+        padding-left: 0;
+      }
+      ul li {
+        margin-bottom: 8px;
+        padding-left: 25px;
+        position: relative;
+      }
+      ul li i.fa-li {
+        position: absolute;
+        left: 0;
+        top: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="back-to-hub">
+      <a href="AZ 104 HUB A .backup.html"
+        ><i class="fas fa-arrow-left"></i>Back to Study Hub (backup)</a
+      >
+    </div>
+
+    <div class="main-container">
+      <h1>
+        <i class="fas fa-bolt"></i>Flashcard: Event Grid Subscription to Blob
+        Storage
+      </h1>
+
+      <div class="card-container">
+        <!-- Objective & Workflow -->
+        <div class="card full-width-card">
+          <div class="card-header">
+            <h2><i class="fas fa-bullseye"></i>Lab Objective & Workflow</h2>
+          </div>
+          <div class="card-content">
+            <p>
+              Connect a Blob Storage account to an Event Grid topic and route
+              events to an Azure Web App running the Event Grid Viewer. Validate
+              end-to-end flow by uploading blobs.
+            </p>
+            <ol>
+              <li>Create Storage Account and Container.</li>
+              <li>Deploy Event Grid Viewer Web App.</li>
+              <li>
+                Create Event Grid webhook subscription pointing to the web app.
+              </li>
+              <li>Upload blob and verify event in the viewer.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Storage Account & Container -->
+        <div class="card">
+          <div class="card-header">
+            <h2>
+              <i class="fas fa-database"></i>Storage Account & Container
+              Creation
+            </h2>
+          </div>
+          <div class="card-content">
+            <pre><code class="language-powershell">
+$resourceGroup = "rg_centralus_xxx"
+$location = "centralus"
+$storageName = "mikestorage123"
+
+New-AzStorageAccount -ResourceGroupName $resourceGroup `
+  -Name $storageName -Location $location `
+  -SkuName Standard_LRS -Kind BlobStorage `
+  -AccessTier Hot -AllowBlobPublicAccess $false
+
+$ctx = (Get-AzStorageAccount -ResourceGroupName $resourceGroup -AccountName $storageName).Context
+New-AzStorageContainer -Name "gridcontainer" -Context $ctx
+                </code></pre>
+          </div>
+        </div>
+
+        <!-- Web App Deployment -->
+        <div class="card">
+          <div class="card-header">
+            <h2><i class="fas fa-rocket"></i>Deploy Event Grid Viewer</h2>
+          </div>
+          <div class="card-content">
+            <p>
+              Used the ARM template from GitHub. Important: Web App names must
+              be globally unique and only contain lowercase letters, numbers,
+              and hyphens.
+            </p>
+            <pre><code class="language-powershell">
+$sitename = "mikesite123"
+
+New-AzResourceGroupDeployment `
+  -ResourceGroupName $resourceGroup `
+  -TemplateUri "https://raw.githubusercontent.com/Azure-Samples/azure-event-grid-viewer/master/azuredeploy.json" `
+  -siteName $sitename `
+  -hostingPlanName viewerhost `
+  -branch "main" -sku "B1"
+                </code></pre>
+          </div>
+        </div>
+
+        <!-- Event Grid Subscription -->
+        <div class="card">
+          <div class="card-header">
+            <h2><i class="fas fa-plug"></i>Create Event Grid Subscription</h2>
+          </div>
+          <div class="card-content">
+            <pre><code class="language-powershell">
+$storageId = (Get-AzStorageAccount -ResourceGroupName $resourceGroup -AccountName $storageName).Id
+$endpoint = "https://$sitename.azurewebsites.net/api/updates"
+
+$obj = New-AzEventGridWebHookEventSubscriptionDestinationObject -EndpointUrl $endpoint
+
+New-AzEventGridSubscription `
+  -EventSubscriptionName "gridBlobQuickStart" `
+  -Destination $obj `
+  -Scope $storageId
+                </code></pre>
+          </div>
+        </div>
+
+        <!-- Lessons Learned -->
+        <div class="card full-width-card lessons-header">
+          <div class="card-header lessons-header">
+            <h2>
+              <i class="fas fa-lightbulb"></i>Lessons Learned & AZ-104 Takeaways
+            </h2>
+          </div>
+          <div class="card-content">
+            <ul class="fa-ul">
+              <li>
+                <i class="fa-li fas fa-ban"></i>Web App names must follow naming
+                rules; invalid names cause deployment failures.
+              </li>
+              <li>
+                <i class="fa-li fas fa-check-circle"></i>Webhook handshake will
+                fail if the endpoint isn’t deployed and publicly reachable.
+              </li>
+              <li>
+                <i class="fa-li fas fa-link"></i>Event Grid requires a valid
+                subscriber endpoint to confirm events.
+              </li>
+              <li>
+                <i class="fa-li fas fa-exclamation-circle"></i>Always verify the
+                endpoint URL before creating a subscription.
+              </li>
+              <li>
+                <i class="fa-li fas fa-terminal"></i>For AZ-104, remember the
+                `New-AzEventGridSubscription` syntax and required parameters
+                (`-Scope`, `-Destination`).
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

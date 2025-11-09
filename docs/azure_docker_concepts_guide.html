@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Understanding Docker & Its Role in Azure (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors */
+            --docker-color: #2496ED; /* Docker Blue */
+            --image-color: #4CAF50; 
+            --container-color: #FF9800; 
+            --registry-color: #607D8B;
+            --azure-service-color: var(--azure-blue-dark);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--docker-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-docker { font-size: 1.2em; }
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--docker-color); }
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+         @media (min-width: 1200px) { 
+            .card-container { grid-template-columns: repeat(3, 1fr); }
+            .card.benefits-card, .card.azure-role-card { grid-column: span 3; } /* Make these wider */
+        }
+
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+        }
+        .card-header.docker-header { background-color: var(--docker-color); border-bottom-color: #1A7ABF;}
+        .card-header.docker-header:hover { background-color: #1A7ABF;}
+        .card-header.image-header { background-color: var(--image-color); border-bottom-color: #388E3C;}
+        .card-header.image-header:hover { background-color: #388E3C;}
+        .card-header.container-header { background-color: var(--container-color); border-bottom-color: #F57C00; color: var(--text-dark);}
+        .card-header.container-header:hover { background-color: #F57C00;}
+        .card-header.registry-header { background-color: var(--registry-color); border-bottom-color: #455A64;}
+        .card-header.registry-header:hover { background-color: #455A64;}
+        .card-header.default-header { background-color: var(--azure-blue); border-bottom-color: var(--azure-blue-dark);}
+        .card-header.default-header:hover { background-color: var(--azure-blue-dark);}
+
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { font-size: 0.9em; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--docker-color); 
+          }
+        
+        .image-card li i.fa-li { color: var(--image-color); }
+        .container-card li i.fa-li { color: var(--container-color); }
+        .registry-card li i.fa-li { color: var(--registry-color); }
+        .benefits-card li i.fa-li { color: var(--success-color); }
+        .azure-role-card li i.fa-li { color: var(--azure-service-color); }
+
+
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; 
+            justify-content: space-around; gap: 10px; flex-wrap: wrap;
+        }
+        .diagram-box {
+            background-color: #fff; padding: 8px 12px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px; font-size: 0.9em;
+        }
+        .diagram-box i { font-size: 1.6em; }
+        .diagram-box strong { font-size: 1em; color: var(--azure-blue-dark); margin-bottom: 3px;}
+        .diagram-box span { font-size: 0.85em; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; margin: 0 5px; align-self: center;}
+        
+        .docker-flow-diagram .dockerfile-icon { color: #384d54; } /* Darker grey for file */
+        .docker-flow-diagram .image-icon { color: var(--image-color); }
+        .docker-flow-diagram .container-icon { color: var(--container-color); }
+        .docker-flow-diagram .registry-icon { color: var(--registry-color); }
+
+        .key-point { font-weight: 600; color: var(--docker-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .important-note { background-color: #e6f7ff; border-left: 4px solid var(--docker-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--docker-color); margin-right: 8px; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fab fa-docker"></i>Understanding Docker & Its Role in Azure</h1>
+        <p class="instructions">A conceptual overview of Docker, its key components, and how it's used with Azure services like ACI, AKS, and App Service. Essential for AZ-104. <strong>Click/Tap</strong> headers.</p>
+
+        <div class="card-container">
+
+            <!-- What is Docker? -->
+            <div class="card">
+                <input type="checkbox" id="what-docker-toggle" class="card-toggle" checked>
+                <label for="what-docker-toggle" class="card-header docker-header">
+                    <h2><i class="fas fa-question-circle"></i>What is Docker?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--docker-color);"><i class="fas fa-box-open"></i>An Open Platform for Containers</h3>
+                    <p class="description">Docker is an open-source platform that enables developers to easily develop, ship, and run applications inside isolated environments called containers.</p>
+                    <p>It packages software into standardized units that combine the application source code with all the operating system (OS) libraries and dependencies required to run the code in any environment.</p>
+                    <div class="diagram docker-flow-diagram">
+                        <div class="diagram-box"><i class="fas fa-file-alt dockerfile-icon"></i><strong>Dockerfile</strong><span>Build Instructions</span></div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box" style="border-color:var(--image-color)"><i class="fas fa-compact-disc image-icon"></i><strong>Image</strong><span>App + Dependencies</span></div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box" style="border-color:var(--container-color)"><i class="fas fa-play-circle container-icon"></i><strong>Container</strong><span>Running Instance</span></div>
+                    </div>
+                    <ul>
+                        <li><i class="fa-li fas fa-cogs"></i><strong>Simplifies Deployment:</strong> "Build once, run anywhere" (on any machine with Docker).</li>
+                        <li><i class="fa-li fas fa-rocket"></i><strong>Fast & Lightweight:</strong> Containers share the host OS kernel, making them much lighter and faster than VMs.</li>
+                        <li><i class="fa-li fas fa-puzzle-piece"></i><strong>Standardization:</strong> Provides a consistent environment from development to production.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Dockerfile -->
+            <div class="card">
+                <input type="checkbox" id="dockerfile-toggle" class="card-toggle">
+                <label for="dockerfile-toggle" class="card-header" style="background-color: #384d54;"> <!-- Darker for file-like -->
+                    <h2><i class="fas fa-file-code"></i>Dockerfile: The Blueprint</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:#384d54;"><i class="fas fa-pencil-ruler"></i>Instructions to Build an Image</h3>
+                    <p class="description">A <code class="code-term">Dockerfile</code> is a simple text file that contains a list of commands that Docker uses to assemble a container image automatically.</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-file-alt"></i>Defines the base OS image (e.g., Ubuntu, Alpine).</li>
+                        <li><i class="fa-li fas fa-download"></i>Specifies dependencies to install (e.g., Python, Node.js, libraries).</li>
+                        <li><i class="fa-li fas fa-copy"></i>Copies application code into the image.</li>
+                        <li><i class="fa-li fas fa-terminal"></i>Sets the command to run when the container starts.</li>
+                        <li><i class="fa-li fas fa-cogs"></i>Example commands: <code class="code-term">FROM</code>, <code class="code-term">RUN</code>, <code class="code-term">COPY</code>, <code class="code-term">WORKDIR</code>, <code class="code-term">CMD</code>, <code class="code-term">ENTRYPOINT</code>.</li>
+                    </ul>
+                    <p><strong>AZ-104 Context:</strong> You won't write complex Dockerfiles, but understand its role as the source for building images.</p>
+                </div>
+            </div>
+            
+            <!-- Docker Image -->
+            <div class="card image-card">
+                <input type="checkbox" id="image-toggle" class="card-toggle">
+                <label for="image-toggle" class="card-header image-header">
+                    <h2><i class="fas fa-compact-disc"></i>Docker Image: The Package</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--image-color);"><i class="fas fa-archive"></i>Immutable Application Package</h3>
+                    <p class="description">A Docker image is a lightweight, standalone, executable package that includes everything needed to run a piece of software: the code, a runtime, libraries, environment variables, and config files.</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-layer-group"></i><strong>Layered Filesystem:</strong> Images are built in layers, making them efficient for storage and distribution. Only changed layers are updated/transferred.</li>
+                        <li><i class="fa-li fas fa-lock"></i><strong>Immutable:</strong> Once an image is built, it doesn't change. If you need to make changes, you build a new image (often with a new version tag).</li>
+                        <li><i class="fa-li fas fa-tags"></i><strong>Tagged:</strong> Images are typically tagged with versions (e.g., <code class="code-term">myapp:latest</code>, <code class="code-term">myapp:1.0</code>).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Docker Container -->
+            <div class="card container-card">
+                <input type="checkbox" id="container-toggle" class="card-toggle">
+                <label for="container-toggle" class="card-header container-header">
+                    <h2><i class="fas fa-box"></i>Docker Container: The Runtime</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--container-color);"><i class="fas fa-running"></i>A Running Instance of an Image</h3>
+                    <p class="description">A container is a live, running instance of a Docker image. You can have many containers running from the same image.</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-user-friends"></i><strong>Isolation:</strong> Containers run in isolated environments on the host OS, sharing the host's kernel but having their own process space, filesystem, and network interface.</li>
+                        <li><i class="fa-li fas fa-bolt"></i><strong>Ephemeral by Default:</strong> Data written inside a container's writable layer is lost when the container stops, unless persistent storage (volumes) is configured.</li>
+                        <li><i class="fa-li fas fa-play-circle"></i>Can be started, stopped, moved, and deleted quickly.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Container Registry -->
+            <div class="card registry-card">
+                <input type="checkbox" id="registry-toggle" class="card-toggle">
+                <label for="registry-toggle" class="card-header registry-header">
+                    <h2><i class="fas fa-database"></i>Container Registry: Image Storage</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--registry-color);"><i class="fas fa-warehouse"></i>Storing and Distributing Images</h3>
+                    <p class="description">A container registry is a storage system for Docker images. You push images to a registry and pull images from a registry.</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-cloud-upload-alt"></i><strong>Public Registries:</strong> E.g., Docker Hub (widely used for open-source and public images).</li>
+                        <li><i class="fa-li fas fa-lock"></i><strong>Private Registries:</strong> For storing proprietary or internal application images.
+                            <ul>
+                                <li><span class="key-point">Azure Container Registry (ACR):</span> Microsoft's managed private Docker registry service in Azure. Highly recommended for Azure workloads. Provides geo-replication, RBAC, image scanning, etc.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-link"></i>Essential for CI/CD pipelines and deploying containers to Azure services.</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Benefits of Containerization -->
+            <div class="card benefits-card">
+                <input type="checkbox" id="benefits-toggle" class="card-toggle">
+                <label for="benefits-toggle" class="card-header default-header" style="background-color: var(--success-color);">
+                    <h2><i class="fas fa-thumbs-up"></i>Benefits of Containerization</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--success-color);"><i class="fas fa-check-circle"></i>Why Use Containers?</h3>
+                     <ul>
+                        <li><i class="fa-li fas fa-arrows-alt-h"></i><strong>Portability:</strong> "Build once, run anywhere" - consistent environments across dev, test, prod, on-prem, or cloud.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i><strong>Efficiency & Speed:</strong> Containers share the host kernel, leading to faster startup times and lower resource overhead compared to VMs. More containers can run on a single host.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i><strong>Isolation:</strong> Applications run in isolated user spaces, reducing conflicts between dependencies.</li>
+                        <li><i class="fa-li fas fa-sync-alt"></i><strong>Consistency:</strong> Eliminates "it works on my machine" problems by packaging all dependencies.</li>
+                        <li><i class="fa-li fas fa-expand-arrows-alt"></i><strong>Scalability:</strong> Easy to scale applications up or down by running more or fewer container instances.</li>
+                        <li><i class="fa-li fas fa-microchip"></i><strong>Microservices:</strong> Well-suited for building and deploying microservice architectures.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Docker's Role in Azure -->
+            <div class="card azure-role-card">
+                <input type="checkbox" id="azure-role-toggle" class="card-toggle">
+                <label for="azure-role-toggle" class="card-header default-header">
+                    <h2><i class="fab fa-microsoft"></i>Docker's Role in Azure</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-service-color);"><i class="fas fa-cloud"></i>Running Containers on Azure</h3>
+                    <p class="description">Azure provides several services that leverage Docker containers for deploying and managing applications:</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-shipping-fast" style="color:var(--azure-service-color)"></i><strong>Azure Container Instances (ACI):</strong>
+                            <ul><li>Simplest way to run a single Docker container or a small group of co-located containers in Azure without managing underlying VMs.</li><li>Fast startup, per-second billing. Ideal for simple tasks, batch jobs, or quick tests.</li></ul>
+                        </li>
+                        <li style="margin-top:10px;"><i class="fa-li fas fa-dharmachakra" style="color:var(--azure-service-color)"></i><strong>Azure Kubernetes Service (AKS):</strong>
+                            <ul><li>A managed Kubernetes orchestration service. Kubernetes uses Docker (or other OCI-compliant runtimes) to run containerized applications at scale.</li><li>Manages application lifecycle, scaling, service discovery, load balancing, and more for complex applications.</li></ul>
+                        </li>
+                        <li style="margin-top:10px;"><i class="fa-li fas fa-rocket" style="color:var(--azure-service-color)"></i><strong>Azure App Service for Containers (Web App for Containers):</strong>
+                            <ul><li>PaaS offering to deploy web applications packaged as Docker containers.</li><li>Leverages App Service features like deployment slots, custom domains, auto-scaling, and integrated CI/CD.</li></ul>
+                        </li>
+                         <li style="margin-top:10px;"><i class="fa-li fas fa-database" style="color:var(--registry-color)"></i><strong>Azure Container Registry (ACR):</strong>
+                            <ul><li>A private Docker image registry in Azure. Essential for storing and managing your custom Docker images used by ACI, AKS, App Service, and other services.</li></ul>
+                        </li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand that these Azure services run Docker containers, the purpose of ACR, and the basic use cases for ACI vs. AKS vs. App Service for Containers. You are not expected to be a Docker CLI expert.</p>
+                </div>
+            </div>
+
+             <!-- AZ-104 Summary -->
+            <div class="card"> 
+                <input type="checkbox" id="summary-docker-toggle" class="card-toggle">
+                <label for="summary-docker-toggle" class="card-header" style="background-color: var(--azure-blue-dark);">
+                    <h2><i class="fas fa-graduation-cap"></i>Docker Concepts: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-blue-dark);"><i class="fas fa-lightbulb"></i>Core Understanding for the Exam</h3>
+                    <ul>
+                        <li><i class="fa-li fab fa-docker" style="color:var(--docker-color)"></i><strong>Docker</strong> is a platform for running applications in isolated <span class="key-point">containers</span>.</li>
+                        <li><i class="fa-li fas fa-file-alt"></i>A <code class="code-term">Dockerfile</code> builds an <code class="code-term">Image</code>.</li>
+                        <li><i class="fa-li fas fa-box"></i>An <code class="code-term">Image</code> is a package of your app and its dependencies.</li>
+                        <li><i class="fa-li fas fa-play-circle"></i>A <code class="code-term">Container</code> is a running instance of an image.</li>
+                        <li><i class="fa-li fas fa-database"></i><code class="code-term">Container Registries</code> (like <span class="key-point">Azure Container Registry - ACR</span>) store and distribute images.</li>
+                        <li><i class="fa-li fas fa-cloud"></i>Azure services like <span class="key-point">ACI</span>, <span class="key-point">AKS</span>, and <span class="key-point">App Service for Containers</span> use Docker images.</li>
+                        <li><i class="fa-li fas fa-thumbs-up"></i>Understand the main benefits: portability, efficiency, consistency.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.querySelectorAll('.card-toggle').forEach(checkbox => {
+           checkbox.addEventListener('change', (e) => { /* CSS handles expand/collapse via :checked pseudo-class */ });
+        });
+    </script>
+</body>
+</html>

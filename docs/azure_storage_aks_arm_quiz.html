@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Storage, AKS & ARM Quiz (AZ-104)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --correct-color: #107c10;
+            --incorrect-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --quiz-main-color: #ffb900; /* Gold/Yellow for this quiz theme */
+            --timer-button-bg: #d83b01; 
+            --timer-button-hover-bg: #a4262c;
+            /* Specific Topic Colors */
+            --storage-color: #0078d4; 
+            --aks-color: #326ce5; 
+            --arm-color: #f7630c;
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .quiz-container {
+            max-width: 850px; margin: 20px auto; padding: 25px 35px;
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 8px; box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark); text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px; margin-bottom: 25px;
+        }
+        h1 i { margin-right: 10px; color: var(--quiz-main-color); }
+
+        .back-to-hub {
+            margin-bottom: 20px; padding: 10px; background-color: #e6f2ff; 
+            border-radius: 5px; text-align: center;
+        }
+        .back-to-hub a {
+            text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em;
+        }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .question-block {
+            margin-bottom: 30px; padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+
+        .question-text { font-weight: 600; font-size: 1.1em; margin-bottom: 15px; }
+        .question-text i { margin-right: 8px; }
+        .question-text i.fa-database { color: var(--storage-color); }
+        .question-text i.fa-dharmachakra { color: var(--aks-color); }
+        .question-text i.fa-file-code { color: var(--arm-color); }
+
+         .scenario-text {
+            font-style: italic; background-color: #f9f9f9; padding: 10px;
+            border-left: 3px solid var(--info-color); margin-bottom: 10px; font-size: 0.95em;
+        }
+
+        .options-list { list-style: none; padding-left: 0; margin: 0; }
+        .options-list li {
+            margin-bottom: 10px; padding: 10px 15px; border: 1px solid var(--border-color);
+            border-radius: 4px; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .options-list li label {
+            display: flex; align-items: center; cursor: pointer; width: 100%; font-size: 1em;
+        }
+        .options-list li input[type="radio"] {
+            margin-right: 12px; accent-color: var(--azure-blue); cursor: pointer; width: 18px; height: 18px;
+        }
+        .options-list li:hover { background-color: #eef1f5; border-color: var(--azure-blue); }
+
+        .feedback {
+            margin-top: 12px; padding: 10px 15px; border-radius: 4px; font-weight: 600;
+            display: none; font-size: 0.95em;
+        }
+        .feedback.correct { background-color: #e7f3e7; border: 1px solid var(--correct-color); color: var(--correct-color); }
+        .feedback.incorrect { background-color: #fdeceb; border: 1px solid var(--incorrect-color); color: var(--incorrect-color); }
+        .feedback i { margin-right: 8px; }
+        .feedback .review-hint { display: block; font-size: 0.9em; font-weight: normal; margin-top: 8px; color: #555; }
+        .feedback .review-hint a { color: var(--azure-blue-dark); text-decoration: underline;}
+
+        .options-list li.correct-answer-highlight { background-color: #d4edda !important; border-color: var(--correct-color) !important; font-weight: bold; }
+        .options-list li.incorrect-selection-highlight { background-color: #f8d7da !important; border-color: var(--incorrect-color) !important; opacity: 0.8; }
+
+        .sticky-footer {
+            position: sticky; bottom: 0; left: 0; width: 100%;
+            background-color: rgba(255, 255, 255, 0.95); padding: 15px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .timer-button-container { display: flex; flex-direction: column; align-items: center; }
+        #check-answers-btn {
+            padding: 12px 25px; font-size: 1.15em; font-weight: bold; color: var(--text-light);
+            background-color: var(--timer-button-bg); border: none; border-radius: 5px;
+            cursor: pointer; transition: background-color 0.2s ease; min-width: 180px;
+        }
+        #check-answers-btn:hover { background-color: var(--timer-button-hover-bg); }
+        #check-answers-btn:disabled { background-color: #e74c3c; opacity: 0.7; cursor: not-allowed; }
+        #timer-display { font-size: 0.9em; color: var(--text-dark); margin-top: 8px; font-weight: 500; }
+        #timer-display.active { color: var(--warning-color); font-weight: bold;}
+
+        #score-area {
+            text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 20px; padding: 10px;
+            background-color: var(--diagram-bg); border-radius: 4px; border: 1px solid var(--border-color);
+            display: none;
+        }
+        #score-area i { margin-right: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1><i class="fas fa-layer-group"></i>Storage, AKS & ARM Quiz</h1>
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+
+        <form id="quiz-form">
+
+            <!-- Question 1: Immutable Storage - Locked Time-Based -->
+            <div class="question-block" data-question-id="q1_immutable_locked" data-correct-answer="cannot_shorten" data-review-topic="Immutable Storage Guide">
+                <p class="question-text"><i class="fas fa-lock" style="color: #797775;"></i>Scenario: A container has a time-based retention policy of 1 year, and the policy is LOCKED. Goal: Change the retention to 6 months. Proposed Solution: Edit the locked policy and reduce the interval. Does this solution meet the goal?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q1_immutable_locked" value="yes_can_edit"> Yes, locked policies can still have their intervals changed.</label></li>
+                    <li><label><input type="radio" name="q1_immutable_locked" value="cannot_shorten"> No, once locked, a time-based retention interval cannot be decreased.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 2: AzCopy Authentication -->
+            <div class="question-block" data-question-id="q2_azcopy_auth" data-correct-answer="aad_sas" data-review-topic="AzCopy v10 Guide">
+                <p class="question-text"><i class="fas fa-terminal" style="color:var(--azure-blue);"></i>Which are the two PRIMARY recommended authentication methods for AzCopy v10 when transferring data to/from Azure Storage?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q2_azcopy_auth" value="accountkey_connectionstring"> Storage Account Key and Connection String</label></li>
+                    <li><label><input type="radio" name="q2_azcopy_auth" value="aad_sas"> Azure Active Directory (Azure AD) and Shared Access Signature (SAS) Token</label></li>
+                    <li><label><input type="radio" name="q2_azcopy_auth" value="managedid_cert"> Managed Identity and Client Certificate</label></li>
+                    <li><label><input type="radio" name="q2_azcopy_auth" value="anonymous_public"> Anonymous Public Access and Storage Account Key</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 3: AKS Control Plane -->
+            <div class="question-block" data-question-id="q3_aks_controlplane" data-correct-answer="azure_manages" data-review-topic="AKS Introduction Guide">
+                <p class="question-text"><i class="fas fa-dharmachakra"></i>In Azure Kubernetes Service (AKS), who is responsible for managing the Kubernetes control plane (API server, etcd, scheduler)?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q3_aks_controlplane" value="customer_manages"> The customer, by deploying control plane VMs.</label></li>
+                    <li><label><input type="radio" name="q3_aks_controlplane" value="azure_manages"> Azure manages the control plane components as a service.</label></li>
+                    <li><label><input type="radio" name="q3_aks_controlplane" value="shared_responsibility"> It's a shared responsibility, with both Azure and the customer managing parts of it.</label></li>
+                    <li><label><input type="radio" name="q3_aks_controlplane" value="third_party"> A third-party Kubernetes provider integrated with Azure.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 4: ARM Template Deployment Mode for Deletion -->
+            <div class="question-block" data-question-id="q4_arm_mode_delete" data-correct-answer="complete" data-review-topic="ARM Templates Guide">
+                 <div class="scenario-text">
+                    Scenario: You have an ARM template that defines a specific set of resources for an application environment. You deploy this template to an existing resource group.
+                    Goal: Ensure that any resources currently in the resource group that are NOT defined in your ARM template are removed.
+                </div>
+                <p class="question-text"><i class="fas fa-file-code"></i>Proposed Solution: Deploy the ARM template using the `Incremental` deployment mode. Does this solution meet the goal?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q4_arm_mode_delete" value="yes_incremental"> Yes</label></li>
+                    <li><label><input type="radio" name="q4_arm_mode_delete" value="complete"> No, you should use `Complete` deployment mode.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 5: Object Replication & Versioning Prereq -->
+            <div class="question-block" data-question-id="q5_objrep_versioning" data-correct-answer="yes_both_versioning" data-review-topic="Object Replication & Versioning Guide">
+                <p class="question-text"><i class="fas fa-copy" style="color: #038387;"></i>To configure Object Replication for block blobs between two storage accounts, what is a key prerequisite regarding data protection features on these accounts?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q5_objrep_versioning" value="soft_delete_source"> Soft delete must be enabled on the source account only.</label></li>
+                    <li><label><input type="radio" name="q5_objrep_versioning" value="lifecycle_dest"> Lifecycle management must be enabled on the destination account.</label></li>
+                    <li><label><input type="radio" name="q5_objrep_versioning" value="yes_both_versioning"> Blob versioning must be enabled on BOTH the source and destination accounts.</label></li>
+                    <li><label><input type="radio" name="q5_objrep_versioning" value="change_feed_only"> Blob change feed must be enabled on the source account, versioning is optional.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 6: Smallest K8s Deployable Unit -->
+            <div class="question-block" data-question-id="q6_k8s_pod" data-correct-answer="pod" data-review-topic="AKS Introduction Guide">
+                <p class="question-text"><i class="fas fa-dharmachakra"></i>What is the smallest and most basic deployable object in Kubernetes, representing a single instance of a running process in your cluster?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q6_k8s_pod" value="deployment"> Deployment</label></li>
+                    <li><label><input type="radio" name="q6_k8s_pod" value="service"> Service</label></li>
+                    <li><label><input type="radio" name="q6_k8s_pod" value="pod"> Pod</label></li>
+                    <li><label><input type="radio" name="q6_k8s_pod" value="node"> Node</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 7: ARM Template Language -->
+             <div class="question-block" data-question-id="q7_arm_language" data-correct-answer="json" data-review-topic="ARM Templates Guide">
+                <p class="question-text"><i class="fas fa-file-code"></i>Azure Resource Manager (ARM) templates are written in which language format to define infrastructure as code?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q7_arm_language" value="xml"> XML</label></li>
+                    <li><label><input type="radio" name="q7_arm_language" value="yaml"> YAML</label></li>
+                    <li><label><input type="radio" name="q7_arm_language" value="json"> JSON</label></li>
+                    <li><label><input type="radio" name="q7_arm_language" value="python"> Python</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 8: Lifecycle for Old Versions -->
+            <div class="question-block" data-question-id="q8_lifecycle_versions" data-correct-answer="yes_delete_old_versions" data-review-topic="Blob Versioning & Lifecycle Guide">
+                 <div class="scenario-text">
+                    Scenario: You have enabled blob versioning on a storage account. Over time, many previous versions of blobs are created.
+                    Goal: Automatically remove blob versions that are older than 180 days to manage storage costs.
+                </div>
+                <p class="question-text"><i class="fas fa-recycle" style="color:var(--lifecycle-color);"></i>Proposed Solution: Create an Azure Blob Lifecycle Management rule with an action to `delete` blob versions where `daysAfterVersionCreation` is greater than 180. Does this solution meet the goal?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q8_lifecycle_versions" value="yes_delete_old_versions"> Yes</label></li>
+                    <li><label><input type="radio" name="q8_lifecycle_versions" value="no_only_tier"> No, Lifecycle Management can only tier versions, not delete them.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="sticky-footer">
+        <div class="timer-button-container">
+            <button type="button" id="check-answers-btn">Check Answers</button>
+            <div id="timer-display">Timer: 00:00</div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for quiz functionality (same as previous enhanced quiz)
+        const quizForm = document.getElementById('quiz-form');
+        const checkAnswersBtn = document.getElementById('check-answers-btn');
+        const questionBlocks = document.querySelectorAll('.question-block');
+        const timerDisplay = document.getElementById('timer-display');
+        let timerInterval = null;
+        let secondsElapsed = 0;
+        let timerStarted = false;
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (timerStarted) return;
+            timerStarted = true;
+            timerDisplay.classList.add('active');
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                timerDisplay.textContent = `Timer: ${formatTime(secondsElapsed)}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerDisplay.classList.remove('active');
+        }
+
+        quizForm.addEventListener('click', function(event) {
+            if (event.target.type === 'radio' && !timerStarted && !checkAnswersBtn.disabled) {
+                startTimer();
+            }
+        });
+
+        checkAnswersBtn.addEventListener('click', () => {
+            if (!timerStarted && questionBlocks.length > 0) { startTimer(); }
+            stopTimer();
+            let score = 0;
+            const totalQuestions = questionBlocks.length;
+
+            questionBlocks.forEach(block => {
+                const questionId = block.dataset.questionId;
+                const correctAnswer = block.dataset.correctAnswer;
+                const reviewTopic = block.dataset.reviewTopic || "the relevant study guide";
+                const feedbackEl = block.querySelector('.feedback');
+                const optionsList = block.querySelector('.options-list');
+                const selectedOptionInput = optionsList.querySelector(`input[name="${questionId}"]:checked`);
+
+                optionsList.querySelectorAll('li').forEach(li => {
+                    li.classList.remove('correct-answer-highlight', 'incorrect-selection-highlight');
+                });
+
+                if (selectedOptionInput) {
+                    const userAnswer = selectedOptionInput.value;
+                    const selectedLi = selectedOptionInput.closest('li');
+                    const correctLi = optionsList.querySelector(`input[value="${correctAnswer}"]`).closest('li');
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        feedbackEl.innerHTML = `<i class="fas fa-check-circle"></i> Correct!`;
+                        feedbackEl.className = 'feedback correct';
+                        selectedLi.classList.add('correct-answer-highlight');
+                    } else {
+                        feedbackEl.innerHTML = `<i class="fas fa-times-circle"></i> Incorrect. <span class="review-hint">Hint: The correct concept is related to '${correctAnswer}'. Review ${reviewTopic}.</span>`;
+                        feedbackEl.className = 'feedback incorrect';
+                        selectedLi.classList.add('incorrect-selection-highlight');
+                        if (correctLi) { correctLi.classList.add('correct-answer-highlight'); }
+                    }
+                } else {
+                    feedbackEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Please select an answer. <span class="review-hint">Review ${reviewTopic} for this concept.</span>`;
+                    feedbackEl.className = 'feedback incorrect';
+                }
+                feedbackEl.style.display = 'block';
+            });
+
+            let scoreArea = document.getElementById('score-area');
+            if (!scoreArea) {
+                scoreArea = document.createElement('div');
+                scoreArea.id = 'score-area';
+                const container = document.querySelector('.quiz-container');
+                const stickyFooter = document.querySelector('.sticky-footer');
+                if (container && stickyFooter) { container.insertBefore(scoreArea, stickyFooter); }
+                else if (container) { container.appendChild(scoreArea); }
+            }
+            scoreArea.innerHTML = `<i class="fas fa-star"></i> Your Score: ${score} out of ${totalQuestions} in ${formatTime(secondsElapsed)}`;
+            scoreArea.style.display = 'block';
+
+            checkAnswersBtn.disabled = true;
+            checkAnswersBtn.textContent = 'Answers Checked';
+        });
+    </script>
+
+</body>
+</html>

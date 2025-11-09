@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AzCopy v10 Utility Guide (CLI Focus - AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #f3f2f1;
+            --code-border: #e0e0e0;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors */
+            --azcopy-color: #0078d4; /* Stick with Azure Blue */
+            --auth-color: #ffb900;   /* Gold/Yellow */
+            --command-color: #6f42c1; /* Purple */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-terminal { font-size: 1.1em; color: var(--azcopy-color); }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--azcopy-color); }
+
+        /* --- Mind Map Diagram --- */
+        .mindmap-container {
+            background-color: var(--card-bg); border-radius: 8px; padding: 25px;
+            margin: 0 auto 30px auto; width: 100%; max-width: 700px;
+            box-shadow: 0 2px 8px var(--shadow-color); border: 1px solid var(--border-color);
+            position: relative; min-height: 280px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .mindmap-center {
+            background-color: var(--azcopy-color); color: var(--text-light); padding: 15px;
+            border-radius: 8px; text-align: center; font-weight: 600; font-size: 1.1em;
+            width: 150px; height: auto; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(0, 120, 212, 0.5);
+            z-index: 10;
+        }
+        .mindmap-center i { font-size: 1.6em; margin-bottom: 8px; }
+
+        .mindmap-branch {
+            position: absolute; background-color: var(--diagram-bg); padding: 8px 12px;
+            border-radius: 6px; font-size: 0.8em; text-align: center; /* Smaller font */
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+            display: flex; align-items: center; gap: 5px; min-width: 100px;
+            z-index: 5;
+        }
+        .mindmap-branch i { font-size: 0.9em; color: var(--azcopy-color);}
+        .mindmap-branch.whatis i { color: var(--info-color); }
+        .mindmap-branch.auth i { color: var(--auth-color); }
+        .mindmap-branch.commands i { color: var(--command-color); }
+        .mindmap-branch.features i { color: var(--success-color); }
+        .mindmap-branch.storage i { color: #605e5c; }
+
+        /* Positioning */
+        .branch-whatis { top: 10px; left: 50%; transform: translateX(-50%); }
+        .branch-storage { top: 60px; left: 50%; transform: translateX(-50%); }
+
+        .branch-auth { top: 50%; left: 10px; transform: translateY(-50%); }
+        .branch-auth-aad { top: calc(50% - 45px); left: -70px; transform: rotate(-25deg);}
+        .branch-auth-sas { top: calc(50% + 25px); left: -70px; transform: rotate(25deg);}
+
+        .branch-commands { top: 50%; right: 10px; transform: translateY(-50%); }
+        .branch-commands-copy { top: calc(50% - 45px); right: -70px; transform: rotate(25deg); }
+        .branch-commands-sync { top: calc(50% + 25px); right: -70px; transform: rotate(-25deg); }
+
+        .branch-features { bottom: 10px; left: 50%; transform: translateX(-50%); }
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1100px) {
+             .card-container { grid-template-columns: repeat(3, 1fr); }
+             .card.auth-card { grid-column: span 2; } /* Make auth wider */
+        }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--azcopy-color); color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid var(--azure-blue-dark);
+        }
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--azcopy-color); font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--azcopy-color); font-size: 0.9em;
+          }
+        /* Custom list icons */
+        .card-content li i.fa-terminal { color: var(--azcopy-color); }
+        .card-content li i.fa-bolt { color: #f7b20c; } /* Performance */
+        .card-content li i.fa-file-upload { color: var(--success-color); }
+        .card-content li i.fa-file-download { color: var(--info-color); }
+        .card-content li i.fa-sync-alt { color: var(--success-color); }
+        .card-content li i.fa-copy { color: var(--azure-blue); }
+        .card-content li i.fa-play-circle { color: var(--success-color); }
+        .card-content li i.fa-undo { color: var(--warning-color); } /* Resume */
+        .card-content li i.fa-key { color: var(--auth-color); }
+        .card-content li i.fa-id-card { color: var(--auth-color); }
+        .card-content li i.fa-code { color: var(--command-color); }
+        .card-content li i.fa-cubes { color: var(--azure-blue-dark); } /* Blob */
+        .card-content li i.fa-file-alt { color: var(--info-color); } /* File */
+        .card-content li i.fa-tree { color: var(--success-color); } /* ADLS */
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-vertical { flex-direction: column; align-items: stretch; gap: 10px;}
+        .diagram-box {
+            background-color: #fff; padding: 10px 15px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px;
+        }
+        .diagram-box i { font-size: 1.5em; color: var(--azure-blue); }
+        .diagram-box span { font-size: 0.85em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; }
+        .diagram-arrow-down { transform: rotate(90deg); margin: 5px 0; }
+
+        /* Specific Diagram Styles */
+        .auth-diagram .diagram-box i { font-size: 1.8em; }
+        .auth-diagram .fa-user, .auth-diagram .fa-robot { color: #605e5c; }
+        .auth-diagram .fa-id-card, .auth-diagram .fa-key { color: var(--auth-color); }
+        .auth-diagram .fa-sign-in-alt { color: var(--success-color); }
+        .auth-diagram .fa-terminal { color: var(--azcopy-color); }
+
+        .sync-diagram .fa-folder-open, .sync-diagram .fa-folder { color: var(--info-color); }
+        .sync-diagram .fa-sync-alt { color: var(--success-color); font-size: 1.3em;}
+        .sync-diagram .fa-exchange-alt { color: var(--warning-color); font-size: 1.3em;}
+        .sync-diagram .fa-trash { color: var(--warning-color); font-size: 1.3em;}
+
+        /* --- Code formatting --- */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: var(--code-bg);
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid var(--code-border); color: var(--command-color); /* Command Color */
+        }
+        .code-term { font-weight: bold; }
+        pre {
+             background-color: var(--code-bg); border: 1px solid var(--code-border); padding: 15px;
+             border-radius: 4px; overflow-x: auto; font-size: 0.85em; margin-top: 10px;
+        }
+        pre code { background: none; border: none; padding: 0; font-size: 1em; color: #333;}
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azcopy-color); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .warning-text { color: var(--warning-color); font-weight: 600; }
+        .important-note { background-color: #e6f2ff; border-left: 4px solid var(--azcopy-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--azcopy-color); margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-terminal"></i>AzCopy v10 Utility Guide (CLI Focus)</h1>
+
+    <!-- Mind Map -->
+    <div class="mindmap-container">
+         <div class="mindmap-center"><i class="fas fa-terminal"></i>AzCopy v10</div>
+
+         <div class="mindmap-branch branch-whatis whatis"><i class="fas fa-info-circle"></i>What is it?</div>
+         <div class="mindmap-branch branch-storage storage"><i class="fas fa-database"></i>Storage Targets</div>
+
+         <div class="mindmap-branch branch-auth auth"><i class="fas fa-key"></i>Authentication</div>
+         <div class="mindmap-branch branch-auth-aad auth"><i class="fas fa-id-card"></i>Azure AD</div>
+         <div class="mindmap-branch branch-auth-sas auth"><i class="fas fa-user-secret"></i>SAS Token</div>
+
+         <div class="mindmap-branch branch-commands commands"><i class="fas fa-code"></i>Commands</div>
+         <div class="mindmap-branch branch-commands-copy commands"><i class="fas fa-copy"></i>Copy</div>
+         <div class="mindmap-branch branch-commands-sync commands"><i class="fas fa-sync-alt"></i>Sync</div>
+
+         <div class="mindmap-branch branch-features features"><i class="fas fa-star"></i>Key Features</div>
+    </div>
+
+    <p class="instructions">Learn about AzCopy, the command-line tool for high-performance data transfer to and from Azure Storage. <strong>Click/Tap</strong> headers to explore key commands and concepts.</p>
+
+    <div class="card-container">
+
+        <!-- What is AzCopy? -->
+        <div class="card">
+            <input type="checkbox" id="what-toggle" class="card-toggle" checked> <!-- Start expanded -->
+            <label for="what-toggle" class="card-header">
+                <h2><i class="fas fa-question-circle"></i>What is AzCopy v10?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-terminal"></i>High-Performance CLI Tool</h3>
+                <p class="description">A command-line utility optimized for copying data to/from Azure Blob Storage, Azure Files, and Azure Data Lake Storage Gen2.</p>
+                 <ul>
+                    <li><i class="fas fa-bolt fa-li"></i><strong>Performance:</strong> Designed for speed, using parallelism for large and numerous file transfers.</li>
+                    <li><i class="fas fa-code fa-li"></i><strong>Scriptable:</strong> Essential for automating data transfer tasks (PowerShell, Bash).</li>
+                    <li><i class="fas fa-globe fa-li"></i><strong>Cross-Platform:</strong> Single executable for Windows, macOS, and Linux. No installation needed.</li>
+                    <li><i class="fas fa-database fa-li"></i><strong>Supported Services:</strong>
+                        <ul>
+                            <li><i class="fas fa-cubes fa-li" style="color:var(--azure-blue-dark)"></i> Azure Blob Storage (including ADLS Gen2 hierarchical namespace)</li>
+                            <li><i class="fas fa-file-alt fa-li" style="color:var(--info-color)"></i> Azure Files</li>
+                            <li>*Limited support for Table Storage copy (account to account).*</li>
+                        </ul>
+                    </li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Why Use AzCopy? -->
+        <div class="card">
+            <input type="checkbox" id="why-toggle" class="card-toggle">
+            <label for="why-toggle" class="card-header">
+                <h2><i class="fas fa-thumbs-up"></i>Why Use AzCopy?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-rocket"></i>Key Advantages for Data Transfer</h3>
+                 <p class="description">When AzCopy is the preferred tool for Azure Storage operations.</p>
+                 <ul>
+                    <li><i class="fas fa-tachometer-alt fa-li"></i><strong>Bulk Data Movement:</strong> Ideal for migrating large datasets or transferring many files.</li>
+                    <li><i class="fas fa-tasks fa-li"></i><strong>Automation & Scripting:</strong> Easily integrate into DevOps pipelines or scheduled tasks.</li>
+                    <li><i class="fas fa-undo fa-li"></i><strong>Resumable Transfers:</strong> Automatically resumes interrupted copy or sync jobs from the point of failure.</li>
+                    <li><i class="fas fa-sync-alt fa-li"></i><strong>Synchronization:</strong> Efficiently keep local directories in sync with Azure Storage, or between Azure locations.</li>
+                    <li><i class="fas fa-exchange-alt fa-li" style="color:var(--azure-blue)"></i><strong>Inter-Account/Region Copy:</strong> Perform server-side copies directly between storage accounts (even across regions) without downloading data locally first.</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Authentication -->
+        <div class="card auth-card">
+            <input type="checkbox" id="auth-toggle" class="card-toggle">
+            <label for="auth-toggle" class="card-header">
+                <h2><i class="fas fa-key" style="color: var(--auth-color)"></i>Authentication Methods</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-user-shield"></i>Authorizing AzCopy Operations</h3>
+                <p class="description">How AzCopy authenticates to Azure Storage.</p>
+                <div class="diagram auth-diagram">
+                     <div class="diagram-box"><i class="fas fa-user"></i><span>User /<br/> <i class="fas fa-robot"></i> Service Principal</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box" style="border-color: var(--auth-color);"><i class="fas fa-sign-in-alt"></i><span>`azcopy login`</span></div>
+                      <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"><i class="fas fa-id-card"></i><span>Azure AD Auth<br/>(RBAC Roles)</span></div>
+                     <div style="text-align: center; font-weight: bold; margin: 5px 0;">OR</div>
+                     <div class="diagram-box" style="border-color: var(--auth-color);"><i class="fas fa-key"></i><span>SAS Token<br/>(Append to URL)</span></div>
+                 </div>
+                 <div class="diagram auth-diagram" style="margin-top: 10px;">
+                     <div class="diagram-box"><i class="fas fa-terminal"></i><span>AzCopy Command<br/>(e.g., `azcopy copy`)</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"><i class="fas fa-database"></i><span>Azure Storage Service</span></div>
+                 </div>
+                 <ul>
+                    <li><i class="fas fa-id-card fa-li" style="color: var(--auth-color);"></i><strong>Azure Active Directory (Azure AD) - Recommended:</strong>
+                        <ul>
+                            <li>Use <code class="code-term">azcopy login</code> to authenticate interactively (user) or programmatically with a Service Principal or Managed Identity.</li>
+                            <li>Authorizes operations based on <span class="key-point">Azure RBAC roles</span> assigned to the identity (e.g., `Storage Blob Data Contributor`, `Storage File Data SMB Share Contributor`).</li>
+                            <li>Most secure, as credentials (like account keys or SAS tokens) are not embedded in scripts or URLs.</li>
+                        </ul>
+                    </li>
+                    <li><i class="fas fa-key fa-li" style="color: var(--auth-color);"></i><strong>Shared Access Signature (SAS) Token:</strong>
+                        <ul>
+                            <li>Append a valid SAS token (granting specific permissions for a limited time) directly to the source and/or destination URL in AzCopy commands.</li>
+                            <li>Useful for one-off tasks, scenarios where Azure AD login isn't practical, or for delegating limited access to third parties.</li>
+                            <li>Example for destination: `https://[account].blob.core.windows.net/[container]?[SAS_TOKEN]`</li>
+                        </ul>
+                    </li>
+                 </ul>
+                  <div class="important-note"><i class="fas fa-info-circle"></i> While possible, using Storage Account Keys directly is generally discouraged for security. Prefer Azure AD or SAS.</div>
+            </div>
+        </div>
+
+         <!-- Command: azcopy copy -->
+        <div class="card">
+            <input type="checkbox" id="copy-cmd-toggle" class="card-toggle">
+            <label for="copy-cmd-toggle" class="card-header">
+                <h2><i class="fas fa-code" style="color:var(--command-color)"></i>Command: `azcopy copy`</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-copy"></i>The Workhorse: Transferring Data</h3>
+                 <p class="description">Used for uploading, downloading, and copying between Azure Storage locations.</p>
+                <pre><code class="language-bash">azcopy copy '&lt;source_path_or_url&gt;' '&lt;destination_path_or_url&gt;' [flags]</code></pre>
+                <h4>Common Scenarios & Flags:</h4>
+                <ul>
+                    <li><i class="fas fa-file-upload fa-li"></i><strong>Upload local folder to Blob:</strong><br/>
+                        `azcopy copy './local-folder' 'https://[acct].blob.core.windows.net/[container]' --recursive`</li>
+                    <li><i class="fas fa-file-download fa-li"></i><strong>Download Blob container to local:</strong><br/>
+                        `azcopy copy 'https://[acct].blob.core.windows.net/[container]' './local-folder' --recursive`</li>
+                    <li><i class="fas fa-copy fa-li"></i><strong>Copy Blob container to another account:</strong><br/>
+                        `azcopy copy 'https://[src_acct].blob.core.windows.net/[src_container]' 'https://[dest_acct].blob.core.windows.net/[dest_container]' --recursive`</li>
+                    <li><i class="fas fa-cubes fa-li"></i><strong>Upload to specific Blob tier:</strong><br/>
+                        `azcopy copy './file.txt' 'https://[acct].blob.core.windows.net/[container]/file.txt' --block-blob-tier Cool`</li>
+                    <li><i class="fas fa-filter fa-li"></i><strong>Filter files:</strong> <code class="code-term">--include-pattern="*.log"</code>, <code class="code-term">--exclude-path="archive/"</code></li>
+                    <li><i class="fas fa-flag fa-li"></i><strong>Other flags:</strong> <code class="code-term">--overwrite</code> (control overwrite behavior), <code class="code-term">--blob-type</code>, <code class="code-term">--log-level</code>.</li>
+                </ul>
+                <p>The `copy` command transfers all specified source files/blobs. If destination exists, it might be overwritten depending on flags/defaults.</p>
+            </div>
+        </div>
+
+        <!-- Command: azcopy sync -->
+        <div class="card">
+            <input type="checkbox" id="sync-cmd-toggle" class="card-toggle">
+            <label for="sync-cmd-toggle" class="card-header">
+                <h2><i class="fas fa-code" style="color:var(--command-color)"></i>Command: `azcopy sync`</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-sync-alt"></i>Keeping Directories Aligned</h3>
+                <p class="description">Synchronizes the content of a source location to a destination location, only transferring changes.</p>
+                 <pre><code class="language-bash">azcopy sync '&lt;source_path_or_url&gt;' '&lt;destination_path_or_url&gt;' [flags]</code></pre>
+                  <div class="diagram sync-diagram">
+                     <div class="diagram-box"><i class="fas fa-folder-open"></i><span>Source</span></div>
+                     <i class="fas fa-arrows-alt-h diagram-arrow"></i>
+                     <div class="diagram-box"><i class="fas fa-folder"></i><span>Destination</span></div>
+                      <div style="width: 100%; text-align: center; margin: 10px 0;"><i class="fas fa-arrow-down"></i> AzCopy Sync Compares & Acts <i class="fas fa-arrow-down"></i></div>
+                     <div style="display: flex; gap: 10px; justify-content: center; width: 100%;">
+                         <div class="diagram-box" style="min-width:80px; background-color: #e7f3e7;"><i class="fas fa-exchange-alt"></i><span>Copy New/<br/>Changed from Source</span></div>
+                         <div class="diagram-box" style="min-width:80px; background-color: #ffeaea;"><i class="fas fa-trash"></i><span>Delete Extra in Dest<br/>(with `--delete-destination`)</span></div>
+                     </div>
+                 </div>
+                <ul>
+                    <li><i class="fas fa-exchange-alt fa-li" style="color:var(--success-color)"></i><strong>Incremental & Efficient:</strong> Compares filenames and last modified timestamps (LMT). Only copies files if they are new at the source or if the LMT at the source is more recent.</li>
+                    <li><i class="fas fa-trash fa-li" style="color:var(--warning-color)"></i><strong>Deletion (Optional but Powerful):</strong>
+                        <ul>
+                            <li><code class="code-term">--delete-destination=true</code>: Deletes files/blobs from the destination if they don't exist at the source. <span class="warning-text">Irreversible!</span></li>
+                            <li><code class="code-term">--delete-destination=prompt</code>: Prompts before deleting.</li>
+                        </ul>
+                    </li>
+                    <li><i class="fas fa-directions fa-li"></i><strong>One-Way Sync:</strong> By default, changes flow from source to destination.</li>
+                     <li><i class="fas fa-check fa-li"></i>Ideal for keeping a local backup in Azure, or ensuring a remote site mirrors a primary location.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Other Commands & Features -->
+        <div class="card">
+            <input type="checkbox" id="other-features-toggle" class="card-toggle">
+            <label for="other-features-toggle" class="card-header">
+                <h2><i class="fas fa-star"></i>Other Useful AzCopy Commands & Features</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-puzzle-piece"></i>More AzCopy Capabilities</h3>
+                <ul>
+                    <li><i class="fas fa-sign-in-alt fa-li"></i><code class="code-term">azcopy login</code>: Authenticate using Azure AD (interactive, service principal, managed identity).
+                        <ul><li>Use `--tenant-id` for specific tenants.</li></ul>
+                    </li>
+                    <li><i class="fas fa-sign-out-alt fa-li"></i><code class="code-term">azcopy logout</code>: Clear cached Azure AD tokens.</li>
+                     <li><i class="fas fa-folder-plus fa-li"></i><code class="code-term">azcopy make</code> (or `azcopy mk`): Create a container (Blob/ADLS Gen2) or file share. Example: `azcopy make 'https://[acct].blob.core.windows.net/newcontainer'`</li>
+                     <li><i class="fas fa-list fa-li"></i><code class="code-term">azcopy list</code> (or `azcopy ls`): List contents of a container, share, or local directory. Example: `azcopy ls 'https://[acct].blob.core.windows.net/mycontainer'`</li>
+                     <li><i class="fas fa-trash fa-li" style="color:var(--warning-color)"></i><code class="code-term">azcopy remove</code> (or `azcopy rm`): Delete blobs, files, or directories. Example: `azcopy rm 'https://[acct].blob.core.windows.net/mycontainer/oldfile.txt'`</li>
+                     <li><i class="fas fa-tasks fa-li"></i><strong>Job Management:</strong>
+                        <ul>
+                            <li><code class="code-term">azcopy jobs list</code>: Show recent jobs and their status.</li>
+                            <li><code class="code-term">azcopy jobs show &lt;jobID&gt;</code>: Details of a specific job.</li>
+                            <li><code class="code-term">azcopy jobs resume &lt;jobID&gt;</code>: Resume a failed/paused job.</li>
+                            <li><code class="code-term">azcopy jobs clean [--with-status=Cancelled|Failed|Completed]</code>: Remove old job records.</li>
+                         </ul>
+                    </li>
+                    <li><i class="fas fa-undo fa-li"></i><strong>Automatic Resume:</strong> AzCopy automatically attempts to resume from plan files if interrupted.</li>
+                    <li><i class="fas fa-file-medical-alt fa-li"></i><strong>Logging & Plan Files:</strong> Detailed logs and plan files are created in `~/.azcopy` (Linux/Mac) or `%UserPROFILE%\.azcopy` (Windows). Control log level with <code class="code-term">--log-level</code>.</li>
+                     <li><i class="fas fa-cogs fa-li"></i><strong>Performance Tuning:</strong> Environment variables like <code class="code-term">AZCOPY_CONCURRENCY_VALUE</code> can adjust parallelism.</li>
+                 </ul>
+            </div>
+        </div>
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

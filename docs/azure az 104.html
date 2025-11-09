@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Guide</title>
+
+    <!-- Include Tailwind and Flowbite CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      
+    </style>
+  </head>
+  <body>
+    <!-- Add your content here. You can find flowbite components at https://flowbite.com/docs/components/ -->
+    
+    <main class="pt-16 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900 antialiased">
+      <div class="flex px-4 justify-between mx-auto ">
+        <article class="mx-auto w-full max-w-2xl">
+          <img class="h-auto rounded-lg mb-6" src="https://learn.microsoft.com/en-us/media/open-graph-image.png" alt="image description">
+          <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Study Guide for Microsoft Azure Administrator (AZ-104)</h1>
+          <p class="mb-6 text-xl font-normal text-gray-500">Comprehensive preparation guide for the AZ-104 certification exam</p>
+          
+          <!-- Key Terms -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key Terms</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Backup</mark> - A service that provides data protection and recovery capabilities for Azure resources</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Critical for maintaining business continuity and disaster recovery in Azure environments</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Bastion</mark> - A fully managed service that provides secure and seamless RDP and SSH access to virtual machines</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Important for securing access to virtual machines without exposing them directly to the internet</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Container Apps</mark> - A fully managed serverless container service for building and deploying modern applications</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables deployment and management of containerized applications without managing infrastructure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Container Instances</mark> - A service that allows running containers in Azure without managing servers or container orchestration</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides quick and simple container deployment without infrastructure management overhead</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure DNS</mark> - A hosting service for DNS domains that provides name resolution using Microsoft Azure infrastructure</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Essential for managing domain names and DNS records in Azure environments</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Monitor</mark> - A comprehensive solution for collecting, analyzing, and acting on telemetry from cloud and on-premises environments</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Critical for monitoring performance and health of Azure resources</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Policy</mark> - A service used to create, assign, and manage policies that control or audit resources</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Helps enforce organizational standards and assess compliance across Azure resources</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Resource Manager (ARM) templates</mark> - JSON files that define infrastructure and configuration for Azure deployments</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables infrastructure as code and automated deployment of Azure resources</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Site Recovery</mark> - A disaster recovery service that ensures business continuity by keeping applications running during outages</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Critical for maintaining business operations during regional failures or disasters</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Storage Explorer</mark> - A standalone application for managing Azure Storage data across multiple accounts</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides a graphical interface for managing various types of Azure storage resources</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Bicep</mark> - A domain-specific language for deploying Azure resources, which simplifies ARM template authoring</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides a more developer-friendly approach to infrastructure as code in Azure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Network Security Groups (NSGs)</mark> - Virtual firewall rules that control inbound and outbound network traffic to Azure resources</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Fundamental to implementing network security in Azure environments</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Recovery Services vault</mark> - A storage entity in Azure that houses backup data and recovery points</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Central component for implementing backup and disaster recovery solutions</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Shared Access Signature (SAS)</mark> - A URI that grants restricted access rights to Azure Storage resources</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables secure, delegated access to storage resources without sharing account keys</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Virtual Machine Scale Sets</mark> - A group of identical, load-balanced VMs that can automatically increase or decrease in response to demand</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables automatic scaling of applications and improved availability</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+          
+          <!-- Key People -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key People & Entities</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure</mark> - Cloud computing platform referenced throughout the document</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Primary subject of the certification exam and study materials</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Backup</mark> - Service mentioned in monitoring and maintenance section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Key service for backup and recovery operations in Azure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Bastion</mark> - Service mentioned in networking section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Secure access solution for virtual networks</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Container Apps</mark> - Service mentioned in compute resources section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Platform for deploying and managing containerized applications</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Container Instances</mark> - Service mentioned in compute resources section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Container hosting solution in Azure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure DNS</mark> - Service mentioned in networking section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Domain name system service for Azure resources</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Monitor</mark> - Service mentioned in monitoring section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Primary monitoring and diagnostics service for Azure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Network Watcher</mark> - Service mentioned in monitoring section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Network performance monitoring and diagnostics tool</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Site Recovery</mark> - Service mentioned in backup and recovery section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Disaster recovery service for Azure resources</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">BitLocker</mark> - Mentioned in additional resources section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Encryption technology referenced in documentation</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Microsoft</mark> - Company name mentioned throughout document</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provider of Azure platform and certification</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Microsoft Entra ID</mark> - Identity service mentioned in governance section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Core identity and access management service for Azure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">PowerShell</mark> - Listed in required experience section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Command-line tool for Azure administration</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Key Dates -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key Dates</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">March 19, 2025</mark> - Article publication date</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Date when the study guide for Exam AZ-104 was published or last updated</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">April 8 - May 28, 2025</mark> - AI Skills Fest duration</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Time period for the AI Skills Fest event</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">April 18, 2025</mark> - Skills measurement update date</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Date when the exam skills measurements were updated and became effective</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">2025</mark> - Copyright year</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Microsoft copyright date shown at the bottom of the document</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">8 weeks after English version</mark> - Localization timeline</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Approximate time period for exam updates to be localized into other languages after English version updates</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Key Concepts -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key concepts</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Azure Administrator Exam (AZ-104)</mark> - A certification exam that tests expertise in implementing, managing, and monitoring an organization's Microsoft Azure environment</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Validates skills required for Azure administration roles and demonstrates proficiency in core Azure services</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Identity and Governance (20-25%)</mark> - Management of Azure identities, roles, subscriptions, and governance policies</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Critical for controlling access, managing resources, and maintaining security compliance in Azure environments</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Storage Implementation (15-20%)</mark> - Configuration and management of Azure storage accounts, files, and blob storage</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Essential for managing data storage solutions and ensuring proper access controls in Azure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Compute Resources (20-25%)</mark> - Deployment and management of virtual machines, containers, and app services</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Core component for running applications and workloads in Azure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Virtual Networking (15-20%)</mark> - Configuration and management of virtual networks, security, and connectivity</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Fundamental for establishing secure communication between Azure resources</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Monitoring and Maintenance (10-15%)</mark> - Implementation of monitoring solutions, backup, and disaster recovery</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Ensures reliability and availability of Azure resources</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Azure Resource Manager (ARM) Templates</mark> - JSON files used for infrastructure as code deployment in Azure</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables automated and consistent resource deployment across Azure environments</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Microsoft Entra ID</mark> - Azure's cloud-based identity and access management service</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Primary system for managing user access and authentication in Azure</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Azure Monitor</mark> - Platform for collecting, analyzing, and responding to monitoring data</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Critical for maintaining performance and health of Azure resources</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Azure Backup and Site Recovery</mark> - Services for data backup and disaster recovery solutions</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Essential for business continuity and data protection strategies</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+
+          <!-- Full Doc -->
+          <section class="pb-6">
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Azure Identity and Governance</h1>
+              <p class="mb-3 text-xl text-gray-500">Managing users, access controls, and governance policies in Azure</p>
+              <p class="text-gray-500 dark:text-gray-900">This section covers the fundamental aspects of identity management and governance in Azure. You'll learn how to manage Microsoft Entra users and groups, including creating and managing user accounts, assigning licenses, and configuring self-service password reset. The section also details Azure role-based access control (RBAC), implementing Azure Policy, and managing subscriptions and costs. Understanding these concepts is crucial for maintaining security and compliance in Azure environments. You'll explore how to use management groups to organize resources effectively and implement cost control measures through budgets and alerts.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      Master Microsoft Entra ID user and group management including license assignment
+                  </li>
+                  <li>
+                      Understand and implement role-based access control across different scopes
+                  </li>
+                  <li>
+                      Learn to use Azure Policy and resource tags for governance
+                  </li>
+                  <li>
+                      Implement cost management through budgets and Azure Advisor
+                  </li>
+                  <li>
+                      Configure and manage management groups for resource organization
+                  </li>
+              </ul>
+            </div>
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Azure Storage Solutions</h1>
+              <p class="mb-3 text-xl text-gray-500">Implementing and managing Azure storage services</p>
+              <p class="text-gray-500 dark:text-gray-900">This section focuses on Azure storage solutions, covering configuration and management of storage accounts, access control, and different storage services. You'll learn how to implement security measures like storage firewalls and SAS tokens, manage access keys, and configure various storage redundancy options. The section covers both Azure Files and Blob Storage, including advanced features like lifecycle management, versioning, and soft delete. Understanding storage tiers and data protection mechanisms is essential for optimal cost management and data security.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      Configure and secure Azure Storage accounts with appropriate access controls
+                  </li>
+                  <li>
+                      Implement shared access signatures and storage policies
+                  </li>
+                  <li>
+                      Master Azure Files and Blob Storage configuration and management
+                  </li>
+                  <li>
+                      Understand storage redundancy options and their use cases
+                  </li>
+                  <li>
+                      Implement lifecycle management and versioning for blob storage
+                  </li>
+              </ul>
+            </div>
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Azure Compute Resources</h1>
+              <p class="mb-3 text-xl text-gray-500">Deploying and managing various compute services in Azure</p>
+              <p class="text-gray-500 dark:text-gray-900">This section covers the deployment and management of Azure compute resources, including virtual machines, containers, and App Services. You'll learn how to use ARM templates and Bicep files for infrastructure as code, manage virtual machines and their components, and work with container services like Azure Container Instances and Container Apps. The section also details App Service configuration, including scaling, networking, and deployment slots. Understanding these compute options and their management is crucial for building and maintaining Azure infrastructure.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      Master ARM templates and Bicep files for resource deployment
+                  </li>
+                  <li>
+                      Configure and manage virtual machines and scale sets
+                  </li>
+                  <li>
+                      Implement container solutions using Azure Container Instances and Apps
+                  </li>
+                  <li>
+                      Configure and manage Azure App Services effectively
+                  </li>
+                  <li>
+                      Understand different compute options and their appropriate use cases
+                  </li>
+              </ul>
+            </div>
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Virtual Networking</h1>
+              <p class="mb-3 text-xl text-gray-500">Implementing and managing Azure virtual networks</p>
+              <p class="text-gray-500 dark:text-gray-900">This section focuses on Azure networking concepts and implementation. You'll learn how to configure and manage virtual networks, implement network security through NSGs and application security groups, and set up secure access using Azure Bastion. The section covers DNS configuration, load balancing, and troubleshooting network connectivity issues. Understanding these networking concepts is essential for creating secure and efficient Azure infrastructure that meets organizational requirements.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      Configure and manage virtual networks and peering
+                  </li>
+                  <li>
+                      Implement network security using NSGs and application security groups
+                  </li>
+                  <li>
+                      Set up secure access with Azure Bastion and private endpoints
+                  </li>
+                  <li>
+                      Configure Azure DNS and load balancing solutions
+                  </li>
+                  <li>
+                      Master network troubleshooting and monitoring
+                  </li>
+              </ul>
+            </div>
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Monitoring and Recovery</h1>
+              <p class="mb-3 text-xl text-gray-500">Implementing monitoring, backup, and disaster recovery solutions</p>
+              <p class="text-gray-500 dark:text-gray-900">This section covers Azure monitoring and recovery solutions, including Azure Monitor, backup services, and disaster recovery options. You'll learn how to configure and interpret monitoring metrics, set up alerts and action groups, and implement backup solutions using Recovery Services vaults. The section also covers Azure Site Recovery for disaster recovery scenarios and failover procedures. Understanding these monitoring and recovery concepts is crucial for maintaining highly available and resilient Azure infrastructure.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      Configure and use Azure Monitor for comprehensive monitoring
+                  </li>
+                  <li>
+                      Implement backup solutions using Azure Backup
+                  </li>
+                  <li>
+                      Configure disaster recovery using Azure Site Recovery
+                  </li>
+                  <li>
+                      Set up effective alerting and monitoring strategies
+                  </li>
+                  <li>
+                      Master backup and recovery procedures for Azure resources
+                  </li>
+              </ul>
+            </div>
+            
+          </section>
+        </article>
+      </div>
+        
+      </div>
+      <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700">
+      <footer>
+        <span class="block text-sm text-center text-gray-500">End of study guide.
+          </span>
+      </footer>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+  </body>
+</html>

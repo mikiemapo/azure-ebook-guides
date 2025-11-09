@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azure App Service: Web Apps & Scaling Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      :root {
+        --azure-blue: #0078d4;
+        --azure-blue-dark: #005a9e;
+        --azure-bg-light: #f0f4f8;
+        --text-dark: #323130;
+        --text-light: #ffffff;
+        --border-color: #d1d1d1;
+        --card-bg: #ffffff;
+        --diagram-bg: #f8f9fa;
+        --success-color: #107c10;
+        --warning-color: #d83b01;
+        --info-color: #005a9e;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        /* Original App Service Feature Colors */
+        --appservice-color: var(
+          --success-color
+        ); /* Green for App Service (used by default .card-header) */
+        --plan-color: var(--info-color);
+        --webapp-color: var(--azure-blue);
+        --scaling-color: #f7b20c; /* Gold for scaling */
+
+        /* ---- ADD THESE NEW VARIABLES FOR APP SERVICE NETWORKING ---- */
+        --appservice-net-color: #68217a; /* App Service Purple - for the main networking section intro header */
+        --inbound-color: #27ae60; /* A different Green - for inbound-related card headers */
+        --outbound-color: #2980b9; /* Blue - for outbound-related card headers */
+        --private-link-color: #8e44ad; /* Darker Purple - for Private Link/Endpoint card headers */
+        --hybrid-color: #f39c12; /* Orange - for Hybrid Connections card headers */
+        --ase-color: #34495e; /* Dark Blue/Grey - for ASE card headers */
+        --service-endpoint-color: #3498db; /* Example for icons */
+        --service-tag-color: #f1c40f; /* Example for icons */
+        /* ---- END OF NEW VARIABLES ---- */
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+          Helvetica, Arial, sans-serif;
+        background-color: var(--azure-bg-light);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--text-dark);
+        line-height: 1.6;
+      }
+
+      .main-container {
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      h1 {
+        color: var(--azure-blue-dark);
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      h1 .fa-rocket {
+        font-size: 1.1em;
+        color: var(--appservice-color);
+      }
+
+      .back-to-hub-container {
+        width: 100%;
+        max-width: 1000px;
+        margin: 0 auto 20px auto;
+        padding: 0 20px;
+        box-sizing: border-box;
+      }
+      .back-to-hub {
+        padding: 10px;
+        background-color: #e6f2ff;
+        border-radius: 5px;
+        text-align: left;
+        border: 1px solid var(--azure-blue);
+      }
+      .back-to-hub a {
+        text-decoration: none;
+        color: #005a9e;
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+      .back-to-hub a i {
+        margin-right: 8px;
+      }
+
+      .instructions {
+        background-color: var(--card-bg);
+        padding: 12px 18px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        text-align: center;
+        font-size: 0.95em;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px var(--shadow-color);
+      }
+      .instructions strong {
+        color: var(--appservice-color);
+      }
+
+      /* --- Quick Jump Menu --- */
+      .quick-jump-container {
+        background-color: #fff3cd;
+        border: 2px solid #ffc107;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 25px;
+        text-align: center;
+        font-size: 1em;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+      }
+      .quick-jump-container a {
+        text-decoration: none;
+        color: var(--azure-blue-dark);
+        font-weight: 500;
+        transition: color 0.2s ease;
+        padding: 0 8px;
+      }
+      .quick-jump-container a:hover {
+        color: var(--appservice-color);
+        text-decoration: underline;
+      }
+      .quick-jump-container .focus-link {
+        font-weight: 700;
+        color: #d83b01;
+      }
+      .quick-jump-container .focus-link:hover {
+        color: #a52a00;
+      }
+
+      /* --- Mind Map Diagram --- */
+      .mindmap-container {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 20px;
+        margin: 0 auto 30px auto;
+        width: 100%;
+        box-shadow: 0 2px 8px var(--shadow-color);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      .mindmap-item {
+        background-color: var(--diagram-bg);
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-size: 0.9em;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px var(--shadow-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        width: calc(33.33% - 20px);
+        min-width: 140px;
+        transition: transform 0.2s ease;
+      }
+      .mindmap-item:hover {
+        transform: translateY(-3px);
+      }
+      .mindmap-item i {
+        font-size: 1.8em;
+        margin-bottom: 5px;
+      }
+      .mindmap-item span {
+        font-weight: 600;
+      }
+      /* Specific item colors for mind map */
+      .mindmap-item.whatis i {
+        color: var(--appservice-color);
+      }
+      .mindmap-item.plan i {
+        color: var(--plan-color);
+      }
+      .mindmap-item.webapp i {
+        color: var(--webapp-color);
+      }
+      .mindmap-item.scaling i {
+        color: var(--scaling-color);
+      }
+      .mindmap-item.deploy i {
+        color: #605e5c;
+      }
+      .mindmap-item.features i {
+        color: var(--info-color);
+      }
+
+      /* --- Card Section --- */
+      .card-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        width: 100%;
+      }
+      @media (min-width: 768px) {
+        .card-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1200px) {
+        .card-container {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      /* General Card Styles */
+      .card {
+        background-color: var(--card-bg);
+        border-radius: 6px;
+        box-shadow: 0 2px 5px var(--shadow-color);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+      }
+      .card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+      .card-toggle {
+        display: none;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        background-color: var(--appservice-color);
+        color: var(--text-light);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        border-bottom: 1px solid #0d6a0d; /* Darker AppService Green */
+      }
+      .card-header:hover {
+        background-color: #0d6a0d;
+      }
+      /* Custom header colors per section if needed */
+      .card-header.keyconcepts-header {
+        background-color: var(--plan-color);
+        border-bottom-color: #00437a;
+      }
+      .card-header.keyconcepts-header:hover {
+        background-color: #00437a;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 1.2em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-header h2 i {
+        font-size: 1em;
+        opacity: 0.9;
+      }
+      .card-header .toggle-icon {
+        font-size: 1.1em;
+        transition: transform 0.3s ease;
+      }
+      .card-content {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        padding: 0 18px;
+        transition: max-height 0.4s ease-out, opacity 0.3s ease-in,
+          padding 0.4s ease-out, border-top 0.4s ease-out;
+        background-color: var(--card-bg);
+        border-top: 0px solid var(--border-color);
+        flex-grow: 1;
+      }
+      .card-toggle:checked + .card-header {
+        border-bottom-color: transparent;
+      }
+      .card-toggle:checked + .card-header .toggle-icon {
+        transform: rotate(180deg);
+      }
+      .card-toggle:checked ~ .card-content {
+        max-height: 2500px;
+        opacity: 1;
+        padding: 15px 18px;
+        border-top: 1px solid var(--border-color);
+        overflow-y: auto;
+      }
+
+      /* --- Content Styling --- */
+      .card-content h3 {
+        color: var(--azure-blue-dark);
+        margin-top: 0;
+        margin-bottom: 12px;
+        font-size: 1.1em;
+        font-weight: 600;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-content h3 i {
+        font-size: 0.9em;
+        color: var(--appservice-color);
+      }
+      .card-content p {
+        font-size: 0.95em;
+        margin-bottom: 12px;
+      }
+      .card-content ul {
+        font-size: 0.95em;
+        padding-left: 0;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        list-style: none;
+      }
+      .card-content li {
+        margin-bottom: 8px;
+        position: relative;
+        padding-left: 25px;
+      }
+      .card-content li i.fa-li {
+        position: absolute;
+        left: 0;
+        top: 3px;
+        width: 20px;
+        text-align: center;
+        font-size: 0.9em;
+        color: var(--appservice-color);
+      }
+      .keyconcepts-card li i.fa-li {
+        color: var(--plan-color);
+      }
+
+      /* General icons for points */
+      .card-content li i.fa-globe,
+      .card-content li i.fa-server,
+      .card-content li i.fa-cogs {
+        color: var(--appservice-color);
+      }
+      .card-content li i.fa-code-branch,
+      .card-content li i.fa-mobile-alt,
+      .card-content li i.fa-laptop-code {
+        color: var(--info-color);
+      }
+      .card-content li i.fa-shield-alt {
+        color: var(--success-color);
+      }
+      .card-content li i.fa-info-circle {
+        color: var(--info-color);
+      }
+      .card-content li i.fa-window-maximize,
+      .card-content li i.fa-linux,
+      .card-content li i.fa-docker {
+        color: #605e5c;
+      }
+      .card-content li i.fa-arrows-alt-v {
+        color: var(--scaling-color);
+      }
+
+      /* --- Diagram Styles --- */
+      .diagram {
+        border: 1px dashed var(--border-color);
+        padding: 15px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        background-color: var(--diagram-bg);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .diagram-box {
+        background-color: #fff;
+        padding: 8px 12px;
+        border-radius: 4px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 2px var(--shadow-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        min-width: 90px;
+        font-size: 0.9em;
+      }
+      .diagram-box i {
+        font-size: 1.6em;
+      }
+      .diagram-box span {
+        font-size: 0.8em;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+      .diagram-arrow {
+        font-size: 1.8em;
+        color: #a19f9d;
+        margin: 0 5px;
+      }
+      .diagram-label {
+        font-size: 0.75em;
+        color: #605e5c;
+        font-style: italic;
+        width: 100%;
+        text-align: center;
+        margin-top: 5px;
+      }
+
+      /* Specific Diagram Styles */
+      .paas-diagram .fa-users,
+      .paas-diagram .fa-cloud {
+        color: #605e5c;
+      }
+      .paas-diagram .fa-rocket {
+        color: var(--appservice-color);
+        font-size: 2em;
+      }
+      .paas-diagram .responsibility-label {
+        font-size: 0.7em;
+        font-weight: bold;
+        margin-top: 3px;
+      }
+
+      .asp-webapp-diagram .fa-server {
+        color: var(--plan-color);
+        font-size: 1.8em;
+      }
+      .asp-webapp-diagram .fa-globe {
+        color: var(--webapp-color);
+        font-size: 1.6em;
+      }
+      .asp-webapp-diagram .diagram-box {
+        min-width: 130px;
+      }
+
+      /* Helper classes */
+      .key-point {
+        font-weight: 600;
+        color: var(--appservice-color);
+      } /* Use AppService color */
+      .description {
+        font-style: italic;
+        color: #605e5c;
+        margin-bottom: 15px;
+        display: block;
+      }
+      .important-note {
+        background-color: #e7f3e7;
+        border-left: 4px solid var(--appservice-color);
+        padding: 10px 15px;
+        margin: 15px 0;
+        font-size: 0.9em;
+      }
+      .important-note i {
+        color: var(--appservice-color);
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="back-to-hub-container">
+      <div class="back-to-hub">
+        <a href="index.html"
+          ><i class="fas fa-arrow-left"></i>Back to Study Hub</a
+        >
+      </div>
+    </div>
+
+    <div class="main-container">
+      <h1>
+        <i class="fas fa-rocket"></i>Azure App Service: Web Apps & Scaling Guide
+      </h1>
+      <p class="instructions">
+        Learn about Azure App Service for hosting web applications, its core
+        components like App Service Plans, and how scaling works. Key for
+        AZ-104. <strong>Click/Tap</strong> headers.
+      </p>
+
+      <!-- Quick Jump Menu -->
+      <div class="quick-jump-container">
+        <strong>🎯 Quick Jump to Pillars:</strong>
+        <a href="#pillar1-app-fundamentals-toggle" class="quick-link focus-link"
+          >⚡ Fundamentals</a
+        >
+        |
+        <a
+          href="#pillar2-scaling-performance-toggle"
+          class="quick-link focus-link"
+          >⚡ Scaling & Performance</a
+        >
+        |
+        <a href="#pillar3-deployment-operations-toggle" class="quick-link"
+          >Deployment & Operations</a
+        >
+        |
+        <a
+          href="#pillar4-networking-security-toggle"
+          class="quick-link focus-link"
+          >⚡ Networking & Security</a
+        >
+        |
+        <a href="#pillar5-monitoring-diagnostics-toggle" class="quick-link"
+          >Monitoring & Diagnostics</a
+        >
+        |
+        <a href="#appservice-key-takeaways-toggle" class="quick-link"
+          >📚 Key Takeaways</a
+        >
+      </div>
+
+      <!-- Mind Map -->
+      <div class="mindmap-container">
+        <div class="mindmap-item whatis">
+          <i class="fas fa-question-circle"></i
+          ><span>What is App Service?</span>
+        </div>
+        <div class="mindmap-item plan">
+          <i class="fas fa-server"></i><span>App Service Plan</span>
+        </div>
+        <div class="mindmap-item webapp">
+          <i class="fas fa-globe-europe"></i><span>Web App</span>
+        </div>
+        <div class="mindmap-item scaling">
+          <i class="fas fa-chart-line"></i><span>Scaling</span>
+        </div>
+        <div class="mindmap-item deploy">
+          <i class="fas fa-cloud-upload-alt"></i><span>Deployment</span>
+        </div>
+        <div class="mindmap-item features">
+          <i class="fas fa-star"></i><span>Key Features</span>
+        </div>
+      </div>
+
+      <div class="card-container">
+        <!-- Pillar 1: App Service Fundamentals -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="pillar1-app-fundamentals-toggle"
+            class="card-toggle"
+            checked
+          />
+          <label
+            id="card1"
+            for="pillar1-app-fundamentals-toggle"
+            class="card-header"
+            style="background-color: var(--appservice-color)"
+          >
+            <h2>
+              <i class="fas fa-layer-group"></i>Pillar 1: App Service
+              Fundamentals
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--appservice-color)">
+              <i class="fas fa-cloud"></i>What is Azure App Service?
+            </h3>
+            <p class="description">
+              Azure App Service is a fully managed Platform-as-a-Service (PaaS)
+              for building, deploying, and scaling web applications, REST APIs,
+              and mobile backends.
+            </p>
+
+            <div class="diagram paas-diagram">
+              <div class="diagram-box">
+                <i class="fas fa-users"></i><span>YOU Manage</span
+                ><span class="responsibility-label"
+                  >Application Code & Data</span
+                >
+              </div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div
+                class="diagram-box"
+                style="border-color: var(--appservice-color)"
+              >
+                <i class="fas fa-rocket"></i><strong>App Service</strong>
+              </div>
+              <i class="fas fa-arrow-left diagram-arrow"></i>
+              <div class="diagram-box">
+                <i class="fas fa-cloud"></i><span>AZURE Manages</span
+                ><span class="responsibility-label">OS, Middleware, Infra</span>
+              </div>
+            </div>
+
+            <ul>
+              <li>
+                <i class="fa-li fas fa-laptop-code"></i
+                ><strong>Supported Runtimes:</strong> .NET, .NET Core, Java,
+                Ruby, Node.js, PHP, Python. Also supports custom Docker
+                containers.
+              </li>
+              <li>
+                <i class="fa-li fas fa-cogs"></i
+                ><strong>No OS Management:</strong> Azure handles OS patching,
+                infrastructure maintenance, and runtime updates.
+              </li>
+              <li>
+                <i class="fa-li fas fa-arrows-alt-v"></i
+                ><strong>Built-in Scalability:</strong> Easily scale up (more
+                powerful instances) or scale out (more instances).
+              </li>
+              <li>
+                <i class="fa-li fas fa-shield-alt"></i
+                ><strong>Security Features:</strong> Integration with Azure AD,
+                SSL/TLS certificates, network restrictions.
+              </li>
+              <li>
+                <i class="fa-li fas fa-code-branch"></i
+                ><strong>DevOps Integration:</strong> CI/CD with Azure DevOps,
+                GitHub Actions, etc.
+              </li>
+            </ul>
+
+            <h3 style="color: var(--plan-color); margin-top: 30px">
+              <i class="fas fa-puzzle-piece"></i>Key Concepts: Web App & App
+              Service Plan
+            </h3>
+            <p class="description">
+              Understanding the relationship between your application (Web App)
+              and the underlying compute resources (App Service Plan).
+            </p>
+
+            <div class="diagram asp-webapp-diagram">
+              <div class="diagram-box" style="border-color: var(--plan-color)">
+                <i class="fas fa-server"></i>
+                <strong>App Service Plan (ASP)</strong>
+                <span>Defines Region, OS, SKU (Size/Tier), Instance Count</span>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  align-items: center;
+                  gap: 5px;
+                  margin: 10px 0;
+                "
+              >
+                <i class="fas fa-arrow-down diagram-arrow"></i>
+                <span>Hosts <i class="fas fa-arrow-down"></i></span>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-around;
+                  width: 100%;
+                "
+              >
+                <div
+                  class="diagram-box"
+                  style="border-color: var(--webapp-color)"
+                >
+                  <i class="fas fa-globe"></i><span>Web App 1</span>
+                </div>
+                <div
+                  class="diagram-box"
+                  style="border-color: var(--webapp-color)"
+                >
+                  <i class="fas fa-mobile-alt"></i
+                  ><span>Mobile App Backend</span>
+                </div>
+                <div
+                  class="diagram-box"
+                  style="border-color: var(--webapp-color)"
+                >
+                  <i class="fas fa-code"></i><span>API App</span>
+                </div>
+              </div>
+            </div>
+
+            <ul>
+              <li>
+                <i
+                  class="fa-li fas fa-globe"
+                  style="color: var(--webapp-color)"
+                ></i
+                ><strong>Web App (or App Service App):</strong>
+                <ul>
+                  <li>
+                    This is where your application code and content reside.
+                  </li>
+                  <li>
+                    Gets a unique `*.azurewebsites.net` domain name (custom
+                    domains can be added).
+                  </li>
+                  <li>
+                    Runs <span class="key-point">on an App Service Plan</span>.
+                  </li>
+                </ul>
+              </li>
+              <li style="margin-top: 15px">
+                <i
+                  class="fa-li fas fa-server"
+                  style="color: var(--plan-color)"
+                ></i
+                ><strong>App Service Plan (ASP):</strong>
+                <ul>
+                  <li>
+                    Defines the set of compute resources your web app runs on.
+                    Think of it as the server(s) or farm.
+                  </li>
+                  <li>
+                    <span class="key-point">Key Attributes:</span> Region,
+                    Operating System (Windows/Linux), SKU (Pricing Tier - Free,
+                    Basic, Standard, Premium, Isolated), Instance Count.
+                  </li>
+                  <li>
+                    An ASP can host
+                    <span class="key-point">multiple Web Apps</span>
+                    (cost-effective for dev/test or smaller apps).
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <div
+              class="important-note"
+              style="
+                border-left: 5px solid var(--warning-color);
+                background-color: #fff8e1;
+                padding: 15px;
+                margin: 20px 0;
+                border-radius: 5px;
+              "
+            >
+              <h4 style="color: var(--warning-color); margin-top: 0">
+                <i class="fas fa-exclamation-triangle"></i> Critical AZ-104
+                Concept
+              </h4>
+              <p style="font-size: 1.1em; margin-bottom: 0">
+                <strong>You scale the PLAN, not the App!</strong> When you scale
+                (scale out by adding instances, scale up by choosing a higher
+                SKU), it affects the App Service Plan and therefore ALL web apps
+                hosted in that plan. Individual web apps cannot be scaled
+                independently.
+              </p>
+            </div>
+
+            <div
+              class="important-note"
+              style="
+                border-left: 5px solid var(--info-color);
+                background-color: #e3f2fd;
+                padding: 15px;
+                margin: 20px 0;
+                border-radius: 5px;
+              "
+            >
+              <h4 style="color: var(--info-color); margin-top: 0">
+                <i class="fas fa-cubes"></i> App Service Runtime Options
+              </h4>
+              <ul>
+                <li>
+                  <i class="fa-li fas fa-code"></i
+                  ><strong>Supported Stacks:</strong> .NET, Java, Node.js,
+                  Python, PHP, Ruby, and custom Docker containers.
+                </li>
+                <li>
+                  <i class="fa-li fas fa-desktop"></i>Choose runtime
+                  <strong>and</strong> OS (Windows or Linux) during creation —
+                  affects feature set and pricing.
+                </li>
+                <li>
+                  <i class="fa-li fab fa-windows" style="color: #0078d4"></i
+                  ><strong>Windows Plans:</strong> Ideal for .NET Framework and
+                  IIS-based apps.
+                </li>
+                <li>
+                  <i class="fa-li fab fa-linux" style="color: #fcc624"></i
+                  ><strong>Linux Plans:</strong> For Node.js, Python, PHP, Java;
+                  supports containers and SSH.
+                </li>
+                <li>
+                  <i class="fa-li fab fa-docker" style="color: #0db7ed"></i
+                  ><strong>Custom Containers:</strong> Use Azure Container
+                  Registry or Docker Hub for nonstandard stacks.
+                </li>
+                <li>
+                  <i
+                    class="fa-li fas fa-database"
+                    style="color: var(--success-color)"
+                  ></i
+                  ><strong>Backups:</strong> Available on
+                  <strong>Standard tier and above</strong> (requires storage
+                  account link).
+                </li>
+              </ul>
+
+              <div
+                class="diagram-box"
+                style="
+                  background-color: #fff3cd;
+                  border-color: var(--warning-color);
+                  margin: 15px 0;
+                  padding: 12px;
+                "
+              >
+                <strong style="color: var(--warning-color)"
+                  >RUNTIME = ROADMAP Mnemonic</strong
+                ><br />
+                <span style="font-size: 0.95em">
+                  <strong>R</strong> - Runtime Stack<br />
+                  <strong>O</strong> - OS Choice (Win/Linux)<br />
+                  <strong>A</strong> - App Service Plan Tier<br />
+                  <strong>D</strong> - Deployment Method<br />
+                  <strong>M</strong> - Monitoring Options<br />
+                  <strong>A</strong> - Autoscale Rules<br />
+                  <strong>P</strong> - Price / Performance Impact
+                </span>
+              </div>
+
+              <p style="margin-bottom: 0">
+                <strong>AZ-104 Focus:</strong> Know which App Service Plans
+                support specific runtimes and features (Linux containers,
+                backups, scaling). Expect questions comparing
+                <em>Windows vs Linux plans</em> and
+                <em>App Service Plan tier capabilities</em>.
+              </p>
+            </div>
+
+            <p>
+              <strong>AZ-104 Focus:</strong> Crucial to understand that you
+              scale the PLAN, not the individual Web App directly. Know the
+              different ASP tiers and their implications (e.g., Free/Basic have
+              limitations, Standard/Premium offer more features like slots,
+              custom domains, autoscale).
+            </p>
+          </div>
+        </div>
+
+        <!-- Pillar 2: Scaling & Performance -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="pillar2-scaling-performance-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card2"
+            for="pillar2-scaling-performance-toggle"
+            class="card-header"
+            style="
+              background-color: var(--scaling-color);
+              color: var(--text-dark);
+            "
+          >
+            <h2>
+              <i class="fas fa-chart-line"></i>Pillar 2: Scaling & Performance
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--scaling-color)">
+              <i class="fas fa-arrows-alt-v"></i>Adjusting Compute Capacity
+            </h3>
+            <p class="description">
+              Scaling the App Service Plan (not individual Web Apps) adjusts the
+              underlying compute resources available to your hosted
+              applications.
+            </p>
+
+            <div
+              class="diagram"
+              style="flex-direction: column; align-items: stretch; gap: 15px"
+            >
+              <div class="diagram-box" style="width: auto; padding: 10px">
+                <i
+                  class="fas fa-server"
+                  style="color: var(--plan-color); font-size: 1.8em"
+                ></i>
+                <strong>App Service Plan</strong>
+                <span>(Current Capacity: e.g., 2 Small Instances)</span>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  justify-content: space-around;
+                  width: 100%;
+                "
+              >
+                <div style="text-align: center; width: 45%">
+                  <i class="fas fa-arrow-down diagram-arrow"></i>
+                  <strong>Scale Up/Down</strong>
+                  <i class="fas fa-arrow-up diagram-arrow"></i><br />
+                  <span style="font-size: 0.8em"
+                    >(Change SKU/Size - More Power per Instance)</span
+                  >
+                </div>
+                <div style="text-align: center; width: 45%">
+                  <i class="fas fa-arrow-left diagram-arrow"></i>
+                  <strong>Scale In/Out</strong>
+                  <i class="fas fa-arrow-right diagram-arrow"></i><br />
+                  <span style="font-size: 0.8em"
+                    >(Change Instance Count - More/Fewer Instances)</span
+                  >
+                </div>
+              </div>
+              <div
+                class="diagram-box"
+                style="width: auto; padding: 10px; margin-top: 10px"
+              >
+                <i
+                  class="fas fa-server"
+                  style="color: var(--plan-color); font-size: 1.8em"
+                ></i>
+                <strong>App Service Plan</strong>
+                <span>(New Capacity: e.g., 4 Medium Instances)</span>
+              </div>
+            </div>
+
+            <ul>
+              <li>
+                <i
+                  class="fa-li fas fa-arrow-up"
+                  style="color: var(--scaling-color)"
+                ></i
+                ><strong>Scale Up (Vertical Scaling):</strong>
+                <ul>
+                  <li>
+                    Increases the resources of individual instances (CPU,
+                    memory, disk space, features).
+                  </li>
+                  <li>
+                    Done by changing the
+                    <span class="key-point">Pricing Tier/SKU</span> of the App
+                    Service Plan (e.g., from B1 to S1, or P1V2 to P2V2).
+                  </li>
+                  <li>Typically causes application restarts.</li>
+                </ul>
+              </li>
+              <li style="margin-top: 15px">
+                <i
+                  class="fa-li fas fa-arrows-alt-h"
+                  style="color: var(--scaling-color)"
+                ></i
+                ><strong>Scale Out (Horizontal Scaling):</strong>
+                <ul>
+                  <li>
+                    Increases the
+                    <span class="key-point">number of VM instances</span>
+                    running your app.
+                  </li>
+                  <li>Distributes load across more instances.</li>
+                  <li>
+                    Does not typically cause downtime for existing instances
+                    (new ones are added).
+                  </li>
+                  <li>Can be done manually or automatically.</li>
+                </ul>
+              </li>
+            </ul>
+
+            <h4 style="margin-top: 20px; color: var(--azure-blue-dark)">
+              <i class="fas fa-robot" style="color: var(--scaling-color)"></i
+              >Automatic Scaling (Azure Autoscale for ASPs)
+            </h4>
+            <p>
+              Azure Autoscale allows the App Service Plan to dynamically adjust
+              the instance count based on load or schedule. There are different
+              approaches/modes:
+            </p>
+            <ul>
+              <li>
+                <i
+                  class="fa-li fas fa-ruler-combined"
+                  style="color: var(--info-color)"
+                ></i
+                ><strong
+                  >1. Rules-Based Scaling (Traditional Autoscale):</strong
+                >
+                <ul>
+                  <li>
+                    <span class="key-point">You define specific rules.</span>
+                  </li>
+                  <li>
+                    Based on <span class="code-term">Metrics</span>: CPU
+                    percentage, Memory percentage, Disk Queue Length, HTTP Queue
+                    Length, Data In/Out. Set thresholds to trigger scale-out
+                    (add instances) or scale-in (remove instances).
+                  </li>
+                  <li>
+                    Based on <span class="code-term">Schedules</span>: Scale to
+                    specific instance counts at fixed times or on recurring
+                    schedules (e.g., more instances during business hours).
+                  </li>
+                  <li>
+                    Configure instance limits (minimum, maximum, default).
+                  </li>
+                  <li>
+                    Example: "If CPU > 70% for 10 mins, add 1 instance. If CPU <
+                    30% for 20 mins, remove 1 instance."
+                  </li>
+                </ul>
+              </li>
+              <li style="margin-top: 10px">
+                <i
+                  class="fa-li fas fa-magic"
+                  style="color: var(--success-color)"
+                ></i
+                ><strong
+                  >2. "Automatic Scaling" / Elastic Scale (More Managed by
+                  Azure):</strong
+                >
+                <ul>
+                  <li>
+                    As your source described: Azure more
+                    <span class="key-point"
+                      >automatically handles scaling decisions</span
+                    >, often looking directly at HTTP load.
+                  </li>
+                  <li>
+                    <span class="key-point"
+                      >Less manual rule definition required by the user.</span
+                    >
+                  </li>
+                  <li>
+                    Can include features like always having a
+                    <span class="code-term">pre-warmed instance</span> ready to
+                    quickly handle new load.
+                  </li>
+                  <li>
+                    This is a setting within the App Service Plan's scale-out
+                    configuration, sometimes presented as a simpler "automatic"
+                    option alongside detailed rule-based configuration. The
+                    exact UI and terminology can evolve in the portal.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+            <p>
+              <strong>AZ-104 Focus:</strong> Understanding the difference
+              between Scale Up vs. Scale Out for ASPs. Knowing how to configure
+              rules-based autoscale (metric and schedule). Being aware that
+              simpler, more load-driven automatic scaling options also exist for
+              App Service Plans. Knowing which ASP tiers support autoscale
+              (Standard, Premium, Isolated).
+            </p>
+            <p>
+              <strong>Implication:</strong> Proper scaling ensures your
+              application performs well under load while managing costs
+              effectively. Choosing the right scaling method depends on
+              predictability of load and desired control.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pillar 3: Deployment & Operations -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="pillar3-deployment-operations-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card3"
+            for="pillar3-deployment-operations-toggle"
+            class="card-header"
+            style="background-color: #605e5c"
+          >
+            <h2>
+              <i class="fas fa-cloud-upload-alt"></i>Pillar 3: Deployment &
+              Operations
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: #605e5c">
+              <i class="fas fa-code-branch"></i>Getting Your Code to App Service
+            </h3>
+            <p class="description">
+              Various ways to deploy your application code or containers to an
+              Azure Web App, plus staging strategies for zero-downtime
+              deployments.
+            </p>
+
+            <div class="diagram">
+              <div class="diagram-box">
+                <i class="fas fa-code"></i
+                ><span>Your Code / Container Image</span>
+              </div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div class="diagram-box" style="min-width: 150px">
+                <i class="fas fa-cogs"></i
+                ><span>Deployment Method (Git, Zip, Docker, etc.)</span>
+              </div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div
+                class="diagram-box"
+                style="border-color: var(--appservice-color)"
+              >
+                <i
+                  class="fas fa-globe"
+                  style="color: var(--appservice-color)"
+                ></i
+                ><span>Azure Web App</span>
+              </div>
+            </div>
+
+            <h4 style="margin-top: 20px">
+              <i class="fas fa-tools"></i> Deployment Methods
+            </h4>
+            <ul>
+              <li>
+                <i
+                  class="fa-li fas fa-terminal"
+                  style="color: var(--cli-color)"
+                ></i
+                ><strong
+                  >Azure CLI (`az webapp up`, `az webapp deployment source
+                  config-zip`):</strong
+                >
+                Quick deployment, especially for simple apps or CI/CD. `az
+                webapp up` can create resources and deploy.
+              </li>
+              <li>
+                <i class="fa-li fab fa-git-alt" style="color: #f1502f"></i
+                ><strong>Git (Local Git, GitHub, Azure Repos):</strong>
+                Continuous deployment from source control.
+              </li>
+              <li>
+                <i class="fa-li fas fa-file-archive"></i
+                ><strong>Zip Deploy:</strong> Upload a .zip file containing your
+                application. Common for CI/CD.
+              </li>
+              <li>
+                <i class="fa-li fab fa-docker" style="color: #0db7ed"></i
+                ><strong>Docker Hub / Azure Container Registry (ACR):</strong>
+                Deploy containerized applications.
+              </li>
+              <li>
+                <i class="fa-li fas fa-cogs"></i><strong>FTP/S:</strong> Legacy
+                method, generally not recommended for production.
+              </li>
+              <li>
+                <i class="fa-li fas fa-tools"></i
+                ><strong>IDE Integration:</strong> Deploy directly from Visual
+                Studio, VS Code, etc.
+              </li>
+              <li>
+                <i class="fa-li fas fa-play-circle"></i
+                ><strong>Deployment Center:</strong> Portal UI for configuring
+                CI/CD from various sources.
+              </li>
+            </ul>
+
+            <h3 style="color: var(--info-color); margin-top: 30px">
+              <i class="fas fa-exchange-alt"></i>Deployment Slots
+            </h3>
+            <p class="description">
+              Live apps have a production slot. You can create additional
+              deployment slots (e.g., "staging") to deploy and test new versions
+              before swapping them into production.
+            </p>
+
+            <div class="diagram" style="align-items: stretch; margin: 20px 0">
+              <div
+                class="diagram-box"
+                style="border-color: var(--success-color); min-width: 150px"
+              >
+                <i class="fas fa-globe" style="color: var(--success-color)"></i
+                ><strong>Production Slot</strong
+                ><span>(live traffic: myapp.azurewebsites.net)</span>
+              </div>
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  justify-content: center;
+                  align-items: center;
+                  margin: 0 10px;
+                "
+              >
+                <i
+                  class="fas fa-sync-alt diagram-arrow"
+                  style="font-size: 1.5em; transform: none"
+                ></i>
+                <span style="font-size: 0.8em; font-weight: bold">SWAP</span>
+                <i
+                  class="fas fa-sync-alt diagram-arrow"
+                  style="font-size: 1.5em; transform: scaleX(-1)"
+                ></i>
+              </div>
+              <div
+                class="diagram-box"
+                style="border-color: var(--warning-color); min-width: 150px"
+              >
+                <i class="fas fa-flask" style="color: var(--warning-color)"></i
+                ><strong>Staging Slot</strong
+                ><span>(test traffic: myapp-staging.azurewebsites.net)</span>
+                <span class="diagram-label"
+                  >Deploy & Test New Version Here</span
+                >
+              </div>
+            </div>
+
+            <h4>
+              <i class="fas fa-layer-group"></i> How Deployment Slots Work
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-rocket"></i
+                ><strong>Purpose:</strong> Validate application changes in a
+                production-like staging environment without impacting the live
+                production app.
+              </li>
+              <li>
+                <i class="fa-li fas fa-cogs"></i
+                ><strong>How it Works:</strong> Each slot is a live app with its
+                own hostname. You deploy the new version to a non-production
+                slot (e.g., staging).
+              </li>
+              <li>
+                <i class="fa-li fas fa-check-circle"></i
+                ><strong>Testing:</strong> Test the staging slot thoroughly.
+              </li>
+              <li>
+                <i class="fa-li fas fa-exchange-alt"></i
+                ><strong>Swap:</strong> If tests pass,
+                <span class="key-point">swap</span> the staging slot with the
+                production slot. Azure warms up the staging slot instances
+                before the swap to minimize/eliminate downtime. The old
+                production code moves to the staging slot (for easy rollback).
+              </li>
+              <li>
+                <i class="fa-li fas fa-cog"></i
+                ><strong>Configuration Stickiness:</strong> Some settings (like
+                connection strings, app settings) can be marked as "slot
+                settings" so they don't swap with the code, allowing different
+                configurations for different slots.
+              </li>
+              <li>
+                <i
+                  class="fa-li fas fa-dollar-sign"
+                  style="color: var(--warning-color)"
+                ></i
+                ><strong>Availability:</strong> Available in
+                <span class="key-point">Standard, Premium, and Isolated</span>
+                App Service Plan tiers (not Free or Basic).
+              </li>
+            </ul>
+
+            <p>
+              <strong>AZ-104 Focus:</strong> Knowing common deployment methods,
+              especially `az webapp up`, Git integration, and container
+              deployment from ACR. Understanding deployment slots, the swap
+              operation, slot-specific settings, and which ASP tiers support
+              them.
+            </p>
+            <p>
+              <strong>Implication:</strong> Enables safer deployments with zero
+              or minimal downtime and provides a quick rollback mechanism.
+            </p>
+          </div>
+        </div>
+
+        <!-- Pillar 4: Networking & Security -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="pillar4-networking-security-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card4"
+            for="pillar4-networking-security-toggle"
+            class="card-header"
+            style="background-color: var(--inbound-color)"
+          >
+            <h2>
+              <i class="fas fa-network-wired"></i>Pillar 4: Networking &
+              Security
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--azure-blue-dark)">
+              <i class="fas fa-lock"></i>Custom Domains & SSL/TLS
+            </h3>
+            <p class="description">
+              Configure your Web App to use your own custom domain name (e.g.,
+              `www.yourcompany.com`) and secure it with an SSL/TLS certificate.
+            </p>
+
+            <div class="diagram">
+              <div class="diagram-box">
+                <i class="fas fa-user"></i
+                ><span>User request for www.yourcompany.com</span>
+              </div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div class="diagram-box">
+                <i
+                  class="fas fa-project-diagram"
+                  style="color: var(--info-color)"
+                ></i
+                ><span>DNS (CNAME/A Record)</span>
+              </div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div
+                class="diagram-box"
+                style="border-color: var(--appservice-color)"
+              >
+                <i
+                  class="fas fa-lock"
+                  style="color: var(--appservice-color)"
+                ></i
+                ><span>App Service (with SSL Cert & Custom Domain)</span>
+              </div>
+            </div>
+
+            <ul>
+              <li>
+                <i class="fa-li fas fa-link"></i><strong>Custom Domain:</strong>
+                <ul>
+                  <li>
+                    Map your registered domain name to your Azure Web App.
+                  </li>
+                  <li>
+                    Requires DNS configuration (CNAME for `www` or A record for
+                    root/apex domain, plus `awverify` TXT record for
+                    validation).
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i
+                  class="fa-li fas fa-certificate"
+                  style="color: var(--success-color)"
+                ></i
+                ><strong>SSL/TLS Certificates:</strong>
+                <ul>
+                  <li>Enable HTTPS for secure connections.</li>
+                  <li>
+                    <span class="key-point"
+                      >App Service Managed Certificates:</span
+                    >
+                    Free SSL certificates for your custom domains, automatically
+                    managed and renewed by Azure (for non-apex domains and some
+                    apex with aliasing).
+                  </li>
+                  <li>
+                    <span class="key-point">Upload Your Own Certificate:</span>
+                    Import PFX certificates purchased from a CA or from Key
+                    Vault.
+                  </li>
+                  <li>
+                    SNI SSL and IP SSL bindings available depending on ASP tier.
+                  </li>
+                </ul>
+              </li>
+            </ul>
+
+            <h3 style="color: var(--inbound-color); margin-top: 30px">
+              <i class="fas fa-route"></i>Network Traffic Control
+            </h3>
+            <p class="description">
+              App Service offers various features to control inbound and
+              outbound network traffic and integrate with VNets.
+            </p>
+
+            <div class="diagram" style="margin: 20px 0">
+              <div
+                class="diagram-box"
+                style="border-color: var(--inbound-color)"
+              >
+                <i
+                  class="fas fa-sign-in-alt"
+                  style="color: var(--inbound-color)"
+                ></i
+                ><strong>Inbound</strong
+                ><span>IP Restrictions, Private Endpoints</span>
+              </div>
+              <i class="fas fa-arrows-alt-h diagram-arrow"></i>
+              <div
+                class="diagram-box"
+                style="border-color: var(--appservice-color)"
+              >
+                <i
+                  class="fas fa-globe"
+                  style="color: var(--appservice-color)"
+                ></i
+                ><strong>App Service</strong>
+              </div>
+              <i class="fas fa-arrows-alt-h diagram-arrow"></i>
+              <div
+                class="diagram-box"
+                style="border-color: var(--outbound-color)"
+              >
+                <i
+                  class="fas fa-arrow-alt-circle-up"
+                  style="color: var(--outbound-color)"
+                ></i
+                ><strong>Outbound</strong><span>VNet Integration, Hybrid</span>
+              </div>
+            </div>
+
+            <h4>
+              <i
+                class="fas fa-shield-alt"
+                style="color: var(--inbound-color)"
+              ></i>
+              Inbound Traffic Control
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-filter"></i
+                ><strong>Access Restrictions (IP Restrictions):</strong>
+                <ul>
+                  <li>
+                    Define a priority-ordered list of allow/deny rules to
+                    control network access to your App Service.
+                  </li>
+                  <li>
+                    <strong>IP-based Rules:</strong> Allow/deny traffic from
+                    specific IPv4/IPv6 address ranges (CIDR notation).
+                  </li>
+                  <li>
+                    <strong>Service Endpoint-based Rules:</strong> Allow traffic
+                    only from specific subnets within an Azure VNet (requires
+                    Microsoft.Web service endpoint).
+                  </li>
+                  <li>
+                    <strong>Service Tags:</strong> Allow traffic from predefined
+                    groups of IP addresses for specific Azure services (e.g.,
+                    AzureFrontDoor.Backend).
+                  </li>
+                  <li>
+                    Rules evaluated in priority order; first match determines
+                    action (Allow/Deny).
+                  </li>
+                  <li>Implicit "Deny All" if no rules match.</li>
+                </ul>
+              </li>
+              <li style="margin-top: 10px">
+                <i
+                  class="fa-li fas fa-plug"
+                  style="color: var(--info-color)"
+                ></i
+                ><strong>Private Endpoints:</strong>
+                <ul>
+                  <li>
+                    Expose your App Service privately within your VNet using a
+                    private IP.
+                  </li>
+                  <li>Traffic doesn't go over the public internet.</li>
+                  <li>Provides inbound private access TO your App Service.</li>
+                </ul>
+              </li>
+            </ul>
+
+            <h4 style="margin-top: 20px">
+              <i
+                class="fas fa-arrow-alt-circle-up"
+                style="color: var(--outbound-color)"
+              ></i>
+              Outbound Traffic Control
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-sitemap"></i
+                ><strong>VNet Integration (Regional):</strong>
+                <ul>
+                  <li>
+                    Allows your App Service to make outbound calls to resources
+                    within your Azure VNet.
+                  </li>
+                  <li>
+                    Enables secure access to VMs, Private Endpoint-enabled PaaS
+                    services, Key Vault, etc.
+                  </li>
+                  <li>
+                    App Service runtime injected into a delegated subnet within
+                    your VNet.
+                  </li>
+                  <li>
+                    <span class="key-point">Outbound ONLY</span> - does NOT
+                    provide inbound private access (use Private Endpoints for
+                    that).
+                  </li>
+                  <li>
+                    Requires dedicated subnet delegated to
+                    Microsoft.Web/serverFarms (/28 or larger recommended).
+                  </li>
+                  <li>
+                    Regional - App Service must be in same region as VNet.
+                  </li>
+                  <li>Non-transitive across VNet peerings.</li>
+                </ul>
+              </li>
+              <li style="margin-top: 10px">
+                <i class="fa-li fas fa-globe"></i
+                ><strong>Hybrid Connections:</strong> Access on-premises
+                resources from your App Service without a VPN (uses Azure
+                Relay).
+              </li>
+            </ul>
+
+            <h4 style="margin-top: 20px">
+              <i class="fas fa-cloud" style="color: var(--ase-color)"></i>
+              Advanced Isolation
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-lock"></i
+                ><strong>App Service Environment (ASE):</strong>
+                <ul>
+                  <li>
+                    A fully isolated and dedicated deployment of App Service
+                    into your VNet.
+                  </li>
+                  <li>Provides maximum network isolation and control.</li>
+                  <li>More expensive, Premium/Isolated tier feature.</li>
+                  <li>Ideal for high-security, high-scale scenarios.</li>
+                </ul>
+              </li>
+            </ul>
+
+            <p>
+              <strong>AZ-104 Focus:</strong> How to map custom domains,
+              understanding DNS record types needed (CNAME, A, TXT), options for
+              SSL certificates (Managed vs. Uploaded). Understanding IP
+              restrictions, the purpose of VNet Integration (for outbound
+              traffic from app), the concept of Private Endpoints (for inbound
+              private access to app), and what an ASE provides. Differentiate
+              VNet Integration (outbound) from Private Endpoints (inbound).
+            </p>
+          </div>
+        </div>
+
+        <!-- Pillar 5: Monitoring & Diagnostics -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="pillar5-monitoring-diagnostics-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card5"
+            for="pillar5-monitoring-diagnostics-toggle"
+            class="card-header"
+            style="background-color: #038387"
+          >
+            <h2>
+              <i class="fas fa-desktop"></i>Pillar 5: Monitoring & Diagnostics
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: #038387">
+              <i class="fas fa-diagnoses"></i>Keeping Your App Healthy
+            </h3>
+            <p class="description">
+              Tools and features for monitoring performance, diagnosing issues,
+              and logging.
+            </p>
+
+            <ul>
+              <li>
+                <i class="fa-li fas fa-chart-line"></i
+                ><strong>Azure Monitor Integration:</strong>
+                <ul>
+                  <li>
+                    Collects platform
+                    <span class="code-term">Metrics</span> (HTTP requests,
+                    response time, CPU/Memory of ASP).
+                  </li>
+                  <li>
+                    Can send <span class="code-term">Resource Logs</span> (Web
+                    server logs, application logs, failed request tracing) to
+                    Log Analytics, Storage, or Event Hub via Diagnostic
+                    Settings.
+                  </li>
+                  <li>
+                    Set up <span class="code-term">Alerts</span> based on
+                    metrics or log queries.
+                  </li>
+                </ul>
+              </li>
+              <li style="margin-top: 10px">
+                <i
+                  class="fa-li fas fa-lightbulb"
+                  style="color: var(--advisor-color)"
+                ></i
+                ><strong>Application Insights:</strong> Deep application
+                performance monitoring (APM). Tracks requests, dependencies,
+                exceptions, performance traces. Requires instrumenting your
+                application code or auto-instrumentation.
+              </li>
+              <li style="margin-top: 10px">
+                <i class="fa-li fas fa-stream"></i
+                ><strong>Log Streaming:</strong> View live application and web
+                server logs in real-time (e.g., via CLI or Portal).
+              </li>
+              <li style="margin-top: 10px">
+                <i class="fa-li fas fa-tools"></i
+                ><strong>Diagnose and solve problems blade:</strong> Portal tool
+                that provides automated diagnostics and solutions for common
+                issues.
+              </li>
+            </ul>
+
+            <p>
+              <strong>AZ-104 Focus:</strong> Knowing how to enable Diagnostic
+              Settings to send logs to Log Analytics, understanding what metrics
+              are available, and the role of Application Insights for deeper app
+              monitoring.
+            </p>
+          </div>
+        </div>
+
+        <!-- Key Takeaways -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="appservice-key-takeaways-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card6"
+            for="appservice-key-takeaways-toggle"
+            class="card-header"
+            style="background-color: var(--azure-blue-dark)"
+          >
+            <h2>
+              <i class="fas fa-graduation-cap"></i>App Service: AZ-104 Key
+              Takeaways
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--azure-blue-dark)">
+              <i class="fas fa-check-double"></i>Core Concepts for the Exam
+            </h3>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-server"></i
+                ><strong>App Service Plan is Key:</strong> Understand it defines
+                compute resources (Region, OS, SKU, Instances) and is what you
+                scale. Multiple Web Apps can share one Plan.
+              </li>
+              <li>
+                <i class="fa-li fas fa-arrows-alt-v"></i
+                ><strong>Scaling Methods:</strong>
+                <ul>
+                  <li>Scale Up (change SKU/tier of ASP).</li>
+                  <li>
+                    Scale Out (change instance count of ASP) - Manually or via
+                    Autoscale (Rules-based or more Automatic/Elastic).
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-exchange-alt"></i
+                ><strong>Deployment Slots:</strong> Purpose for staging/testing,
+                swap operation, slot-specific settings, tier requirements
+                (Standard+).
+              </li>
+              <li>
+                <i class="fa-li fas fa-cloud-upload-alt"></i
+                ><strong>Deployment:</strong> Familiarity with common methods
+                like `az webapp up`, Git, Zip Deploy, Deployment Center.
+              </li>
+              <li>
+                <i class="fa-li fas fa-globe-americas"></i
+                ><strong>Custom Domains & SSL:</strong> DNS records (CNAME, A,
+                TXT), App Service Managed Certs vs. uploading your own.
+              </li>
+              <li>
+                <i class="fa-li fas fa-network-wired"></i
+                ><strong>Networking:</strong> IP Restrictions, VNet Integration
+                (outbound), Private Endpoints (inbound), ASE basics.
+              </li>
+              <li>
+                <i class="fa-li fas fa-desktop"></i
+                ><strong>Monitoring:</strong> Diagnostic settings for logs,
+                metrics, Application Insights role.
+              </li>
+            </ul>
+            <p class="important-note">
+              <i class="fas fa-info-circle"></i>App Service is a core PaaS
+              offering. Focus on how to configure it for scalability,
+              availability, and secure deployment.
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- End card-container -->
+    </div>
+    <!-- End main-container -->
+
+    <script>
+      // Card toggle event listeners (CSS handles the expand/collapse visual)
+      document.querySelectorAll(".card-toggle").forEach((checkbox) => {
+        checkbox.addEventListener("change", (e) => {
+          /* CSS handles expand/collapse */
+        });
+      });
+
+      // Quick Jump Navigation - Opens and scrolls to card
+      document.addEventListener("DOMContentLoaded", () => {
+        // Handle initial hash on page load
+        if (window.location.hash) {
+          const targetId = window.location.hash.substring(1);
+          const targetCheckbox = document.getElementById(targetId);
+          if (
+            targetCheckbox &&
+            targetCheckbox.classList.contains("card-toggle")
+          ) {
+            targetCheckbox.checked = true;
+            setTimeout(() => {
+              const cardLabel = targetCheckbox.nextElementSibling;
+              if (cardLabel) {
+                cardLabel.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }
+            }, 100);
+          }
+        }
+
+        // Handle quick jump link clicks
+        document.querySelectorAll(".quick-link").forEach((link) => {
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute("href").substring(1);
+            const targetCheckbox = document.getElementById(targetId);
+
+            if (targetCheckbox) {
+              // Open the card
+              targetCheckbox.checked = true;
+
+              // Scroll to card header after brief delay to allow CSS transition
+              setTimeout(() => {
+                const cardLabel = targetCheckbox.nextElementSibling;
+                if (cardLabel) {
+                  cardLabel.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
+                }
+              }, 100);
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

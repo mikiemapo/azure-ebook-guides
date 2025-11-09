@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azure Policy Guide: Governance & Compliance (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      :root {
+        --azure-blue: #0078d4;
+        --azure-blue-dark: #005a9e;
+        --azure-bg-light: #e8f4fd;
+        --text-dark: #1a1a1a;
+        --text-light: #ffffff;
+        --border-color: #c5d9e8;
+        --card-bg: #ffffff;
+        --diagram-bg: #f5f9fc;
+        --code-bg: #2d2d2d;
+        --code-text-color: #dcdcdc;
+        --code-border: #444;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+        --shadow-color: rgba(0, 120, 212, 0.12);
+        --shadow-hover: rgba(0, 120, 212, 0.2);
+        /* Theme-specific vibrant colors */
+        --governance-color: #2563eb;
+        --governance-light: #3b82f6;
+        --customer-color: #0ea5e9;
+        --customer-light: #38bdf8;
+        --microsoft-color: #6366f1;
+        --microsoft-light: #818cf8;
+        --shared-color: #f59e0b;
+        --shared-light: #fbbf24;
+        --takeaway-color: #8b5cf6;
+        --takeaway-light: #a78bfa;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+          Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, #e8f4fd 0%, #f0f9ff 100%);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--text-dark);
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      .main-container {
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      h1 {
+        color: var(--governance-color);
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-size: 2.1em;
+        text-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+      }
+      h1 i {
+        font-size: 1.1em;
+        filter: drop-shadow(0 2px 4px rgba(37, 99, 235, 0.2));
+      }
+
+      .instructions {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+        padding: 16px 24px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        text-align: center;
+        font-size: 1em;
+        border: 2px solid var(--governance-light);
+        box-shadow: 0 4px 12px var(--shadow-color);
+      }
+      .instructions strong {
+        color: var(--governance-color);
+        font-weight: 700;
+      }
+
+      /* --- Quick Jump Navigation --- */
+      .quick-jump {
+        background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin: 0 auto 35px auto;
+        width: 100%;
+        box-shadow: 0 6px 20px var(--shadow-color);
+        border: 2px solid var(--governance-light);
+      }
+      .quick-jump h3 {
+        margin: 0 0 16px 0;
+        color: var(--governance-color);
+        font-size: 1.2em;
+        font-weight: 700;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .quick-jump-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+      }
+      .quick-jump-links a {
+        background: linear-gradient(
+          135deg,
+          var(--governance-color) 0%,
+          var(--governance-light) 100%
+        );
+        color: var(--text-light);
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.95em;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .quick-jump-links a:hover {
+        background: linear-gradient(
+          135deg,
+          var(--azure-blue-dark) 0%,
+          var(--governance-color) 100%
+        );
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+      }
+
+      /* --- Card Section --- */
+      .card-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 25px;
+        width: 100%;
+      }
+      @media (min-width: 768px) {
+        .card-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1200px) {
+        .card-container {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      /* General Card Styles */
+      .card {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px var(--shadow-color);
+        overflow: hidden;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+      }
+      .card:hover {
+        box-shadow: 0 8px 24px var(--shadow-hover);
+        transform: translateY(-2px);
+        border-color: var(--governance-light);
+      }
+      .card-toggle {
+        display: none;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        background: linear-gradient(
+          135deg,
+          var(--governance-color) 0%,
+          var(--governance-light) 100%
+        );
+        color: var(--text-light);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+      }
+      .card-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.3) 0%,
+          rgba(255, 255, 255, 0.6) 50%,
+          rgba(255, 255, 255, 0.3) 100%
+        );
+      }
+      .card-header:hover {
+        background: linear-gradient(
+          135deg,
+          var(--governance-light) 0%,
+          var(--azure-blue) 100%
+        );
+      }
+      .card-header.customer-header {
+        background: linear-gradient(
+          135deg,
+          var(--customer-color) 0%,
+          var(--customer-light) 100%
+        );
+      }
+      .card-header.microsoft-header {
+        background: linear-gradient(
+          135deg,
+          var(--microsoft-color) 0%,
+          var(--microsoft-light) 100%
+        );
+      }
+      .card-header.model-header {
+        background: linear-gradient(
+          135deg,
+          var(--shared-color) 0%,
+          var(--shared-light) 100%
+        );
+        color: var(--text-dark);
+      }
+      .card-header.takeaway-header {
+        background: linear-gradient(
+          135deg,
+          var(--takeaway-color) 0%,
+          var(--takeaway-light) 100%
+        );
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 1.25em;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .card-header h2 i {
+        font-size: 1.1em;
+        opacity: 0.95;
+      }
+      .card-header .toggle-icon {
+        font-size: 1.2em;
+        transition: transform 0.3s ease;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+      }
+      .card-content {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        padding: 0 20px;
+        transition: max-height 0.5s ease-out, opacity 0.4s ease-in,
+          padding 0.5s ease-out;
+        background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+        flex-grow: 1;
+      }
+      .card-toggle:checked + .card-header .toggle-icon {
+        transform: rotate(180deg);
+      }
+      .card-toggle:checked ~ .card-content {
+        max-height: 3000px;
+        opacity: 1;
+        padding: 20px;
+        border-top: 2px solid var(--border-color);
+        overflow-y: auto;
+      }
+
+      /* --- Content Styling --- */
+      .card-content h3 {
+        color: var(--governance-color);
+        margin-top: 0;
+        margin-bottom: 14px;
+        font-size: 1.15em;
+        font-weight: 700;
+        border-bottom: 2px solid var(--governance-light);
+        padding-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .card-content h3 i {
+        font-size: 1em;
+        color: var(--governance-light);
+      }
+      .card-content p {
+        margin: 0 0 12px 0;
+      }
+      .card-content ul {
+        font-size: 0.98em;
+        padding-left: 0;
+        margin-top: 8px;
+        margin-bottom: 18px;
+        list-style: none;
+      }
+      .card-content li {
+        margin-bottom: 10px;
+        position: relative;
+        padding-left: 28px;
+        line-height: 1.6;
+      }
+      .card-content li i.fa-li {
+        position: absolute;
+        left: 0;
+        top: 4px;
+        width: 20px;
+        text-align: center;
+        font-size: 1em;
+        color: var(--governance-color);
+      }
+
+      /* Mnemonic and example boxes */
+      .mnemonic-box {
+        background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+        border-left: 5px solid var(--governance-color);
+        padding: 18px 24px;
+        margin: 22px 0;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.15);
+      }
+      .example-box {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 2px solid var(--success-color);
+        border-radius: 10px;
+        padding: 18px 24px;
+        margin: 22px 0;
+        box-shadow: 0 3px 10px rgba(16, 185, 129, 0.15);
+      }
+
+      /* Accessibility & mobile */
+      .quick-jump-links a:focus-visible,
+      .card-header:focus-visible {
+        outline: 3px solid var(--governance-color);
+        outline-offset: 3px;
+      }
+
+      /* Icon badges */
+      .card-content li i.fa-li {
+        background: var(--governance-light);
+        color: #fff !important;
+        width: 26px;
+        height: 26px;
+        line-height: 26px;
+        border-radius: 50%;
+        font-size: 0.85em;
+        top: 0.35em;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        transition: background 0.3s ease, transform 0.3s ease;
+      }
+      .card-content li:hover i.fa-li {
+        transform: scale(1.08);
+      }
+      /* Optional per-card colors (kept uniform for policy for consistency) */
+
+      /* Mobile tweaks */
+      @media (max-width: 767px) {
+        body {
+          padding: 12px;
+        }
+        h1 {
+          font-size: 1.75em;
+        }
+        .card-header h2 {
+          font-size: 1.05em;
+        }
+        .quick-jump-links {
+          flex-direction: column;
+        }
+        .quick-jump-links a {
+          width: 100%;
+          text-align: center;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <h1>
+        <i class="fas fa-balance-scale"></i>
+        Azure Policy Guide: Governance & Compliance (AZ-104)
+      </h1>
+
+      <div class="instructions">
+        <strong>Interactive Study Guide:</strong> Click any section header to
+        expand and explore Azure Policy. Use the Quick Jump menu below to
+        navigate to specific pillars.
+      </div>
+
+      <!-- Quick Jump Menu -->
+      <div class="quick-jump">
+        <h3><i class="fas fa-bolt"></i> Quick Jump</h3>
+        <div class="quick-jump-links">
+          <a href="#pillar1"> <i class="fas fa-lightbulb"></i> Core Concept </a>
+          <a href="#pillar2">
+            <i class="fas fa-puzzle-piece"></i> Policy Components
+          </a>
+          <a href="#pillar3"> <i class="fas fa-cogs"></i> How It Works </a>
+          <a href="#pillar4"> <i class="fas fa-gavel"></i> Policy Effects </a>
+          <a href="#pillar5">
+            <i class="fas fa-wrench"></i> Remediation & Automation
+          </a>
+          <a href="#pillar6">
+            <i class="fas fa-sitemap"></i> Governance Integration
+          </a>
+          <a href="#pillar7"> <i class="fas fa-book"></i> Key Takeaways </a>
+        </div>
+      </div>
+
+      <!-- Cards -->
+      <div class="card-container">
+        <!-- Pillar 1 – Core Concept: Governance & Compliance Engine -->
+        <div class="card" id="pillar1">
+          <input type="checkbox" class="card-toggle" id="toggle-p1" />
+          <label for="toggle-p1" class="card-header">
+            <h2>
+              <i class="fas fa-lightbulb"></i> Pillar 1 – Core Concept:
+              Governance & Compliance Engine
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <ul>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>Azure Policy is a
+                governance service that enforces organizational rules across
+                resources.
+              </li>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>Evaluates resources at
+                creation and on schedule to ensure compliance.
+              </li>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>Focus: consistency,
+                security, and regulatory alignment.
+              </li>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>Analogy: an automatic
+                “rule enforcer” that keeps Azure tidy.
+              </li>
+            </ul>
+            <div class="example-box">
+              <strong>AZ-104 Focus:</strong> Understand what Azure Policy is and
+              its governance role.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 2 – Policy Components -->
+        <div class="card" id="pillar2">
+          <input type="checkbox" class="card-toggle" id="toggle-p2" />
+          <label for="toggle-p2" class="card-header customer-header">
+            <h2>
+              <i class="fas fa-puzzle-piece"></i> Pillar 2 – Policy Components
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-diagram-project"></i>Building Blocks of
+              Enforcement
+            </h3>
+            <ul>
+              <li>
+                <i class="fas fa-file-code fa-li"></i>Policy Definition – The
+                rule (JSON logic + effect). Example: “Deny creation without tag
+                ‘Environment’.”
+              </li>
+              <li>
+                <i class="fas fa-layer-group fa-li"></i>Initiative Definition –
+                Group of multiple policy definitions. Example: “Enable Security
+                Baseline.”
+              </li>
+              <li>
+                <i class="fas fa-paper-plane fa-li"></i>Assignment – Applies a
+                definition/initiative to a scope (subscription or resource
+                group).
+              </li>
+              <li>
+                <i class="fas fa-sliders-h fa-li"></i>Parameters – Make policies
+                reusable. Example: “TagName = Department.”
+              </li>
+              <li>
+                <i class="fas fa-undo fa-li"></i>Remediation Task – Fixes
+                non-compliant existing resources. Example: DeployIfNotExists to
+                enable encryption.
+              </li>
+            </ul>
+            <div class="mnemonic-box">
+              <strong>Mnemonic:</strong> P-I-A → Definition → Initiative →
+              Assignment.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 3 – How It Works -->
+        <div class="card" id="pillar3">
+          <input type="checkbox" class="card-toggle" id="toggle-p3" />
+          <label for="toggle-p3" class="card-header microsoft-header">
+            <h2><i class="fas fa-cogs"></i> Pillar 3 – How It Works</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <ul>
+              <li>
+                <i class="fas fa-1 fa-li"></i>1. Create a Policy Definition
+                (JSON rule + effect).
+              </li>
+              <li>
+                <i class="fas fa-2 fa-li"></i>2. Assign it to a scope
+                (Management Group, Subscription, or Resource Group).
+              </li>
+              <li>
+                <i class="fas fa-3 fa-li"></i>3. Evaluate resources – new and
+                existing.
+              </li>
+              <li>
+                <i class="fas fa-4 fa-li"></i>4. Enforce or flag non-compliance
+                based on effect.
+              </li>
+              <li>
+                <i class="fas fa-5 fa-li"></i>5. Remediate where possible
+                (DeployIfNotExists or Modify).
+              </li>
+            </ul>
+            <p>
+              <strong>Evaluation Triggers:</strong> Resource creation, update,
+              periodic scan.
+            </p>
+            <p>
+              <strong>Compliance Dashboard:</strong> Shows compliance percentage
+              and details.
+            </p>
+            <div class="example-box">
+              <strong>AZ-104 Focus:</strong> Know the end-to-end flow and where
+              evaluation happens.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 4 – Policy Effects -->
+        <div class="card" id="pillar4">
+          <input type="checkbox" class="card-toggle" id="toggle-p4" />
+          <label for="toggle-p4" class="card-header model-header">
+            <h2><i class="fas fa-gavel"></i> Pillar 4 – Policy Effects</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <ul>
+              <li>
+                <i class="fas fa-ban fa-li"></i>Deny – Blocks non-compliant
+                creation/update. Example: Deny VM without tag.
+              </li>
+              <li>
+                <i class="fas fa-eye fa-li"></i>Audit – Flags non-compliant
+                resources but allows deployment.
+              </li>
+              <li>
+                <i class="fas fa-plus-square fa-li"></i>Append – Adds required
+                property or tag automatically.
+              </li>
+              <li>
+                <i class="fas fa-edit fa-li"></i>Modify – Changes configuration
+                to make resource compliant.
+              </li>
+              <li>
+                <i class="fas fa-truck-loading fa-li"></i>DeployIfNotExists –
+                Creates missing resource (e.g., diagnostic settings).
+              </li>
+            </ul>
+            <div class="mnemonic-box">
+              <strong>Mnemonic:</strong> D-A-A-M-D → Deny, Audit, Append,
+              Modify, DeployIfNotExists.
+            </div>
+            <div class="example-box">
+              <strong>AZ-104 Focus:</strong> Match the correct effect to a given
+              scenario.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 5 – Remediation & Automation -->
+        <div class="card" id="pillar5">
+          <input type="checkbox" class="card-toggle" id="toggle-p5" />
+          <label for="toggle-p5" class="card-header">
+            <h2>
+              <i class="fas fa-wrench"></i> Pillar 5 – Remediation & Automation
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <ul>
+              <li>
+                <i class="fas fa-sync fa-li"></i>Remediation tasks apply policy
+                “fix” logic to existing resources.
+              </li>
+              <li>
+                <i class="fas fa-id-card fa-li"></i>Requires a Managed Identity
+                with Contributor role.
+              </li>
+              <li>
+                <i class="fas fa-play fa-li"></i>Can run automatically or
+                manually.
+              </li>
+              <li>
+                <i class="fas fa-tools fa-li"></i>Common uses: Apply diagnostic
+                settings, enable encryption, or deploy missing agents.
+              </li>
+              <li>
+                <i class="fas fa-lightbulb fa-li"></i>Exam Tip: Remediation =
+                Governance automation, not repair or autoscale.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Pillar 6 – Governance Integration -->
+        <div class="card" id="pillar6">
+          <input type="checkbox" class="card-toggle" id="toggle-p6" />
+          <label for="toggle-p6" class="card-header microsoft-header">
+            <h2>
+              <i class="fas fa-sitemap"></i> Pillar 6 – Governance Integration
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-diagram-project"></i>Policy + RBAC + Blueprints
+            </h3>
+            <ul>
+              <li>
+                <i class="fas fa-user-shield fa-li"></i>RBAC defines who can do
+                what.
+              </li>
+              <li>
+                <i class="fas fa-check-square fa-li"></i>Policy defines what
+                must be true.
+              </li>
+              <li>
+                <i class="fas fa-scroll fa-li"></i>Blueprints bundle policies,
+                RBAC, and templates for consistent deployments.
+              </li>
+              <li>
+                <i class="fas fa-map fa-li"></i>Scenario: Enforce secure
+                settings across subscriptions using Blueprints.
+              </li>
+            </ul>
+            <div class="example-box">
+              <strong>AZ-104 Focus:</strong> Distinguish Policy enforcement from
+              RBAC permissions.
+            </div>
+          </div>
+        </div>
+
+        <!-- Pillar 7 – Key Takeaways & Exam Mnemonics -->
+        <div class="card" id="pillar7">
+          <input type="checkbox" class="card-toggle" id="toggle-p7" />
+          <label for="toggle-p7" class="card-header takeaway-header">
+            <h2>
+              <i class="fas fa-book"></i> Pillar 7 – Key Takeaways & Exam
+              Mnemonics
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <ul>
+              <li>
+                <i class="fas fa-stream fa-li"></i>P-I-A-R: Policy → Initiative
+                → Assignment → Remediation.
+              </li>
+              <li>
+                <i class="fas fa-list-ol fa-li"></i>D-A-A-M-D: The five Policy
+                Effects.
+              </li>
+              <li>
+                <i class="fas fa-layer-group fa-li"></i>Scope Order: Management
+                Group → Subscription → Resource Group → Resource.
+              </li>
+              <li>
+                <i class="fas fa-tachometer-alt fa-li"></i>Compliance Dashboard:
+                Tracks overall compliance %.
+              </li>
+              <li>
+                <i class="fas fa-user-check fa-li"></i>Always Customer Task:
+                Interpret compliance results and act on them.
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Auto-scroll to card when expanded
+      document.querySelectorAll(".card-toggle").forEach((toggle) => {
+        toggle.addEventListener("change", function () {
+          if (this.checked) {
+            setTimeout(() => {
+              let card = this.closest(".card");
+              if (card) {
+                card.scrollIntoView({ behavior: "smooth", block: "start" });
+              }
+            }, 100);
+          }
+        });
+      });
+
+      // Quick Jump functionality
+      document.querySelectorAll(".quick-jump-links a").forEach((link) => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute("href").substring(1);
+          const targetCard = document.getElementById(targetId);
+          if (!targetCard) return;
+          const targetToggle = targetCard.querySelector(".card-toggle");
+          if (targetToggle && !targetToggle.checked) {
+            targetToggle.checked = true;
+          }
+          setTimeout(() => {
+            targetCard.scrollIntoView({ behavior: "smooth", block: "start" });
+          }, 100);
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Guide: Linux VM - Add Disk, Prepare & Encrypt (ADE) with CLI & PS (AZ-104)</title>
+     <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #2d2d2d; 
+            --code-text-color: #dcdcdc; 
+            --code-border: #444;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --vm-color: #0078FF; 
+            --cli-color: #444; 
+            --ps-color: #012456;
+            --disk-color: #605e5c; /* Grey for disk */
+            --keyvault-color: var(--azure-blue);
+            --encryption-color: var(--success-color);
+            --extension-color: #6f42c1; /* Purple */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+       .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+         h1 i.fa-linux { color: #FCC624; /* Ubuntu Orange-ish */ text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;}
+         h1 i.fa-hdd { color: var(--disk-color); margin-left: 5px;}
+         h1 i.fa-lock { color: var(--encryption-color); margin-left: 5px;}
+
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+       
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1200px) { 
+             .card-container { grid-template-columns: repeat(3, 1fr); }
+             .card.workflow-card { grid-column: span 3; }
+             .card.ade-card { grid-column: span 3;}
+         }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--azure-blue); color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid var(--azure-blue-dark);
+        }
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+         .card-header.cli-header { background-color: var(--cli-color); border-bottom-color: #222;}
+         .card-header.cli-header:hover { background-color: #222;}
+         .card-header.ps-header { background-color: var(--ps-color); border-bottom-color: #00122c;}
+         .card-header.ps-header:hover { background-color: #00122c;}
+         .card-header.disk-header { background-color: var(--disk-color); border-bottom-color: #444;}
+         .card-header.disk-header:hover { background-color: #444;}
+         .card-header.encryption-header { background-color: var(--encryption-color); border-bottom-color: #0d6a0d;}
+         .card-header.encryption-header:hover { background-color: #0d6a0d;}
+         
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--azure-blue); font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--azure-blue); font-size: 0.9em;
+          }
+        /* Custom list icons */
+        .card-content li i.fa-terminal { color: var(--cli-color); }
+        .card-content li i.fa-server { color: var(--vm-color); }
+        .card-content li i.fa-hdd { color: var(--disk-color); }
+        .card-content li i.fa-linux { color: #FCC624; text-shadow: -1px -1px 0 #222, 1px -1px 0 #222, -1px 1px 0 #222, 1px 1px 0 #222; }
+        .card-content li i.fa-plug { color: var(--extension-color); }
+        .card-content li i.fa-file-code { color: #605e5c; } /* Script file */
+        .card-content li i.fa-key { color: var(--keyvault-color); }
+        .card-content li i.fa-lock { color: var(--encryption-color); }
+        .card-content li i.fa-check { color: var(--success-color); }
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+        .card-content li i.fa-lightbulb { color: #f7b20c; }
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+        }
+        .diagram-box {
+            background-color: #fff; padding: 8px 12px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 90px; font-size: 0.9em;
+        }
+        .diagram-box i { font-size: 1.6em; } 
+        .diagram-box span { font-size: 0.8em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; margin: 0 5px; }
+        
+        .command-flow { display: flex; flex-direction: column; align-items: center; gap: 10px;}
+        .command-flow .step { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; width:100%;}
+        .command-flow .step-icon { font-size: 1.5em; width: 30px; text-align:center; }
+        .command-flow .step-action { flex-grow: 1; }
+        .command-flow .step-action code { display: inline-block; margin-bottom: 3px;}
+        .command-flow .step-env { font-size: 0.8em; color: #605e5c; font-style: italic; }
+
+        .disk-prep-diagram .fa-ssh { color: var(--cli-color);}
+        .disk-prep-diagram .fa-cogs { color: var(--extension-color);}
+        .disk-prep-diagram .fa-hdd { color: var(--disk-color);}
+        .disk-prep-diagram .fa-check-circle { color: var(--success-color);}
+
+        /* --- Code formatting --- */
+         code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+         pre {
+             background-color: var(--code-bg);
+             border: 1px solid var(--code-border);
+             padding: 15px; border-radius: 4px;
+             overflow-x: auto; font-size: 0.9em; 
+             color: var(--code-text-color);
+             margin-top: 10px;
+        }
+        pre code { background: none; border: none; padding: 0; font-size: 1em; color: var(--code-text-color); }
+        .param { color: #4ec9b0; } 
+        .value { color: #ce9178; } 
+        .comment { color: #6a9955; font-style: italic; } 
+        .cmdlet { color: #dcdcaa; } 
+        .variable { color: #9cdcfe; } 
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .important-note { background-color: #fff8db; border-left: 4px solid var(--warning-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--warning-color); margin-right: 8px; }
+         
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fab fa-linux"></i><i class="fas fa-hdd"></i><i class="fas fa-lock"></i>Lab: Linux VM Data Disk & Encryption</h1>
+     <div style="margin-bottom: 20px; padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: center;">
+         <a href="index.html" style="text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em;">
+             <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>Back to Study Hub
+         </a>
+     </div>
+       
+    <p class="instructions">This guide covers creating a Linux VM, attaching and preparing a new data disk using Azure CLI and Custom Script Extension, and then conceptually discusses enabling Azure Disk Encryption (ADE) for all disks.</p>
+
+    <div class="card-container">
+
+        <!-- Workflow Summary -->
+        <div class="card workflow-card">
+            <input type="checkbox" id="workflow-toggle" class="card-toggle" checked>
+            <label for="workflow-toggle" class="card-header">
+                <h2><i class="fas fa-project-diagram"></i>Lab Workflow: Add Disk & Prepare</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-route"></i>Sequence of CLI & PowerShell Operations</h3>
+                <p class="description">A summary of the steps you performed in the Cloud Shell.</p>
+                 <div class="diagram command-flow">
+                    <div class="step">
+                        <i class="fas fa-terminal step-icon" style="color:var(--cli-color)"></i>
+                        <div class="step-action"><strong>Azure CLI (Cloud Shell):</strong> `az configure --defaults location=... group=...`</div>
+                    </div>
+                    <i class="fas fa-arrow-down diagram-arrow"></i>
+                    <div class="step">
+                         <i class="fas fa-server step-icon" style="color:var(--vm-color)"></i>
+                        <div class="step-action"><strong>CLI:</strong> `az vm create --name support-web-vm01 --image Canonical:UbuntuServer...` <span class="step-env">(Deploy Linux VM)</span></div>
+                    </div>
+                     <i class="fas fa-arrow-down diagram-arrow"></i>
+                     <div class="step">
+                        <i class="fas fa-hdd step-icon" style="color:var(--disk-color)"></i>
+                        <div class="step-action"><strong>CLI:</strong> `az vm disk attach --vm-name ... --name uploadDataDisk1 --size-gb 64 --new` <span class="step-env">(Attach new data disk)</span></div>
+                    </div>
+                     <i class="fas fa-arrow-down diagram-arrow"></i>
+                    <div class="step">
+                        <i class="fab fa-windows step-icon" style="color:var(--ps-color)"></i>
+                        <div class="step-action"><strong>PowerShell (Cloud Shell):</strong> `$ipaddress = az vm show ... --query "publicIps" ...` <span class="step-env">(Get Public IP. Note: CLI command run via PS)</span></div>
+                    </div>
+                     <i class="fas fa-arrow-down diagram-arrow"></i>
+                    <div class="step">
+                        <i class="fas fa-ssh step-icon" style="color:var(--cli-color)"></i>
+                        <div class="step-action"><strong>PowerShell (Cloud Shell):</strong> `ssh azureuser@$ipaddress lsblk` <span class="step-env">(SSH into VM, check disks - `sdc` is new)</span></div>
+                    </div>
+                     <i class="fas fa-arrow-down diagram-arrow"></i>
+                     <div class="step">
+                        <i class="fas fa-plug step-icon" style="color:var(--extension-color)"></i>
+                        <div class="step-action"><strong>CLI:</strong> `az vm extension set --vm-name ... --name customScript --settings '{"fileUris": ["...add-data-disk.sh"]}' --protected-settings '{"commandToExecute": "./add-data-disk.sh"}'` <span class="step-env">(Run script inside VM to prep disk)</span></div>
+                    </div>
+                    <i class="fas fa-arrow-down diagram-arrow"></i>
+                     <div class="step">
+                         <i class="fas fa-check-circle step-icon" style="color:var(--success-color)"></i>
+                        <div class="step-action"><strong>PowerShell (Cloud Shell):</strong> `ssh azureuser@$ipaddress lsblk` <span class="step-env">(SSH again, verify disk `sdc1` is partitioned, formatted & mounted to `/uploads`)</span></div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+
+        <!-- VM & Disk Creation (CLI) -->
+        <div class="card">
+            <input type="checkbox" id="vm-disk-create-toggle" class="card-toggle">
+            <label for="vm-disk-create-toggle" class="card-header cli-header">
+                <h2><i class="fas fa-terminal"></i>VM & Data Disk Creation (CLI)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-server"></i>`az vm create` & `az vm disk attach`</h3>
+                <p class="description">Using Azure CLI to provision a Linux VM and attach a new data disk.</p>
+                <pre><code class="cmd-example language-bash"><span class="comment"># Create Linux VM</span>
+az vm create <span class="param">--name</span> support-web-vm01 <span class="param">--image</span> <span class="value">Canonical:UbuntuServer:16.04-LTS:latest</span> <span class="param">--size</span> Standard_DS1_v2 <span class="param">--admin-username</span> azureuser <span class="param">--generate-ssh-keys</span>
+
+<span class="comment"># Attach a new 64GB Premium LRS data disk</span>
+az vm disk attach <span class="param">--vm-name</span> support-web-vm01 <span class="param">--name</span> uploadDataDisk1 <span class="param">--size-gb</span> 64 <span class="param">--sku</span> Premium_LRS <span class="param">--new</span></code></pre>
+                 <ul>
+                    <li><i class="fa-li fas fa-linux"></i>A Linux VM was created using a specific Ubuntu image. SSH keys were auto-generated.</li>
+                    <li><i class="fa-li fas fa-hdd"></i><code class="code-term">--new</code> flag in `az vm disk attach` creates a new managed disk and attaches it.</li>
+                    <li><i class="fa-li fas fa-info-circle"></i>The disk is attached but <span class="key-point">not yet usable</span> by the OS until partitioned, formatted, and mounted.</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Getting IP & Initial Disk Check -->
+        <div class="card">
+            <input type="checkbox" id="ip-check-toggle" class="card-toggle">
+            <label for="ip-check-toggle" class="card-header ps-header">
+                <h2><i class="fab fa-windows"></i>Getting IP & Initial Disk Check (PowerShell in Cloud Shell)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-network-wired"></i>Connecting & Verifying</h3>
+                <p class="description">You used PowerShell syntax for variable assignment in Cloud Shell, then SSH'd in.</p>
+                <pre><code class="cmd-example language-powershell"><span class="comment"># Note: 'az' CLI commands are run within PowerShell here</span>
+<span class="variable">$ipaddress</span> = az vm show <span class="param">--name</span> support-web-vm01 <span class="param">--show-details</span> <span class="param">--query</span> <span class="value">"publicIps"</span> <span class="param">--output</span> tsv
+Write-Output <span class="variable">$ipaddress</span>
+
+ssh azureuser@<span class="variable">$ipaddress</span> lsblk</code></pre>
+                 <ul>
+                    <li><i class="fa-li fas fa-lightbulb"></i>Initial `ipaddress=$(az ...)` failed because that's Bash variable assignment syntax. <code class="variable">$ipaddress = az ...</code> is correct for PowerShell.</li>
+                    <li><i class="fa-li fas fa-ssh"></i>SSH connection established successfully.</li>
+                    <li><i class="fa-li fas fa-hdd"></i><code class="code-term">lsblk</code> output initially showed the new disk (e.g., <code class="code-term">sdc</code>) as a raw, unpartitioned device.</li>
+                 </ul>
+            </div>
+        </div>
+
+       <!-- Custom Script Extension for Disk Prep -->
+        <div class="card">
+            <input type="checkbox" id="cse-disk-toggle" class="card-toggle">
+            <label for="cse-disk-toggle" class="card-header cli-header">
+                <h2><i class="fas fa-plug" style="color:var(--extension-color)"></i>Disk Preparation via Custom Script Extension</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-file-code"></i>Automating Guest OS Configuration</h3>
+                <p class="description">Using CLI to run a script inside the Linux VM to prepare the new data disk.</p>
+                <pre><code class="cmd-example language-bash">az vm extension set <span class="param">--vm-name</span> support-web-vm01 <span class="param">--name</span> customScript \<br/>  <span class="param">--publisher</span> Microsoft.Azure.Extensions \<br/>  <span class="param">--settings</span> '{"fileUris":["https://raw.githubusercontent.com/.../add-data-disk.sh"]}' \<br/>  <span class="param">--protected-settings</span> '{"commandToExecute": "./add-data-disk.sh"}'</code></pre>
+                 <ul>
+                    <li><i class="fa-li fas fa-download"></i><code class="code-term">fileUris</code>: Downloads the specified script (`add-data-disk.sh`) to the VM.</li>
+                    <li><i class="fa-li fas fa-play"></i><code class="code-term">commandToExecute</code>: Executes the downloaded script on the VM. This script handles:
+                        <ul>
+                            <li>Partitioning the new disk (e.g., `/dev/sdc` -> `/dev/sdc1`).</li>
+                            <li>Creating a filesystem (e.g., ext4) on the partition.</li>
+                            <li>Creating a mount point (e.g., `/uploads`).</li>
+                            <li>Mounting the partition to the mount point.</li>
+                            <li>(Typically) Adding an entry to `/etc/fstab` for persistence across reboots.</li>
+                        </ul>
+                    </li>
+                    <li><i class="fa-li fas fa-check"></i>Subsequent `ssh ... lsblk` confirmed the disk (`sdc1`) was prepared and mounted (e.g., at `/uploads`).</li>
+                 </ul>
+                 <div class="diagram disk-prep-diagram">
+                    <div class="diagram-box"><i class="fas fa-hdd"></i><span>Raw Disk (sdc)</span></div>
+                    <i class="fas fa-arrow-right diagram-arrow"></i>
+                    <div class="diagram-box"><i class="fas fa-cogs"></i><span>`add-data-disk.sh` (Partition, Format, Mount)</span></div>
+                    <i class="fas fa-arrow-right diagram-arrow"></i>
+                    <div class="diagram-box" style="border-color:var(--success-color)"><i class="fas fa-check-circle"></i><span>Mounted Disk (sdc1 at /uploads)</span></div>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Conceptual: Azure Disk Encryption (ADE) for Linux -->
+        <div class="card ade-card">
+            <input type="checkbox" id="ade-linux-toggle" class="card-toggle">
+            <label for="ade-linux-toggle" class="card-header encryption-header">
+                <h2><i class="fas fa-lock"></i>Azure Disk Encryption (ADE) for Linux (Conceptual)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-shield-alt"></i>Encrypting OS and Data Disks</h3>
+                <p class="description">While your lab focused on disk prep, the next step for security could be ADE. For Linux, ADE uses DM-Crypt.</p>
+                 <ul>
+                    <li><i class="fa-li fas fa-key"></i><strong>Key Vault Required:</strong> Similar to Windows ADE, a Key Vault <span class="key-point">enabled for disk encryption</span> is needed to store encryption keys/passphrases.</li>
+                    <li><i class="fa-li fas fa-cogs"></i><strong>Cmdlets/CLI:</strong>
+                        <ul>
+                            <li>PowerShell: `Set-AzVmDiskEncryptionExtension -VolumeType All ...` (or `OS`, `Data`).</li>
+                            <li>CLI: `az vm encryption enable --volume-type All ...`</li>
+                        </ul>
+                    </li>
+                    <li><i class="fa-li fas fa-linux"></i><strong>Linux Mechanism:</strong> Uses <span class="code-term">DM-Crypt</span> to encrypt the disks.</li>
+                    <li><i class="fa-li fas fa-hdd"></i>After adding and preparing your data disk (`/uploads`), running ADE with <code class="code-term">-VolumeType All</code> would encrypt both the OS disk and this new data disk.</li>
+                    <li><i class="fa-li fas fa-check-circle"></i>Status can be checked with `Get-AzVmDiskEncryptionStatus` (PS) or `az vm encryption show` (CLI).</li>
+                 </ul>
+                 <p class="important-note"><i class="fas fa-info-circle"></i>For Linux ADE, ensure the VM image and distribution are supported. Prerequisites might include specific kernel modules or packages.</p>
+            </div>
+        </div>
+        
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+    <script>
+        document.querySelectorAll('.card-toggle').forEach(checkbox => {
+           checkbox.addEventListener('change', (e) => { /* CSS handles expand/collapse */ });
+        });
+    </script>
+
+</body>
+</html>

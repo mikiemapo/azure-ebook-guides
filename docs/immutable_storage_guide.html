@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Blob Immutable Storage Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #f3f2f1;
+            --code-border: #e0e0e0;
+            --success-color: #107c10;
+            --warning-color: #d83b01; /* Orange/Red */
+            --info-color: #005a9e;
+            --lock-color: #797775; /* Neutral Grey */
+            --legal-hold-color: #a4262c; /* Dark Red */
+            --time-retention-color: #0078d4; /* Azure Blue */
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 950px; }
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-lock { font-size: 1.1em; color: var(--lock-color); }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--azure-blue-dark); }
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1100px) { .card-container { grid-template-columns: repeat(3, 1fr); } }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+
+        .card-toggle { display: none; }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--azure-blue); color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid var(--azure-blue-dark);
+        }
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2000px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--azure-blue); font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--azure-blue); font-size: 0.9em;
+          }
+          /* Custom list icons */
+          .card-content li i.fa-lock { color: var(--lock-color); }
+          .card-content li i.fa-shield-alt { color: var(--success-color); }
+          .card-content li i.fa-balance-scale { color: var(--info-color); }
+          .card-content li i.fa-gavel { color: var(--legal-hold-color); }
+          .card-content li i.fa-clock { color: var(--time-retention-color); }
+          .card-content li i.fa-tag { color: var(--legal-hold-color); }
+          .card-content li i.fa-unlock { color: var(--warning-color); }
+          .card-content li i.fa-check-circle { color: var(--success-color); }
+          .card-content li i.fa-times-circle { color: var(--warning-color); }
+          .card-content li i.fa-layer-group { color: var(--info-color); }
+          .card-content li i.fa-box { color: var(--azure-blue-dark); }
+          .card-content li i.fa-copy { color: var(--azure-blue); }
+          .card-content li i.fa-history { color: #605e5c; }
+          .card-content li i.fa-trash-restore { color: var(--warning-color); }
+          .card-content li i.fa-user-shield { color: var(--info-color); }
+          .card-content li i.fa-plus-circle { color: var(--success-color); }
+          .card-content li i.fa-file-signature { color: var(--legal-hold-color); }
+
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-box {
+            background-color: #fff; padding: 10px 15px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px;
+        }
+        .diagram-box i { font-size: 1.5em; color: var(--azure-blue); }
+        .diagram-box span { font-size: 0.85em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; }
+
+        /* Specific Diagram Styles */
+        .worm-diagram .diagram-box i { font-size: 1.8em; }
+        .worm-diagram .fa-pen { color: var(--success-color); }
+        .worm-diagram .fa-times { color: var(--warning-color); font-size: 0.6em; vertical-align: super;}
+        .worm-diagram .fa-book-open { color: var(--info-color); }
+
+        .policy-diagram .diagram-box i { font-size: 1.6em; }
+        .policy-diagram .fa-clock { color: var(--time-retention-color); }
+        .policy-diagram .fa-gavel { color: var(--legal-hold-color); }
+
+        .state-diagram .diagram-box { min-width: 120px; }
+        .state-diagram .fa-unlock { color: var(--warning-color); }
+        .state-diagram .fa-lock { color: var(--success-color); }
+
+        .scope-diagram .diagram-box i { font-size: 1.8em; }
+        .scope-diagram .fa-box { color: var(--azure-blue-dark); }
+        .scope-diagram .fa-copy { color: var(--azure-blue); }
+
+        .interaction-diagram { flex-direction: column; align-items: stretch; gap: 10px; }
+        .interaction-item { display: flex; align-items: center; gap: 10px; background-color: #fff; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border-color); }
+        .interaction-item i { font-size: 1.2em; width: 25px; text-align: center; }
+        .interaction-item span { font-size: 0.9em; }
+
+        /* --- Code formatting --- */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: var(--code-bg);
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid var(--code-border); color: #c50f1f;
+        }
+        .code-term { font-weight: bold; color: var(--azure-blue-dark); }
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .warning-text { color: var(--warning-color); font-weight: 600; }
+        .important-note { background-color: #fff8db; border-left: 4px solid #ffcc00; padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: #ffcc00; margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-lock"></i>Azure Blob Immutable Storage Guide</h1>
+
+    <p class="instructions">Understand how to protect Azure Blob data from modification or deletion using Immutability Policies. <strong>Click/Tap</strong> headers to explore.</p>
+
+    <div class="card-container">
+
+        <!-- What is Immutable Storage? -->
+        <div class="card">
+            <input type="checkbox" id="what-toggle" class="card-toggle">
+            <label for="what-toggle" class="card-header">
+                <h2><i class="fas fa-question-circle"></i>What is Immutable Storage?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-feather-alt"></i>WORM State (Write Once, Read Many)</h3>
+                <p class="description">Keeps blob data in a non-erasable, non-modifiable state for a specified interval or indefinitely.</p>
+                <div class="diagram worm-diagram">
+                     <div class="diagram-box"> <i class="fas fa-pen"></i><span>Write / Upload</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box" style="border-color: var(--lock-color); border-width: 2px;"> <i class="fas fa-lock" style="color: var(--lock-color);"></i> <span>Immutable Blob</span> <span style="font-size: 0.8em">(Protected)</span> </div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                      <div class="diagram-box"> <i class="fas fa-book-open"></i><span>Read Allowed</span></div>
+                      <div class="diagram-box" style="opacity: 0.6;"> <i class="fas fa-trash-alt"></i><i class="fas fa-times"></i><span>Delete Blocked</span></div>
+                      <div class="diagram-box" style="opacity: 0.6;"> <i class="fas fa-edit"></i><i class="fas fa-times"></i><span>Modify Blocked</span></div>
+                </div>
+                <ul>
+                    <li><i class="fas fa-lock fa-li"></i>Once set, blobs <span class="key-point">cannot be modified or deleted</span> until the policy expires (for time-based) or the hold is removed.</li>
+                    <li><i class="fas fa-layer-group fa-li"></i>Applies to blob <span class="key-point">content and metadata</span> (except for legal hold tags).</li>
+                    <li><i class="fas fa-shield-alt fa-li"></i>Helps meet regulatory compliance requirements (e.g., SEC 17a-4(f), FINRA).</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Why Use Immutable Storage? -->
+        <div class="card">
+            <input type="checkbox" id="why-toggle" class="card-toggle">
+            <label for="why-toggle" class="card-header">
+                <h2><i class="fas fa-thumbs-up"></i>Why Use Immutable Storage?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-star"></i>Key Benefits</h3>
+                <p class="description">Primary reasons for enabling immutability on blob data.</p>
+                 <ul>
+                    <li><i class="fas fa-balance-scale fa-li"></i><strong>Compliance:</strong> Meet strict regulatory requirements for data retention and non-alteration (WORM).</li>
+                    <li><i class="fas fa-shield-alt fa-li"></i><strong>Data Protection:</strong> Guard against accidental or malicious deletion/modification, including ransomware attacks.</li>
+                    <li><i class="fas fa-gavel fa-li"></i><strong>Legal Hold Needs:</strong> Preserve data indefinitely for litigation or investigation purposes, separate from standard retention.</li>
+                    <li><i class="fas fa-lock fa-li"></i><strong>Policy Enforcement:</strong> Ensure data retention policies are automatically enforced at the storage layer.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Policy Types Overview -->
+        <div class="card">
+            <input type="checkbox" id="policy-types-toggle" class="card-toggle">
+            <label for="policy-types-toggle" class="card-header">
+                <h2><i class="fas fa-code-branch"></i>Policy Types</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-tasks"></i>Time-Based vs. Legal Hold</h3>
+                <p class="description">Two distinct types of immutability policies.</p>
+                <div class="diagram policy-diagram">
+                     <div class="diagram-box"> <i class="fas fa-box"></i> <span>Container / Blob Version</span> </div>
+                     <i class="fas fa-arrow-down diagram-arrow" style="transform: rotate(90deg)"></i>
+                     <div style="display: flex; gap: 15px; width: 100%; justify-content: center;">
+                         <div class="diagram-box" style="border-color: var(--time-retention-color);"> <i class="fas fa-clock"></i> <span>Time-Based Retention</span> </div>
+                         <div class="diagram-box" style="border-color: var(--legal-hold-color);"> <i class="fas fa-gavel"></i> <span>Legal Hold</span> </div>
+                     </div>
+                </div>
+                <ul>
+                    <li><i class="fas fa-clock fa-li" style="color:var(--time-retention-color)"></i><strong>Time-based Retention:</strong> Protects data for a <span class="key-point">defined interval</span> (days/years). Blobs become mutable after the period expires.</li>
+                    <li><i class="fas fa-gavel fa-li" style="color:var(--legal-hold-color)"></i><strong>Legal Hold:</strong> Protects data <span class="key-point">indefinitely</span> until the hold is explicitly removed. Used for legal/investigation scenarios.</li>
+                    <li><i class="fas fa-layer-group fa-li"></i>A container or blob version can have <span class="key-point">both</span> types active simultaneously. Immutability lasts until <span class="key-point">all</span> holds are cleared AND the retention period expires.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Time-Based Retention -->
+        <div class="card">
+            <input type="checkbox" id="time-toggle" class="card-toggle">
+            <label for="time-toggle" class="card-header">
+                <h2><i class="fas fa-clock" style="color:var(--time-retention-color)"></i>Time-Based Retention</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="far fa-calendar-alt"></i>Policy Details</h3>
+                <p class="description">Protecting data for a fixed duration.</p>
+                <ul>
+                    <li><i class="fas fa-clock fa-li"></i><strong>Retention Interval:</strong> Set in days (1 to 400 years equivalent).</li>
+                    <li><i class="fas fa-lock fa-li"></i><strong>Policy State:</strong>
+                        <ul>
+                            <li><i class="fas fa-unlock fa-li" style="color:var(--warning-color)"></i><em>Unlocked:</em> Allows testing, increases to interval, deletion of policy. <span class="warning-text">Not compliant.</span></li>
+                            <li><i class="fas fa-lock fa-li" style="color:var(--success-color)"></i><em>Locked:</em> <span class="key-point">Compliant state</span>. Prevents deletion/shortening of interval. Only interval increases allowed (max 5 per lock).</li>
+                        </ul>
+                    </li>
+                    <li><i class="fas fa-plus-circle fa-li"></i><strong>Allow Protected Appends:</strong> Optional setting (container-level policy only). Allows new blocks to be added to <span class="code-term">Append Blobs</span> using `AppendBlock` operation (e.g., for logs). Does NOT apply to Block Blobs.</li>
+                 </ul>
+                 <div class="diagram state-diagram">
+                     <div class="diagram-box"> <i class="fas fa-unlock"></i><span>Unlocked State</span><span>(Testing, Modifiable)</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box" style="border-color: var(--success-color);"> <i class="fas fa-lock"></i><span>Locked State</span><span>(Compliant, Immutable)</span></div>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Legal Holds -->
+        <div class="card">
+            <input type="checkbox" id="legal-toggle" class="card-toggle">
+            <label for="legal-toggle" class="card-header">
+                <h2><i class="fas fa-gavel" style="color:var(--legal-hold-color)"></i>Legal Holds</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-file-signature"></i>Policy Details</h3>
+                 <p class="description">Indefinite protection, independent of time.</p>
+                <ul>
+                    <li><i class="fas fa-infinity fa-li" style="color:var(--legal-hold-color)"></i><strong>Indefinite Retention:</strong> Keeps data immutable until the hold is explicitly cleared.</li>
+                    <li><i class="fas fa-tag fa-li"></i><strong>Tags:</strong> Holds are associated with user-defined alphanumeric tags (e.g., `caseID-XYZ`). Used for identification and management.</li>
+                    <li><i class="fas fa-layer-group fa-li"></i><strong>Multiple Holds:</strong> A container or blob version can have <span class="key-point">multiple legal holds</span> active simultaneously (each with a different tag).</li>
+                    <li><i class="fas fa-unlock fa-li" style="color:var(--success-color)"></i><strong>Clearance:</strong> Data remains immutable until <span class="key-point">ALL</span> legal holds associated with it are cleared.</li>
+                    <li><i class="fas fa-clock fa-li"></i><strong>Independence:</strong> Operates independently of time-based retention policies.</li>
+                 </ul>
+                 <div class="diagram">
+                     <div class="diagram-box" style="border-color: var(--legal-hold-color);"> <i class="fas fa-tag" style="color: var(--legal-hold-color);"></i> <span>Hold 1 ('CaseA')</span></div>
+                     <div class="diagram-box" style="border-color: var(--legal-hold-color);"> <i class="fas fa-tag" style="color: var(--legal-hold-color);"></i> <span>Hold 2 ('InvestigateB')</span></div>
+                     <i class="fas fa-link diagram-arrow" style="transform: rotate(-45deg);"></i>
+                     <div class="diagram-box"> <i class="fas fa-box"></i> <span>Container / Blob Version</span> </div>
+                     <i class="fas fa-link diagram-arrow" style="transform: rotate(45deg) scaleX(-1);"></i>
+                 </div>
+                 <p>Must clear both 'CaseA' and 'InvestigateB' holds to potentially make the object mutable (if no time-based policy is active).</p>
+            </div>
+        </div>
+
+        <!-- Scope -->
+        <div class="card">
+            <input type="checkbox" id="scope-toggle" class="card-toggle">
+            <label for="scope-toggle" class="card-header">
+                <h2><i class="fas fa-bullseye"></i>Policy Scope</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-crosshairs"></i>Container vs. Version Level</h3>
+                <p class="description">Where immutability policies can be applied.</p>
+                <div class="diagram scope-diagram">
+                    <div class="diagram-box"> <i class="fas fa-box"></i><span>Container Level</span><span>(Default Policy for Blobs)</span></div>
+                    <div class="diagram-box"> <i class="fas fa-copy"></i><span>Blob Version Level</span><span>(Requires Versioning)</span></div>
+                </div>
+                 <ul>
+                    <li><i class="fas fa-box fa-li"></i><strong>Container Level:</strong> Policy applies to <span class="key-point">all blobs within</span> the container. Can be configured as a default policy that blobs inherit. Older method.</li>
+                    <li><i class="fas fa-copy fa-li"></i><strong>Version Level:</strong> <span class="key-point">Requires blob versioning</span> to be enabled on the storage account. Allows setting policies on individual blob versions for more granular control. Can override container policy.</li>
+                    <li><i class="fas fa-layer-group fa-li"></i>Policies set at the version level take precedence over container-level policies.</li>
+                </ul>
+                <div class="important-note"><i class="fas fa-info-circle"></i>Version-level immutability is the newer, more flexible approach.</div>
+            </div>
+        </div>
+
+        <!-- Interaction with Features -->
+        <div class="card">
+            <input type="checkbox" id="interaction-toggle" class="card-toggle">
+            <label for="interaction-toggle" class="card-header">
+                <h2><i class="fas fa-link"></i>Interaction with Other Features</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-project-diagram"></i>Versioning, Soft Delete & Immutability</h3>
+                <p class="description">How these protection features work together (Key for AZ-104).</p>
+                <div class="diagram interaction-diagram">
+                    <div class="interaction-item"> <i class="fas fa-lock" style="color: var(--lock-color)"></i> <span>Immutable policy protects a blob/version from modification/deletion.</span> </div>
+                    <div class="interaction-item"> <i class="fas fa-history" style="color: #605e5c"></i> <span>Versioning automatically creates new versions on overwrite.</span> </div>
+                    <div class="interaction-item"> <i class="fas fa-trash-restore" style="color: var(--warning-color)"></i> <span>Soft Delete marks blobs/versions for deletion but retains them for a period.</span> </div>
+                </div>
+                 <ul>
+                    <li><i class="fas fa-history fa-li"></i><strong>Versioning & Immutability:</strong> Immutability policies are typically applied at the <span class="key-point">version level</span> when versioning is enabled. Each version gets its own immutability status.</li>
+                    <li><i class="fas fa-trash-restore fa-li"></i><strong>Soft Delete & Immutability:</strong> An immutable blob/version <span class="warning-text">cannot</span> be soft-deleted until its immutability period expires / holds are cleared. Soft delete protects non-immutable blobs or blobs *after* their immutability ends.</li>
+                     <li><i class="fas fa-layer-group fa-li"></i><strong>Precedence:</strong> Immutability policy takes precedence. You cannot delete (even soft-delete) an immutable object.</li>
+                 </ul>
+                 <div class="important-note"><i class="fas fa-info-circle"></i>Enabling versioning is highly recommended when using immutability for fine-grained control and protection against accidental policy configuration.</div>
+            </div>
+        </div>
+
+        <!-- Supported Scenarios -->
+         <div class="card">
+            <input type="checkbox" id="scenarios-toggle" class="card-toggle">
+            <label for="scenarios-toggle" class="card-header">
+                <h2><i class="fas fa-check-circle"></i>Supported Scenarios</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-server"></i>Account Types & Blob Types</h3>
+                <p class="description">Where immutable storage can be used.</p>
+                 <ul>
+                    <li><i class="fas fa-check-circle fa-li"></i><strong>Storage Accounts:</strong> General-purpose v2 (GPv2), Premium Block Blob, Azure Data Lake Storage Gen2 accounts.</li>
+                    <li><i class="fas fa-times-circle fa-li" style="color: var(--warning-color);"></i><strong>Not Supported:</strong> General-purpose v1 (GPv1), Premium File Shares, Premium Page Blobs.</li>
+                    <li><i class="fas fa-check-circle fa-li"></i><strong>Blob Types:</strong> Applies to <span class="key-point">Block Blobs</span> and <span class="key-point">Append Blobs</span>.</li>
+                    <li><i class="fas fa-times-circle fa-li" style="color: var(--warning-color);"></i><strong>Not Supported:</strong> Page Blobs.</li>
+                     <li><i class="fas fa-check-circle fa-li"></i><strong>Tiers:</strong> Supported on all access tiers (Hot, Cool, Cold, Archive). Blobs remain immutable even when moved to Archive tier.</li>
+                </ul>
+                 <div class="important-note"><i class="fas fa-info-circle"></i>Account must be GPv2 or specialized block blob/ADLS Gen2. Cannot be enabled on older GPv1 accounts.</div>
+            </div>
+        </div>
+
+        <!-- Permissions -->
+        <div class="card">
+            <input type="checkbox" id="perms-toggle" class="card-toggle">
+            <label for="perms-toggle" class="card-header">
+                <h2><i class="fas fa-user-shield"></i>Permissions (RBAC)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-key"></i>Required Roles</h3>
+                <p class="description">Azure RBAC actions needed to manage immutability policies.</p>
+                 <ul>
+                    <li><i class="fas fa-user-shield fa-li"></i><strong>To Configure/Manage Policies:</strong> Requires permissions included in roles like <span class="code-term">Storage Blob Data Owner</span> or <span class="code-term">Storage Blob Data Contributor</span>, or specific RBAC actions:
+                        <ul>
+                            <li><code>Microsoft.Storage/storageAccounts/blobServices/containers/write</code> (Create/Update container)</li>
+                            <li><code>Microsoft.Storage/storageAccounts/blobServices/containers/immutableStorage/write</code> (Manage immutability policy)</li>
+                            <li><code>Microsoft.Storage/storageAccounts/blobServices/containers/legalHold/write</code> (Manage legal holds)</li>
+                        </ul>
+                    </li>
+                    <li><i class="fas fa-user-shield fa-li"></i><strong>To Lock Time-Based Policy:</strong> Requires the specific action <code>Microsoft.Storage/storageAccounts/blobServices/containers/immutableStorage/lock/action</code>.</li>
+                     <li><i class="fas fa-user-shield fa-li"></i><strong>To Clear Legal Hold:</strong> Requires <code>Microsoft.Storage/storageAccounts/blobServices/containers/legalHold/clear/action</code> (via tag).</li>
+                 </ul>
+                 <p>Ensure users or service principals have the necessary roles assigned at the appropriate scope (Subscription, Resource Group, or Storage Account).</p>
+            </div>
+        </div>
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

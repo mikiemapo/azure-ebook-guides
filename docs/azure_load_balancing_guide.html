@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Load Balancing Services Explained (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors for Load Balancing Guide */
+            --lb-main-color: #00A1F1; /* A distinct light blue for overall guide */
+            --l4-color: #0078d4; /* Darker blue for Layer 4 LB */
+            --l7-color: #107c10; /* Green for Layer 7 */
+            --traffic-manager-color: #4A235A; /* Deep purple for Traffic Manager */
+            --front-door-color: #D83B01; /* Orange/Red for Front Door */
+            --az104-tip-color: #ffc107; /* Gold for exam tips */
+            --lab-review-color: #6A0DAD; /* Deep purple for lab review */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6; 
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--lb-main-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-balance-scale-right { font-size: 1.1em; } 
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--lb-main-color); }
+
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; } 
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+        }
+        .card-header.lb-header { background-color: var(--lb-main-color); border-bottom-color: #0077C0;}
+        .card-header.lb-header:hover { background-color: #0077C0;}
+        .card-header.default-summary-header { background-color: var(--azure-blue-dark); border-bottom-color: #004578;}
+        .card-header.default-summary-header:hover { background-color: #004578;}
+        /* Specific header for Lab Review card */
+        .card-header.lab-review-header { background-color: var(--lab-review-color); border-bottom-color: #4f0a82;}
+        .card-header.lab-review-header:hover { background-color: #4f0a82;}
+
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+ 
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; 
+            padding: 0 18px; 
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); 
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 3000px; opacity: 1; /* Retain generous max-height for content */
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            overflow-y: auto;
+        }
+
+        .card-content h3, .card-content h4 {
+             color: var(--azure-blue-dark); margin-top: 15px; margin-bottom: 10px; font-size: 1.1em;
+             font-weight: 600; padding-bottom: 6px;
+             display: flex; align-items: center; gap: 8px;
+         }
+        .card-content h3 { border-bottom: 1px solid #eee; font-size: 1.15em; margin-top: 0;}
+        .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+        .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+        .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--lb-main-color); 
+          }
+        
+        .key-point { font-weight: 600; color: var(--lb-main-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+        .table-responsive-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            margin: 15px 0;
+        }
+
+        .comparison-table {
+            width: 100%;
+            min-width: 600px; /* Force a minimum width so it will scroll on phones */
+            border-collapse: collapse;
+            margin-top: 0;
+        }
+        .comparison-table th, .comparison-table td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; vertical-align: top;}
+        .comparison-table th { background-color: var(--diagram-bg); font-weight: 600; }
+        .mnemonic-box { 
+            background-color: #fff3cd; 
+            border-left: 5px solid var(--az104-tip-color); 
+            padding: 10px 15px; 
+            margin: 15px 0; 
+            font-size: 1em; 
+            font-weight: bold;
+            color: #856404;
+            text-align: center;
+        }
+        .mnemonic-box i { margin-right: 8px; color: var(--az104-tip-color);}
+        .az104-tip {
+            background-color: #e7f3e7; border-left: 4px solid var(--lb-main-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; 
+        }
+        .az104-tip i { color: var(--lb-main-color); margin-right: 8px; }
+        .az104-tip.warning {
+            background-color: #fcf8e3; border-left-color: var(--warning-color); color: #8a6d3b;
+        }
+        .az104-tip.warning i { color: var(--warning-color); }
+
+        /* Specific list icons for clarity */
+        .card-content li i.fa-layer-group { color: var(--l4-color); }
+        .card-content li i.fa-globe { color: var(--l7-color); }
+        .card-content li i.fa-dns { color: var(--traffic-manager-color); }
+        .card-content li i.fa-door-open { color: var(--front-door-color); }
+        .card-content li i.fa-route { color: var(--lb-main-color); }
+        .card-content li i.fa-lock-open { color: var(--l7-color); }
+        .card-content li i.fa-user-shield { color: var(--l7-color); }
+        .card-content li i.fa-cookie-bite { color: var(--l7-color); }
+        .card-content li i.fa-arrows-alt-v { color: var(--l7-color); }
+        .card-content li i.fa-star { color: var(--traffic-manager-color); }
+        .card-content li i.fa-tachometer-alt { color: var(--traffic-manager-color); }
+        .card-content li i.fa-weight-hanging { color: var(--traffic-manager-color); }
+        .card-content li i.fa-map-marked-alt { color: var(--traffic-manager-color); }
+        .card-content li i.fa-shipping-fast { color: var(--front-door-color); }
+        .card-content li i.fa-box-open { color: var(--front-door-color); }
+        .card-content li i.fa-terminal { color: #605e5c; } /* For lab-specific */
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-balance-scale-right"></i>Azure Load Balancing Services Explained</h1>
+        <p class="instructions">Learn about Azure's different load balancing services to distribute traffic, improve resiliency, and ensure high availability for your applications. <strong>Click/Tap</strong> headers to explore.</p>
+
+        <div class="card-container">
+
+            <!-- Card 1: What is Load Balancing? (Redesigned for brevity) -->
+            <div class="card">
+                <input type="checkbox" id="what-is-lb-toggle" class="card-toggle" checked> 
+                <label for="what-is-lb-toggle" class="card-header lb-header">
+                    <h2><i class="fas fa-info-circle"></i>What is Load Balancing?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-random"></i>Distributing Network Traffic Effectively</h3>
+                    <p class="description">Load balancing distributes incoming network traffic across multiple backend resources (e.g., VMs, App Services). It's crucial for high availability and scalability.</p>
+
+                    <h4>Core Goals:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-arrow-up"></i>**Availability:** Redirects traffic from unhealthy servers to healthy ones.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i>**Performance/Scalability:** Prevents single server overload; allows scaling out with more backend instances.</li>
+                    </ul>
+
+                    <h4>Layer 7 (Application) vs. DNS (Name Resolution):</h4>
+                    <p class="description">A key distinction for Azure traffic management services:</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-code"></i>**Layer 7 (HTTP/S):** Inspects actual application request content (URL path, HTTP headers, cookies). Makes *intelligent routing decisions* based on this content.</li>
+                        <li><i class="fa-li fas fa-dns"></i>**DNS Layer:** Acts as an internet "name directory." Its main job is to *translate domain names to IP addresses*. It does *not* directly handle application traffic.</li>
+                    </ul>
+                    <div class="mnemonic-box"><i class="fas fa-lightbulb"></i>DNS = Name Directory, NOT Traffic Director.</div>
+                    <div class="az104-tip"><i class="fas fa-flask"></i>AZ-104 Focus: Differentiate Layer 7 (content-aware routing) from DNS Layer (name-to-IP translation). This distinction guides service choice.</div>
+                </div>
+            </div>
+
+            <!-- Card 2: Lab Review: Standard Load Balancer Setup (Enhanced with your lab details) -->
+            <div class="card">
+                <input type="checkbox" id="lb-lab-review-toggle" class="card-toggle">
+                <label for="lb-lab-review-toggle" class="card-header lab-review-header">
+                    <h2><i class="fas fa-vial"></i>Lab Review: Standard Load Balancer Setup</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--lab-review-color);"><i class="fas fa-tasks"></i>Building & Testing Azure Load Balancer</h3>
+                    <p class="description">This lab involved building and testing an Azure Load Balancer to achieve high availability for a web application using two Virtual Machines (VMs).</p>
+
+                    <h4>1. Lab Setup & Configuration:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-network-wired"></i>**Virtual Network:** `mikenet1` with a backend subnet.</li>
+                        <li><i class="fa-li fas fa-server"></i>**VMs:** `mikelabVM1` and `mikelabVM2` deployed into `mikenet1`.</li>
+                        <li><i class="fa-li fas fa-cubes"></i>**High Availability:** VMs placed in an <span class="key-point">Availability Set named `AvailSet`</span> for protection against hardware failures and planned maintenance.</li>
+                        <li><i class="fa-li fas fa-fingerprint"></i>**NICs & NSGs:** Each VM had its own NIC (`mikelabvm1845`, `mikelabvm2379`) and associated NSG (`mikelabVM1-nsg`, `mikelabVM2-nsg`).</li>
+                        <li><i class="fa-li fas fa-code"></i>**Web Server & Customization:** IIS installed on each VM.
+                            <ul>
+                                <li>`mikelabVM1`: Displayed "This is Availability Set for Machine 1"</li>
+                                <li>`mikelabVM2`: Displayed "This is Availability Set for Machine 2"</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-balance-scale-right"></i>**Load Balancer:** `basicLB` (Public-facing) created.
+                            <ul>
+                                <li><span class="key-point">Frontend IP:</span> Static Public IP `mypublicIP`.</li>
+                                <li><span class="key-point">Backend Pool:</span> Registered `mikelabvm1845` and `mikelabvm2379` NICs.</li>
+                                <li><span class="key-point">Health Probe:</span> `WhizProbe` (HTTP on port 80).</li>
+                                <li><span class="key-point">Load Balancing Rule:</span> `LBrule` (HTTP port 80 frontend to backend pool port 80).</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4>2. Validation & Key Learnings:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-terminal"></i>**Testing:** Browsing to `mypublicIP/Default.html` and refreshing the page successfully alternated between "Machine 1" and "Machine 2" messages.</li>
+                        <li><i class="fa-li fas fa-check-circle"></i>**Result:** Confirmed `basicLB` was distributing requests effectively.</li>
+                        <li><i class="fa-li fas fa-info-circle"></i>**Reinforcement:** Learned how Load Balancer provides HA by distributing traffic, and how Availability Sets ensure resilience at the compute layer.</li>
+                    </ul>
+
+                    <div class="az104-tip warning"><i class="fas fa-exclamation-triangle"></i>AZ-104 Focus: This lab demonstrates Load Balancer's component-based setup (Frontend IP, Backend Pool, Health Probe, Rule) and its integration with Availability Sets for end-to-end resilience. Remember: Standard LB requires Standard Public IPs.</div>
+                </div>
+            </div>
+
+            <!-- Card 3: Azure Load Balancer (Layer 4) -->
+            <div class="card">
+                <input type="checkbox" id="azure-lb-deep-dive-toggle" class="card-toggle">
+                <label for="azure-lb-deep-dive-toggle" class="card-header" style="background-color: var(--l4-color);">
+                    <h2><i class="fas fa-layer-group"></i>Azure Load Balancer (Layer 4)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--l4-color);"><i class="fas fa-stream"></i>Regional TCP/UDP Traffic Distribution</h3>
+                    <p class="description">Operates at Layer 4 (Transport Layer). Distributes TCP and UDP traffic based on IP/port (5-tuple hash). High performance, low latency.</p>
+                    
+                    <h4>Key Characteristics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-map-pin"></i>**Scope:** <span class="key-point">Regional</span>. Can be zone-redundant within a region.</li>
+                        <li><i class="fa-li fas fa-link"></i>**Traffic Type:** <span class="key-point">TCP & UDP</span>. Does not inspect application content (e.g., HTTP headers).</li>
+                        <li><i class="fa-li fas fa-sticky-note"></i>**Session Persistence:** Default is 5-tuple hash. Can use Client IP (2-tuple/3-tuple) for source IP affinity (sticky sessions).</li>
+                    </ul>
+
+                    <h4>Types & Rules:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-globe"></i>**Public LB:** For Internet traffic to VMs; can provide outbound connections.</li>
+                        <li><i class="fa-li fas fa-lock"></i>**Internal LB:** For traffic *within* a VNet (e.g., between app tiers).</li>
+                        <li><i class="fa-li fas fa-puzzle-piece"></i>**HA Ports:** A single rule to load balance *all* TCP/UDP flows on *all* ports for internal Standard LBs (useful for NVAs).</li>
+                    </ul>
+                    <div class="az104-tip warning"><i class="fas fa-exclamation-triangle"></i>AZ-104 Focus: Layer 4, Regional. Key components (Health Probes, Session Persistence). *Not* for web-specific content routing or SSL offload.</div>
+                </div>
+            </div>
+
+            <!-- Card 4: Azure Application Gateway (Layer 7) -->
+            <div class="card">
+                <input type="checkbox" id="app-gateway-toggle" class="card-toggle">
+                <label for="app-gateway-toggle" class="card-header" style="background-color: var(--l7-color);">
+                    <h2><i class="fas fa-globe"></i>Application Gateway (Layer 7)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--l7-color);"><i class="fas fa-code"></i>Regional Web Traffic & WAF</h3>
+                    <p class="description">Azure's dedicated <span class="key-point">Layer 7 (HTTP/S)</span> load balancer. Manages web traffic based on application content.</p>
+                    <div class="mnemonic-box"><i class="fas fa-brain"></i>AGW: App Logic, Region Locked.</div>
+                    
+                    <h4>Key Features:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-lock-open"></i>**SSL/TLS Offload:** Decrypts HTTPS at gateway, offloading CPU from backend servers.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i>**WAF:** Integrated Web Application Firewall protects against OWASP Top 10 web exploits.</li>
+                        <li><i class="fa-li fas fa-route"></i>**Path-Based Routing:** Routes to different backend pools based on URL path (e.g., `/images` to image servers).</li>
+                        <li><i class="fa-li fas fa-cookie-bite"></i>**Session Affinity:** Uses cookies to send all client requests to the same backend server (sticky sessions).</li>
+                        <li><i class="fa-li fas fa-arrows-alt-v"></i>**Autoscaling (V2 SKU):** Dynamically adjusts capacity based on traffic load.</li>
+                        <li><i class="fa-li fab fa-docker"></i>**Container Support:** Advanced features for Kubernetes ingress.</li>
+                    </ul>
+                    <div class="az104-tip"><i class="fas fa-flask"></i>AZ-104 Focus: Layer 7, Regional. Key capabilities: SSL offload, WAF, path-based routing, session affinity.</div>
+                </div>
+            </div>
+
+            <!-- Card 5: Azure Traffic Manager (Global DNS-based) -->
+            <div class="card">
+                <input type="checkbox" id="traffic-manager-toggle" class="card-toggle">
+                <label for="traffic-manager-toggle" class="card-header" style="background-color: var(--traffic-manager-color);">
+                    <h2><i class="fas fa-dns"></i>Azure Traffic Manager (Global DNS)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--traffic-manager-color);"><i class="fas fa-globe-americas"></i>Global DNS-Based Traffic Routing</h3>
+                    <p class="description">A <span class="key-point">DNS-based global load balancer</span>. Directs clients to the most appropriate service endpoint (e.g., public IPs of Application Gateways in different regions).</p>
+                    <div class="mnemonic-box"><i class="fas fa-lightbulb"></i>DNS = Name Directory, NOT Traffic Director.</div>
+                    
+                    <h4>Key Characteristics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-globe"></i>**Scope:** <span class="key-point">Global</span>. Distributes traffic across regions/external endpoints.</li>
+                        <li><i class="fa-li fas fa-link"></i>**Operation:** Operates at the <span class="key-point">DNS layer</span>. Responds to DNS queries, but *does not* inspect or handle actual HTTP/S traffic.</li>
+                        <li><i class="fa-li fas fa-exclamation-triangle"></i>**Failover Speed:** Relies on DNS TTL; can be slower than L7 global services due to caching.</li>
+                    </ul>
+
+                    <h4>Primary Routing Methods:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-star"></i>**Priority:** For failover/DR. Directs all traffic to a primary endpoint; fails over if unhealthy.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i>**Performance:** Directs clients to the endpoint with the <span class="key-point">lowest network latency</span> (often geographically closest).</li>
+                        <li><i class="fa-li fas fa-weight-hanging"></i>**Weighted:** Distributes traffic based on configured percentages (for gradual rollouts, uneven load).</li>
+                        <li><i class="fa-li fas fa-map-marked-alt"></i>**Geographic:** Routes users based on their DNS query's geographic origin (data sovereignty, localized content).</li>
+                    </ul>
+                    <div class="az104-tip"><i class="fas fa-flask"></i>AZ-104 Focus: Global, DNS-based. Key methods: Priority (DR), Performance (latency), Weighted (distribution), Geographic.</div>
+                </div>
+            </div>
+
+            <!-- Card 6: Azure Front Door (Global L7/Edge) -->
+            <div class="card">
+                <input type="checkbox" id="front-door-toggle" class="card-toggle">
+                <label for="front-door-toggle" class="card-header" style="background-color: var(--front-door-color);">
+                    <h2><i class="fas fa-door-open"></i>Azure Front Door (Global L7/Edge)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--front-door-color);"><i class="fas fa-shipping-fast"></i>Global L7 CDN & WAF at the Edge</h3>
+                    <p class="description">A global, scalable entry-point using Microsoft's global edge network. Operates at <span class="key-point">Layer 7 (HTTP/S)</span>, acting as a reverse proxy.</p>
+                    
+                    <h4>Key Features & Advantages:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-globe"></i>**Scope:** <span class="key-point">Global</span>. Distributes traffic across regions.</li>
+                        <li><i class="fa-li fas fa-network-wired"></i>**Operation:** Handles traffic <span class="key-point">directly at the edge</span> (nearest Point of Presence). Faster failover than DNS-based TM.</li>
+                        <li><i class="fa-li fas fa-fighter-jet"></i>**Performance:** Anycast IP and split TCP accelerate application performance globally.</li>
+                        <li><i class="fa-li fas fa-lock-open"></i>**Global SSL Offload:** Offloads SSL/TLS at the closest edge to the user.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i>**Global WAF:** Integrated Web Application Firewall protection at the edge.</li>
+                        <li><i class="fa-li fas fa-box-open"></i>**Caching:** Can cache static content at edge locations (CDN capabilities).</li>
+                        <li><i class="fa-li fas fa-route"></i>**Path-Based Routing:** Routes traffic based on URL paths, globally.</li>
+                    </ul>
+                    <div class="az104-tip warning"><i class="fas fa-exclamation-triangle"></i>AZ-104 Focus: Global, Layer 7. Key differentiators: Edge network performance, global WAF, caching. *Sees and routes actual traffic*, unlike Traffic Manager.</div>
+                </div>
+            </div>
+
+            <!-- Card 7: Service Comparison: Which Load Balancer to Use? (Comparison Table) -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="lb-comparison-toggle" class="card-toggle" checked>
+                <label for="lb-comparison-toggle" class="card-header" style="background-color: var(--azure-blue-dark);">
+                    <h2><i class="fas fa-balance-scale-right"></i>Service Comparison: Which Load Balancer to Use?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-question-circle"></i>Choosing the Right Tool for the Job</h3>
+                    <div class="table-responsive-wrapper">
+                        <table class="comparison-table">
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th style="color:var(--l4-color);">Azure Load Balancer</th>
+                                    <th style="color:var(--l7-color);">Application Gateway</th>
+                                    <th style="color:var(--traffic-manager-color);">Traffic Manager</th>
+                                    <th style="color:var(--front-door-color);">Azure Front Door</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>OSI Layer</strong></td>
+                                    <td>Layer 4 (TCP/UDP)</td>
+                                    <td>Layer 7 (HTTP/S)</td>
+                                    <td>DNS Layer</td>
+                                    <td>Layer 7 (HTTP/S)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Scope</strong></td>
+                                    <td>Regional</td>
+                                    <td>Regional</td>
+                                    <td><span class="key-point" style="color:var(--traffic-manager-color);">Global</span></td>
+                                    <td><span class="key-point" style="color:var(--front-door-color);">Global</span></td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Traffic Handling</strong></td>
+                                    <td>Routes traffic directly</td>
+                                    <td>Routes traffic directly</td>
+                                    <td><span class="warning-text">Does not route traffic</span>; responds to DNS queries</td>
+                                    <td>Routes traffic directly via global edge network</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>WAF Feature</strong></td>
+                                    <td>No</td>
+                                    <td>Yes (Optional, Regional)</td>
+                                    <td>No</td>
+                                    <td>Yes (Optional, Global Edge)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>SSL Offloading</strong></td>
+                                    <td>No</td>
+                                    <td>Yes (Regional)</td>
+                                    <td>No</td>
+                                    <td>Yes (Global Edge)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Caching</strong></td>
+                                    <td>No</td>
+                                    <td>No</td>
+                                    <td>No</td>
+                                    <td>Yes (Global Edge, CDN)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Traffic Acceleration</strong></td>
+                                    <td>No</td>
+                                    <td>No</td>
+                                    <td>Via DNS Latency-based Routing</td>
+                                    <td>Yes (Global Anycast, Split TCP)</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Typical Use Case</strong></td>
+                                    <td>High-performance, non-HTTP traffic within a region.</td>
+                                    <td>Web traffic routing, SSL offload, WAF within a region.</td>
+                                    <td>Global DNS-based failover & distribution.</td>
+                                    <td>Global web traffic acceleration, WAF, CDN.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card 8: Load Balancing: AZ-104 Key Takeaways (Final Summary) -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="lb-summary-final-toggle" class="card-toggle" checked>
+                <label for="lb-summary-final-toggle" class="card-header default-summary-header">
+                    <h2><i class="fas fa-graduation-cap"></i>Load Balancing: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-check-double"></i>Exam Essentials & Differentiators</h3>
+                    <p class="description">For the exam, you must be able to differentiate the four main load balancing services based on scope, OSI layer, and primary features.</p>
+                    
+                    <h4>Core Differentiators:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-ruler-horizontal"></i>**Scope:**
+                            <ul>
+                                <li>**Regional:** Azure Load Balancer (L4), Application Gateway (L7).</li>
+                                <li>**Global:** Traffic Manager (DNS), Azure Front Door (L7).</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top:10px;"><i class="fa-li fas fa-layer-group"></i>**Traffic Type (OSI Layer):**
+                            <ul>
+                                <li>**Layer 4 (TCP/UDP):** Azure Load Balancer.</li>
+                                <li>**Layer 7 (HTTP/S):** Application Gateway, Azure Front Door.</li>
+                                <li>**DNS Layer:** Traffic Manager. (Remember: <span class="key-point">"DNS = Name Directory, NOT Traffic Director."</span>)</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4>Service-Specific Must-Knows:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-layer-group" style="color:var(--l4-color);"></i>**Azure Load Balancer:** Regional, L4. Best for non-HTTP, high-performance TCP/UDP. (Health Probes, Session Persistence).</li>
+                        <li><i class="fa-li fas fa-globe" style="color:var(--l7-color);"></i>**Application Gateway:** Regional, L7. Best for web apps needing WAF, SSL offload, path-based routing, sticky sessions. (Mnemonic: <span class="key-point">"AGW: App Logic, Region Locked."</span>)</li>
+                        <li><i class="fa-li fas fa-dns" style="color:var(--traffic-manager-color);"></i>**Traffic Manager:** Global, DNS-based. Best for global DNS failover/distribution. (Key methods: Priority for DR, Performance for latency). *Does not handle traffic directly.*</li>
+                        <li><i class="fa-li fas fa-door-open" style="color:var(--front-door-color);"></i>**Azure Front Door:** Global, L7 (edge). Best for global web acceleration, WAF, CDN. *Handles traffic directly at the edge.*</li>
+                    </ul>
+
+                    <div class="az104-tip warning"><i class="fas fa-exclamation-triangle"></i>AZ-104 Exam Tip: Match scenarios to services based on **scope (regional/global)**, **OSI layer (L4/L7/DNS)**, and **specific features** (WAF, SSL offload, caching, direct traffic handling).</div>
+                </div>
+            </div>
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => { /* CSS :checked handles expand/collapse */ });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Firewall Deep Dive (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors for Azure Firewall Guide */
+            --firewall-main-color: #A4262C; /* Distinct dark red/orange for Firewall */
+            --definition-color: #E74C3C; /* Red */
+            --deployment-color: #34495E; /* Dark Grey */
+            --rules-color: #0078d4; /* Azure Blue */
+            --features-color: #27AE60; /* Green */
+            --integration-color: #8E44AD; /* Purple */
+            --relevance-color: #ffc107; /* Gold */
+            --lab-review-color: #6A0DAD; /* Deep purple for lab review */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6; 
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--firewall-main-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-fire-alt { font-size: 1.1em; } 
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--firewall-main-color); }
+
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; } 
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+            background-color: var(--firewall-main-color);
+            border-bottom-color: #831f24;
+        }
+        .card-header:hover { background-color: #831f24; }
+        .card-header.summary-header { /* For the final summary card */
+            background-color: var(--azure-blue-dark); 
+            border-bottom-color: #004578;
+        }
+        .card-header.summary-header:hover { background-color: #004578; }
+
+        /* Specific card header colors */
+        .card-header.lab-review-header { background-color: var(--lab-review-color); border-bottom-color: #4f0a82; }
+        .card-header.lab-review-header:hover { background-color: #4f0a82; }
+
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+ 
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; 
+            padding: 0 18px; 
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); 
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2000px; /* Adjusted for content */
+            opacity: 1;
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            overflow-y: auto;
+        }
+
+        .card-content h3, .card-content h4 {
+             color: var(--azure-blue-dark); margin-top: 15px; margin-bottom: 10px; font-size: 1.1em;
+             font-weight: 600; padding-bottom: 6px;
+             display: flex; align-items: center; gap: 8px;
+         }
+        .card-content h3 { border-bottom: 1px solid #eee; font-size: 1.15em; margin-top: 0;}
+        .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+        .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+        .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--firewall-main-color); /* Default icon color */
+          }
+        
+        .key-point { font-weight: 600; color: var(--firewall-main-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+        
+        .important-note { background-color: #fcebeb; border-left: 4px solid var(--firewall-main-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--firewall-main-color); margin-right: 8px; }
+
+        /* Custom styling for sub-headings */
+        .card-content h4.sub-heading {
+            color: var(--azure-blue-dark);
+            font-size: 1em;
+            margin-top: 10px;
+            margin-bottom: 5px;
+            padding-bottom: 3px;
+            border-bottom: 1px dotted #ccc;
+        }
+        .card-content h4.sub-heading i {
+            color: var(--azure-blue-dark);
+            font-size: 0.9em;
+            margin-right: 5px;
+        }
+
+        .definition-icon { color: var(--definition-color); }
+        .deployment-icon { color: var(--deployment-color); }
+        .rules-icon { color: var(--rules-color); }
+        .features-icon { color: var(--features-color); }
+        .integration-icon { color: var(--integration-color); }
+        .relevance-icon { color: var(--relevance-color); }
+        
+        /* For lab review card-specific icons */
+        .lab-review-card li i.fa-li { color: var(--lab-review-color); }
+
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-fire-alt"></i>Azure Firewall Deep Dive</h1>
+        <p class="instructions">Master Azure Firewall: a managed, stateful network security service for centralized threat protection and traffic filtering across your Azure VNets. Essential for AZ-104.</p>
+        
+        <div class="card-container">
+
+            <!-- Card 1: What is Azure Firewall? -->
+            <div class="card">
+                <input type="checkbox" id="what-is-firewall-toggle" class="card-toggle" checked> 
+                <label for="what-is-firewall-toggle" class="card-header">
+                    <h2><i class="fas fa-question-circle"></i>What is Azure Firewall?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h4 class="sub-heading"><i class="fas fa-bullseye definition-icon"></i>Definition & Purpose:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-check"></i>A <span class="key-point">managed, cloud-native network security service</span> by Microsoft.</li>
+                        <li><i class="fa-li fas fa-check"></i>Provides <span class="key-point">threat protection</span> and centralized traffic filtering for your Azure Virtual Network resources.</li>
+                        <li><i class="fa-li fas fa-check"></i>Acts as a <span class="key-point">stateful firewall</span>, inspecting all traffic flows at Layer 3 to Layer 7.</li>
+                    </ul>
+
+                    <h4 class="sub-heading"><i class="fas fa-star definition-icon"></i>Key Characteristics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-cogs"></i>**Fully Managed:** No need to manage the underlying server infrastructure, patching, or scaling.</li>
+                        <li><i class="fa-li fas fa-shield-alt"></i>**Centralized Security:** Enforce network and application connectivity policies across subscriptions and virtual networks.</li>
+                        <li><i class="fa-li fas fa-filter"></i>**Stateful Inspection:** Monitors the state of active connections and makes filtering decisions based on the context of those connections.</li>
+                        <li><i class="fa-li fas fa-ruler-horizontal"></i>**Scalable:** Automatically scales with demand to accommodate changing network traffic flows.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 2: Deployment & Architecture -->
+            <div class="card">
+                <input type="checkbox" id="deployment-architecture-toggle" class="card-toggle"> 
+                <label for="deployment-architecture-toggle" class="card-header">
+                    <h2><i class="fas fa-building"></i>Deployment & Architecture</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h4 class="sub-heading"><i class="fas fa-network-wired deployment-color"></i>Key Deployment Considerations:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-sitemap"></i>**Dedicated Subnet:** Azure Firewall requires its own dedicated subnet named <span class="key-point">`AzureFirewallSubnet`</span> within the VNet where it's deployed.</li>
+                        <li><i class="fa-li fas fa-globe"></i>**Public IP Address:** It is assigned at least one <span class="key-point">Standard SKU Public IP address</span>, which is used for both inbound (DNAT) and outbound (SNAT) communication.</li>
+                        <li><i class="fa-li fas fa-code-branch"></i>**Hub-Spoke Topology:** Often deployed in a <span class="key-point">hub virtual network</span>, with other (spoke) VNets peering to the hub. This centralizes security for all traffic flowing between spokes, to on-premises, or to the internet.</li>
+                        <li><i class="fa-li fas fa-cloud-flare"></i>**Availability Zones:** Can be deployed across Availability Zones for increased resilience against zone-level failures.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 3: Firewall Policies & Rule Types -->
+            <div class="card">
+                <input type="checkbox" id="firewall-rules-toggle" class="card-toggle"> 
+                <label for="firewall-rules-toggle" class="card-header">
+                    <h2><i class="fas fa-gavel"></i>Firewall Policies & Rule Types</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h4 class="sub-heading"><i class="fas fa-list-alt rules-icon"></i>Rule Types:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-project-diagram"></i>**Network Rules:**
+                            <ul>
+                                <li>Filter traffic based on <span class="key-point">IP addresses, ports, and protocols (TCP, UDP, ICMP, Any)</span>.</li>
+                                <li>Applied at Layer 3/4.</li>
+                                <li>Prioritized by rule collection priority, then rule priority.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-browser"></i>**Application Rules:**
+                            <ul>
+                                <li>Filter HTTP/HTTPS traffic based on <span class="key-point">Fully Qualified Domain Names (FQDNs)</span> and HTTP/S protocols.</li>
+                                <li>Applied at Layer 7.</li>
+                                <li>Example: Allow access to `*.google.com` regardless of IP address changes.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-exchange-alt"></i>**DNAT Rules (Destination Network Address Translation):**
+                            <ul>
+                                <li>Allows inbound traffic from the internet to private IPs within your VNet.</li>
+                                <li>Translates the Firewall's public IP and port to a private IP and port of a backend resource.</li>
+                                <li>Example: Allow RDP (port 3389) from the internet to a specific VM's private IP.</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4 class="sub-heading"><i class="fas fa-scroll rules-icon"></i>Firewall Policy (Standard & Premium):</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-check"></i>A management resource for Firewall configurations, allowing centralized, hierarchical management of rule collections.</li>
+                        <li><i class="fa-li fas fa-lock"></i>**Premium SKU** offers advanced security features like TLS inspection, IDPS (Intrusion Detection and Prevention System), and URL filtering.</li>
+                    </ul>
+                    <p class="important-note">
+                        <i class="fas fa-info-circle"></i>Azure Firewall processes rules in a specific order: DNAT rules first, then Network rules, then Application rules.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 4: Key Features -->
+            <div class="card">
+                <input type="checkbox" id="key-features-toggle" class="card-toggle"> 
+                <label for="key-features-toggle" class="card-header">
+                    <h2><i class="fas fa-star"></i>Key Features</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h4 class="sub-heading"><i class="fas fa-wrench features-icon"></i>Advanced Security & Control:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-wifi"></i>**SNAT (Source Network Address Translation):** All outbound traffic from associated subnets to the internet uses the Firewall's public IP address for SNAT, providing a predictable outbound IP.</li>
+                        <li><i class="fa-li fas fa-crosshairs"></i>**FQDN Filtering:** Application rules allow filtering outbound HTTP/S traffic based on Fully Qualified Domain Names (FQDNs), not just IP addresses.</li>
+                        <li><i class="fa-li fas fa-cloud-meatball"></i>**Threat Intelligence-based Filtering:** Automatically alerts and denies traffic from known malicious IP addresses and domains (from Microsoft's Threat Intelligence feeds).</li>
+                        <li><i class="fa-li fas fa-file-invoice"></i>**Logging & Monitoring:** Integrates with Azure Monitor to send logs to Log Analytics, Storage Accounts, or Event Hubs for auditing and analysis.</li>
+                        <li><i class="fa-li fas fa-hand-holding-usd"></i>**Cost Optimization:** Centralizing security with Azure Firewall can reduce the need for individual NVAs or complex NSG configurations on every subnet.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 5: Lab Review: Azure Firewall Deployment & Rules -->
+            <div class="card lab-review-card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="firewall-lab-review-toggle" class="card-toggle">
+                <label for="firewall-lab-review-toggle" class="card-header lab-review-header">
+                    <h2><i class="fas fa-vial"></i>Lab Review: Azure Firewall Deployment & Rules</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--lab-review-color);"><i class="fas fa-tasks"></i>Hub-Spoke Security in Practice</h3>
+                    <p class="description">This lab involved deploying an Azure Firewall in a hub-like VNet (`whizNet1`), creating VMs, configuring Firewall Policies with various rules, and setting up routing to force traffic through the Firewall for inspection. It reinforces a practical <span class="key-point">Hub-Spoke security topology</span>.</p>
+
+                    <h4 class="sub-heading"><i class="fas fa-cubes"></i>1. Lab Setup & Configuration:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-network-wired"></i>**Hub VNet:** `whizNet1` deployed to host the Azure Firewall.</li>
+                        <li><i class="fa-li fas fa-server"></i>**Spoke Subnets:** Contained `Jumpbox` and `Work` VMs.</li>
+                        <li><i class="fa-li fas fa-fire-alt"></i>**Azure Firewall:**
+                            <ul>
+                                <li>**Public IP:** `WhizlabsFirewall-ip` (for inbound DNAT and outbound SNAT).</li>
+                                <li>**Firewall Policy:** `test-policy` (centralized management of rules).</li>
+                                <li>**Rule Collections:** Included <span class="key-point">Application Rules</span> (L7, FQDN/URLs), <span class="key-point">Network Rules</span> (L3/L4 traffic filtering), and <span class="key-point">DNAT Rules</span> (inbound NAT for RDP).</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-route"></i>**Route Tables (UDRs):** Associated with spoke subnets to <span class="key-point">force all outbound traffic through the Firewall</span> (forced tunneling).</li>
+                        <li><i class="fa-li fas fa-dns"></i>**Custom DNS:** Set at the <span class="key-point">VM NIC level</span>, overriding the default VNet DNS settings.</li>
+                    </ul>
+
+                    <h4 class="sub-heading" style="margin-top:20px;"><i class="fas fa-sitemap"></i>2. How this forms a Hub-Spoke Topology:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-star"></i>**Hub:** The `whizNet1` VNet, containing the Azure Firewall and its Public IP (`WhizlabsFirewall-ip`). This acts as the <span class="key-point">central control point</span> for all network traffic.</li>
+                        <li><i class="fa-li fas fa-network-wired"></i>**Spokes:** The subnets/networks where your `Jumpbox` and `Work` VMs reside, each with their own NSGs and NIC IPs. These "spokes" do not directly connect to each other for general traffic.</li>
+                        <li><i class="fa-li fas fa-link"></i>**Connection:** The spokes connect to the hub via <span class="key-point">Route Tables (UDRs)</span> that explicitly force their outbound traffic through the Firewall.</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--lab-review-color); background-color: #f7ebfc;">
+                        <i class="fas fa-info-circle" style="color:var(--lab-review-color);"></i>**Reinforcement:**
+                        <br>👉 <span class="key-point">Firewall + Route Tables in the hub = central brain.</span>
+                        <br>👉 <span class="key-point">Spokes send traffic → routed to hub → firewall applies rules.</span>
+                    </p>
+
+                    <h4 class="sub-heading" style="margin-top:20px;"><i class="fas fa-check-circle"></i>3. Validation & Enforcement:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-desktop"></i>**DNAT (RDP):** Verified inbound RDP access to VMs, with the public IP mapped to the internal VM via DNAT.</li>
+                        <li><i class="fa-li fas fa-globe"></i>**Application Rules (Web):** Validated allowed FQDNs for HTTP/S traffic, demonstrating L7 filtering.</li>
+                        <li><i class="fa-li fas fa-filter"></i>**Network Rules (General Traffic):** Confirmed outbound filtering for general network traffic as per defined L3/L4 rules.</li>
+                    </ul>
+
+                    <h4 class="sub-heading" style="margin-top:20px;"><i class="fas fa-graduation-cap" style="color:var(--relevance-color);"></i>4. Key Learnings & AZ-104 Exam Points:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-exclamation"></i>**Dedicated Subnet:** Azure Firewall must always reside in a dedicated <span class="key-point">`AzureFirewallSubnet`</span>.</li>
+                        <li><i class="fa-li fas fa-sort-numeric-down"></i>**Rule Priority:** Lower number = higher priority for rule processing.</li>
+                        <li><i class="fa-li fas fa-object-group"></i>**Rule Collection Groups:** Can effectively mix Network, Application, and DNAT rule types within a policy.</li>
+                        <li><i class="fa-li fas fa-balance-scale"></i>**Differentiate Rule Types:**
+                            <ul>
+                                <li><span class="key-point">DNAT:</span> For inbound NAT (public IP:port to private IP:port).</li>
+                                <li><span class="key-point">Network:</span> For L3/L4 traffic filtering (IP, port, protocol).</li>
+                                <li><span class="key-point">Application:</span> For L7 FQDN/URL filtering.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-dns"></i>**Custom DNS Precedence:** NIC-level DNS settings <span class="key-point">override</span> VNet-level DNS settings.</li>
+                        <li><i class="fa-li fas fa-route"></i>**Forced Tunneling:** Route Tables (UDRs) are critical to centralize and inspect all outbound traffic through the Firewall.</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--lab-review-color); background-color: #f7ebfc;">
+                        <i class="fas fa-info-circle" style="color:var(--lab-review-color);"></i>**Implication:** This lab powerfully demonstrates implementing centralized security in a Hub-Spoke model, leveraging Azure Firewall's advanced capabilities and its interaction with Azure networking components like Route Tables and DNS.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card 6: Integration & Use Cases -->
+            <div class="card">
+                <input type="checkbox" id="integration-use-cases-toggle" class="card-toggle"> 
+                <label for="integration-use-cases-toggle" class="card-header">
+                    <h2><i class="fas fa-puzzle-piece"></i>Integration & Use Cases</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h4 class="sub-heading"><i class="fas fa-link integration-color"></i>Common Integration Scenarios:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-building"></i>**Hub-Spoke Networks:** Central security point in a hub VNet. Spoke VNets peer with the hub, and their traffic is forced through the Firewall for inspection using User Defined Routes (UDRs).</li>
+                        <li><i class="fa-li fas fa-route"></i>**Forced Tunneling:** Directing all internet-bound traffic from spoke VNets (or any subnet) through the Firewall for inspection, even if it's destined for another Azure service.</li>
+                        <li><i class="fa-li fas fa-globe-route"></i>**Hybrid Connectivity:** Securing traffic between Azure and on-premises networks when using VPN Gateway or ExpressRoute.</li>
+                        <li><i class="fa-li fas fa-broadcast-tower"></i>**Complementary with NSGs:** NSGs provide distributed, granular Layer 4 protection at the NIC/subnet level, while Azure Firewall provides centralized, intelligent L3-L7 inspection.</li>
+                    </ul>
+
+                    <h4 class="sub-heading"><i class="fas fa-tools integration-color"></i>Azure Firewall vs. NAT Gateway:</h4>
+                    <p class="description">As discussed in the VNet Deep Dive, both can provide outbound SNAT, but their primary purposes differ significantly:</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-broadcast-tower"></i>**NAT Gateway:** Focuses on <span class="key-point">simplified, scalable outbound-only NAT</span> with predictable IPs. No inbound filtering.</li>
+                        <li><i class="fa-li fas fa-fire-alt"></i>**Azure Firewall:** Focuses on <span class="key-point">centralized L3-L7 network security and traffic filtering</span> (inbound & outbound). SNAT is a capability, but not its primary goal.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Final Summary Card -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="firewall-summary-toggle" class="card-toggle" checked>
+                <label for="firewall-summary-toggle" class="card-header summary-header">
+                    <h2><i class="fas fa-graduation-cap"></i>Azure Firewall: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-blue-dark);"><i class="fas fa-check-double"></i>Exam Essentials & Security Principles</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-fire-alt"></i>**Core Purpose:** Managed, stateful L3-L7 firewall for centralized network security, threat protection, and traffic filtering across VNets.</li>
+                        <li><i class="fa-li fas fa-sitemap"></i>**Deployment:** Requires a dedicated subnet named <span class="key-point">`AzureFirewallSubnet`</span>. Often deployed in a hub VNet for hub-spoke architectures.</li>
+                        <li><i class="fa-li fas fa-gavel"></i>**Rule Types:** Understand <span class="key-point">Network Rules</span> (IP/port/protocol, L3/4), <span class="key-point">Application Rules</span> (FQDN-based, L7), and <span class="key-point">DNAT Rules</span> (inbound translation). Know rule processing order.</li>
+                        <li><i class="fa-li fas fa-star"></i>**Key Features:** FQDN filtering, Threat Intelligence, SNAT for outbound traffic, logging/monitoring.</li>
+                        <li><i class="fa-li fas fa-lock"></i>**Security Model:** Provides robust inbound and outbound filtering. Complements NSGs (Firewall is centralized L3-L7, NSGs are distributed L4).</li>
+                        <li><i class="fa-li fas fa-exchange-alt"></i>**Firewall vs. NAT Gateway:** Firewall = comprehensive security (inbound & outbound, L3-L7). NAT Gateway = simplified, scalable *outbound-only* SNAT.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i>**SKUs:** Standard (core features) and Premium (advanced like IDPS, TLS inspection).</li>
+                        <li><i class="fa-li fas fa-vial"></i>**Lab Reinforcement:** Practice configuring Firewall rules (DNAT, App, Network), Route Tables for forced tunneling, and DNS overrides to understand practical application in Hub-Spoke scenarios. (Reinforces the <span class="key-point">Hub-Spoke topology</span>).</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--firewall-main-color); background-color: #fcebeb;">
+                        <i class="fas fa-lightbulb" style="color:var(--firewall-main-color);"></i>**Exam Tip:** Look for scenarios requiring *centralized security*, *L7 filtering (FQDNs)*, *threat intelligence*, or *DNAT for inbound access*. If multiple VNets need consistent security policies, Azure Firewall in a hub VNet is the answer.
+                    </p>
+                </div>
+            </div>
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => { /* CSS :checked handles expand/collapse */ });
+            });
+        });
+    </script>
+</body>
+</html>

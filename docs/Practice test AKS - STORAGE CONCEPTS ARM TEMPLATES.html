@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Storage & Compute Quiz (AZ-104)</title> <!-- Updated Title -->
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --correct-color: #107c10;
+            --incorrect-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors */
+            --versioning-color: #6f42c1;
+            --replication-color: #038387;
+            --lifecycle-color: var(--success-color);
+            --copy-color: #038387;
+            --k8s-color: #326ce5;
+            --aks-color: var(--azure-blue);
+            --arm-color: #f7630c; /* Orange */
+            --immutable-color: #797775; /* Grey */
+        }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px 35px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark);
+            text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        h1 i { margin-right: 10px; }
+
+        .question-block {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .question-block:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .question-text i {
+            margin-right: 8px;
+            color: var(--azure-blue); /* Default icon color */
+        }
+        /* Specific icon colors for questions */
+        .question-text i.fa-history { color: var(--versioning-color); }
+        .question-text i.fa-copy { color: var(--replication-color); }
+        .question-text i.fa-recycle { color: var(--lifecycle-color); }
+        .question-text i.fa-layer-group { color: var(--info-color); }
+        .question-text i.fa-dharmachakra { color: var(--k8s-color); } /* K8s */
+        .question-text i.fa-microsoft { color: var(--aks-color); } /* AKS */
+        .question-text i.fa-file-code { color: var(--arm-color); } /* ARM */
+        .question-text i.fa-lock { color: var(--immutable-color); } /* Immutability */
+        .question-text i.fa-link { color: var(--azure-blue-dark); } /* Interaction */
+
+
+        .options-list { list-style: none; padding-left: 0; margin: 0; }
+        .options-list li {
+            margin-bottom: 10px; padding: 8px 12px; border: 1px solid var(--border-color);
+            border-radius: 4px; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .options-list li label {
+            display: flex; align-items: center; cursor: pointer; width: 100%; font-size: 0.95em;
+        }
+        .options-list li input[type="radio"] {
+            margin-right: 12px; accent-color: var(--azure-blue); cursor: pointer;
+            width: 18px; height: 18px;
+        }
+        .options-list li:hover { background-color: #eef1f5; border-color: var(--azure-blue); }
+
+        /* Feedback Styles */
+        .feedback {
+            margin-top: 10px; padding: 8px 12px; border-radius: 4px; font-weight: 600;
+            display: none; font-size: 0.9em;
+        }
+        .feedback.correct {
+            background-color: #e7f3e7; border: 1px solid var(--correct-color); color: var(--correct-color);
+        }
+        .feedback.incorrect {
+            background-color: #fdeceb; border: 1px solid var(--incorrect-color); color: var(--incorrect-color);
+        }
+        .feedback i { margin-right: 6px; }
+
+        /* Highlight correct/incorrect options */
+        .options-list li.correct-answer-highlight { background-color: #dff0d8 !important; border-color: var(--correct-color) !important; }
+        .options-list li.incorrect-selection-highlight { background-color: #f2dede !important; border-color: var(--incorrect-color) !important; opacity: 0.7; }
+
+        .submit-button {
+            display: block; width: 100%; max-width: 200px; margin: 30px auto 10px auto; padding: 12px 20px;
+            font-size: 1.1em; font-weight: 600; color: var(--text-light); background-color: var(--success-color);
+            border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .submit-button:hover { background-color: #0d6a0d; }
+        .submit-button:active { transform: scale(0.98); }
+        .submit-button:disabled { background-color: #94d3a2; cursor: not-allowed; }
+
+        #score-area {
+            text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 20px; padding: 10px;
+            background-color: var(--diagram-bg); border-radius: 4px; border: 1px solid var(--border-color);
+            display: none; /* Hidden until checked */
+        }
+        #score-area i { margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1><i class="fas fa-tasks"></i>Azure Storage & Compute Quiz</h1>
+
+        <form id="quiz-form">
+
+            <!-- == Storage Questions == -->
+
+            <!-- Question 1: Versioning Trigger -->
+            <div class="question-block" data-question="1" data-correct="overwrite">
+                <p class="question-text"><i class="fas fa-history"></i>Which action AUTOMATICALLY creates a new blob version when Blob Versioning is enabled?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q1" value="read"> Reading a blob</label></li>
+                    <li><label><input type="radio" name="q1" value="overwrite"> Overwriting an existing blob (e.g., using Put Blob)</label></li>
+                    <li><label><input type="radio" name="q1" value="metadata"> Changing blob metadata</label></li>
+                    <li><label><input type="radio" name="q1" value="snapshot"> Creating a blob snapshot</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 2: Replication Dependency -->
+            <div class="question-block" data-question="2" data-correct="versioning">
+                <p class="question-text"><i class="fas fa-copy"></i>What feature MUST be enabled on BOTH source and destination accounts for Object Replication?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q2" value="softdelete"> Blob Soft Delete</label></li>
+                    <li><label><input type="radio" name="q2" value="lifecycle"> Lifecycle Management</label></li>
+                    <li><label><input type="radio" name="q2" value="versioning"> Blob Versioning</label></li>
+                    <li><label><input type="radio" name="q2" value="immutability"> Immutability Policy (Legal Hold)</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 3: Lifecycle Purpose -->
+            <div class="question-block" data-question="3" data-correct="tier_delete">
+                 <p class="question-text"><i class="fas fa-recycle"></i>What is the primary purpose of Azure Blob Lifecycle Management?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q3" value="sync_copy"> To synchronously copy blobs between regions.</label></li>
+                    <li><label><input type="radio" name="q3" value="encrypt"> To enforce server-side encryption.</label></li>
+                    <li><label><input type="radio" name="q3" value="tier_delete"> To automate tiering (Hot/Cool/Cold/Archive) and deleting blobs/versions based on rules.</label></li>
+                    <li><label><input type="radio" name="q3" value="backup"> To create daily managed backups.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 4: Access Tiers -->
+            <div class="question-block" data-question="4" data-correct="archive">
+                <p class="question-text"><i class="fas fa-layer-group"></i>Which Blob Access Tier has the highest retrieval latency (hours)?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q4" value="hot"> Hot</label></li>
+                    <li><label><input type="radio" name="q4" value="cool"> Cool</label></li>
+                    <li><label><input type="radio" name="q4" value="cold"> Cold</label></li>
+                    <li><label><input type="radio" name="q4" value="archive"> Archive</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 5: Copy Blob Nature -->
+             <div class="question-block" data-question="5" data-correct="async_serverside">
+                <p class="question-text"><i class="fas fa-copy" style="color: var(--copy-color)"></i>Which statement best describes the `Copy Blob` operation?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q5" value="sync_policy"> It's synchronous and policy-based.</label></li>
+                    <li><label><input type="radio" name="q5" value="async_serverside"> It's asynchronous and server-side, initiated per-blob.</label></li>
+                    <li><label><input type="radio" name="q5" value="sync_client"> It's synchronous and performed by the client.</label></li>
+                    <li><label><input type="radio" name="q5" value="requires_versioning"> It requires Blob Versioning enabled on the source.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 6: Versioning & Lifecycle -->
+             <div class="question-block" data-question="6" data-correct="tier_delete_versions">
+                <p class="question-text"><i class="fas fa-link"></i>How can Lifecycle Management manage costs associated with Blob Versioning?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q6" value="prevent_versions"> By preventing versions from being created.</label></li>
+                    <li><label><input type="radio" name="q6" value="tier_delete_versions"> By tiering older versions to cheaper storage or deleting versions after a specific age.</label></li>
+                    <li><label><input type="radio" name="q6" value="copy_versions"> By copying specific versions to another account.</label></li>
+                    <li><label><input type="radio" name="q6" value="restore_versions"> By automatically restoring the latest version.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 7: Object Replication - What is NOT replicated -->
+             <div class="question-block" data-question="7" data-correct="version_delete">
+                <p class="question-text"><i class="fas fa-copy"></i>Which source action is NOT replicated by Object Replication?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q7" value="create_blob"> Creating a new block blob.</label></li>
+                    <li><label><input type="radio" name="q7" value="overwrite_blob"> Overwriting an existing block blob.</label></li>
+                    <li><label><input type="radio" name="q7" value="delete_current"> Deleting the current (base) block blob.</label></li>
+                    <li><label><input type="radio" name="q7" value="version_delete"> Deleting a specific, older blob version.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 8: Access Tier Cost/Latency -->
+             <div class="question-block" data-question="8" data-correct="cool_tradeoff">
+                <p class="question-text"><i class="fas fa-layer-group"></i>Compared to Hot, the Cool tier generally offers:</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q8" value="lower_both"> Lower storage cost and lower access cost.</label></li>
+                    <li><label><input type="radio" name="q8" value="higher_both"> Higher storage cost and higher access cost.</label></li>
+                    <li><label><input type="radio" name="q8" value="cool_tradeoff"> Lower storage cost but higher access cost.</label></li>
+                    <li><label><input type="radio" name="q8" value="higher_storage_lower_access"> Higher storage cost but lower access cost.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 9: Immutable Storage Types -->
+            <div class="question-block" data-question="9" data-correct="time_legal">
+                <p class="question-text"><i class="fas fa-lock"></i>What are the two main types of Immutability policies for Azure Blobs?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q9" value="version_soft"> Versioning and Soft Delete</label></li>
+                    <li><label><input type="radio" name="q9" value="time_legal"> Time-based Retention and Legal Hold</label></li>
+                    <li><label><input type="radio" name="q9" value="locked_unlocked"> Locked Policy and Unlocked Policy</label></li>
+                    <li><label><input type="radio" name="q9" value="rbac_policy"> RBAC Policy and Azure Policy</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 10: Immutability & Deletion -->
+            <div class="question-block" data-question="10" data-correct="cannot_delete">
+                <p class="question-text"><i class="fas fa-link"></i>If a blob version has a locked time-based retention policy that hasn't expired OR an active legal hold, what happens if you try to delete it (even with Soft Delete enabled)?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q10" value="soft_deleted"> It gets soft-deleted immediately.</label></li>
+                    <li><label><input type="radio" name="q10" value="version_deleted"> The specific version is deleted, but the base blob remains.</label></li>
+                    <li><label><input type="radio" name="q10" value="policy_removed"> The immutability policy is automatically removed, then it's deleted.</label></li>
+                    <li><label><input type="radio" name="q10" value="cannot_delete"> The deletion operation fails because the object is immutable.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- == AKS Questions == -->
+
+            <!-- Question 11: K8s Definition -->
+            <div class="question-block" data-question="11" data-correct="orchestration">
+                 <p class="question-text"><i class="fas fa-dharmachakra"></i>What is the primary function of Kubernetes (K8s)?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q11" value="build_images"> Building container images.</label></li>
+                    <li><label><input type="radio" name="q11" value="orchestration"> Orchestrating (deploying, scaling, managing) containerized applications.</label></li>
+                    <li><label><input type="radio" name="q11" value="vm_provision"> Provisioning virtual machines.</label></li>
+                    <li><label><input type="radio" name="q11" value="network_firewall"> Configuring network firewalls.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 12: AKS Benefit -->
+            <div class="question-block" data-question="12" data-correct="managed_control_plane">
+                <p class="question-text"><i class="fab fa-microsoft"></i>What is a major benefit of using Azure Kubernetes Service (AKS) compared to self-managing Kubernetes?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q12" value="free_nodes"> The worker nodes (VMs) are free.</label></li>
+                    <li><label><input type="radio" name="q12" value="managed_control_plane"> Azure manages the Kubernetes control plane (API server, etcd, etc.) at no cost.</label></li>
+                    <li><label><input type="radio" name="q12" value="no_containers"> You don't need to use containers.</label></li>
+                    <li><label><input type="radio" name="q12" value="auto_app_deploy"> It automatically deploys applications without configuration files.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 13: K8s Smallest Unit -->
+            <div class="question-block" data-question="13" data-correct="pod">
+                <p class="question-text"><i class="fas fa-dharmachakra"></i>What is the smallest deployable unit in Kubernetes, often containing one or more containers?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q13" value="node"> Node</label></li>
+                    <li><label><input type="radio" name="q13" value="service"> Service</label></li>
+                    <li><label><input type="radio" name="q13" value="pod"> Pod</label></li>
+                    <li><label><input type="radio" name="q13" value="deployment"> Deployment</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 14: AKS Components -->
+             <div class="question-block" data-question="14" data-correct="control_nodes">
+                <p class="question-text"><i class="fab fa-microsoft"></i>An AKS cluster consists of two main component groups. What are they?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q14" value="pods_services"> Pods and Services</label></li>
+                    <li><label><input type="radio" name="q14" value="vnet_storage"> Virtual Network and Storage Accounts</label></li>
+                    <li><label><input type="radio" name="q14" value="control_nodes"> The Azure-managed Control Plane and user-managed Agent Nodes</label></li>
+                    <li><label><input type="radio" name="q14" value="cli_portal"> Azure CLI and Azure Portal</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- == ARM Template Questions == -->
+
+            <!-- Question 15: ARM Template Purpose -->
+            <div class="question-block" data-question="15" data-correct="declarative_iac">
+                <p class="question-text"><i class="fas fa-file-code"></i>What is the primary purpose of Azure Resource Manager (ARM) templates?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q15" value="run_scripts"> To run imperative scripts for resource creation.</label></li>
+                    <li><label><input type="radio" name="q15" value="monitor_logs"> To monitor Azure resource logs.</label></li>
+                    <li><label><input type="radio" name="q15" value="declarative_iac"> To declaratively define Azure resources as Infrastructure as Code (IaC).</label></li>
+                    <li><label><input type="radio" name="q15" value="manage_users"> To manage user access and roles (RBAC).</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 16: ARM Template Format -->
+             <div class="question-block" data-question="16" data-correct="json">
+                <p class="question-text"><i class="fas fa-file-code"></i>In what format are ARM templates written?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q16" value="yaml"> YAML</label></li>
+                    <li><label><input type="radio" name="q16" value="xml"> XML</label></li>
+                    <li><label><input type="radio" name="q16" value="json"> JSON</label></li>
+                    <li><label><input type="radio" name="q16" value="bicep"> Bicep (only)</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 17: ARM Template Core Section -->
+             <div class="question-block" data-question="17" data-correct="resources">
+                <p class="question-text"><i class="fas fa-file-code"></i>Which section within an ARM template is REQUIRED and defines the actual Azure resources to be deployed?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q17" value="parameters"> parameters</label></li>
+                    <li><label><input type="radio" name="q17" value="variables"> variables</label></li>
+                    <li><label><input type="radio" name="q17" value="resources"> resources</label></li>
+                    <li><label><input type="radio" name="q17" value="outputs"> outputs</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 18: ARM Deployment Modes -->
+            <div class="question-block" data-question="18" data-correct="complete_deletes">
+                <p class="question-text"><i class="fas fa-file-code"></i>What is the key difference between 'Incremental' and 'Complete' deployment modes for ARM templates at the Resource Group scope?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q18" value="incremental_updates"> Incremental only updates existing resources; Complete creates new ones.</label></li>
+                    <li><label><input type="radio" name="q18" value="complete_deletes"> Complete mode deletes resources in the Resource Group that are NOT defined in the template; Incremental mode leaves them untouched.</label></li>
+                    <li><label><input type="radio" name="q18" value="incremental_faster"> Incremental mode is significantly faster than Complete mode.</label></li>
+                    <li><label><input type="radio" name="q18" value="complete_validates"> Complete mode validates templates; Incremental mode does not.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+
+            <button type="button" id="submit-quiz" class="submit-button">Check Answers</button>
+            <div id="score-area"></div>
+
+        </form>
+    </div>
+
+    <script>
+        // JavaScript remains the same as the previous version
+        const submitButton = document.getElementById('submit-quiz');
+        const quizForm = document.getElementById('quiz-form');
+        const scoreArea = document.getElementById('score-area');
+        const questionBlocks = document.querySelectorAll('.question-block');
+
+        submitButton.addEventListener('click', () => {
+            let score = 0;
+            const totalQuestions = questionBlocks.length;
+
+            questionBlocks.forEach(block => {
+                const questionNumber = block.dataset.question;
+                const correctAnswer = block.dataset.correct;
+                const feedbackEl = block.querySelector('.feedback');
+                const optionsList = block.querySelector('.options-list');
+                const selectedOptionInput = optionsList.querySelector(`input[name="q${questionNumber}"]:checked`);
+
+                // Clear previous feedback highlights
+                optionsList.querySelectorAll('li').forEach(li => {
+                    li.classList.remove('correct-answer-highlight', 'incorrect-selection-highlight');
+                });
+
+                if (selectedOptionInput) {
+                    const userAnswer = selectedOptionInput.value;
+                    const selectedLi = selectedOptionInput.closest('li');
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        feedbackEl.innerHTML = `<i class="fas fa-check-circle"></i> Correct!`;
+                        feedbackEl.className = 'feedback correct'; // Use class directly
+                        selectedLi.classList.add('correct-answer-highlight');
+                    } else {
+                        feedbackEl.innerHTML = `<i class="fas fa-times-circle"></i> Incorrect. Review the concept related to '${correctAnswer}'.`; // Simplified incorrect message
+                        feedbackEl.className = 'feedback incorrect'; // Use class directly
+                        selectedLi.classList.add('incorrect-selection-highlight');
+                        // Also highlight the actual correct answer's li
+                        const correctLi = optionsList.querySelector(`input[value="${correctAnswer}"]`).closest('li');
+                         if (correctLi) {
+                             correctLi.classList.add('correct-answer-highlight');
+                         }
+                    }
+                } else {
+                    feedbackEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Please select an answer.`;
+                     feedbackEl.className = 'feedback incorrect'; // Use class directly (treat unanswered as incorrect for feedback style)
+                }
+                feedbackEl.style.display = 'block'; // Show feedback
+            });
+
+            // Display final score
+            scoreArea.innerHTML = `<i class="fas fa-star"></i> Your Score: ${score} out of ${totalQuestions}`;
+            scoreArea.style.display = 'block';
+
+            // Disable button after checking
+            submitButton.disabled = true;
+            submitButton.textContent = 'Answers Checked';
+        });
+    </script>
+
+</body>
+</html>

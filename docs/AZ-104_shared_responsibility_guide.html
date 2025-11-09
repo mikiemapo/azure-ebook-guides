@@ -1,0 +1,1413 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azure Shared Responsibility Model (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      :root {
+        --azure-blue: #0078d4;
+        --azure-blue-dark: #005a9e;
+        --azure-bg-light: #e8f4fd;
+        --text-dark: #1a1a1a;
+        --text-light: #ffffff;
+        --border-color: #c5d9e8;
+        --card-bg: #ffffff;
+        --diagram-bg: #f5f9fc;
+        --code-bg: #2d2d2d;
+        --code-text-color: #dcdcdc;
+        --code-border: #444;
+        --success-color: #10b981;
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+        --shadow-color: rgba(0, 120, 212, 0.12);
+        --shadow-hover: rgba(0, 120, 212, 0.2);
+        /* Theme-specific vibrant colors for Shared Responsibility */
+        --governance-color: #2563eb;
+        --governance-light: #3b82f6;
+        --customer-color: #0ea5e9;
+        --customer-light: #38bdf8;
+        --microsoft-color: #6366f1;
+        --microsoft-light: #818cf8;
+        --shared-color: #f59e0b;
+        --shared-light: #fbbf24;
+        --takeaway-color: #8b5cf6;
+        --takeaway-light: #a78bfa;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+          Helvetica, Arial, sans-serif;
+        background: linear-gradient(135deg, #e8f4fd 0%, #f0f9ff 100%);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--text-dark);
+        line-height: 1.7;
+        min-height: 100vh;
+      }
+
+      .main-container {
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      h1 {
+        color: var(--governance-color);
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        font-size: 2.2em;
+        text-shadow: 0 2px 4px rgba(37, 99, 235, 0.1);
+      }
+      h1 i {
+        font-size: 1.1em;
+        filter: drop-shadow(0 2px 4px rgba(37, 99, 235, 0.2));
+      }
+
+      .instructions {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fbff 100%);
+        padding: 16px 24px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+        text-align: center;
+        font-size: 1em;
+        border: 2px solid var(--governance-light);
+        box-shadow: 0 4px 12px var(--shadow-color);
+      }
+      .instructions strong {
+        color: var(--governance-color);
+        font-weight: 700;
+      }
+
+      /* --- Quick Jump Navigation --- */
+      .quick-jump {
+        background: linear-gradient(135deg, #ffffff 0%, #f0f9ff 100%);
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin: 0 auto 35px auto;
+        width: 100%;
+        box-shadow: 0 6px 20px var(--shadow-color);
+        border: 2px solid var(--governance-light);
+      }
+      .quick-jump h3 {
+        margin: 0 0 16px 0;
+        color: var(--governance-color);
+        font-size: 1.2em;
+        font-weight: 700;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      .quick-jump-links {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 12px;
+      }
+      .quick-jump-links a {
+        background: linear-gradient(
+          135deg,
+          var(--governance-color) 0%,
+          var(--governance-light) 100%
+        );
+        color: var(--text-light);
+        padding: 10px 18px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.95em;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.25);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .quick-jump-links a:hover {
+        background: linear-gradient(
+          135deg,
+          var(--azure-blue-dark) 0%,
+          var(--governance-color) 100%
+        );
+        transform: translateY(-3px);
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
+      }
+
+      /* --- Card Section --- */
+      .card-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 25px;
+        width: 100%;
+      }
+      @media (min-width: 768px) {
+        .card-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1200px) {
+        .card-container {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      /* General Card Styles */
+      .card {
+        background-color: var(--card-bg);
+        border-radius: 12px;
+        box-shadow: 0 4px 12px var(--shadow-color);
+        overflow: hidden;
+        border: 2px solid transparent;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+      }
+      .card:hover {
+        box-shadow: 0 8px 24px var(--shadow-hover);
+        transform: translateY(-2px);
+        border-color: var(--governance-light);
+      }
+      .card-toggle {
+        display: none;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 16px 20px;
+        background: linear-gradient(
+          135deg,
+          var(--governance-color) 0%,
+          var(--governance-light) 100%
+        );
+        color: var(--text-light);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        position: relative;
+      }
+      .card-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+          90deg,
+          rgba(255, 255, 255, 0.3) 0%,
+          rgba(255, 255, 255, 0.6) 50%,
+          rgba(255, 255, 255, 0.3) 100%
+        );
+      }
+      .card-header:hover {
+        background: linear-gradient(
+          135deg,
+          var(--governance-light) 0%,
+          var(--azure-blue) 100%
+        );
+      }
+      .card-header.customer-header {
+        background: linear-gradient(
+          135deg,
+          var(--customer-color) 0%,
+          var(--customer-light) 100%
+        );
+      }
+      .card-header.customer-header:hover {
+        background: linear-gradient(
+          135deg,
+          var(--customer-light) 0%,
+          #06b6d4 100%
+        );
+      }
+      .card-header.microsoft-header {
+        background: linear-gradient(
+          135deg,
+          var(--microsoft-color) 0%,
+          var(--microsoft-light) 100%
+        );
+      }
+      .card-header.microsoft-header:hover {
+        background: linear-gradient(
+          135deg,
+          var(--microsoft-light) 0%,
+          #a5b4fc 100%
+        );
+      }
+      .card-header.shared-header,
+      .card-header.model-header {
+        background: linear-gradient(
+          135deg,
+          var(--shared-color) 0%,
+          var(--shared-light) 100%
+        );
+        color: var(--text-dark);
+      }
+      .card-header.shared-header:hover,
+      .card-header.model-header:hover {
+        background: linear-gradient(
+          135deg,
+          var(--shared-light) 0%,
+          #fcd34d 100%
+        );
+      }
+      .card-header.takeaway-header {
+        background: linear-gradient(
+          135deg,
+          var(--takeaway-color) 0%,
+          var(--takeaway-light) 100%
+        );
+      }
+      .card-header.takeaway-header:hover {
+        background: linear-gradient(
+          135deg,
+          var(--takeaway-light) 0%,
+          #c4b5fd 100%
+        );
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 1.25em;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .card-header h2 i {
+        font-size: 1.1em;
+        opacity: 0.95;
+      }
+      .card-header .toggle-icon {
+        font-size: 1.2em;
+        transition: transform 0.3s ease;
+        filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+      }
+      .card-content {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        padding: 0 20px;
+        transition: max-height 0.5s ease-out, opacity 0.4s ease-in,
+          padding 0.5s ease-out;
+        background: linear-gradient(180deg, #ffffff 0%, #fafbfc 100%);
+        flex-grow: 1;
+      }
+      .card-toggle:checked + .card-header .toggle-icon {
+        transform: rotate(180deg);
+      }
+      .card-toggle:checked ~ .card-content {
+        max-height: 3000px;
+        opacity: 1;
+        padding: 20px;
+        border-top: 2px solid var(--border-color);
+        overflow-y: auto;
+      }
+
+      /* --- Content Styling --- */
+      .card-content h3 {
+        color: var(--governance-color);
+        margin-top: 0;
+        margin-bottom: 14px;
+        font-size: 1.15em;
+        font-weight: 700;
+        border-bottom: 2px solid var(--governance-light);
+        padding-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .card-content h3 i {
+        font-size: 1em;
+        color: var(--governance-light);
+      }
+      .card-content ul {
+        font-size: 0.98em;
+        padding-left: 0;
+        margin-top: 8px;
+        margin-bottom: 18px;
+        list-style: none;
+      }
+      .card-content li {
+        margin-bottom: 10px;
+        position: relative;
+        padding-left: 28px;
+        line-height: 1.6;
+      }
+      .card-content li i.fa-li {
+        position: absolute;
+        left: 0;
+        top: 4px;
+        width: 20px;
+        text-align: center;
+        font-size: 1em;
+        color: var(--governance-color);
+      }
+
+      /* General icons for points */
+      .card-content li i.fa-cloud,
+      .card-content li i.fa-server {
+        color: var(--customer-color);
+      }
+      .card-content li i.fa-shield-alt,
+      .card-content li i.fa-lock {
+        color: var(--success-color);
+      }
+      .card-content li i.fa-info-circle {
+        color: var(--info-color);
+      }
+      .card-content li i.fa-exclamation-triangle {
+        color: var(--warning-color);
+      }
+      .card-content li i.fa-user-shield {
+        color: var(--customer-color);
+      }
+      .card-content li i.fa-building {
+        color: var(--microsoft-color);
+      }
+      .card-content li i.fa-handshake {
+        color: var(--shared-color);
+      }
+      .card-content li i.fa-check-circle {
+        color: var(--success-color);
+      }
+      .card-content li i.fa-database {
+        color: var(--info-color);
+      }
+      .card-content li i.fa-id-card,
+      .card-content li i.fa-laptop,
+      .card-content li i.fa-users {
+        color: var(--customer-color);
+      }
+      .card-content li i.fa-network-wired,
+      .card-content li i.fa-hdd,
+      .card-content li i.fa-cube,
+      .card-content li i.fa-cogs {
+        color: var(--microsoft-color);
+      }
+
+      /* --- Diagram Styles --- */
+      .diagram-box {
+        background: linear-gradient(135deg, #f8fbff 0%, #e8f4fd 100%);
+        padding: 16px 22px;
+        border-radius: 10px;
+        text-align: center;
+        border: 2px solid var(--info-color);
+        box-shadow: 0 3px 10px rgba(59, 130, 246, 0.15);
+        margin: 18px 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+      }
+      .diagram-box i {
+        font-size: 2.8em;
+        margin-bottom: 8px;
+        color: var(--info-color);
+        filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.2));
+      }
+      .diagram-box h4 {
+        margin: 8px 0;
+        font-size: 1.15em;
+        font-weight: 700;
+        color: var(--governance-color);
+      }
+      .diagram-arrow {
+        font-size: 2em;
+        color: var(--info-color);
+        filter: drop-shadow(0 1px 2px rgba(59, 130, 246, 0.2));
+      }
+
+      /* --- Mnemonic Box --- */
+      .mnemonic-box {
+        background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+        border-left: 5px solid var(--governance-color);
+        padding: 18px 24px;
+        margin: 22px 0;
+        border-radius: 8px;
+        box-shadow: 0 3px 10px rgba(37, 99, 235, 0.15);
+      }
+      .mnemonic-box h4 {
+        margin: 0 0 12px 0;
+        color: var(--governance-color);
+        font-size: 1.15em;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .mnemonic-box strong {
+        color: var(--governance-color);
+        font-weight: 700;
+      }
+      .mnemonic-box ul {
+        margin: 12px 0 0 0;
+        padding-left: 0;
+        list-style: none;
+      }
+      .mnemonic-box li {
+        margin-bottom: 10px;
+        padding-left: 28px;
+        position: relative;
+      }
+      .mnemonic-box li i {
+        position: absolute;
+        left: 0;
+        top: 4px;
+        color: var(--governance-color);
+      }
+
+      /* --- Example Box --- */
+      .example-box {
+        background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+        border: 2px solid var(--success-color);
+        border-radius: 10px;
+        padding: 18px 24px;
+        margin: 22px 0;
+        box-shadow: 0 3px 10px rgba(16, 185, 129, 0.15);
+      }
+      .example-box h4 {
+        margin: 0 0 12px 0;
+        color: var(--success-color);
+        font-size: 1.05em;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .example-box strong {
+        color: var(--success-color);
+        font-weight: 700;
+      }
+      .example-box ul {
+        margin: 12px 0 0 0;
+        padding-left: 0;
+        list-style: none;
+      }
+      .example-box li {
+        margin-bottom: 10px;
+        padding-left: 28px;
+        position: relative;
+      }
+      .example-box li i {
+        position: absolute;
+        left: 0;
+        top: 4px;
+        font-size: 0.95em;
+        color: var(--success-color);
+      }
+
+      /* --- Comparison Table --- */
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 22px 0;
+        font-size: 0.95em;
+        box-shadow: 0 4px 12px var(--shadow-color);
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .comparison-table thead {
+        background: linear-gradient(
+          135deg,
+          var(--governance-color) 0%,
+          var(--governance-light) 100%
+        );
+        color: var(--text-light);
+      }
+      .comparison-table th {
+        padding: 14px;
+        text-align: left;
+        font-weight: 700;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      }
+      .comparison-table td {
+        padding: 14px;
+        border-bottom: 1px solid var(--border-color);
+        background-color: var(--card-bg);
+      }
+      .comparison-table tbody tr:nth-child(even) td {
+        background-color: var(--diagram-bg);
+      }
+      .comparison-table tr:hover td {
+        background-color: #e0f2fe;
+      }
+      .comparison-table td strong {
+        font-weight: 700;
+        color: var(--governance-color);
+      }
+
+      /* --- Code formatting --- */
+      code,
+      .code-term {
+        font-family: "Consolas", "Courier New", monospace;
+        background-color: #e0f2fe;
+        padding: 0.15em 0.5em;
+        border-radius: 4px;
+        font-size: 0.92em;
+        border: 1px solid #bae6fd;
+        color: var(--azure-blue-dark);
+        font-weight: 500;
+      }
+
+      /* Helper classes */
+      .key-point {
+        font-weight: 700;
+        color: var(--governance-color);
+      }
+      .description {
+        font-style: italic;
+        color: #64748b;
+        margin-bottom: 16px;
+        display: block;
+        line-height: 1.6;
+      }
+      .important-note {
+        background: linear-gradient(135deg, #dbeafe 0%, #e0f2fe 100%);
+        border-left: 5px solid var(--info-color);
+        padding: 14px 20px;
+        margin: 18px 0;
+        font-size: 0.95em;
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.12);
+      }
+      .important-note i {
+        color: var(--info-color);
+        margin-right: 10px;
+      }
+
+      /* Responsive adjustments */
+      @media (max-width: 767px) {
+        body {
+          padding: 12px;
+        }
+        h1 {
+          font-size: 1.6em;
+        }
+        .card-header h2 {
+          font-size: 1.05em;
+        }
+        .quick-jump-links {
+          flex-direction: column;
+        }
+        .quick-jump-links a {
+          width: 100%;
+          text-align: center;
+        }
+      }
+
+      /* --- Additional Enhancements (Nov 2025 refinement) --- */
+      /* Accessible focus outlines */
+      .quick-jump-links a:focus-visible,
+      .card-header:focus-visible {
+        outline: 3px solid var(--governance-color);
+        outline-offset: 3px;
+      }
+
+      /* Icon badges (override earlier per-icon colors to unify style) */
+      .card-content li i.fa-li {
+        background: var(--governance-light);
+        color: #fff !important;
+        width: 26px;
+        height: 26px;
+        line-height: 26px;
+        border-radius: 50%;
+        font-size: 0.85em;
+        top: 0.35em;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        transition: background 0.3s ease, transform 0.3s ease;
+      }
+      .card-content li:hover i.fa-li {
+        transform: scale(1.08);
+      }
+      .customer-card .card-content li i.fa-li {
+        background: var(--customer-color);
+      }
+      .microsoft-card .card-content li i.fa-li {
+        background: var(--microsoft-color);
+      }
+      .model-card .card-content li i.fa-li {
+        background: var(--shared-color);
+        color: #222 !important;
+      }
+      #pillar5 .card-content li i.fa-li {
+        background: var(--takeaway-color);
+      }
+
+      /* Diagram visual differentiation */
+      .diagram-box {
+        position: relative;
+        overflow: hidden;
+      }
+      .diagram-box::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at 80% 20%,
+          rgba(255, 255, 255, 0.55),
+          transparent 65%
+        );
+        pointer-events: none;
+        mix-blend-mode: overlay;
+      }
+      .customer-card .diagram-box {
+        border-color: var(--customer-color);
+        box-shadow: 0 3px 12px rgba(14, 165, 233, 0.25);
+      }
+      .microsoft-card .diagram-box {
+        border-color: var(--microsoft-color);
+        box-shadow: 0 3px 12px rgba(99, 102, 241, 0.25);
+      }
+      .model-card .diagram-box {
+        border-color: var(--shared-color);
+        box-shadow: 0 3px 12px rgba(245, 158, 11, 0.25);
+      }
+      #pillar5 .diagram-box {
+        border-color: var(--takeaway-color);
+        box-shadow: 0 3px 12px rgba(139, 92, 246, 0.25);
+      }
+
+      /* Optional spectrum bar (if added later) */
+      .diagram-spectrum {
+        display: flex;
+        width: 100%;
+        height: 12px;
+        border-radius: 6px;
+        overflow: hidden;
+        margin-top: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .diagram-spectrum span {
+        flex: 1;
+      }
+      .diagram-spectrum .iaas {
+        background: var(--governance-color);
+      }
+      .diagram-spectrum .paas {
+        background: var(--customer-color);
+      }
+      .diagram-spectrum .saas {
+        background: var(--microsoft-color);
+      }
+
+      /* Responsive comparison table: transform to stacked cards on small screens */
+      @media (max-width: 680px) {
+        .comparison-table {
+          border: 0;
+        }
+        .comparison-table thead {
+          display: none;
+        }
+        .comparison-table tbody {
+          display: block;
+        }
+        .comparison-table tr {
+          display: block;
+          margin: 0 0 18px;
+          border: 2px solid var(--border-color);
+          border-radius: 10px;
+          box-shadow: 0 3px 10px var(--shadow-color);
+          overflow: hidden;
+        }
+        .comparison-table td {
+          display: block;
+          border: 0;
+          border-bottom: 1px solid var(--border-color);
+          padding: 12px 14px 12px 50%;
+          position: relative;
+          background: #fff;
+        }
+        .comparison-table tbody tr:nth-child(even) td {
+          background: #fff;
+        }
+        .comparison-table td:last-child {
+          border-bottom: 0;
+        }
+        .comparison-table td::before {
+          content: "";
+          position: absolute;
+          left: 12px;
+          top: 12px;
+          font-weight: 600;
+          color: var(--governance-color);
+          width: calc(50% - 24px);
+        }
+        .comparison-table td:nth-child(1) {
+          padding-left: 16px;
+          font-weight: 700;
+          background: linear-gradient(90deg, #eff6ff 0%, #ffffff 70%);
+        }
+        .comparison-table td:nth-child(1)::before {
+          content: "";
+        }
+        .comparison-table td:nth-child(2)::before {
+          content: "IaaS";
+        }
+        .comparison-table td:nth-child(3)::before {
+          content: "PaaS";
+        }
+        .comparison-table td:nth-child(4)::before {
+          content: "SaaS";
+        }
+      }
+
+      /* Sticky header for wider screens (if table overflows vertically) */
+      @media (min-width: 681px) {
+        .comparison-table thead th {
+          position: sticky;
+          top: 0;
+          z-index: 2;
+        }
+      }
+
+      /* Mobile typography & spacing fine-tuning */
+      @media (max-width: 480px) {
+        body {
+          font-size: 0.95em;
+        }
+        h1 {
+          font-size: 1.75em;
+        }
+        .card-header h2 {
+          font-size: 1.05em;
+        }
+        .example-box,
+        .mnemonic-box,
+        .diagram-box {
+          padding: 16px 18px;
+        }
+      }
+
+      /* Respect reduced motion preferences */
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+          animation: none !important;
+          scroll-behavior: auto !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="main-container">
+      <h1>
+        <i class="fas fa-shield-halved"></i>
+        Azure Shared Responsibility Model (AZ-104)
+      </h1>
+
+      <!-- Instructions -->
+      <div class="instructions">
+        <strong>Interactive Study Guide:</strong> Click any section header to
+        expand and explore the Azure Shared Responsibility Model. Use the Quick
+        Jump menu below to navigate to specific pillars.
+      </div>
+
+      <!-- Quick Jump Menu -->
+      <div class="quick-jump">
+        <h3><i class="fas fa-bolt"></i> Quick Jump</h3>
+        <div class="quick-jump-links">
+          <a href="#pillar1"> <i class="fas fa-lightbulb"></i> Core Concept </a>
+          <a href="#pillar2">
+            <i class="fas fa-user-shield"></i> Customer Responsibility
+          </a>
+          <a href="#pillar3">
+            <i class="fas fa-cloud"></i> Microsoft Responsibility
+          </a>
+          <a href="#pillar4">
+            <i class="fas fa-layer-group"></i> Service Models
+          </a>
+          <a href="#pillar5"> <i class="fas fa-book"></i> Key Takeaways </a>
+        </div>
+      </div>
+
+      <!-- Unified Card Container: All cards grouped as siblings inside one container -->
+      <div class="card-container">
+        <!-- Pillar 1: Core Concept -->
+        <div class="card" id="pillar1">
+          <input type="checkbox" class="card-toggle" id="toggle-pillar1" />
+          <label for="toggle-pillar1" class="card-header">
+            <h2>
+              <i class="fas fa-lightbulb"></i>
+              Pillar 1 – Core Concept
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-shield-halved"></i>
+              Understanding the Shared Responsibility Framework
+            </h3>
+            <ul>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>What is it?</strong> The Azure Shared Responsibility
+                Model defines which security and operational tasks are handled
+                by Microsoft and which are the customer's responsibility.
+              </li>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>Core Principle:</strong> As you move from IaaS to PaaS
+                to SaaS, Microsoft takes on more responsibility, but the
+                customer always retains certain responsibilities.
+              </li>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>Why it matters:</strong> Understanding where
+                responsibility lies is critical for security, compliance, and
+                incident response in Azure environments.
+              </li>
+            </ul>
+            <div class="mnemonic-box">
+              <strong>Analogy:</strong> Think of cloud service models like
+              housing:
+              <ul
+                style="margin-top: 10px; list-style: disc; padding-left: 20px"
+              >
+                <li>
+                  <strong>IaaS (Landlord):</strong> You rent the building and
+                  land, but you manage everything inside—furniture, maintenance,
+                  security.
+                </li>
+                <li>
+                  <strong>PaaS (Apartment):</strong> The landlord handles
+                  building maintenance and infrastructure; you manage your
+                  apartment contents.
+                </li>
+                <li>
+                  <strong>SaaS (Hotel):</strong> Everything is managed for you;
+                  you just bring your personal items and data.
+                </li>
+              </ul>
+            </div>
+            <div class="diagram-box">
+              <h4>
+                <i class="fas fa-arrow-right"></i> Responsibility Spectrum
+              </h4>
+              <p>
+                <strong>IaaS</strong> → <strong>PaaS</strong> →
+                <strong>SaaS</strong>
+              </p>
+              <div class="diagram-arrow">⬇️</div>
+              <p><strong>More Control = More Responsibility</strong></p>
+              <p style="margin-top: 10px; font-size: 0.85em; color: #666">
+                As you move right on the spectrum, Microsoft assumes more
+                responsibility, and customers have less to manage.
+              </p>
+            </div>
+            <div class="example-box">
+              <strong>AZ-104 Focus:</strong> Recognize how control and
+              responsibility shift depending on the service model (IaaS, PaaS,
+              SaaS). Know what you manage vs. what Azure manages in each model.
+            </div>
+          </div>
+        </div>
+        <!-- Pillar 2: Customer Responsibility -->
+        <div class="card customer-card" id="pillar2">
+          <input type="checkbox" class="card-toggle" id="toggle-pillar2" />
+          <label for="toggle-pillar2" class="card-header customer-header">
+            <h2>
+              <i class="fas fa-user-shield"></i>
+              Pillar 2 – Always the Customer's Responsibility
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-lock"></i>
+              Data, Identity, Endpoints, Access
+            </h3>
+            <p>
+              <strong>No matter the service model,</strong> the customer always
+              retains responsibility for these critical areas:
+            </p>
+            <ul>
+              <li>
+                <i class="fas fa-database fa-li"></i>
+                <strong>Data Protection:</strong> Securing, classifying, and
+                managing your data. This includes encryption at rest and in
+                transit where applicable.
+              </li>
+              <li>
+                <i class="fas fa-id-card fa-li"></i>
+                <strong>Identity & Access Management (IAM):</strong> Managing
+                user identities, role assignments, multi-factor authentication
+                (MFA), and access policies.
+              </li>
+              <li>
+                <i class="fas fa-laptop fa-li"></i>
+                <strong>Endpoint Security:</strong> Protecting devices that
+                access Azure resources (laptops, mobile devices, etc.).
+              </li>
+              <li>
+                <i class="fas fa-users fa-li"></i>
+                <strong>Accounts & Access:</strong> Managing user accounts,
+                permissions, and ensuring principle of least privilege.
+              </li>
+            </ul>
+            <div class="mnemonic-box">
+              <strong>Mnemonic: D.I.A.D.</strong><br />
+              <strong>D</strong>ata | <strong>I</strong>dentity |
+              <strong>A</strong>ccess | <strong>D</strong>evices<br />
+              <span style="font-size: 0.9em; color: #666"
+                >These four areas are <strong>always</strong> your
+                responsibility, no matter which Azure service model you
+                use.</span
+              >
+            </div>
+            <div class="example-box">
+              <strong>Example:</strong> Even when using Azure SQL Database
+              (PaaS), you must:
+              <ul style="margin-top: 8px; list-style: disc; padding-left: 20px">
+                <li>
+                  Configure firewall rules and Network Security Groups (NSGs)
+                </li>
+                <li>
+                  Enable Multi-Factor Authentication (MFA) for database admins
+                </li>
+                <li>Manage data encryption keys and access policies</li>
+                <li>Control who has read/write access to the database</li>
+              </ul>
+            </div>
+            <div class="example-box">
+              <strong>AZ-104 Focus:</strong> These responsibilities never shift,
+              even in SaaS. Be prepared to identify customer-owned security
+              controls in any service model scenario.
+            </div>
+          </div>
+        </div>
+        <!-- Pillar 3: Microsoft Responsibility -->
+        <div class="card microsoft-card" id="pillar3">
+          <input type="checkbox" class="card-toggle" id="toggle-pillar3" />
+          <label for="toggle-pillar3" class="card-header microsoft-header">
+            <h2>
+              <i class="fas fa-cloud"></i>
+              Pillar 3 – Microsoft Responsibility
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-server"></i>
+              Platform, Physical, and Core Infrastructure
+            </h3>
+            <p>
+              <strong>Microsoft handles the foundational layers</strong> of
+              Azure's infrastructure, including:
+            </p>
+            <ul>
+              <li>
+                <i class="fas fa-building fa-li"></i>
+                <strong>Physical Datacenters:</strong> Physical security, power,
+                cooling, and hardware maintenance.
+              </li>
+              <li>
+                <i class="fas fa-network-wired fa-li"></i>
+                <strong>Core Network:</strong> Azure's global network backbone,
+                routers, and connectivity infrastructure.
+              </li>
+              <li>
+                <i class="fas fa-hdd fa-li"></i>
+                <strong>Host Infrastructure:</strong> Physical servers, storage,
+                and compute hardware.
+              </li>
+              <li>
+                <i class="fas fa-cube fa-li"></i>
+                <strong>Hypervisor:</strong> The virtualization layer that
+                enables multi-tenancy and VM isolation.
+              </li>
+              <li>
+                <i class="fas fa-cogs fa-li"></i>
+                <strong>Platform Services:</strong> For PaaS and SaaS, Microsoft
+                manages the underlying runtime, middleware, and operating system
+                updates.
+              </li>
+            </ul>
+            <div class="diagram-box">
+              <h4>
+                <i class="fas fa-layer-group"></i> Azure Layers under Microsoft
+                Management
+              </h4>
+              <div style="text-align: left; margin-top: 10px">
+                <p style="margin: 5px 0">
+                  <strong>Physical Layer:</strong> Datacenters, racks, power,
+                  cooling
+                </p>
+                <p style="margin: 5px 0">
+                  <strong>Network Layer:</strong> Azure backbone, edge routers,
+                  CDN
+                </p>
+                <p style="margin: 5px 0">
+                  <strong>Compute Layer:</strong> Servers, storage arrays,
+                  hypervisor
+                </p>
+                <p style="margin: 5px 0">
+                  <strong>Platform Layer (PaaS/SaaS):</strong> OS patching,
+                  runtime, middleware
+                </p>
+              </div>
+            </div>
+            <div class="example-box">
+              <strong>Compliance Standards:</strong> Microsoft maintains
+              numerous certifications and compliance standards:
+              <ul style="margin-top: 8px; list-style: disc; padding-left: 20px">
+                <li>
+                  <strong>SOC 1, 2, 3:</strong> Service organization controls
+                </li>
+                <li>
+                  <strong>ISO 27001:</strong> Information security management
+                </li>
+                <li>
+                  <strong>FedRAMP:</strong> Federal risk and authorization
+                  management
+                </li>
+                <li>
+                  <strong>HIPAA/HITECH:</strong> Healthcare data protection
+                </li>
+                <li><strong>GDPR:</strong> European data privacy regulation</li>
+              </ul>
+              <p style="margin-top: 8px; font-size: 0.9em">
+                Microsoft is responsible for maintaining these certifications
+                for the platform infrastructure.
+              </p>
+            </div>
+            <div class="example-box">
+              <strong>AZ-104 Focus:</strong> Understand the scope of Microsoft's
+              platform security and compliance responsibilities. Know that
+              physical security and core infrastructure are always Microsoft's
+              responsibility.
+            </div>
+          </div>
+        </div>
+        <!-- Pillar 4: Service Models -->
+        <div class="card model-card" id="pillar4">
+          <input type="checkbox" class="card-toggle" id="toggle-pillar4" />
+          <label for="toggle-pillar4" class="card-header model-header">
+            <h2>
+              <i class="fas fa-layer-group"></i>
+              Pillar 4 – Responsibility by Service Model
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-balance-scale"></i>
+              IaaS vs PaaS vs SaaS Responsibility Split
+            </h3>
+            <p>
+              The shared responsibility model varies significantly based on
+              which cloud service model you use:
+            </p>
+            <table class="comparison-table">
+              <thead>
+                <tr>
+                  <th>Component</th>
+                  <th>IaaS</th>
+                  <th>PaaS</th>
+                  <th>SaaS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Data & Classification</strong></td>
+                  <td>Customer</td>
+                  <td>Customer</td>
+                  <td>Customer</td>
+                </tr>
+                <tr>
+                  <td><strong>Identity & Access</strong></td>
+                  <td>Customer</td>
+                  <td>Customer</td>
+                  <td>Customer</td>
+                </tr>
+                <tr>
+                  <td><strong>Applications</strong></td>
+                  <td>Customer</td>
+                  <td>Customer</td>
+                  <td>Microsoft</td>
+                </tr>
+                <tr>
+                  <td><strong>Operating System</strong></td>
+                  <td>Customer</td>
+                  <td>Microsoft</td>
+                  <td>Microsoft</td>
+                </tr>
+                <tr>
+                  <td><strong>Network Controls</strong></td>
+                  <td>Shared</td>
+                  <td>Shared</td>
+                  <td>Microsoft</td>
+                </tr>
+                <tr>
+                  <td><strong>Runtime/Middleware</strong></td>
+                  <td>Customer</td>
+                  <td>Microsoft</td>
+                  <td>Microsoft</td>
+                </tr>
+                <tr>
+                  <td><strong>Hypervisor</strong></td>
+                  <td>Microsoft</td>
+                  <td>Microsoft</td>
+                  <td>Microsoft</td>
+                </tr>
+                <tr>
+                  <td><strong>Physical Infrastructure</strong></td>
+                  <td>Microsoft</td>
+                  <td>Microsoft</td>
+                  <td>Microsoft</td>
+                </tr>
+              </tbody>
+            </table>
+            <h3 style="margin-top: 25px">
+              <i class="fas fa-server"></i>
+              IaaS (Infrastructure as a Service)
+            </h3>
+            <ul>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>Customer Manages:</strong> Virtual machines, operating
+                systems, applications, data, network security groups (NSGs),
+                firewall rules, patching, and updates.
+              </li>
+              <li>
+                <i class="fas fa-cloud fa-li"></i>
+                <strong>Microsoft Manages:</strong> Physical servers, storage,
+                networking infrastructure, hypervisor, datacenter security.
+              </li>
+              <li>
+                <i class="fas fa-info-circle fa-li"></i>
+                <strong>Example:</strong> Azure Virtual Machines, Azure Virtual
+                Network
+              </li>
+            </ul>
+            <h3 style="margin-top: 20px">
+              <i class="fas fa-cogs"></i>
+              PaaS (Platform as a Service)
+            </h3>
+            <ul>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>Customer Manages:</strong> Applications, data,
+                application-level security, access controls.
+              </li>
+              <li>
+                <i class="fas fa-cloud fa-li"></i>
+                <strong>Microsoft Manages:</strong> Operating system, runtime
+                environment, middleware, patching, infrastructure, network
+                security.
+              </li>
+              <li>
+                <i class="fas fa-info-circle fa-li"></i>
+                <strong>Example:</strong> Azure App Service, Azure SQL Database,
+                Azure Functions
+              </li>
+            </ul>
+            <h3 style="margin-top: 20px">
+              <i class="fas fa-boxes"></i>
+              SaaS (Software as a Service)
+            </h3>
+            <ul>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>Customer Manages:</strong> Data usage, access controls,
+                user permissions, data classification.
+              </li>
+              <li>
+                <i class="fas fa-cloud fa-li"></i>
+                <strong>Microsoft Manages:</strong> Everything else—application,
+                runtime, OS, infrastructure, physical security.
+              </li>
+              <li>
+                <i class="fas fa-info-circle fa-li"></i>
+                <strong>Example:</strong> Microsoft 365, Dynamics 365, Azure AD
+                (Entra ID)
+              </li>
+            </ul>
+            <div class="example-box" style="margin-top: 20px">
+              <strong>AZ-104 Focus:</strong> Be able to identify management
+              boundaries for each service model. Know which components shift
+              from customer to Microsoft as you move from IaaS → PaaS → SaaS.
+            </div>
+          </div>
+        </div>
+        <!-- Pillar 5: Key Takeaways & Exam Mnemonics -->
+        <div class="card" id="pillar5">
+          <input type="checkbox" class="card-toggle" id="toggle-pillar5" />
+          <label for="toggle-pillar5" class="card-header takeaway-header">
+            <h2>
+              <i class="fas fa-book"></i>
+              Key Takeaways & Exam Mnemonics
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-graduation-cap"></i>
+              Essential Points for AZ-104 Exam
+            </h3>
+            <div class="mnemonic-box">
+              <strong>D.I.A.D. - Always Customer Responsibility:</strong><br />
+              <strong>D</strong>ata | <strong>I</strong>dentity |
+              <strong>A</strong>ccess | <strong>D</strong>evices<br />
+              <span style="font-size: 0.9em; color: #666"
+                >Remember: These NEVER shift to Microsoft, regardless of service
+                model.</span
+              >
+            </div>
+            <div class="diagram-box">
+              <h4><i class="fas fa-arrow-right"></i> Layers of Control</h4>
+              <p style="text-align: left; margin-top: 10px">
+                <strong>Top (Customer):</strong> Data, Identity, Access<br />
+                <strong>Middle (Varies):</strong> Applications, OS, Runtime<br />
+                <strong>Bottom (Microsoft):</strong> Infrastructure, Physical,
+                Network
+              </p>
+              <div class="diagram-arrow">⬇️</div>
+              <p>
+                <strong>More Control = More Responsibility</strong><br />
+                IaaS → PaaS → SaaS
+              </p>
+            </div>
+            <h3 style="margin-top: 20px">
+              <i class="fas fa-list-check"></i>
+              Summary Bullets for Exam Prep
+            </h3>
+            <ul>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>Customer Always Manages:</strong> Data, identity, user
+                access, endpoints—no matter the service model.
+              </li>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>Microsoft Always Manages:</strong> Physical
+                infrastructure, datacenters, hypervisor, core networking.
+              </li>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>IaaS:</strong> Customer manages OS, applications, and
+                most security configurations. Microsoft handles infrastructure.
+              </li>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>PaaS:</strong> Microsoft manages OS and runtime;
+                customer handles apps and data.
+              </li>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>SaaS:</strong> Microsoft manages everything except data
+                usage, access control, and user permissions.
+              </li>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>Shared Responsibilities:</strong> Network controls and
+                security are often shared between customer and Microsoft,
+                especially in IaaS/PaaS.
+              </li>
+              <li>
+                <i class="fas fa-check-circle fa-li"></i>
+                <strong>Compliance:</strong> Microsoft maintains platform
+                certifications (SOC, ISO, FedRAMP), but customers must ensure
+                their data usage and configurations comply with regulations.
+              </li>
+            </ul>
+            <div class="example-box" style="margin-top: 20px">
+              <strong>Exam Tip:</strong> When answering responsibility
+              questions:
+              <ol
+                style="margin-top: 8px; list-style: decimal; padding-left: 20px"
+              >
+                <li>Identify the service model (IaaS, PaaS, SaaS)</li>
+                <li>
+                  Check if it's D.I.A.D. (Data, Identity, Access, Devices) → If
+                  yes, it's <strong>always customer</strong>
+                </li>
+                <li>
+                  Check if it's physical/infrastructure → If yes, it's
+                  <strong>always Microsoft</strong>
+                </li>
+                <li>
+                  For everything else, use the service model matrix to determine
+                  responsibility
+                </li>
+              </ol>
+            </div>
+            <div class="mnemonic-box" style="margin-top: 15px">
+              <strong>Memory Aid: "From Ground to Cloud"</strong><br />
+              <span style="font-size: 0.9em">
+                Ground (Physical) → Microsoft<br />
+                Middle (OS/Runtime) → Depends on Model<br />
+                Cloud (Data/Apps) → Customer + Microsoft<br />
+                Top (Identity/Access) → Always Customer
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Auto-scroll to card when expanded
+      document.querySelectorAll(".card-toggle").forEach((toggle) => {
+        toggle.addEventListener("change", function () {
+          if (this.checked) {
+            setTimeout(() => {
+              // Find the card container (parent .card)
+              let card = this.closest(".card");
+              if (card) {
+                card.scrollIntoView({
+                  behavior: "smooth",
+                  block: "start",
+                });
+              }
+            }, 100);
+          }
+        });
+      });
+
+      // Quick Jump functionality
+      document.querySelectorAll(".quick-jump-links a").forEach((link) => {
+        link.addEventListener("click", function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute("href").substring(1);
+          const targetCard = document.getElementById(targetId);
+          if (!targetCard) return;
+          const targetToggle = targetCard.querySelector(".card-toggle");
+          // Open the card if not already open
+          if (targetToggle && !targetToggle.checked) {
+            targetToggle.checked = true;
+          }
+          // Scroll to the card
+          setTimeout(() => {
+            targetCard.scrollIntoView({
+              behavior: "smooth",
+              block: "start",
+            });
+          }, 100);
+        });
+      });
+    </script>
+  </body>
+</html>

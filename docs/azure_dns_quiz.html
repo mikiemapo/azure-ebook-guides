@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure DNS Concepts Quiz (AZ-104)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --correct-color: #107c10;
+            --incorrect-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --quiz-icon-color: #8E44AD; /* DNS Purple from guide */
+            --timer-button-bg: #d83b01;
+            --timer-button-hover-bg: #a4262c;
+            --info-color: #005a9e; /* For scenario text border */
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .quiz-container {
+            max-width: 850px; margin: 20px auto; padding: 25px 35px;
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 8px; box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark); text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px; margin-bottom: 25px;
+        }
+        h1 i { margin-right: 10px; color: var(--quiz-icon-color); }
+
+        .back-to-hub {
+            margin-bottom: 20px; padding: 10px; background-color: #e6f2ff;
+            border-radius: 5px; text-align: center;
+        }
+        .back-to-hub a {
+            text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em;
+        }
+        .back-to-hub a i { margin-right: 8px; }
+
+
+        .question-block {
+            margin-bottom: 30px; padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+
+        .question-text { font-weight: 600; font-size: 1.1em; margin-bottom: 15px; }
+        .question-text i { margin-right: 8px; color: var(--quiz-icon-color); }
+        .scenario-text {
+            font-style: italic;
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-left: 3px solid var(--info-color);
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+
+        .options-list { list-style: none; padding-left: 0; margin: 0; }
+        .options-list li {
+            margin-bottom: 10px; padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px; cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .options-list li label {
+            display: flex; align-items: center; cursor: pointer;
+            width: 100%; font-size: 1em;
+        }
+        .options-list li input[type="radio"] {
+            margin-right: 12px; accent-color: var(--azure-blue); cursor: pointer;
+            width: 18px; height: 18px;
+        }
+        .options-list li:hover { background-color: #eef1f5; border-color: var(--azure-blue); }
+
+        .feedback {
+            margin-top: 12px; padding: 10px 15px;
+            border-radius: 4px; font-weight: 600; display: none; font-size: 0.95em;
+        }
+        .feedback.correct {
+            background-color: #e7f3e7; border: 1px solid var(--correct-color); color: var(--correct-color);
+        }
+        .feedback.incorrect {
+            background-color: #fdeceb; border: 1px solid var(--incorrect-color); color: var(--incorrect-color);
+        }
+        .feedback i { margin-right: 8px; }
+        .feedback .review-hint {
+            display: block;
+            font-size: 0.9em;
+            font-weight: normal;
+            margin-top: 8px;
+            color: #555;
+        }
+        .feedback .review-hint strong { color: var(--azure-blue-dark); }
+
+
+        .options-list li.correct-answer-highlight { background-color: #d4edda !important; border-color: var(--correct-color) !important; font-weight: bold; }
+        .options-list li.incorrect-selection-highlight { background-color: #f8d7da !important; border-color: var(--incorrect-color) !important; opacity: 0.8; }
+
+        .sticky-footer {
+            position: sticky;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.95);
+            padding: 15px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .timer-button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #check-answers-btn {
+            padding: 12px 25px;
+            font-size: 1.15em;
+            font-weight: bold;
+            color: var(--text-light);
+            background-color: var(--timer-button-bg);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            min-width: 180px;
+        }
+        #check-answers-btn:hover { background-color: var(--timer-button-hover-bg); }
+        #check-answers-btn:disabled { background-color: #c0392b; opacity: 0.7; cursor: not-allowed; }
+
+        #timer-display {
+            font-size: 0.9em;
+            color: var(--text-dark);
+            margin-top: 8px;
+            font-weight: 500;
+        }
+        #timer-display.active { color: var(--incorrect-color); font-weight: bold;}
+
+
+        #score-area {
+            text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 30px; padding: 15px;
+            background-color: #e6f2ff;
+            border-radius: 6px; border: 1px solid var(--azure-blue);
+            display: none;
+        }
+        #score-area i { margin-right: 8px; color: var(--azure-blue); }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1><i class="fas fa-globe-americas"></i>Azure DNS Concepts Quiz</h1>
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+
+        <form id="quiz-form">
+
+            <!-- Question 1: Zone Apex & PaaS -->
+            <div class="question-block" data-question-id="q1_zone_apex" data-correct-answer="alias_record" data-review-topic="Alias Records Explained Guide">
+                <div class="scenario-text">
+                    Scenario: You have a web app running on Azure App Service. You want to point your root domain, `my-cool-app.com`, directly to this App Service. You discover that you cannot use a CNAME record for a root domain.
+                </div>
+                <p class="question-text"><i class="fas fa-star"></i>Which Azure DNS record type should you use in your `my-cool-app.com` Public DNS Zone to point the zone apex directly to the Azure App Service resource?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q1_zone_apex" value="a_record"> A) A (Host) Record with the App Service's IP address.</label></li>
+                    <li><label><input type="radio" name="q1_zone_apex" value="ptr_record"> B) PTR (Pointer) Record.</label></li>
+                    <li><label><input type="radio" name="q1_zone_apex" value="alias_record"> C) Alias Record.</label></li>
+                    <li><label><input type="radio" name="q1_zone_apex" value="txt_record"> D) TXT (Text) Record.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 2: Hybrid DNS Resolution -->
+            <div class="question-block" data-question-id="q2_hybrid_dns" data-correct-answer="private_resolver" data-review-topic="Azure DNS Private Resolver Guide">
+                <div class="scenario-text">
+                    Scenario: Your company has an on-premises network with its own DNS servers for `corp.onprem`. They also have an Azure VNet with VMs that need to resolve names in the `corp.onprem` domain. You want to achieve this without deploying and managing custom DNS server VMs in Azure.
+                </div>
+                <p class="question-text"><i class="fas fa-sync-alt"></i>Which Azure DNS service is specifically designed to act as a managed bridge, forwarding DNS queries from Azure to your on-premises DNS servers?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q2_hybrid_dns" value="public_dns"> A) Azure Public DNS Zone</label></li>
+                    <li><label><input type="radio" name="q2_hybrid_dns" value="private_dns"> B) Azure Private DNS Zone</label></li>
+                    <li><label><input type="radio" name="q2_hybrid_dns" value="private_resolver"> C) Azure DNS Private Resolver</label></li>
+                    <li><label><input type="radio" name="q2_hybrid_dns" value="traffic_manager"> D) Azure Traffic Manager</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 3: Domain Delegation -->
+            <div class="question-block" data-question-id="q3_delegation" data-correct-answer="delegation_at_registrar" data-review-topic="DNS Delegation Workflow Guide">
+                <div class="scenario-text">
+                    Scenario: You have purchased the domain `new-business.com` from a third-party registrar. You have created a Public DNS Zone in Azure for `new-business.com`. However, when you browse to the domain, it doesn't resolve to your web server.
+                </div>
+                <p class="question-text"><i class="fas fa-exclamation-triangle"></i>What is the most likely critical step that has been missed in this process?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q3_delegation" value="missing_a_record"> A) You need to create an A record in the Azure DNS Zone.</label></li>
+                    <li><label><input type="radio" name="q3_delegation" value="delegation_at_registrar"> B) The domain has not been delegated to Azure's name servers at the domain registrar.</label></li>
+                    <li><label><input type="radio" name="q3_delegation" value="vnet_link_missing"> C) A Private DNS Zone has not been linked to the VNet.</label></li>
+                    <li><label><input type="radio" name="q3_delegation" value="cname_needed"> D) You need to create a CNAME record instead of an A record.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 4: Internal VNet Resolution -->
+            <div class="question-block" data-question-id="q4_vnet_resolution" data-correct-answer="private_zone_linked_to_both" data-review-topic="Azure Private DNS Zones Guide">
+                <div class="scenario-text">
+                    Scenario: You have two VNets, `VNet-A` and `VNet-B`, which are peered together. A VM in `VNet-A` needs to resolve the name of a VM in `VNet-B` using a custom internal domain name like `vm-b.internal.corp`.
+                </div>
+                <p class="question-text"><i class="fas fa-project-diagram"></i>What is the simplest, most effective way to enable this cross-VNet name resolution?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q4_vnet_resolution" value="public_zone"> A) Create a Public DNS Zone and add A records for both VMs.</label></li>
+                    <li><label><input type="radio" name="q4_vnet_resolution" value="dns_vms"> B) Deploy custom DNS server VMs in both VNets and configure forwarding.</label></li>
+                    <li><label><input type="radio" name="q4_vnet_resolution" value="private_zone_linked_to_both"> C) Create a single Azure Private DNS Zone (`internal.corp`) and link it to both `VNet-A` and `VNet-B`.</label></li>
+                    <li><label><input type="radio" name="q4_vnet_resolution" value="nslookup_manual"> D) Use `nslookup` from each VM to find the other's IP address.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 5: Global Failover -->
+            <div class="question-block" data-question-id="q5_global_failover" data-correct-answer="traffic_manager_priority" data-review-topic="Azure Traffic Manager Guide">
+                <div class="scenario-text">
+                    Scenario: Your company has deployed a critical application to App Service instances in both East US and West Europe. You need a solution that will direct all users to the East US region, but automatically send them to West Europe if the East US region becomes unavailable.
+                </div>
+                <p class="question-text"><i class="fas fa-route"></i>Which Azure DNS-based service is best suited for this global failover scenario?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q5_global_failover" value="private_resolver_rules"> A) Azure DNS Private Resolver with rules.</label></li>
+                    <li><label><input type="radio" name="q5_global_failover" value="load_balancer"> B) Azure Load Balancer.</label></li>
+                    <li><label><input type="radio" name="q5_global_failover" value="app_gateway"> C) Azure Application Gateway.</label></li>
+                    <li><label><input type="radio" name="q5_global_failover" value="traffic_manager_priority"> D) Azure Traffic Manager with Priority routing.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+        </form>
+        <!-- Score area will be inserted here by JS -->
+    </div>
+
+    <div class="sticky-footer">
+        <div class="timer-button-container">
+            <button type="button" id="check-answers-btn">Check Answers</button>
+            <div id="timer-display">Timer: 00:00</div>
+        </div>
+    </div>
+
+    <script>
+        const quizForm = document.getElementById('quiz-form');
+        const checkAnswersBtn = document.getElementById('check-answers-btn');
+        const questionBlocks = document.querySelectorAll('.question-block');
+        const timerDisplay = document.getElementById('timer-display');
+
+        let timerInterval = null;
+        let secondsElapsed = 0;
+        let timerStarted = false;
+        let scoreArea = null; 
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (timerStarted) return;
+            timerStarted = true;
+            timerDisplay.classList.add('active');
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                timerDisplay.textContent = `Timer: ${formatTime(secondsElapsed)}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerDisplay.classList.remove('active');
+        }
+
+        quizForm.addEventListener('click', function(event) {
+            if (event.target.type === 'radio' && !timerStarted && !checkAnswersBtn.disabled) {
+                startTimer();
+            }
+        });
+
+        checkAnswersBtn.addEventListener('click', () => {
+            if (!timerStarted && questionBlocks.length > 0) {
+                startTimer(); 
+            }
+            stopTimer();
+
+            let score = 0;
+            const totalQuestions = questionBlocks.length;
+
+            questionBlocks.forEach(block => {
+                const questionId = block.dataset.questionId;
+                const correctAnswer = block.dataset.correctAnswer;
+                const reviewTopic = block.dataset.reviewTopic || "the relevant study guide";
+                const feedbackEl = block.querySelector('.feedback');
+                const optionsList = block.querySelector('.options-list');
+                const selectedOptionInput = optionsList.querySelector(`input[name="${questionId}"]:checked`);
+
+                optionsList.querySelectorAll('li').forEach(li => {
+                    li.classList.remove('correct-answer-highlight', 'incorrect-selection-highlight');
+                });
+
+                if (selectedOptionInput) {
+                    const userAnswer = selectedOptionInput.value;
+                    const selectedLi = selectedOptionInput.closest('li');
+                    const correctLi = optionsList.querySelector(`input[value="${correctAnswer}"]`)?.closest('li');
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        feedbackEl.innerHTML = `<i class="fas fa-check-circle"></i> Correct!`;
+                        feedbackEl.className = 'feedback correct';
+                        selectedLi.classList.add('correct-answer-highlight');
+                    } else {
+                        feedbackEl.innerHTML = `<i class="fas fa-times-circle"></i> Incorrect. \n                                                <span class="review-hint">Hint: The correct answer is highlighted in green. Please review <strong>${reviewTopic}</strong>.</span>`;
+                        feedbackEl.className = 'feedback incorrect';
+                        selectedLi.classList.add('incorrect-selection-highlight');
+                        if (correctLi) {
+                            correctLi.classList.add('correct-answer-highlight');
+                        }
+                    }
+                } else {
+                    feedbackEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Please select an answer. \n                                            <span class="review-hint">Review <strong>${reviewTopic}</strong> for this concept.</span>`;
+                    feedbackEl.className = 'feedback incorrect';
+                     const correctLi = optionsList.querySelector(`input[value="${correctAnswer}"]`)?.closest('li');
+                     if (correctLi) {
+                        correctLi.classList.add('correct-answer-highlight');
+                    }
+                }
+                feedbackEl.style.display = 'block';
+            });
+
+            if (!scoreArea) {
+                scoreArea = document.createElement('div');
+                scoreArea.id = 'score-area';
+                const container = document.querySelector('.quiz-container');
+                container.appendChild(scoreArea);
+            }
+            
+            scoreArea.innerHTML = `<i class="fas fa-star"></i> Your Score: ${score} out of ${totalQuestions} in ${formatTime(secondsElapsed)}`;
+            scoreArea.style.display = 'block';
+
+            checkAnswersBtn.disabled = true;
+            checkAnswersBtn.textContent = 'Answers Checked';
+            
+            quizForm.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.disabled = true;
+            });
+        });
+    </script>
+
+</body>
+</html>

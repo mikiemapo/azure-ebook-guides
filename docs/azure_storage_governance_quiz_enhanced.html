@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Azure Storage & Governance Quiz (AZ-104)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --correct-color: #107c10;
+            --incorrect-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --quiz-main-color: #6f42c1; /* Purple for this quiz theme */
+            --timer-button-bg: #d83b01; 
+            --timer-button-hover-bg: #a4262c;
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .quiz-container {
+            max-width: 850px; margin: 20px auto; padding: 25px 35px;
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 8px; box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark); text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px; margin-bottom: 25px;
+        }
+        h1 i { margin-right: 10px; color: var(--quiz-main-color); }
+
+        .back-to-hub {
+            margin-bottom: 20px; padding: 10px; background-color: #e6f2ff; 
+            border-radius: 5px; text-align: center;
+        }
+        .back-to-hub a {
+            text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em;
+        }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .question-block {
+            margin-bottom: 30px; padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .question-block:last-of-type { border-bottom: none; margin-bottom: 0; }
+
+        .question-text { font-weight: 600; font-size: 1.1em; margin-bottom: 15px; }
+        .question-text i { margin-right: 8px; color: var(--quiz-main-color); }
+         .scenario-text {
+            font-style: italic; background-color: #f9f9f9; padding: 10px;
+            border-left: 3px solid var(--info-color); margin-bottom: 10px; font-size: 0.95em;
+        }
+
+        .options-list { list-style: none; padding-left: 0; margin: 0; }
+        .options-list li {
+            margin-bottom: 10px; padding: 10px 15px; border: 1px solid var(--border-color);
+            border-radius: 4px; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .options-list li label {
+            display: flex; align-items: center; cursor: pointer; width: 100%; font-size: 1em;
+        }
+        .options-list li input[type="radio"] {
+            margin-right: 12px; accent-color: var(--azure-blue); cursor: pointer; width: 18px; height: 18px;
+        }
+        .options-list li:hover { background-color: #eef1f5; border-color: var(--azure-blue); }
+
+        .feedback {
+            margin-top: 12px; padding: 10px 15px; border-radius: 4px; font-weight: 600;
+            display: none; font-size: 0.95em;
+        }
+        .feedback.correct { background-color: #e7f3e7; border: 1px solid var(--correct-color); color: var(--correct-color); }
+        .feedback.incorrect { background-color: #fdeceb; border: 1px solid var(--incorrect-color); color: var(--incorrect-color); }
+        .feedback i { margin-right: 8px; }
+        .feedback .review-hint { display: block; font-size: 0.9em; font-weight: normal; margin-top: 8px; color: #555; }
+        .feedback .review-hint a { color: var(--azure-blue-dark); text-decoration: underline;}
+
+        .options-list li.correct-answer-highlight { background-color: #d4edda !important; border-color: var(--correct-color) !important; font-weight: bold; }
+        .options-list li.incorrect-selection-highlight { background-color: #f8d7da !important; border-color: var(--incorrect-color) !important; opacity: 0.8; }
+
+        .sticky-footer {
+            position: sticky; bottom: 0; left: 0; width: 100%;
+            background-color: rgba(255, 255, 255, 0.95); padding: 15px 0;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1); display: flex;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        .timer-button-container { display: flex; flex-direction: column; align-items: center; }
+        #check-answers-btn {
+            padding: 12px 25px; font-size: 1.15em; font-weight: bold; color: var(--text-light);
+            background-color: var(--timer-button-bg); border: none; border-radius: 5px;
+            cursor: pointer; transition: background-color 0.2s ease; min-width: 180px;
+        }
+        #check-answers-btn:hover { background-color: var(--timer-button-hover-bg); }
+        #check-answers-btn:disabled { background-color: #e74c3c; opacity: 0.7; cursor: not-allowed; }
+        #timer-display { font-size: 0.9em; color: var(--text-dark); margin-top: 8px; font-weight: 500; }
+        #timer-display.active { color: var(--warning-color); font-weight: bold;}
+
+        #score-area {
+            text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 20px; padding: 10px;
+            background-color: var(--diagram-bg); border-radius: 4px; border: 1px solid var(--border-color);
+            display: none;
+        }
+        #score-area i { margin-right: 8px; }
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1><i class="fas fa-archive"></i>Enhanced Storage & Governance Quiz</h1>
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+
+        <form id="quiz-form">
+
+            <!-- Question 1: Shared Responsibility - PaaS OS Patching -->
+            <div class="question-block" data-question-id="q1_shared_paas_os" data-correct-answer="microsoft" data-review-topic="Shared Responsibility Model Guide">
+                <p class="question-text"><i class="fas fa-handshake"></i>Scenario: You are using Azure App Service (a PaaS offering) to host your web application. Goal: Ensure the underlying operating system of the App Service plan is patched. Proposed Solution: You schedule regular OS patching routines for the App Service instances. Does this solution meet the goal?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q1_shared_paas_os" value="yes_customer_patches"> Yes, the customer is always responsible for OS patching.</label></li>
+                    <li><label><input type="radio" name="q1_shared_paas_os" value="microsoft"> No, in a PaaS model like App Service, Microsoft is responsible for patching the underlying OS.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 2: Storage Redundancy for Zone Failure -->
+            <div class="question-block" data-question-id="q2_redundancy_zone" data-correct-answer="zrs" data-review-topic="Storage Redundancy Guide">
+                <p class="question-text"><i class="fas fa-sync-alt"></i>You need to configure an Azure Storage account for high availability within a single region, ensuring data survives an entire Availability Zone failure. Which redundancy option is most appropriate?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q2_redundancy_zone" value="lrs"> Locally-redundant storage (LRS)</label></li>
+                    <li><label><input type="radio" name="q2_redundancy_zone" value="zrs"> Zone-redundant storage (ZRS)</label></li>
+                    <li><label><input type="radio" name="q2_redundancy_zone" value="grs"> Geo-redundant storage (GRS)</label></li>
+                    <li><label><input type="radio" name="q2_redundancy_zone" value="ra_gzrs"> Read-access geo-zone-redundant storage (RA-GZRS)</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 3: Blob Versioning Trigger -->
+            <div class="question-block" data-question-id="q3_versioning_trigger" data-correct-answer="overwrite_delete" data-review-topic="Blob Versioning Guide">
+                <p class="question-text"><i class="fas fa-history"></i>Blob Versioning is enabled on a storage account. Which of the following actions will automatically create a new version of a blob named `document.txt`?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q3_versioning_trigger" value="read_blob"> Reading `document.txt`.</label></li>
+                    <li><label><input type="radio" name="q3_versioning_trigger" value="change_tier"> Changing the access tier of `document.txt` from Hot to Cool.</label></li>
+                    <li><label><input type="radio" name="q3_versioning_trigger" value="overwrite_delete"> Overwriting `document.txt` with new content OR deleting the current `document.txt`.</label></li>
+                    <li><label><input type="radio" name="q3_versioning_trigger" value="create_snapshot"> Creating a snapshot of `document.txt`.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 4: Lifecycle Management for Cost -->
+            <div class="question-block" data-question-id="q4_lifecycle_cost" data-correct-answer="yes_tier_versions" data-review-topic="Blob Lifecycle & Tiers Guide">
+                 <p class="question-text"><i class="fas fa-recycle"></i>Scenario: You have enabled Blob Versioning, and many old versions are accumulating, increasing storage costs. Goal: Reduce storage costs for old versions. Proposed Solution: Configure a Lifecycle Management rule to transition blob versions older than 90 days to the Archive tier. Does this solution meet the goal?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q4_lifecycle_cost" value="yes_tier_versions"> Yes</label></li>
+                    <li><label><input type="radio" name="q4_lifecycle_cost" value="no_versions_not_supported"> No, Lifecycle Management cannot target blob versions.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 5: Object Replication & Version Deletion -->
+            <div class="question-block" data-question-id="q5_obj_rep_ver_del" data-correct-answer="no_not_replicated" data-review-topic="Object Replication & Versioning Guide">
+                <p class="question-text"><i class="fas fa-copy"></i>Object Replication is configured from a source to a destination account (both have versioning enabled). Scenario: An administrator deletes a specific, older version (not the current blob) directly from the source container. Goal: Ensure this specific version deletion is also reflected on the destination account. Does the default behavior of Object Replication meet this goal?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q5_obj_rep_ver_del" value="yes_replicated"> Yes, all version deletions are replicated.</label></li>
+                    <li><label><input type="radio" name="q5_obj_rep_ver_del" value="no_not_replicated"> No, deleting a specific older version on the source is NOT replicated; the destination retains that version.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 6: Copy Blob Asynchronous -->
+            <div class="question-block" data-question-id="q6_copy_blob_async" data-correct-answer="check_status" data-review-topic="Copy Blob Operation Guide">
+                <p class="question-text"><i class="fas fa-copy" style="color:var(--copy-color)"></i>You initiate a `Copy Blob` operation to copy a large blob between two storage accounts. What must your script or application do to confirm the copy has finished successfully?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q6_copy_blob_async" value="assume_complete"> Assume it's complete after the initial API call returns HTTP 202.</label></li>
+                    <li><label><input type="radio" name="q6_copy_blob_async" value="check_status"> Periodically check the copy status of the destination blob until it shows 'success'.</label></li>
+                    <li><label><input type="radio" name="q6_copy_blob_async" value="source_event"> Wait for an event on the source blob indicating completion.</label></li>
+                    <li><label><input type="radio" name="q6_copy_blob_async" value="sync_operation"> The `Copy Blob` operation is always synchronous for large files.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 7: Immutable Storage Locked Policy -->
+            <div class="question-block" data-question-id="q7_immutable_locked" data-correct-answer="no_cannot_shorten" data-review-topic="Immutable Storage Guide">
+                 <p class="question-text"><i class="fas fa-lock"></i>Scenario: A time-based retention policy is applied to a container and then LOCKED. The retention period is 365 days. Goal: Reduce the retention period to 180 days. Proposed Solution: Modify the locked policy to set the interval to 180 days. Does this solution meet the goal?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q7_immutable_locked" value="yes_can_modify"> Yes, locked policies can still be modified.</label></li>
+                    <li><label><input type="radio" name="q7_immutable_locked" value="no_cannot_shorten"> No, once a time-based retention policy is locked, the retention interval cannot be decreased (only increased).</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 8: Azure Policy Effect for Prevention -->
+             <div class="question-block" data-question-id="q8_policy_effect_deny" data-correct-answer="deny" data-review-topic="Azure Policy Guide">
+                <p class="question-text"><i class="fas fa-balance-scale"></i>You want to create an Azure Policy to prevent the creation of GRS (Geo-redundant storage) accounts in a specific subscription to save costs. Which policy effect should you primarily use to achieve this?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q8_policy_effect_deny" value="audit"> Audit</label></li>
+                    <li><label><input type="radio" name="q8_policy_effect_deny" value="append"> Append</label></li>
+                    <li><label><input type="radio" name="q8_policy_effect_deny" value="deny"> Deny</label></li>
+                    <li><label><input type="radio" name="q8_policy_effect_deny" value="deployifnotexists"> DeployIfNotExists</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 9: Key Vault for App Secrets -->
+             <div class="question-block" data-question-id="q9_keyvault_secrets" data-correct-answer="yes_store_secrets" data-review-topic="Azure Key Vault Guide">
+                <p class="question-text"><i class="fas fa-key"></i>Scenario: Your application needs to connect to a SQL database using a connection string containing credentials. Goal: Securely manage this connection string and avoid hardcoding it in the application configuration. Proposed Solution: Store the connection string as a Secret in Azure Key Vault and have the application retrieve it at runtime using a Managed Identity. Does this solution meet the goal?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q9_keyvault_secrets" value="yes_store_secrets"> Yes</label></li>
+                    <li><label><input type="radio" name="q9_keyvault_secrets" value="no_kv_for_keys"> No, Key Vault is only for storing encryption keys, not connection strings.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 10: AzCopy Authentication -->
+            <div class="question-block" data-question-id="q10_azcopy_auth" data-correct-answer="aad_sas" data-review-topic="AzCopy v10 Guide">
+                <p class="question-text"><i class="fas fa-terminal"></i>What are the two primary recommended methods for AzCopy v10 to authenticate to Azure Storage for transferring data?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q10_azcopy_auth" value="key_cert"> Storage Account Key and Client Certificate</label></li>
+                    <li><label><input type="radio" name="q10_azcopy_auth" value="aad_sas"> Azure Active Directory (Azure AD) login and SAS Token</label></li>
+                    <li><label><input type="radio" name="q10_azcopy_auth" value="ssh_api"> SSH Key and API Key</label></li>
+                    <li><label><input type="radio" name="q10_azcopy_auth" value="connection_string_only"> Only via Connection String</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="sticky-footer">
+        <div class="timer-button-container">
+            <button type="button" id="check-answers-btn">Check Answers</button>
+            <div id="timer-display">Timer: 00:00</div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for quiz functionality (same as the previous "Enhanced Azure Compute Quiz")
+        const quizForm = document.getElementById('quiz-form');
+        const checkAnswersBtn = document.getElementById('check-answers-btn');
+        // scoreArea will be created dynamically
+        const questionBlocks = document.querySelectorAll('.question-block');
+        const timerDisplay = document.getElementById('timer-display');
+
+        let timerInterval = null;
+        let secondsElapsed = 0;
+        let timerStarted = false;
+
+        function formatTime(totalSeconds) {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function startTimer() {
+            if (timerStarted) return;
+            timerStarted = true;
+            timerDisplay.classList.add('active');
+            timerInterval = setInterval(() => {
+                secondsElapsed++;
+                timerDisplay.textContent = `Timer: ${formatTime(secondsElapsed)}`;
+            }, 1000);
+        }
+
+        function stopTimer() {
+            clearInterval(timerInterval);
+            timerDisplay.classList.remove('active');
+        }
+
+        quizForm.addEventListener('click', function(event) {
+            if (event.target.type === 'radio' && !timerStarted && !checkAnswersBtn.disabled) {
+                startTimer();
+            }
+        });
+
+        checkAnswersBtn.addEventListener('click', () => {
+            if (!timerStarted && questionBlocks.length > 0) {
+                startTimer();
+            }
+            stopTimer();
+            let score = 0;
+            const totalQuestions = questionBlocks.length;
+
+            questionBlocks.forEach(block => {
+                const questionId = block.dataset.questionId;
+                const correctAnswer = block.dataset.correctAnswer;
+                const reviewTopic = block.dataset.reviewTopic || "the relevant study guide";
+                const feedbackEl = block.querySelector('.feedback');
+                const optionsList = block.querySelector('.options-list');
+                const selectedOptionInput = optionsList.querySelector(`input[name="${questionId}"]:checked`);
+
+                optionsList.querySelectorAll('li').forEach(li => {
+                    li.classList.remove('correct-answer-highlight', 'incorrect-selection-highlight');
+                });
+
+                if (selectedOptionInput) {
+                    const userAnswer = selectedOptionInput.value;
+                    const selectedLi = selectedOptionInput.closest('li');
+                    const correctLi = optionsList.querySelector(`input[value="${correctAnswer}"]`).closest('li');
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        feedbackEl.innerHTML = `<i class="fas fa-check-circle"></i> Correct!`;
+                        feedbackEl.className = 'feedback correct';
+                        selectedLi.classList.add('correct-answer-highlight');
+                    } else {
+                        feedbackEl.innerHTML = `<i class="fas fa-times-circle"></i> Incorrect. 
+                                                <span class="review-hint">Hint: The correct concept involves '${correctAnswer}'. Please review ${reviewTopic}.</span>`;
+                        feedbackEl.className = 'feedback incorrect';
+                        selectedLi.classList.add('incorrect-selection-highlight');
+                        if (correctLi) {
+                            correctLi.classList.add('correct-answer-highlight');
+                        }
+                    }
+                } else {
+                    feedbackEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Please select an answer. 
+                                            <span class="review-hint">Review ${reviewTopic} for this concept.</span>`;
+                    feedbackEl.className = 'feedback incorrect';
+                }
+                feedbackEl.style.display = 'block';
+            });
+
+            let scoreArea = document.getElementById('score-area');
+            if (!scoreArea) {
+                scoreArea = document.createElement('div');
+                scoreArea.id = 'score-area';
+                const container = document.querySelector('.quiz-container');
+                const stickyFooter = document.querySelector('.sticky-footer');
+                if (container && stickyFooter) {
+                    container.insertBefore(scoreArea, stickyFooter);
+                } else if (container) {
+                    container.appendChild(scoreArea);
+                }
+            }
+            scoreArea.innerHTML = `<i class="fas fa-star"></i> Your Score: ${score} out of ${totalQuestions} in ${formatTime(secondsElapsed)}`;
+            scoreArea.style.display = 'block';
+
+            checkAnswersBtn.disabled = true;
+            checkAnswersBtn.textContent = 'Answers Checked';
+        });
+    </script>
+
+</body>
+</html>

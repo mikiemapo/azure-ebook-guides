@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Storage Redundancy Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8; /* Slightly softer background */
+            --text-dark: #323130; /* Office UI Fabric Dark Text */
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --read-access-color: #107c10; /* Darker Green for Read Access */
+            --durability-color: #d83b01; /* Office UI Fabric Orange/Red */
+            --data-color: #f7630c; /* Office UI Fabric Orange */
+            --region-primary-border: var(--azure-blue);
+            --region-secondary-border: #107c10; /* Darker Green */
+            --shadow-color: rgba(0, 0, 0, 0.1);
+        }
+
+        html {
+            scroll-behavior: smooth; /* Smooth scroll for internal links if added */
+        }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .main-container {
+            width: 100%;
+            max-width: 900px; /* Wider max-width for better desktop view */
+        }
+
+        h1 {
+            color: var(--azure-blue-dark);
+            margin-bottom: 15px;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .instructions {
+            background-color: var(--card-bg);
+            padding: 12px 18px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            text-align: center;
+            font-size: 0.95em;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong {
+            color: var(--azure-blue-dark);
+        }
+
+        /* --- Animation Section --- */
+        .animation-container {
+            background-color: var(--card-bg);
+            border-radius: 6px;
+            padding: 15px;
+            margin: 0 auto 30px auto; /* Center the animation container */
+            width: 100%;
+            max-width: 200px;
+            box-shadow: 0 1px 3px var(--shadow-color);
+            text-align: center;
+            height: 60px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .animated-item {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            animation: cycleItems 18s infinite;
+        }
+
+        .animated-item .icon { font-size: 2.5em; color: var(--azure-blue); }
+        .animated-item .icon .fa-eye { color: var(--read-access-color); margin-left: 5px;} /* Style eye icon in animation */
+
+        @keyframes cycleItems {
+             0%, 15%, 100% { opacity: 0; }
+            1%, 14% { opacity: 1; } /* LRS */
+            17%, 30% { opacity: 1; } /* ZRS */
+            33%, 46% { opacity: 1; } /* GRS */
+            49%, 62% { opacity: 1; } /* RA-GRS */
+            65%, 78% { opacity: 1; } /* GZRS */
+            81%, 94% { opacity: 1; } /* RA-GZRS */
+        }
+
+        .animated-item:nth-child(1) { animation-delay: 0s; }
+        .animated-item:nth-child(2) { animation-delay: -15s; }
+        .animated-item:nth-child(3) { animation-delay: -12s; }
+        .animated-item:nth-child(4) { animation-delay: -9s; }
+        .animated-item:nth-child(5) { animation-delay: -6s; }
+        .animated-item:nth-child(6) { animation-delay: -3s; }
+
+
+        /* --- Card Section --- */
+        .card-container {
+            display: grid; /* Use Grid for more control */
+            grid-template-columns: 1fr; /* Default to single column */
+            gap: 20px;
+            width: 100%;
+        }
+
+        /* Grid layout for larger screens */
+        @media (min-width: 768px) {
+            .card-container {
+                grid-template-columns: repeat(2, 1fr); /* Two columns */
+            }
+        }
+        @media (min-width: 1100px) {
+             .card-container {
+                 grid-template-columns: repeat(3, 1fr); /* Three columns */
+             }
+        }
+
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 6px;
+            box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: box-shadow 0.3s ease;
+        }
+        .card:hover {
+             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-toggle { display: none; }
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 18px; /* Adjusted padding */
+            background-color: var(--azure-blue);
+            color: var(--text-light); cursor: pointer; transition: background-color 0.2s ease;
+            border-bottom: 1px solid var(--azure-blue-dark); /* Subtle border */
+        }
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+        .card-header h2 { margin: 0; font-size: 1.3em; font-weight: 600; }
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg);
+            border-top: 0px solid var(--border-color); /* Start with 0 border */
+        }
+
+        .card-toggle:checked + .card-header {
+             border-bottom-color: transparent; /* Hide bottom border when open */
+        }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 1500px; /* Generous max-height */
+            opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); /* Add top border when open */
+            overflow-y: auto;
+        }
+
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px;
+             font-size: 1.1em; font-weight: 600;
+             border-bottom: 1px solid #eee; padding-bottom: 8px;
+         }
+         .card-content p {
+             font-size: 0.95em; margin-bottom: 12px;
+         }
+         .card-content ul {
+             font-size: 0.95em; padding-left: 20px; margin-top: 5px; margin-bottom: 15px;
+             list-style: disc;
+         }
+          .card-content li {
+             margin-bottom: 8px;
+          }
+          .card-content li::marker {
+              color: var(--azure-blue); /* Style list bullets */
+          }
+
+        /* Diagram Styling */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 10px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            flex-direction: column; align-items: center; gap: 12px; /* Slightly more gap */
+            width: auto; /* Let it size naturally */
+            margin-left: -5px; /* Adjust slightly if needed */
+            margin-right: -5px;
+        }
+        .region {
+            border: 1px solid #8a8886; /* Office UI Fabric Neutral Tertiary */
+            padding: 10px 12px; border-radius: 4px;
+            width: 98%; text-align: center; position: relative; background-color: #fff; /* White background for region */
+        }
+        .region-label {
+             font-size: 0.75em; font-weight: 600; color: #605e5c; /* Office UI Fabric Neutral Secondary */
+             margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .region.primary { border-color: var(--region-primary-border); }
+        .region.secondary { border-color: var(--region-secondary-border); }
+        .region.primary .region-label { color: var(--region-primary-border); }
+        .region.secondary .region-label { color: var(--region-secondary-border); }
+
+        .zone-container {
+            display: flex; justify-content: space-around; align-items: stretch; /* Align items vertically */
+            gap: 10px; width: 100%; margin-top: 5px; min-height: 60px;
+        }
+        .datacenter, .zone {
+            border: 1px dotted #c8c6c4; /* Office UI Fabric Neutral Tertiary Alt */
+            padding: 8px 5px; border-radius: 3px;
+            background-color: #fdfdfd; /* Slightly off-white */
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center; /* Center content */
+            flex: 1; /* Allow zones/dcs to share space */
+            min-width: 45px; text-align: center;
+        }
+         .zone-label {
+             font-size: 0.7em; color: #605e5c; margin-top: 4px; font-weight: 600;
+         }
+        .data-copy { font-size: 1.3em; color: var(--data-color); margin: 3px 0; }
+        .read-point { font-size: 1.4em; color: var(--read-access-color); margin-top: 5px; }
+        .replication-arrow { font-size: 1.6em; color: #605e5c; margin: 8px 0; }
+        .sync-label { font-size: 0.75em; color: #605e5c; font-style: italic; }
+
+        /* Specific Icons */
+        .fa-building { color: #797775; } /* Office UI Fabric Neutral Primary */
+        .fa-globe-americas, .fa-globe-asia { margin-right: 4px; font-size: 0.9em; } /* Smaller globe */
+        .fa-cubes { color: #6f42c1; margin-right: 3px;} /* Keep purple cubes */
+
+         /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .read-access { color: var(--read-access-color); font-weight: 600; }
+        .durability { font-weight: 600; color: var(--durability-color); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; } /* Styling for concept text */
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1>Azure Storage Redundancy Guide (AZ-104)</h1>
+
+    <!-- Animation Area -->
+    <div class="animation-container">
+        <div class="animated-item"><div class="icon"><i class="fas fa-building"></i></div></div>
+        <div class="animated-item"><div class="icon"><i class="fas fa-cubes"></i></div></div>
+        <div class="animated-item"><div class="icon"><i class="fas fa-globe-americas"></i> <i class="fas fa-arrow-right fa-xs"></i> <i class="fas fa-globe-asia"></i></div></div>
+        <div class="animated-item"><div class="icon"><i class="fas fa-globe-americas"></i> <i class="fas fa-arrow-right fa-xs"></i> <i class="fas fa-globe-asia"></i> <i class="fas fa-eye fa-xs"></i></div></div>
+        <div class="animated-item"><div class="icon"><i class="fas fa-cubes"></i> <i class="fas fa-arrow-right fa-xs"></i> <i class="fas fa-globe-asia"></i></div></div>
+        <div class="animated-item"><div class="icon"><i class="fas fa-cubes"></i> <i class="fas fa-arrow-right fa-xs"></i> <i class="fas fa-globe-asia"></i> <i class="fas fa-eye fa-xs"></i></div></div>
+    </div>
+
+    <p class="instructions">Explore Azure's storage redundancy options. <strong>Click/Tap</strong> on each header below to learn more.</p>
+
+    <div class="card-container">
+
+        <!-- LRS Card -->
+        <div class="card">
+            <input type="checkbox" id="lrs-toggle" class="card-toggle">
+            <label for="lrs-toggle" class="card-header">
+                <h2>LRS</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>Locally-redundant storage</h3>
+                <p class="description">Basic protection within a single data center.</p>
+                <ul>
+                    <li><strong>Concept:</strong> 3 synchronous copies within one physical building (data center).</li>
+                    <li><strong>Copies:</strong> <span class="key-point">3</span> (in 1 DC)</li>
+                    <li><strong>Scope:</strong> Single Data Center</li>
+                    <li><strong class="durability">Durability:</strong> ≥ 99.999999999% (11 nines)</li>
+                    <li><strong>Protects against:</strong> Drive/Server rack failures.</li>
+                    <li><strong>Vulnerable to:</strong> Data center-level disaster.</li>
+                    <li><strong class="read-access">Read Access:</strong> <i class="fas fa-eye"></i> Primary only.</li>
+                </ul>
+                 <div class="diagram">
+                    <div class="region primary">
+                         <div class="region-label"><i class="fas fa-globe-americas"></i> Primary Region</div>
+                         <div class="zone-container">
+                             <div class="datacenter">
+                                 <i class="fas fa-building fa-lg"></i>
+                                 <i class="fas fa-database data-copy"></i>
+                                 <i class="fas fa-database data-copy"></i>
+                                 <i class="fas fa-database data-copy"></i>
+                                 <i class="fas fa-eye read-point"></i>
+                                  <div class="zone-label">DC (in 1 AZ)</div>
+                             </div>
+                        </div>
+                    </div>
+                     <div class="sync-label">(3x Sync Copies)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ZRS Card -->
+        <div class="card">
+            <input type="checkbox" id="zrs-toggle" class="card-toggle">
+            <label for="zrs-toggle" class="card-header">
+                <h2>ZRS</h2>
+                 <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3>Zone-redundant storage</h3>
+                 <p class="description">Protection across multiple data centers within a region.</p>
+                 <ul>
+                    <li><strong>Concept:</strong> 3 synchronous copies spread across 3 different Availability Zones (AZs) in the primary region.</li>
+                    <li><strong>Copies:</strong> <span class="key-point">3</span> (1 per AZ)</li>
+                    <li><strong>Scope:</strong> Multiple AZs (1 Region)</li>
+                    <li><strong class="durability">Durability:</strong> ≥ 99.9999999999% (12 nines)</li>
+                    <li><strong>Protects against:</strong> Data center/AZ failure.</li>
+                     <li><strong>Vulnerable to:</strong> Region-wide disaster.</li>
+                    <li><strong class="read-access">Read Access:</strong> <i class="fas fa-eye"></i> Primary only (any AZ).</li>
+                </ul>
+                 <div class="diagram">
+                     <div class="region primary">
+                         <div class="region-label"><i class="fas fa-globe-americas"></i> Primary Region</div>
+                         <div class="zone-container">
+                             <div class="zone">
+                                  <i class="fas fa-building"></i> <i class="fas fa-database data-copy"></i> <i class="fas fa-eye read-point"></i>
+                                  <div class="zone-label">AZ 1</div>
+                             </div>
+                             <div class="zone">
+                                 <i class="fas fa-building"></i> <i class="fas fa-database data-copy"></i> <i class="fas fa-eye read-point"></i>
+                                 <div class="zone-label">AZ 2</div>
+                             </div>
+                              <div class="zone">
+                                 <i class="fas fa-building"></i> <i class="fas fa-database data-copy"></i> <i class="fas fa-eye read-point"></i>
+                                 <div class="zone-label">AZ 3</div>
+                             </div>
+                         </div>
+                     </div>
+                      <div class="sync-label">(3x Sync Copies across AZs)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GRS Card -->
+        <div class="card">
+             <input type="checkbox" id="grs-toggle" class="card-toggle">
+            <label for="grs-toggle" class="card-header">
+                <h2>GRS</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>Geo-redundant storage</h3>
+                <p class="description">Region-level protection by copying data to a secondary region.</p>
+                <ul>
+                    <li><strong>Concept:</strong> LRS in primary (3 sync copies) + Asynchronous LRS copy in a paired secondary region.</li>
+                    <li><strong>Copies:</strong> <span class="key-point">6 Total</span> (3 Pri + 3 Sec)</li>
+                    <li><strong>Scope:</strong> Two Regions</li>
+                    <li><strong class="durability">Durability:</strong> ≥ 99.99999999999999% (16 nines)</li>
+                    <li><strong>Protects against:</strong> Regional disaster.</li>
+                    <li><strong>Failover:</strong> Manual/Microsoft failover required to access secondary data.</li>
+                    <li><strong class="read-access">Read Access:</strong> <i class="fas fa-eye"></i> Primary only (unless failed over).</li>
+                </ul>
+                 <div class="diagram">
+                     <div class="region primary">
+                         <div class="region-label"><i class="fas fa-globe-americas"></i> Primary Region</div>
+                         <div class="zone-container">
+                             <div class="datacenter">
+                                 <i class="fas fa-building fa-lg"></i>(LRS)<i class="fas fa-database data-copy"></i>x3 <i class="fas fa-eye read-point"></i>
+                                  <div class="zone-label">DC</div>
+                             </div>
+                        </div>
+                     </div>
+                     <i class="fas fa-arrow-down replication-arrow"></i> <div class="sync-label">(Async Replication)</div>
+                     <div class="region secondary">
+                         <div class="region-label"><i class="fas fa-globe-asia"></i> Secondary Region</div>
+                          <div class="zone-container">
+                             <div class="datacenter">
+                                 <i class="fas fa-building fa-lg"></i>(LRS)<i class="fas fa-database data-copy"></i>x3
+                                  <div class="zone-label">DC</div>
+                             </div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RA-GRS Card -->
+        <div class="card">
+            <input type="checkbox" id="ragrs-toggle" class="card-toggle">
+            <label for="ragrs-toggle" class="card-header">
+                <h2>RA-GRS</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3>Read-access geo-redundant storage</h3>
+                 <p class="description">GRS plus read-only access to the secondary region.</p>
+                 <ul>
+                    <li><strong>Concept:</strong> Same as GRS, but allows read-only access to the secondary region's LRS copy.</li>
+                    <li><strong>Copies:</strong> <span class="key-point">6 Total</span></li>
+                    <li><strong>Scope:</strong> Two Regions</li>
+                    <li><strong class="durability">Durability:</strong> ≥ 99.99999999999999% (16 nines)</li>
+                    <li><strong>Benefit:</strong> Higher read availability, secondary read endpoint.</li>
+                    <li><strong>Failover:</strong> Still needed for write access in secondary.</li>
+                    <li><strong class="read-access">Read Access:</strong> <i class="fas fa-eye"></i> Primary (RW) + <span class="read-access">Secondary (RO)</span>.</li>
+                </ul>
+                <div class="diagram">
+                     <div class="region primary">
+                         <div class="region-label"><i class="fas fa-globe-americas"></i> Primary Region</div>
+                         <div class="zone-container">
+                             <div class="datacenter">
+                                 <i class="fas fa-building fa-lg"></i>(LRS)<i class="fas fa-database data-copy"></i>x3 <i class="fas fa-eye read-point"></i>
+                                  <div class="zone-label">DC</div>
+                             </div>
+                        </div>
+                     </div>
+                     <i class="fas fa-arrow-down replication-arrow"></i> <div class="sync-label">(Async Replication)</div>
+                     <div class="region secondary">
+                         <div class="region-label"><i class="fas fa-globe-asia"></i> Secondary Region</div>
+                          <div class="zone-container">
+                             <div class="datacenter">
+                                 <i class="fas fa-building fa-lg"></i>(LRS)<i class="fas fa-database data-copy"></i>x3 <i class="fas fa-eye read-point"></i>
+                                  <div class="zone-label">DC + Read</div>
+                             </div>
+                         </div>
+                     </div>
+                </div>
+            </div>
+        </div>
+
+         <!-- GZRS Card -->
+        <div class="card">
+            <input type="checkbox" id="gzrs-toggle" class="card-toggle">
+            <label for="gzrs-toggle" class="card-header">
+                <h2>GZRS</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>Geo-zone-redundant storage</h3>
+                <p class="description">Combines zone redundancy in the primary with geo-replication.</p>
+                 <ul>
+                    <li><strong>Concept:</strong> ZRS in primary (3 sync copies across AZs) + Asynchronous LRS copy in secondary.</li>
+                    <li><strong>Copies:</strong> <span class="key-point">6 Total</span> (3 Pri-ZRS + 3 Sec-LRS)</li>
+                    <li><strong>Scope:</strong> Two Regions (Primary ZRS + Secondary LRS)</li>
+                    <li><strong class="durability">Durability:</strong> ≥ 99.99999999999999% (16 nines)</li>
+                    <li><strong>Benefit:</strong> AZ failure protection in primary + Regional disaster protection.</li>
+                    <li><strong>Failover:</strong> Required to access secondary data.</li>
+                    <li><strong class="read-access">Read Access:</strong> <i class="fas fa-eye"></i> Primary only (any AZ), unless failed over.</li>
+                </ul>
+                 <div class="diagram">
+                     <div class="region primary">
+                         <div class="region-label"><i class="fas fa-globe-americas"></i> Primary Region (ZRS)</div>
+                         <div class="zone-container">
+                             <div class="zone"><i class="fas fa-building"></i><i class="fas fa-database data-copy"></i><i class="fas fa-eye read-point"></i><div class="zone-label">AZ 1</div></div>
+                             <div class="zone"><i class="fas fa-building"></i><i class="fas fa-database data-copy"></i><i class="fas fa-eye read-point"></i><div class="zone-label">AZ 2</div></div>
+                             <div class="zone"><i class="fas fa-building"></i><i class="fas fa-database data-copy"></i><i class="fas fa-eye read-point"></i><div class="zone-label">AZ 3</div></div>
+                         </div>
+                     </div>
+                     <i class="fas fa-arrow-down replication-arrow"></i> <div class="sync-label">(Async Replication)</div>
+                      <div class="region secondary">
+                         <div class="region-label"><i class="fas fa-globe-asia"></i> Secondary Region (LRS)</div>
+                          <div class="zone-container">
+                             <div class="datacenter">
+                                 <i class="fas fa-building fa-lg"></i> <i class="fas fa-database data-copy"></i>x3
+                                  <div class="zone-label">DC</div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+        </div>
+
+        <!-- RA-GZRS Card -->
+        <div class="card">
+            <input type="checkbox" id="ragzrs-toggle" class="card-toggle">
+            <label for="ragzrs-toggle" class="card-header">
+                <h2>RA-GZRS</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3>Read-access geo-zone-redundant storage</h3>
+                <p class="description">Maximum redundancy and availability with reads from both regions.</p>
+                 <ul>
+                    <li><strong>Concept:</strong> GZRS + read-only access enabled for the secondary region's LRS copy.</li>
+                    <li><strong>Copies:</strong> <span class="key-point">6 Total</span></li>
+                    <li><strong>Scope:</strong> Two Regions (Primary ZRS + Secondary LRS+Read)</li>
+                    <li><strong class="durability">Durability:</strong> ≥ 99.99999999999999% (16 nines)</li>
+                    <li><strong>Benefit:</strong> Highest availability option. AZ + Regional protection + Secondary Reads.</li>
+                    <li><strong>Failover:</strong> Still needed for write access in secondary.</li>
+                    <li><strong class="read-access">Read Access:</strong> <i class="fas fa-eye"></i> Primary (RW, any AZ) + <span class="read-access">Secondary (RO)</span>.</li>
+                </ul>
+                 <div class="diagram">
+                     <div class="region primary">
+                         <div class="region-label"><i class="fas fa-globe-americas"></i> Primary Region (ZRS)</div>
+                         <div class="zone-container">
+                             <div class="zone"><i class="fas fa-building"></i><i class="fas fa-database data-copy"></i><i class="fas fa-eye read-point"></i><div class="zone-label">AZ 1</div></div>
+                             <div class="zone"><i class="fas fa-building"></i><i class="fas fa-database data-copy"></i><i class="fas fa-eye read-point"></i><div class="zone-label">AZ 2</div></div>
+                             <div class="zone"><i class="fas fa-building"></i><i class="fas fa-database data-copy"></i><i class="fas fa-eye read-point"></i><div class="zone-label">AZ 3</div></div>
+                         </div>
+                     </div>
+                     <i class="fas fa-arrow-down replication-arrow"></i> <div class="sync-label">(Async Replication)</div>
+                      <div class="region secondary">
+                         <div class="region-label"><i class="fas fa-globe-asia"></i> Secondary Region (LRS+Read)</div>
+                          <div class="zone-container">
+                             <div class="datacenter">
+                                 <i class="fas fa-building fa-lg"></i> <i class="fas fa-database data-copy"></i>x3 <i class="fas fa-eye read-point"></i>
+                                  <div class="zone-label">DC + Read</div>
+                             </div>
+                         </div>
+                     </div>
+                 </div>
+            </div>
+        </div>
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

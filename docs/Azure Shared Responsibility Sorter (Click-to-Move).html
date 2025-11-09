@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Shared Responsibility Sorter (Click-to-Move)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01; /* For incorrect placements */
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --customer-color: var(--azure-blue);
+            --microsoft-color: #605e5c;
+            --shared-color: #ffb900;
+            --hint-color: #777;
+            --selected-item-bg: #cce4ff; /* Light blue for selected item */
+        }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sorter-container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark);
+            text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        h1 i { margin-right: 10px; color: var(--shared-color); }
+
+        .instructions {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            background-color: var(--diagram-bg);
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .instructions strong { color: var(--shared-color); }
+
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .main-layout {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            .clickable-items-pool { /* Changed class name for clarity */
+                flex-basis: 30%;
+            }
+            .drop-zones {
+                flex-basis: 65%;
+            }
+        }
+
+        .clickable-items-pool, .drop-zone { /* Grouped common styles */
+            padding: 15px;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            background-color: var(--diagram-bg);
+            min-height: 200px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .clickable-items-pool h3, .drop-zone h3 {
+            margin-top: 0;
+            text-align: center;
+            color: var(--azure-blue-dark);
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .drop-zones {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+         @media (min-width: 600px) {
+            .drop-zones {
+                flex-direction: row;
+                justify-content: space-around;
+            }
+        }
+
+        .drop-zone.customer-zone { border-color: var(--customer-color); }
+        .drop-zone.customer-zone h3 { color: var(--customer-color); }
+        .drop-zone.microsoft-zone { border-color: var(--microsoft-color); }
+        .drop-zone.microsoft-zone h3 { color: var(--microsoft-color); }
+        .drop-zone.shared-zone { border-color: var(--shared-color); }
+        .drop-zone.shared-zone h3 { color: var(--shared-color); }
+
+        .clickable-item {
+            background-color: var(--card-bg);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 1px 2px var(--shadow-color);
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .clickable-item:hover {
+            border-color: var(--azure-blue);
+        }
+        .clickable-item.selected {
+            background-color: var(--selected-item-bg);
+            border: 2px solid var(--azure-blue);
+            box-shadow: 0 2px 5px rgba(0, 120, 212, 0.3);
+        }
+
+        .clickable-item-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .clickable-item-content i.item-icon {
+            color: var(--azure-blue);
+            font-size: 1.2em;
+        }
+        .clickable-text-container {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Allow text to take available space */
+        }
+        .item-text {
+            font-size: 0.95em;
+            font-weight: 600;
+        }
+        .item-hint {
+            font-size: 0.8em;
+            color: var(--hint-color);
+            font-style: italic;
+            margin-top: 3px;
+        }
+        .clickable-item i.feedback-icon {
+            margin-left: auto;
+            font-size: 1.1em;
+            min-width: 1.2em; /* Ensure space for icon */
+        }
+
+        /* Feedback styles after checking */
+        .clickable-item.correct {
+            border-left: 5px solid var(--success-color) !important;
+            background-color: #e7f3e7;
+        }
+        .clickable-item.incorrect {
+            border-left: 5px solid var(--warning-color) !important;
+            background-color: #fdeceb;
+        }
+        .clickable-item.correct i.feedback-icon::before {
+            font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f00c";
+            color: var(--success-color);
+        }
+        .clickable-item.incorrect i.feedback-icon::before {
+            font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f00d";
+            color: var(--warning-color);
+        }
+
+        .submit-button {
+            display: block; width: 100%; max-width: 200px; margin: 30px auto 10px auto;
+            padding: 12px 20px; font-size: 1.1em; font-weight: 600;
+            color: var(--text-light); background-color: var(--success-color);
+            border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease;
+        }
+        .submit-button:hover { background-color: #0d6a0d; }
+        .submit-button:disabled { background-color: #94d3a2; cursor: not-allowed; }
+
+        #result-message {
+            text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 20px;
+            padding: 10px; border-radius: 4px; display: none;
+        }
+        #result-message.success { background-color: #dff0d8; border: 1px solid var(--success-color); color: var(--success-color);}
+        #result-message.some-incorrect { background-color: #fcf8e3; border: 1px solid #f0ad4e; color: #8a6d3b;}
+    </style>
+</head>
+<body>
+    <div class="sorter-container">
+        <h1><i class="fas fa-handshake"></i>Azure Shared Responsibility Sorter (Click-to-Move)</h1>
+        <p class="instructions"><strong>1. Tap an item</strong> from "Unsorted Responsibilities" to select it (it will highlight blue).<br><strong>2. Tap the target column</strong> ("Customer", "Microsoft", or "Shared") to move the selected item there.<br>Click "Check Answers" when done.</p>
+
+        <div class="main-layout">
+            <div id="items-pool" class="clickable-items-pool drop-zone" data-zone="pool"> <!-- Made pool a drop-zone too -->
+                <h3><i class="fas fa-list-ul"></i> Unsorted Responsibilities</h3>
+                <!-- Items will be populated by JS -->
+            </div>
+
+            <div class="drop-zones">
+                <div id="customer-managed" class="drop-zone customer-zone" data-zone="customer">
+                    <h3><i class="fas fa-user"></i> Customer Manages</h3>
+                </div>
+                <div id="microsoft-managed" class="drop-zone microsoft-zone" data-zone="microsoft">
+                    <h3><i class="fas fa-cloud"></i> Microsoft Manages</h3>
+                </div>
+                <div id="shared-depends" class="drop-zone shared-zone" data-zone="shared">
+                    <h3><i class="fas fa-balance-scale"></i> Shared / Depends</h3>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="check-answers-btn" class="submit-button">Check Answers</button>
+        <div id="result-message"></div>
+    </div>
+
+    <script>
+        const responsibilities = [
+            { id: 'data_info', text: 'Information and Data Classification', hint: 'Who owns and is accountable for the data itself?', correctZone: 'customer', icon: 'fa-database' },
+            { id: 'client_endpoints', text: 'Client Endpoints & Devices', hint: 'Securing the laptops, phones accessing cloud services.', correctZone: 'customer', icon: 'fa-mobile-alt' },
+            { id: 'account_access', text: 'Account & Access Management', hint: 'Managing users, groups, and their permissions.', correctZone: 'customer', icon: 'fa-id-card' },
+            { id: 'physical_dc', text: 'Physical Datacenter Security', hint: 'Security of the buildings, power, cooling.', correctZone: 'microsoft', icon: 'fa-building' },
+            { id: 'physical_network', text: 'Physical Network Hardware', hint: 'Cables, routers, switches in the datacenter.', correctZone: 'microsoft', icon: 'fa-ethernet' },
+            { id: 'physical_hosts', text: 'Physical Compute Hosts', hint: 'The actual servers running virtualization software.', correctZone: 'microsoft', icon: 'fa-server' },
+            { id: 'os_iaas', text: 'Operating System (IaaS VM)', hint: 'Patching and configuring the OS on a virtual machine.', correctZone: 'customer', icon: 'fa-window-maximize' },
+            { id: 'network_controls_iaas', text: 'Network Controls (IaaS NSGs, VNet Firewalls)', hint: 'Defining firewall rules, NSGs for VMs in a VNet.', correctZone: 'customer', icon: 'fa-shield-alt' },
+            { id: 'applications_iaas_paas', text: 'Applications (Code, Logic)', hint: 'Developing, deploying, and securing your own application code.', correctZone: 'customer', icon: 'fa-laptop-code' },
+            { id: 'virtualization_layer', text: 'Virtualization Layer (Hypervisor)', hint: 'The software that creates and manages VMs on physical hosts.', correctZone: 'microsoft', icon: 'fa-layer-group' },
+            { id: 'os_paas', text: 'Operating System (PaaS Service)', hint: 'The OS underlying a PaaS service like App Service or Azure SQL.', correctZone: 'microsoft', icon: 'fa-window-maximize' },
+            { id: 'runtime_middleware_paas', text: 'Runtime & Middleware (PaaS Service)', hint: 'E.g., .NET runtime, Java JDK for an App Service.', correctZone: 'microsoft', icon: 'fa-cogs' },
+            { id: 'network_fabric_platform', text: 'Network Fabric (Platform)', hint: 'The underlying Azure network that PaaS/SaaS services run on.', correctZone: 'microsoft', icon: 'fa-cloud-meatball' },
+            { id: 'data_config_saas', text: 'Data Configuration & Usage (SaaS)', hint: 'How you configure and use data within a SaaS app like M365.', correctZone: 'customer', icon: 'fa-cog' },
+            { id: 'app_saas', text: 'Application Software (SaaS)', hint: 'The SaaS application itself (e.g., Outlook, Teams).', correctZone: 'microsoft', icon: 'fa-cloud-upload-alt' },
+            { id: 'identity_directory_infra', text: 'Identity & Directory Infrastructure (Azure AD)', hint: 'The core Azure AD service providing identity.', correctZone: 'microsoft', icon: 'fa-users-cog' },
+            { id: 'network_traffic_filtering', text: 'Network Traffic Filtering', hint: 'Depends: NSGs (Cust), Azure Firewall (Cust config, MSFT service), WAF (Cust config, MSFT service)', correctZone: 'shared', icon: 'fa-filter' },
+            { id: 'security_monitoring', text: 'Security Monitoring & Response', hint: 'Depends: Cust monitors their resources/apps, MSFT monitors platform.', correctZone: 'shared', icon: 'fa-shield-virus' }
+        ];
+
+        const itemsPool = document.getElementById('items-pool');
+        const dropZoneElements = document.querySelectorAll('.drop-zone'); // Includes items-pool if it has class drop-zone
+        const checkAnswersBtn = document.getElementById('check-answers-btn');
+        const resultMessage = document.getElementById('result-message');
+        let activeSelectedItem = null; // Renamed for clarity
+
+        function deselectCurrentItem() {
+            if (activeSelectedItem) {
+                activeSelectedItem.classList.remove('selected');
+                activeSelectedItem = null;
+            }
+        }
+
+        // Populate clickable items
+        responsibilities.forEach(itemData => {
+            const div = document.createElement('div');
+            div.classList.add('clickable-item');
+            div.id = itemData.id;
+            div.dataset.correctZone = itemData.correctZone;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('clickable-item-content');
+            // ... (rest of item creation from previous version is good) ...
+            const iconEl = document.createElement('i');
+            iconEl.className = `fas ${itemData.icon} item-icon`;
+
+            const textContainer = document.createElement('div');
+            textContainer.classList.add('clickable-text-container');
+
+            const itemText = document.createElement('span');
+            itemText.classList.add('item-text');
+            itemText.textContent = itemData.text;
+
+            const itemHint = document.createElement('span');
+            itemHint.classList.add('item-hint');
+            itemHint.textContent = `Hint: ${itemData.hint}`;
+
+            const feedbackIcon = document.createElement('i');
+            feedbackIcon.classList.add('feedback-icon');
+
+            textContainer.appendChild(itemText);
+            textContainer.appendChild(itemHint);
+            contentDiv.appendChild(iconEl);
+            contentDiv.appendChild(textContainer);
+            contentDiv.appendChild(feedbackIcon);
+            div.appendChild(contentDiv);
+
+            itemsPool.appendChild(div);
+
+            div.addEventListener('click', (e) => {
+                if (checkAnswersBtn.disabled) return;
+
+                const clickedItem = e.currentTarget; // Use currentTarget
+                if (activeSelectedItem === clickedItem) {
+                    deselectCurrentItem();
+                } else {
+                    deselectCurrentItem();
+                    activeSelectedItem = clickedItem;
+                    activeSelectedItem.classList.add('selected');
+                }
+                e.stopPropagation(); // Prevent click from bubbling to parent (like items-pool)
+            });
+        });
+
+        // Event listener for clicking a drop zone (to move the selected item)
+        dropZoneElements.forEach(zone => {
+            zone.addEventListener('click', (e) => {
+                if (checkAnswersBtn.disabled) return;
+                // Ensure we're clicking the zone itself, not an item within it,
+                // unless an item is already selected to be moved.
+                if (activeSelectedItem && (e.target === zone || e.target.closest('h3') === zone.querySelector('h3'))) {
+                    zone.appendChild(activeSelectedItem);
+                    activeSelectedItem.classList.remove('correct', 'incorrect');
+                    deselectCurrentItem();
+                }
+            });
+        });
+
+        checkAnswersBtn.addEventListener('click', () => {
+            let correctCount = 0;
+            let totalItemsSorted = 0; // Count items that are in one of the 3 main drop zones
+            const allClickableItems = document.querySelectorAll('.clickable-item');
+
+            allClickableItems.forEach(item => {
+                item.classList.remove('correct', 'incorrect', 'selected');
+            });
+
+            dropZoneElements.forEach(zone => {
+                // Only evaluate items in the actual sorting zones, not the pool for correctness calculation
+                if (zone.id !== 'items-pool') {
+                    const zoneType = zone.dataset.zone;
+                    zone.querySelectorAll('.clickable-item').forEach(item => {
+                        totalItemsSorted++;
+                        const correctZone = item.dataset.correctZone;
+                        if (zoneType === correctZone) {
+                            item.classList.add('correct');
+                            correctCount++;
+                        } else {
+                            item.classList.add('incorrect');
+                        }
+                    });
+                }
+            });
+
+            // Mark items remaining in the pool as incorrect (for visual feedback)
+            itemsPool.querySelectorAll('.clickable-item').forEach(item => {
+                item.classList.add('incorrect');
+            });
+
+
+            resultMessage.style.display = 'block';
+            const totalResponsibilities = responsibilities.length;
+            const itemsStillInPool = itemsPool.querySelectorAll('.clickable-item').length;
+
+            if (itemsStillInPool === totalResponsibilities && totalResponsibilities > 0) {
+                 resultMessage.textContent = 'Please sort the items into the zones first!';
+                 resultMessage.className = 'some-incorrect';
+            } else if (correctCount === totalResponsibilities && itemsStillInPool === 0) {
+                resultMessage.textContent = `Excellent! All ${correctCount} items sorted correctly!`;
+                resultMessage.className = 'success';
+            } else {
+                let message = `You got ${correctCount} correct out of ${totalItemsSorted} sorted items. `;
+                if (itemsStillInPool > 0) {
+                    message += `${itemsStillInPool} item(s) still unsorted (marked incorrect). `;
+                }
+                message += `Total items: ${totalResponsibilities}. Review the highlights.`;
+                resultMessage.textContent = message;
+                resultMessage.className = 'some-incorrect';
+            }
+            checkAnswersBtn.disabled = true;
+            checkAnswersBtn.textContent = 'Answers Checked';
+            deselectCurrentItem();
+        });
+
+    </script>
+</body>
+</html>

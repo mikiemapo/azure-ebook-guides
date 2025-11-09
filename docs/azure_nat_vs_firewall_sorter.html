@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAT Gateway vs. Azure Firewall - Feature Sorter (AZ-104)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --info-color: #0078d4;
+            /* Feature Colors */
+            --nat-gateway-color: #3498DB; /* A distinct blue for NAT Gateway */
+            --firewall-color: #E74C3C; /* A distinct red/orange for Firewall */
+            --selected-item-bg: #cce4ff;
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: var(--azure-bg-light);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sorter-container {
+            max-width: 900px; /* Adjusted for two main columns */
+            width: 100%;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark);
+            text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        h1 i {
+            margin-right: 10px;
+            color: var(--azure-blue);
+        }
+
+        .back-to-hub {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #e6f2ff;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .back-to-hub a {
+            text-decoration: none;
+            color: #005a9e;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .back-to-hub a i {
+            margin-right: 8px;
+        }
+
+        .instructions {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            background-color: var(--diagram-bg);
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .instructions strong {
+            color: var(--azure-blue-dark);
+        }
+
+        .main-layout {
+            display: flex;
+            flex-direction: column; /* Stack pool above zones on small screens */
+            gap: 20px;
+        }
+        @media (min-width: 768px) { /* Switch to row for wider screens */
+            .main-layout {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            .clickable-items-pool {
+                flex-basis: 35%; /* Pool takes up a bit less space */
+                max-height: 600px;
+                overflow-y: auto;
+            }
+            .drop-zones-container {
+                flex-basis: 60%; /* Zones take more space */
+            }
+        }
+
+        .clickable-items-pool, .drop-zone {
+            padding: 15px;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            background-color: var(--diagram-bg);
+            min-height: 150px; /* Ensure enough height */
+        }
+        .clickable-items-pool h3, .drop-zone h3 {
+            margin-top: 0;
+            text-align: center;
+            font-size: 1.1em; /* Slightly larger for emphasis */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 40px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 15px;
+        }
+
+        .drop-zones-container {
+            display: grid;
+            grid-template-columns: 1fr; /* Single column for zones */
+            gap: 20px;
+        }
+        
+        .drop-zone {
+            cursor: pointer;
+            transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .drop-zone:hover {
+            background-color: #e9ecef;
+        }
+
+        /* Drop Zone Specific Colors */
+        .drop-zone.nat-gateway-zone {
+            border-color: var(--nat-gateway-color);
+        }
+        .drop-zone.nat-gateway-zone h3 {
+            color: var(--nat-gateway-color);
+        }
+        .drop-zone.firewall-zone {
+            border-color: var(--firewall-color);
+        }
+        .drop-zone.firewall-zone h3 {
+            color: var(--firewall-color);
+        }
+       
+        .clickable-item {
+            background-color: var(--card-bg);
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-left: 5px solid var(--azure-blue); /* Default left border */
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 1px 2px var(--shadow-color);
+            transition: all 0.2s ease;
+            font-size: 0.9em; /* Slightly smaller text for items */
+            display: flex; /* For feedback icon alignment */
+            justify-content: space-between; /* Push feedback icon to right */
+            align-items: center;
+        }
+        .clickable-item:hover {
+            border-color: var(--azure-blue-dark);
+            transform: translateY(-2px);
+        }
+        .clickable-item.selected {
+            background-color: var(--selected-item-bg);
+            border: 2px solid var(--azure-blue-dark) !important; /* Override left border */
+            box-shadow: 0 2px 5px rgba(0, 120, 212, 0.3);
+        }
+        
+        .clickable-item i.feedback-icon {
+            font-size: 1.1em;
+            min-width: 1.2em; /* Ensure space for icon */
+            text-align: right;
+        }
+
+        .clickable-item.correct {
+            border-left-color: var(--success-color) !important;
+            background-color: #e7f3e7;
+        }
+        .clickable-item.incorrect {
+            border-left-color: var(--warning-color) !important;
+            background-color: #fdeceb;
+        }
+        .clickable-item.correct i.feedback-icon::before {
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            content: "\f00c"; /* Check mark */
+            color: var(--success-color);
+        }
+        .clickable-item.incorrect i.feedback-icon::before {
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            content: "\f00d"; /* Times mark */
+            color: var(--warning-color);
+        }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 30px auto 10px auto;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-light);
+            background-color: var(--success-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .submit-button:hover {
+            background-color: #0d6a0d;
+        }
+        .submit-button:disabled {
+            background-color: #94d3a2;
+            cursor: not-allowed;
+        }
+
+        #result-message {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none; /* Hidden by default */
+        }
+        #result-message.success {
+            background-color: #dff0d8;
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+        #result-message.some-incorrect {
+            background-color: #fcf8e3;
+            border: 1px solid #f0ad4e; /* Amber for some incorrect */
+            color: #8a6d3b;
+        }
+    </style>
+</head>
+<body>
+    <div class="sorter-container">
+        <h1><i class="fas fa-balance-scale"></i>NAT Gateway vs. Azure Firewall Sorter</h1>
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+        <p class="instructions"><strong>1. Tap a Feature/Characteristic</strong> to select it.<br><strong>2. Tap the Azure Service</strong> it primarily describes to move it there. Click "Check Answers" when done.</p>
+
+        <div class="main-layout">
+            <div id="items-pool" class="clickable-items-pool drop-zone" data-zone="pool">
+                <h3><i class="fas fa-bars"></i> Features & Characteristics</h3>
+                <!-- Clickable items will be injected here by JS -->
+            </div>
+
+            <div class="drop-zones-container">
+                <div id="nat-gateway-zone" class="drop-zone nat-gateway-zone" data-zone="nat_gateway">
+                    <h3><i class="fas fa-broadcast-tower"></i>Azure NAT Gateway</h3>
+                </div>
+                <div id="firewall-zone" class="drop-zone firewall-zone" data-zone="azure_firewall">
+                    <h3><i class="fas fa-fire-alt"></i>Azure Firewall</h3>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="check-answers-btn" class="submit-button">Check Answers</button>
+        <div id="result-message"></div>
+    </div>
+
+    <script>
+        const features = [
+            { id: 'feat_outbound_snat', text: 'Primary: Outbound-Only Internet SNAT', correctZone: 'nat_gateway' },
+            { id: 'feat_central_security', text: 'Primary: Centralized L3-L7 Network Security & Filtering', correctZone: 'azure_firewall' },
+            { id: 'feat_inbound_protection', text: 'Provides Inbound Traffic Protection (e.g., DNAT rules)', correctZone: 'azure_firewall' },
+            { id: 'feat_no_inbound_protection', text: 'No Direct Inbound Traffic Protection (Outbound Focus)', correctZone: 'nat_gateway' },
+            { id: 'feat_dedicated_subnet_fw', text: 'Requires Dedicated Subnet (AzureFirewallSubnet)', correctZone: 'azure_firewall' },
+            { id: 'feat_assoc_user_subnets', text: 'Associated Directly with User Subnets for Outbound', correctZone: 'nat_gateway' },
+            { id: 'feat_threat_intel', text: 'Includes Threat Intelligence Integration', correctZone: 'azure_firewall' },
+            { id: 'feat_snat_exhaustion', text: 'Prevents SNAT Port Exhaustion with Static IPs', correctZone: 'nat_gateway' },
+            { id: 'feat_fqdn_app_rules', text: 'Filters Traffic Based on FQDNs & Application Rules', correctZone: 'azure_firewall' },
+            { id: 'feat_simple_outbound_nat', text: 'Simpler Configuration for Basic Outbound NAT Needs', correctZone: 'nat_gateway' },
+            { id: 'feat_higher_cost_features', text: 'Generally Higher Cost, More Security Features', correctZone: 'azure_firewall' },
+            { id: 'feat_lower_cost_focused', text: 'Generally Lower Cost, Focused on Outbound NAT', correctZone: 'nat_gateway' }
+        ];
+
+        const itemsPoolEl = document.getElementById('items-pool');
+        const dropZoneElements = document.querySelectorAll('.drop-zone'); // Includes the pool initially
+        const checkAnswersBtnEl = document.getElementById('check-answers-btn');
+        const resultMessageEl = document.getElementById('result-message');
+        let activeSelectedItemEl = null;
+
+        function deselectCurrentItem() {
+            if (activeSelectedItemEl) {
+                activeSelectedItemEl.classList.remove('selected');
+                activeSelectedItemEl = null;
+            }
+        }
+        
+        // Shuffle features for variety
+        features.sort(() => 0.5 - Math.random());
+
+        features.forEach(featureData => {
+            const div = document.createElement('div');
+            div.classList.add('clickable-item');
+            div.id = featureData.id;
+            div.textContent = featureData.text; // Text only, icon added as feedback
+            div.dataset.correctZone = featureData.correctZone;
+
+            const feedbackIcon = document.createElement('i');
+            feedbackIcon.classList.add('feedback-icon'); // Class for styling feedback
+            div.appendChild(feedbackIcon); // Append feedback icon span to the item
+
+            itemsPoolEl.appendChild(div);
+
+            div.addEventListener('click', (e) => {
+                if (checkAnswersBtnEl.disabled) return; // Don't allow selection after check
+                const clickedItem = e.currentTarget;
+                if (activeSelectedItemEl === clickedItem) {
+                    deselectCurrentItem();
+                } else {
+                    deselectCurrentItem();
+                    activeSelectedItemEl = clickedItem;
+                    activeSelectedItemEl.classList.add('selected');
+                }
+                e.stopPropagation(); // Prevent event from bubbling to parent drop-zone if item is already in one
+            });
+        });
+
+        dropZoneElements.forEach(zone => {
+            zone.addEventListener('click', (e) => {
+                if (checkAnswersBtnEl.disabled) return; // Don't allow moving after check
+
+                // Ensure we're clicking the zone itself, not an item within it, to move the selected item
+                if (activeSelectedItemEl && (e.target === zone || e.target.closest('.drop-zone') === zone)) {
+                     if (!e.target.closest('.clickable-item')) { // Prevents moving if clicking on an item already in a zone
+                        zone.appendChild(activeSelectedItemEl);
+                        activeSelectedItemEl.classList.remove('correct', 'incorrect'); // Clear previous feedback
+                        deselectCurrentItem();
+                    }
+                }
+            });
+        });
+        
+        checkAnswersBtnEl.addEventListener('click', () => {
+            let correctCount = 0;
+            let totalItemsInSortingZones = 0; 
+            const allClickableItems = document.querySelectorAll('.clickable-item');
+
+            // Clear previous feedback styling
+            allClickableItems.forEach(item => {
+                item.classList.remove('correct', 'incorrect', 'selected');
+            });
+            deselectCurrentItem();
+
+
+            dropZoneElements.forEach(zone => {
+                if (zone.id !== 'items-pool') { // Only check items in the actual target drop zones
+                    const zoneType = zone.dataset.zone;
+                    zone.querySelectorAll('.clickable-item').forEach(item => {
+                        totalItemsInSortingZones++;
+                        const correctZoneForItem = item.dataset.correctZone;
+                        if (zoneType === correctZoneForItem) {
+                            item.classList.add('correct');
+                            correctCount++;
+                        } else {
+                            item.classList.add('incorrect');
+                        }
+                    });
+                }
+            });
+
+            // Mark items still in the pool as incorrect
+            itemsPoolEl.querySelectorAll('.clickable-item').forEach(item => {
+                item.classList.add('incorrect');
+            });
+
+            resultMessageEl.style.display = 'block';
+            const totalFeatures = features.length;
+            const itemsStillInPoolCount = itemsPoolEl.querySelectorAll('.clickable-item').length;
+
+            if (itemsStillInPoolCount === totalFeatures && totalFeatures > 0) {
+                 resultMessageEl.textContent = 'Please sort the features into the service columns!';
+                 resultMessageEl.className = 'some-incorrect';
+            } else if (correctCount === totalFeatures && itemsStillInPoolCount === 0) {
+                resultMessageEl.textContent = `Excellent! All ${correctCount} features sorted correctly!`;
+                resultMessageEl.className = 'success';
+            } else {
+                let messageText = `You sorted ${correctCount} out of ${totalItemsInSortingZones} items correctly. `;
+                if (itemsStillInPoolCount > 0) {
+                    messageText += `${itemsStillInPoolCount} feature(s) are still unsorted. `;
+                }
+                messageText += `Total features: ${totalFeatures}. Review the highlights.`;
+                resultMessageEl.textContent = messageText;
+                resultMessageEl.className = 'some-incorrect';
+            }
+            checkAnswersBtnEl.disabled = true;
+            checkAnswersBtnEl.textContent = 'Answers Checked';
+        });
+    </script>
+</body>
+</html>

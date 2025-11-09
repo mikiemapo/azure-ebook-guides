@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Networking Components - Purpose Sorter (AZ-104)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --info-color: #0078d4;
+            /* Feature Colors */
+            --network-main-color: #0078d4;
+            --security-color: #a4262c; 
+            --connectivity-color: var(--success-color);
+            --access-color: #ffb900; 
+            --routing-color: #6f42c1; 
+            --loadbalancing-color: var(--azure-blue);
+            --paas-access-color: var(--info-color);
+            --selected-item-bg: #cce4ff;
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: var(--azure-bg-light);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sorter-container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 20px auto;
+            padding: 25px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark);
+            text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        h1 i {
+            margin-right: 10px;
+            color: var(--network-main-color);
+        }
+
+        .back-to-hub {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #e6f2ff;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .back-to-hub a {
+            text-decoration: none;
+            color: #005a9e;
+            font-weight: bold;
+            font-size: 1.1em;
+        }
+        .back-to-hub a i {
+            margin-right: 8px;
+        }
+
+        .instructions {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 0.95em;
+            background-color: var(--diagram-bg);
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .instructions strong {
+            color: var(--network-main-color);
+        }
+
+        .main-layout {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        @media (min-width: 900px) {
+            .main-layout {
+                flex-direction: row;
+                justify-content: space-between;
+            }
+            .clickable-items-pool {
+                flex-basis: 25%;
+            }
+            .drop-zones-container {
+                flex-basis: 70%;
+            }
+        }
+
+        .clickable-items-pool, .drop-zone {
+            padding: 15px;
+            border: 2px dashed var(--border-color);
+            border-radius: 6px;
+            background-color: var(--diagram-bg);
+            min-height: 100px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .clickable-items-pool h3, .drop-zone h3 {
+            margin-top: 0;
+            text-align: center;
+            color: var(--azure-blue-dark);
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            min-height: 40px;
+        }
+
+        .drop-zones-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+        @media (min-width: 600px) {
+            .drop-zones-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        @media (min-width: 1000px) {
+            .drop-zones-container {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .drop-zone {
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .drop-zone:hover {
+            background-color: #e9ecef;
+        }
+
+        /* Drop Zone Specific Colors */
+        .drop-zone.filter-l34-zone {
+            border-color: var(--security-color);
+        }
+        .drop-zone.filter-l34-zone h3 {
+            color: var(--security-color);
+        }
+        .drop-zone.firewall-zone {
+            border-color: var(--security-color);
+            opacity: 0.8;
+        }
+        .drop-zone.firewall-zone h3 {
+            color: var(--security-color);
+        }
+        .drop-zone.vpn-zone {
+            border-color: var(--connectivity-color);
+        }
+        .drop-zone.vpn-zone h3 {
+            color: var(--connectivity-color);
+        }
+        .drop-zone.bastion-zone {
+            border-color: var(--access-color);
+        }
+        .drop-zone.bastion-zone h3 {
+            color: var(--access-color);
+        }
+        .drop-zone.privateendpoint-zone {
+            border-color: var(--paas-access-color);
+        }
+        .drop-zone.privateendpoint-zone h3 {
+            color: var(--paas-access-color);
+        }
+        .drop-zone.appgw-zone {
+            border-color: var(--loadbalancing-color);
+        }
+        .drop-zone.appgw-zone h3 {
+            color: var(--loadbalancing-color);
+        }
+        .drop-zone.routetable-zone {
+            border-color: var(--routing-color);
+        }
+        .drop-zone.routetable-zone h3 {
+            color: var(--routing-color);
+        }
+
+        .clickable-item {
+            background-color: var(--card-bg);
+            padding: 10px 15px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 1px 2px var(--shadow-color);
+            transition: all 0.2s ease;
+        }
+        .clickable-item:hover {
+            border-color: var(--azure-blue);
+            transform: scale(1.02);
+        }
+        .clickable-item.selected {
+            background-color: var(--selected-item-bg);
+            border: 2px solid var(--network-main-color);
+            box-shadow: 0 2px 5px rgba(0, 120, 212, 0.3);
+        }
+        .clickable-item-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .clickable-item-content i.item-icon {
+            color: var(--azure-blue);
+            font-size: 1.2em;
+            width: 20px;
+            text-align: center;
+        }
+        .clickable-text-container {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .item-text {
+            font-size: 0.95em;
+            font-weight: 600;
+        }
+        .clickable-item i.feedback-icon {
+            margin-left: auto;
+            font-size: 1.1em;
+            min-width: 1.2em;
+        }
+
+        .clickable-item.correct {
+            border-left: 5px solid var(--success-color) !important;
+            background-color: #e7f3e7;
+        }
+        .clickable-item.incorrect {
+            border-left: 5px solid var(--warning-color) !important;
+            background-color: #fdeceb;
+        }
+        .clickable-item.correct i.feedback-icon::before {
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            content: "\f00c";
+            color: var(--success-color);
+        }
+        .clickable-item.incorrect i.feedback-icon::before {
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            content: "\f00d";
+            color: var(--warning-color);
+        }
+
+        .submit-button {
+            display: block;
+            width: 100%;
+            max-width: 200px;
+            margin: 30px auto 10px auto;
+            padding: 12px 20px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--text-light);
+            background-color: var(--success-color);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+        .submit-button:hover {
+            background-color: #0d6a0d;
+        }
+        .submit-button:disabled {
+            background-color: #94d3a2;
+            cursor: not-allowed;
+        }
+
+        #result-message {
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+        #result-message.success {
+            background-color: #dff0d8;
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+        #result-message.some-incorrect {
+            background-color: #fcf8e3;
+            border: 1px solid #f0ad4e;
+            color: #8a6d3b;
+        }
+    </style>
+</head>
+<body>
+    <div class="sorter-container">
+        <h1><i class="fas fa-sitemap"></i>Azure Networking - Purpose Sorter</h1>
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+        <p class="instructions"><strong>1. Tap a Networking Component</strong> to select it.<br><strong>2. Tap the column describing its Primary Purpose</strong> to move it there. Click "Check Answers" when done.</p>
+
+        <div class="main-layout">
+            <div id="items-pool" class="clickable-items-pool drop-zone" data-zone="pool">
+                <h3><i class="fas fa-network-wired"></i> Networking Components</h3>
+            </div>
+
+            <div class="drop-zones-container">
+                <div id="filter-l34-zone" class="drop-zone filter-l34-zone" data-zone="filter_l34">
+                    <h3><i class="fas fa-user-shield"></i>L3/L4 Filtering (Subnet/NIC)</h3>
+                </div>
+                <div id="firewall-zone" class="drop-zone firewall-zone" data-zone="central_firewall">
+                    <h3><i class="fas fa-fire-alt"></i>Centralized Stateful L3-L7 Firewalling</h3>
+                </div>
+                <div id="vpn-zone" class="drop-zone vpn-zone" data-zone="secure_tunnels">
+                    <h3><i class="fas fa-shield-alt"></i>Secure Cross-Premises/VNet Tunnels</h3>
+                </div>
+                <div id="bastion-zone" class="drop-zone bastion-zone" data-zone="secure_rdp_ssh">
+                    <h3><i class="fas fa-user-secret"></i>Secure RDP/SSH to VMs (Portal)</h3>
+                </div>
+                <div id="privateendpoint-zone" class="drop-zone privateendpoint-zone" data-zone="private_paas">
+                    <h3><i class="fas fa-plug"></i>Private Access to PaaS Services</h3>
+                </div>
+                <div id="appgw-zone" class="drop-zone appgw-zone" data-zone="l7_lb_waf">
+                    <h3><i class="fas fa-exchange-alt"></i>L7 Web Load Balancing & Protection</h3>
+                </div>
+                <div id="routetable-zone" class="drop-zone routetable-zone" data-zone="custom_routing">
+                    <h3><i class="fas fa-route"></i>Custom Traffic Routing Control</h3>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="check-answers-btn" class="submit-button">Check Answers</button>
+        <div id="result-message"></div>
+    </div>
+
+    <script>
+        const components = [
+            { id: 'comp_nsg', text: 'NSG (Network Security Group)', correctZone: 'filter_l34', icon: 'fa-user-shield' },
+            { id: 'comp_az_firewall', text: 'Azure Firewall', correctZone: 'central_firewall', icon: 'fa-fire-alt' },
+            { id: 'comp_vpn_gw', text: 'VPN Gateway', correctZone: 'secure_tunnels', icon: 'fa-shield-alt' },
+            { id: 'comp_bastion', text: 'Azure Bastion', correctZone: 'secure_rdp_ssh', icon: 'fa-user-secret' },
+            { id: 'comp_priv_endpoint', text: 'Private Endpoints', correctZone: 'private_paas', icon: 'fa-plug' },
+            { id: 'comp_app_gw', text: 'Application Gateway + WAF', correctZone: 'l7_lb_waf', icon: 'fa-exchange-alt' },
+            { id: 'comp_route_table', text: 'Route Tables (UDRs)', correctZone: 'custom_routing', icon: 'fa-route' }
+        ];
+
+        const itemsPool = document.getElementById('items-pool');
+        const dropZoneElements = document.querySelectorAll('.drop-zone');
+        const checkAnswersBtn = document.getElementById('check-answers-btn');
+        const resultMessage = document.getElementById('result-message');
+        let activeSelectedItem = null;
+
+        function deselectCurrentItem() {
+            if (activeSelectedItem) {
+                activeSelectedItem.classList.remove('selected');
+                activeSelectedItem = null;
+            }
+        }
+
+        components.forEach(itemData => {
+            const div = document.createElement('div');
+            div.classList.add('clickable-item');
+            div.id = itemData.id;
+            div.dataset.correctZone = itemData.correctZone;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('clickable-item-content');
+
+            const iconEl = document.createElement('i');
+            iconEl.className = `fas ${itemData.icon} item-icon`;
+            
+            // Apply specific color to item icon based on its nature for better visual cue
+            if (itemData.correctZone === 'filter_l34' || itemData.correctZone === 'central_firewall') {
+                iconEl.style.color = 'var(--security-color)';
+            }
+            if (itemData.correctZone === 'secure_tunnels') {
+                iconEl.style.color = 'var(--connectivity-color)';
+            }
+            if (itemData.correctZone === 'secure_rdp_ssh') {
+                iconEl.style.color = 'var(--access-color)';
+            }
+            if (itemData.correctZone === 'private_paas') {
+                iconEl.style.color = 'var(--paas-access-color)';
+            }
+            if (itemData.correctZone === 'l7_lb_waf') {
+                iconEl.style.color = 'var(--loadbalancing-color)';
+            }
+            if (itemData.correctZone === 'custom_routing') {
+                iconEl.style.color = 'var(--routing-color)';
+            }
+
+            const textContainer = document.createElement('div');
+            textContainer.classList.add('clickable-text-container');
+
+            const itemText = document.createElement('span');
+            itemText.classList.add('item-text');
+            itemText.textContent = itemData.text;
+
+            const feedbackIcon = document.createElement('i');
+            feedbackIcon.classList.add('feedback-icon');
+
+            textContainer.appendChild(itemText);
+            contentDiv.appendChild(iconEl);
+            contentDiv.appendChild(textContainer);
+            contentDiv.appendChild(feedbackIcon);
+            div.appendChild(contentDiv);
+
+            itemsPool.appendChild(div);
+
+            div.addEventListener('click', (e) => {
+                if (checkAnswersBtn.disabled) return;
+                const clickedItem = e.currentTarget;
+                if (activeSelectedItem === clickedItem) {
+                    deselectCurrentItem();
+                } else {
+                    deselectCurrentItem();
+                    activeSelectedItem = clickedItem;
+                    activeSelectedItem.classList.add('selected');
+                }
+                e.stopPropagation();
+            });
+        });
+
+        dropZoneElements.forEach(zone => {
+            zone.addEventListener('click', (e) => {
+                if (checkAnswersBtn.disabled) return;
+                if (activeSelectedItem && (e.target === zone || e.target.closest('.drop-zone') === zone)) {
+                    if (!e.target.closest('.clickable-item')) {
+                        zone.appendChild(activeSelectedItem);
+                        activeSelectedItem.classList.remove('correct', 'incorrect');
+                        deselectCurrentItem();
+                    }
+                }
+            });
+        });
+        
+        checkAnswersBtn.addEventListener('click', () => {
+            let correctCount = 0;
+            let totalItemsInSortingZones = 0;
+            const allClickableItems = document.querySelectorAll('.clickable-item');
+
+            allClickableItems.forEach(item => {
+                item.classList.remove('correct', 'incorrect', 'selected');
+            });
+
+            dropZoneElements.forEach(zone => {
+                if (zone.id !== 'items-pool') {
+                    const zoneType = zone.dataset.zone;
+                    zone.querySelectorAll('.clickable-item').forEach(item => {
+                        totalItemsInSortingZones++;
+                        const correctZone = item.dataset.correctZone;
+                        if (zoneType === correctZone) {
+                            item.classList.add('correct');
+                            correctCount++;
+                        } else {
+                            item.classList.add('incorrect');
+                        }
+                    });
+                }
+            });
+
+            itemsPool.querySelectorAll('.clickable-item').forEach(item => {
+                item.classList.add('incorrect');
+            });
+
+            resultMessage.style.display = 'block';
+            const totalComponents = components.length;
+            const itemsStillInPool = itemsPool.querySelectorAll('.clickable-item').length;
+
+            if (itemsStillInPool === totalComponents && totalComponents > 0) {
+                resultMessage.textContent = 'Please sort the components into the purpose columns!';
+                resultMessage.className = 'some-incorrect';
+            } else if (correctCount === totalComponents && itemsStillInPool === 0) {
+                resultMessage.textContent = `Excellent! All ${correctCount} components sorted correctly!`;
+                resultMessage.className = 'success';
+            } else {
+                let message = `You got ${correctCount} correct out of ${totalItemsInSortingZones} sorted components. `;
+                if (itemsStillInPool > 0) {
+                    message += `${itemsStillInPool} component(s) still unsorted (marked incorrect). `;
+                }
+                message += `Total components: ${totalComponents}. Review the highlights.`;
+                resultMessage.textContent = message;
+                resultMessage.className = 'some-incorrect';
+            }
+            checkAnswersBtn.disabled = true;
+            checkAnswersBtn.textContent = 'Answers Checked';
+            deselectCurrentItem();
+        });
+    </script>
+</body>
+</html>

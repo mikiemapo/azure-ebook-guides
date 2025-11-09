@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Networking Components Quiz (AZ-104)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --correct-color: #107c10;
+            --incorrect-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --network-color: var(--azure-blue);
+        }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px 35px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark);
+            text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        h1 i { margin-right: 10px; color: var(--network-color); }
+
+        .question-block {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .question-block:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .question-text i {
+            margin-right: 8px;
+            color: var(--network-color); /* Default icon color for this quiz */
+        }
+
+        .options-list { list-style: none; padding-left: 0; margin: 0; }
+        .options-list li {
+            margin-bottom: 10px; padding: 8px 12px; border: 1px solid var(--border-color);
+            border-radius: 4px; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .options-list li label {
+            display: flex; align-items: center; cursor: pointer; width: 100%; font-size: 0.95em;
+        }
+        .options-list li input[type="radio"] {
+            margin-right: 12px; accent-color: var(--azure-blue); cursor: pointer;
+            width: 18px; height: 18px;
+        }
+        .options-list li:hover { background-color: #eef1f5; border-color: var(--azure-blue); }
+
+        /* Feedback Styles */
+        .feedback {
+            margin-top: 10px; padding: 8px 12px; border-radius: 4px; font-weight: 600;
+            display: none; font-size: 0.9em;
+        }
+        .feedback.correct {
+            background-color: #e7f3e7; border: 1px solid var(--correct-color); color: var(--correct-color);
+        }
+        .feedback.incorrect {
+            background-color: #fdeceb; border: 1px solid var(--incorrect-color); color: var(--incorrect-color);
+        }
+        .feedback i { margin-right: 6px; }
+
+        /* Highlight correct/incorrect options */
+        .options-list li.correct-answer-highlight { background-color: #dff0d8 !important; border-color: var(--correct-color) !important; }
+        .options-list li.incorrect-selection-highlight { background-color: #f2dede !important; border-color: var(--incorrect-color) !important; opacity: 0.7; }
+
+        .submit-button {
+            display: block; width: 100%; max-width: 200px; margin: 30px auto 10px auto; padding: 12px 20px;
+            font-size: 1.1em; font-weight: 600; color: var(--text-light); background-color: var(--success-color);
+            border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .submit-button:hover { background-color: #0d6a0d; }
+        .submit-button:active { transform: scale(0.98); }
+        .submit-button:disabled { background-color: #94d3a2; cursor: not-allowed; }
+
+        #score-area {
+            text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 20px; padding: 10px;
+            background-color: var(--diagram-bg); border-radius: 4px; border: 1px solid var(--border-color);
+            display: none; /* Hidden until checked */
+        }
+        #score-area i { margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1><i class="fas fa-network-wired"></i>Azure Networking Components Quiz</h1>
+        <!-- Add a "Back to Hub" link if desired -->
+        <div style="margin-bottom: 20px; padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: center;">
+            <a href="index.html" style="text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em;">
+                <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>Back to Study Hub
+            </a>
+        </div>
+
+        <form id="quiz-form">
+
+            <!-- Question 1: NSG Scope -->
+            <div class="question-block" data-question="1" data-correct="nic_subnet">
+                <p class="question-text"><i class="fas fa-user-shield"></i>Where can a Network Security Group (NSG) be associated to filter traffic?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q1" value="vnet_rg"> Virtual Network and Resource Group</label></li>
+                    <li><label><input type="radio" name="q1" value="nic_subnet"> Network Interface (NIC) and Subnet</label></li>
+                    <li><label><input type="radio" name="q1" value="vm_storage"> Virtual Machine and Storage Account</label></li>
+                    <li><label><input type="radio" name="q1" value="firewall_appgw"> Azure Firewall and Application Gateway</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 2: Azure Firewall Characteristic -->
+            <div class="question-block" data-question="2" data-correct="centralized_l7">
+                <p class="question-text"><i class="fas fa-fire-alt"></i>Which of these is a key characteristic of Azure Firewall that distinguishes it from NSGs?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q2" value="stateless"> It is a stateless filtering service.</label></li>
+                    <li><label><input type="radio" name="q2" value="distributed"> It is a distributed firewall applied directly to NICs.</label></li>
+                    <li><label><input type="radio" name="q2" value="no_log"> It does not provide logging capabilities.</label></li>
+                    <li><label><input type="radio" name="q2" value="centralized_l7"> It is a centralized, managed service with Layer 7 (e.g., FQDN) filtering capabilities.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 3: VPN Gateway Types -->
+            <div class="question-block" data-question="3" data-correct="s2s_p2s">
+                 <p class="question-text"><i class="fas fa-shield-alt"></i>What are the two primary types of VPN connections supported by Azure VPN Gateway?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q3" value="express_direct"> ExpressRoute Direct and ExpressRoute Global Reach</label></li>
+                    <li><label><input type="radio" name="q3" value="s2s_p2s"> Site-to-Site (S2S) and Point-to-Site (P2S)</label></li>
+                    <li><label><input type="radio" name="q3" value="vnet_peering_link"> VNet Peering and Private Link</label></li>
+                    <li><label><input type="radio" name="q3" value="bastion_firewall"> Azure Bastion and Azure Firewall</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 4: Azure Bastion Primary Benefit -->
+            <div class="question-block" data-question="4" data-correct="no_public_ip">
+                <p class="question-text"><i class="fas fa-user-secret"></i>What is the primary security benefit of using Azure Bastion for VM management?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q4" value="encrypt_disk"> It encrypts the VM's operating system disk.</label></li>
+                    <li><label><input type="radio" name="q4" value="load_balance"> It load balances RDP/SSH traffic across multiple VMs.</label></li>
+                    <li><label><input type="radio" name="q4" value="no_public_ip"> It allows RDP/SSH access via the Azure portal without requiring public IP addresses on the VMs.</label></li>
+                    <li><label><input type="radio" name="q4" value="firewall_rules"> It automatically configures NSG rules for RDP/SSH.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 5: Private Endpoint Purpose -->
+             <div class="question-block" data-question="5" data-correct="paas_private_ip">
+                <p class="question-text"><i class="fas fa-plug"></i>What is the main purpose of an Azure Private Endpoint?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q5" value="public_access_paas"> To provide a public IP address for accessing PaaS services.</label></li>
+                    <li><label><input type="radio" name="q5" value="connect_vnets"> To connect two Azure Virtual Networks together.</label></li>
+                    <li><label><input type="radio" name="q5" value="paas_private_ip"> To provide a private IP address from your VNet to access Azure PaaS services, keeping traffic on the Microsoft network.</label></li>
+                    <li><label><input type="radio" name="q5" value="filter_paas"> To filter traffic between PaaS services using NSG-like rules.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 6: App Gateway + WAF -->
+             <div class="question-block" data-question="6" data-correct="l7_waf">
+                <p class="question-text"><i class="fas fa-exchange-alt"></i>What capabilities does Azure Application Gateway offer, especially when combined with its Web Application Firewall (WAF) SKU?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q6" value="l3_filter"> Basic Layer 3/4 network filtering only.</label></li>
+                    <li><label><input type="radio" name="q6" value="vpn_connect"> Secure VPN connectivity to on-premises networks.</label></li>
+                    <li><label><input type="radio" name="q6" value="l7_waf"> Layer 7 (HTTP/S) load balancing, SSL termination, and protection against common web exploits.</label></li>
+                    <li><label><input type="radio" name="q6" value="dns_resolve"> Primary DNS resolution for Azure services.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 7: Route Tables (UDRs) -->
+             <div class="question-block" data-question="7" data-correct="override_routing">
+                <p class="question-text"><i class="fas fa-route"></i>What is the primary function of Route Tables with User-Defined Routes (UDRs) in Azure?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q7" value="define_ip_ranges"> To define IP address ranges for subnets.</label></li>
+                    <li><label><input type="radio" name="q7" value="load_balance_traffic"> To load balance traffic across multiple virtual machines.</label></li>
+                    <li><label><input type="radio" name="q7" value="override_routing"> To override Azure's default system routing and control how traffic is routed, often to a Network Virtual Appliance (NVA).</label></li>
+                    <li><label><input type="radio" name="q7" value="connect_onprem"> To establish encrypted connections to on-premises networks.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <button type="button" id="submit-quiz" class="submit-button">Check Answers</button>
+            <div id="score-area"></div>
+
+        </form>
+    </div>
+
+    <script>
+        // JavaScript for quiz functionality (same as previous quizzes)
+        const submitButton = document.getElementById('submit-quiz');
+        const quizForm = document.getElementById('quiz-form');
+        const scoreArea = document.getElementById('score-area');
+        const questionBlocks = document.querySelectorAll('.question-block');
+
+        submitButton.addEventListener('click', () => {
+            let score = 0;
+            const totalQuestions = questionBlocks.length;
+
+            questionBlocks.forEach(block => {
+                const questionNumber = block.dataset.question;
+                const correctAnswer = block.dataset.correct;
+                const feedbackEl = block.querySelector('.feedback');
+                const optionsList = block.querySelector('.options-list');
+                const selectedOptionInput = optionsList.querySelector(`input[name="q${questionNumber}"]:checked`);
+
+                optionsList.querySelectorAll('li').forEach(li => {
+                    li.classList.remove('correct-answer-highlight', 'incorrect-selection-highlight');
+                });
+
+                if (selectedOptionInput) {
+                    const userAnswer = selectedOptionInput.value;
+                    const selectedLi = selectedOptionInput.closest('li');
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        feedbackEl.innerHTML = `<i class="fas fa-check-circle"></i> Correct!`;
+                        feedbackEl.className = 'feedback correct';
+                        selectedLi.classList.add('correct-answer-highlight');
+                    } else {
+                        feedbackEl.innerHTML = `<i class="fas fa-times-circle"></i> Incorrect. The correct answer concept is '${correctAnswer}'. Review the networking guide.`;
+                        feedbackEl.className = 'feedback incorrect';
+                        selectedLi.classList.add('incorrect-selection-highlight');
+                        const correctLi = optionsList.querySelector(`input[value="${correctAnswer}"]`).closest('li');
+                         if (correctLi) {
+                             correctLi.classList.add('correct-answer-highlight');
+                         }
+                    }
+                } else {
+                    feedbackEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Please select an answer.`;
+                     feedbackEl.className = 'feedback incorrect';
+                }
+                feedbackEl.style.display = 'block';
+            });
+
+            scoreArea.innerHTML = `<i class="fas fa-star"></i> Your Score: ${score} out of ${totalQuestions}`;
+            scoreArea.style.display = 'block';
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Answers Checked';
+        });
+    </script>
+
+</body>
+</html>

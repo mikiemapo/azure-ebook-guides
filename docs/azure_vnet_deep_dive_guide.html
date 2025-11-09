@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Virtual Networks (VNets) Deep Dive (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors for VNet Guide */
+            --vnet-color: #0072C6; /* A distinct blue for VNet */
+            --subnet-color: #1E8449; 
+            --ipaddress-color: #F39C12; 
+            --dns-color: #8E44AD;
+            --peering-color: #2980B9;
+            --routing-color: #E74C3C;
+            --nat-color: #34495E;
+            /* New/corrected colors for endpoints, firewalls */
+            --service-endpoint-color: #3498db; 
+            --private-link-color: #8e44ad; 
+            --firewall-color: #E74C3C; /* Consistent with routing, or can be distinct if needed */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6; 
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--vnet-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-network-wired { font-size: 1.1em; } 
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--vnet-color); }
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1200px) { 
+            .card-container { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; } 
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+        }
+        /* Header colors for VNet guide cards */
+        .card-header.vnet-header { background-color: var(--vnet-color); border-bottom-color: #00579B;}
+        .card-header.vnet-header:hover { background-color: #00579B;}
+        /* Add other header colors as we define more cards */
+        .card-header.default-summary-header { background-color: var(--azure-blue-dark); border-bottom-color: #004578;} 
+        .card-header.default-summary-header:hover { background-color: #004578;}
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+ 
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; 
+            padding: 0 18px; 
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); 
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 3000px; /* Increased max-height for potentially long cards */
+            opacity: 1;
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            overflow-y: auto;
+        }
+
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { font-size: 0.9em; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--vnet-color); 
+          }
+        
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; 
+            justify-content: space-around; gap: 10px; flex-wrap: wrap;
+        }
+        .diagram-box {
+            background-color: #fff; padding: 8px 12px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px; font-size: 0.9em;
+        }
+        .diagram-box i { font-size: 1.6em; }
+        .diagram-box strong { font-size: 1em; color: var(--azure-blue-dark); margin-bottom: 3px;}
+        .diagram-box span { font-size: 0.85em; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; margin: 0 5px; align-self: center;}
+        
+        .key-point { font-weight: 600; color: var(--vnet-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .important-note { background-color: #e0f0ff; border-left: 4px solid var(--vnet-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--vnet-color); margin-right: 8px; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-network-wired"></i>Azure Virtual Networks (VNets) Deep Dive</h1>
+        <p class="instructions">Explore Azure Virtual Networks (VNets), subnets, IP addressing, DNS, peering, and routing. Foundational for AZ-104. <strong>Click/Tap</strong> headers.</p>
+
+        <div class="card-container">
+
+            <!-- Card 1: What is an Azure Virtual Network (VNet)? -->
+            <div class="card">
+                <input type="checkbox" id="what-is-vnet-toggle" class="card-toggle" checked> 
+                <label for="what-is-vnet-toggle" class="card-header vnet-header">
+                    <h2><i class="fas fa-cloud"></i>What is an Azure Virtual Network (VNet)?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--vnet-color);"><i class="fas fa-project-diagram"></i>Your Private Network in Azure</h3>
+                    <p class="description">An Azure Virtual Network (VNet) is the fundamental building block for your private network in Azure. It provides a logically isolated section of the Azure cloud where you can launch Azure resources.</p>
+
+                    <h4>Core Purpose:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-lock"></i>Enable <span class="key-point">secure communication</span> between Azure resources.</li>
+                        <li><i class="fa-li fas fa-globe-americas"></i>Allow communication with the <span class="key-point">internet</span> (inbound and outbound, as configured).</li>
+                        <li><i class="fa-li fas fa-building"></i>Facilitate communication with <span class="key-point">on-premises networks</span> (hybrid connectivity).</li>
+                    </ul>
+
+                    <h4>Key Capabilities:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-sitemap"></i><strong>Logical Isolation:</strong> VNets are isolated from each other by default.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i><strong>Traffic Filtering:</strong> Control traffic flow using Network Security Groups (NSGs) and Network Virtual Appliances (NVAs).</li>
+                        <li><i class="fa-li fas fa-route"></i><strong>Traffic Routing:</strong> Customize routing with User Defined Routes (UDRs) or Border Gateway Protocol (BGP) with VPN/ExpressRoute.</li>
+                        <li><i class="fa-li fas fa-link"></i><strong>Connectivity:</strong> Connect VNets using VNet Peering; connect to on-prem using VPN Gateways or ExpressRoute.</li>
+                    </ul>
+                    
+                    <p>Think of a VNet as your own private network datacenter in the cloud, offering similar capabilities to a traditional on-premises network but with Azure's scalability, availability, and isolation benefits.</p>
+                    <p><strong>AZ-104 Focus:</strong> Understanding that VNets are the foundation for Azure networking, enabling private IP communication and segmentation for your Azure resources.</p>
+                </div>
+            </div>
+
+            <!-- Card 2: VNet Address Space & Subnets -->
+            <div class="card">
+                <input type="checkbox" id="vnet-address-subnet-toggle" class="card-toggle">
+                <label for="vnet-address-subnet-toggle" class="card-header" style="background-color: var(--subnet-color);">
+                    <h2><i class="fas fa-map-signs"></i>VNet Address Space & Subnets</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--subnet-color);"><i class="fas fa-ruler-combined"></i>Defining Your Network Boundaries</h3>
+                    <p class="description">Properly planning your VNet's address space and segmenting it into subnets is crucial for organization, security, and future growth.</p>
+
+                    <h4><i class="fas fa-network-wired" style="color:var(--vnet-color);"></i>1. VNet Address Space</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-pencil-ruler"></i>When you create a VNet, you must define one or more <span class="key-point">private IP address ranges</span> (CIDR blocks).</li>
+                        <li><i class="fa-li fas fa-book"></i>Recommended to use address ranges enumerated in <span class="key-point">RFC 1918</span>:
+                            <ul>
+                                <li><code class="code-term">10.0.0.0 - 10.255.255.255</code> (10.0.0.0/8 prefix)</li>
+                                <li><code class="code-term">172.16.0.0 - 172.31.255.255</code> (172.16.0.0/12 prefix)</li>
+                                <li><code class="code-term">192.168.0.0 - 192.168.255.255</code> (192.168.0.0/16 prefix)</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-exclamation-triangle"></i>The address space <span class="key-point">must be unique</span> and should not overlap with your other network ranges (on-premises or other Azure VNets you plan to connect to).</li>
+                        <li><i class="fa-li fas fa-edit"></i>Once a VNet is created, you can add more address spaces, but you <span class="warning-text">cannot change an existing address space</span> if resources are deployed in it. Plan carefully!</li>
+                    </ul>
+
+                    <h4><i class="fas fa-th-large" style="color:var(--subnet-color);"></i>2. Subnets</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-divide"></i>Subnets allow you to <span class="key-point">segment your VNet</span> into one or more smaller IP address ranges.</li>
+                        <li><i class="fa-li fas fa-sitemap"></i>Each subnet must reside entirely within the VNet's address space.</li>
+                        <li><i class="fa-li fas fa-lock"></i>Each subnet must have a unique address range within the VNet, specified in CIDR notation (e.g., <code class="code-term">10.0.1.0/24</code>).</li>
+                        <li><i class="fa-li fas fa-server"></i>Azure resources (like VMs, App Service with VNet integration) are deployed <span class="key-point">into specific subnets</span>.</li>
+                        <li><i class="fa-li fas fa-shield-alt"></i>Used for:
+                            <ul>
+                                <li>Logical organization of resources (e.g., web tier, app tier, database tier).</li>
+                                <li>Applying specific Network Security Groups (NSGs) or Route Tables.</li>
+                                <li>Some Azure services require dedicated subnets (e.g., Azure Bastion, VPN Gateway Subnet, Azure Firewall Subnet).</li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4><i class="fas fa-ban" style="color:var(--warning-color);"></i>3. Azure Reserved IP Addresses in Subnets</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-info-circle"></i>For each subnet, Azure reserves the <span class="key-point">first four IP addresses and the last IP address</span>. These cannot be assigned to resources.</li>
+                        <li>Example for subnet <code class="code-term">192.168.1.0/24</code>:
+                            <ul>
+                                <li><code class="code-term">192.168.1.0</code>: Network address.</li>
+                                <li><code class="code-term">192.168.1.1</code>: Reserved by Azure for the default gateway.</li>
+                                <li><code class="code-term">192.168.1.2</code>, <code class="code-term">192.168.1.3</code>: Reserved by Azure to map Azure DNS IPs to the VNet space.</li>
+                                <li><code class="code-term">192.168.1.255</code>: Network broadcast address.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-calculator"></i>Therefore, the smallest supported IPv4 subnet is /29 (8 IPs, 3 usable after Azure reserves 5). The largest is /2.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand RFC 1918 ranges. Know how to plan non-overlapping VNet address spaces. Understand subnetting, CIDR notation, and the 5 reserved IPs in each subnet. Recognize that some services require dedicated subnets.</p>
+                </div>
+            </div>
+
+            <!-- Card 3: IP Addressing in VNets (Public & Private) -->
+            <div class="card">
+                <input type="checkbox" id="vnet-ipaddressing-toggle" class="card-toggle">
+                <label for="vnet-ipaddressing-toggle" class="card-header" style="background-color: var(--ipaddress-color); color:var(--text-dark);">
+                    <h2><i class="fas fa-map-marked-alt"></i>IP Addressing in VNets</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--ipaddress-color);"><i class="fas fa-digital-tachograph"></i>Private and Public IPs</h3>
+                    <p class="description">Azure resources in a VNet use private IPs for internal communication, and can optionally use public IPs for internet communication.</p>
+
+                    <h4><i class="fas fa-lock-open" style="color:var(--vnet-color);"></i>1. Private IP Addresses</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-network-wired"></i>Assigned to resources (e.g., VM NICs, internal load balancers) from the <span class="key-point">address range of the subnet</span> they are in.</li>
+                        <li><i class="fa-li fas fa-link"></i>Used for communication within the VNet, with peered VNets, and with on-premises networks connected via VPN/ExpressRoute.</li>
+                        <li><i class="fa-li fas fa-retweet"></i><strong>Allocation Methods:</strong>
+                            <ul>
+                                <li><code class="code-term">Dynamic</code> (Default): Azure assigns the next available unreserved IP from the subnet. May change if the resource is stopped (deallocated) and restarted.</li>
+                                <li><code class="code-term">Static</code>: You specify an available IP address from the subnet. The IP remains assigned to the resource until the resource is deleted or the static assignment is changed. <span class="key-point">Recommended for servers providing services (e.g., DNS servers, domain controllers, app servers with fixed IPs).</span></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <h4><i class="fas fa-globe" style="color:var(--success-color);"></i>2. Public IP Addresses (PIP)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-wifi"></i>Enable Azure resources to communicate <span class="key-point">inbound from the internet</span> and <span class="key-point">outbound to the internet</span>.</li>
+                        <li><i class="fa-li fas fa-plug"></i>Can be associated with resources like VM NICs, public load balancers, Application Gateways, VPN Gateways, Azure Firewall.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i><strong>SKUs:</strong>
+                            <ul>
+                                <li><code class="code-term">Basic</code>: Older SKU. Open by default (NSG recommended). No zone-redundancy. Dynamic or Static allocation (dynamic may change on stop/deallocate). *Being retired September 2025.*</li>
+                                <li><code class="code-term">Standard</code>: <span class="key-point">Recommended.</span> Secure by default (NSG required for inbound traffic). Supports Availability Zones (can be non-zonal, zonal, or zone-redundant). Static allocation only.</li>
+                            </ul>
+                        </li>
+                         <li><i class="fa-li fas fa-retweet"></i><strong>Allocation Method for Standard SKU:</strong> Always <code class="code-term">Static</code>. The IP address is assigned immediately and released only when the Public IP resource is deleted.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Differentiate private vs. public IPs. Understand static vs. dynamic allocation for both. Know Basic vs. Standard Public IP SKUs and their key differences (security, zones, retirement of Basic).</p>
+                </div>
+            </div>
+
+                        <!-- Card: Understanding SKUs in Azure (Focus on Public IP) -->
+            <div class="card">
+                <input type="checkbox" id="azure-skus-publicip-toggle" class="card-toggle">
+                <label for="azure-skus-publicip-toggle" class="card-header" style="background-color: #4B0082;"> <!-- Indigo color for SKUs -->
+                    <h2><i class="fas fa-tags"></i>Understanding SKUs (Focus: Public IP)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:#4B0082;"><i class="fas fa-cogs"></i>Service Tiers, Capabilities & Pricing</h3>
+                    <p class="description">In Azure, a SKU (Stock Keeping Unit) defines the capabilities, performance level, features, and pricing of a specific Azure resource or service. Think of SKUs as different "editions" or "models."</p>
+
+                    <h4><i class="fas fa-info-circle" style="color:var(--azure-blue);"></i>General Concept of SKUs</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-check"></i>Most Azure services offer multiple SKUs.</li>
+                        <li><i class="fa-li fas fa-list-alt"></i>Examples:
+                            <ul>
+                                <li><strong>App Service Plans:</strong> Free, Shared, Basic (B1), Standard (S1), Premium (P1v3), Isolated. Each has different CPU, memory, and features.</li>
+                                <li><strong>Virtual Machines:</strong> Sizes like Standard_D2s_v3, Standard_E4s_v3 act as SKUs defining compute power.</li>
+                                <li><strong>Storage Accounts:</strong> Standard vs. Premium performance tiers.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-dollar-sign"></i>Choosing a SKU directly impacts <span class="key-point">cost, performance, and available features</span>.</li>
+                    </ul>
+
+                    <h4 style="margin-top:15px;"><i class="fas fa-network-wired" style="color:var(--ipaddress-color);"></i>Public IP Address SKUs</h4>
+                    <p class="description">When creating a Public IP address resource (used with VM NICs, Load Balancers, etc.), you must choose a SKU. This choice is critical for functionality and security.</p>
+                    
+                    <table class="comparison-table" style="width:100%; border-collapse: collapse; margin-top:10px; font-size:0.9em;">
+                        <thead>
+                            <tr>
+                                <th style="border:1px solid var(--border-color); padding:8px; background-color:var(--diagram-bg);">Feature</th>
+                                <th style="border:1px solid var(--border-color); padding:8px; background-color:var(--diagram-bg);">Basic SKU Public IP</th>
+                                <th style="border:1px solid var(--border-color); padding:8px; background-color:var(--diagram-bg);">Standard SKU Public IP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><strong>Security Model</strong></td>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><span class="warning-text">Open by default.</span> NSG recommended but optional for inbound.</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><span class="success-color">Secure by default.</span> NSG <span class="key-point">required</span> for inbound traffic.</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><strong>Allocation Method</strong></td>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Dynamic or Static. (Dynamic may change on VM deallocation).</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><span class="key-point">Always Static.</span></td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><strong>Availability Zones</strong></td>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><span class="warning-text">Not supported.</span></td>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><span class="success-color">Supported.</span> Can be non-zonal, zonal, or zone-redundant.</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><strong>Load Balancer Integration</strong></td>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Basic Load Balancer.</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><span class="key-point">Standard Load Balancer</span> (which also requires Standard SKU).</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><strong>NAT Gateway Integration</strong></td>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><span class="warning-text">Not supported.</span></td>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><span class="success-color">Supported.</span></td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><strong>Retirement</strong></td>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><span class="warning-text">Being retired Sept 30, 2025.</span></td>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Current, recommended SKU.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p class="important-note" style="margin-top:15px; border-left-color: #4B0082; background-color: #f0e6ff;">
+                        <i class="fas fa-exclamation-triangle" style="color:#4B0082;"></i><strong>Key Implication:</strong> For most new deployments, especially those requiring high availability or specific security postures, <span class="key-point">Standard SKU Public IPs are the recommended choice.</span> Basic SKU Public IPs should generally be avoided due to their upcoming retirement and limited features.
+                    </p>
+                    
+                    <p><strong>AZ-104 Focus:</strong></p>
+                    <ul>
+                        <li><i class="fa-li fas fa-check"></i>Understand the difference between Basic and Standard Public IP SKUs.</li>
+                        <li><i class="fa-li fas fa-check"></i>Know that Standard SKU is secure by default and supports Availability Zones.</li>
+                        <li><i class="fa-li fas fa-check"></i>Be aware of the retirement of Basic SKU Public IPs.</li>
+                        <li><i class="fa-li fas fa-check"></i>Recognize that the choice of Public IP SKU can affect compatibility with other services (e.g., Standard Load Balancer).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Card 4: DNS in Azure VNets -->
+            <div class="card">
+                <input type="checkbox" id="vnet-dns-toggle" class="card-toggle">
+                <label for="vnet-dns-toggle" class="card-header" style="background-color: var(--dns-color);">
+                    <h2><i class="fas fa-search-location"></i>DNS in Azure VNets</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--dns-color);"><i class="fas fa-book-reader"></i>Name Resolution for Resources</h3>
+                    <p class="description">Domain Name System (DNS) translates human-readable domain names into IP addresses. Azure provides options for DNS resolution within and for your VNets.</p>
+
+                    <h4><i class="fas fa-cloud" style="color:var(--azure-blue);"></i>1. Azure-Provided DNS (Default)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-magic"></i>When a VNet is created, it uses Azure's internal DNS service by default.</li>
+                        <li><i class="fa-li fas fa-network-wired"></i>Provides name resolution for VMs and PaaS services <span class="key-point">within the same VNet</span> (e.g., <code class="code-term">VM1</code> can resolve <code class="code-term">VM2</code> by hostname).</li>
+                        <li><i class="fa-li fas fa-globe"></i>Can resolve public internet domain names.</li>
+                        <li><i class="fa-li fas fa-info-circle"></i>Cannot resolve names between different VNets (unless using Private DNS Zones linked to multiple VNets).</li>
+                        <li><i class="fa-li fas fa-cogs"></i>You cannot manage the records in Azure-provided DNS.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-user-cog" style="color:var(--text-dark);"></i>2. Custom DNS Servers</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-server"></i>You can configure your VNet (or individual NICs) to use your own DNS servers.</li>
+                        <li><i class="fa-li fas fa-building"></i><strong>Common Use Cases:</strong>
+                            <ul>
+                                <li>Resolving on-premises Active Directory domain names.</li>
+                                <li>Using specific corporate DNS servers for policy or logging.</li>
+                                <li>Advanced DNS features not provided by Azure DNS.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-exclamation-triangle"></i>If using custom DNS, ensure your custom DNS servers can resolve Azure hostnames (e.g., by forwarding queries for <code class="code-term">*.cloudapp.azure.com</code> to Azure's recursive resolver at <code class="code-term">168.63.129.16</code>, or by managing Azure DNS records themselves).</li>
+                    </ul>
+                    
+                    <h4><i class="fas fa-signature" style="color:var(--success-color);"></i>3. Public IP DNS Name Label</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-globe-americas"></i>For a <span class="key-point">Public IP address resource</span>, you can assign a DNS name label.</li>
+                        <li><i class="fa-li fas fa-link"></i>This creates an A record in an Azure-managed public DNS zone (e.g., <code class="code-term">myapp.eastus.cloudapp.azure.com</code>).</li>
+                        <li><i class="fa-li fas fa-info-circle"></i>Provides a publicly resolvable FQDN for your resource.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-eye-slash" style="color:var(--vnet-color);"></i>4. Azure Private DNS Zones</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-lock"></i>Provides a private DNS service for your VNets. You create and manage your own DNS zones (e.g., <code class="code-term">corp.internal</code>).</li>
+                        <li><i class="fa-li fas fa-link"></i>Link a Private DNS Zone to one or more VNets. VMs in linked VNets can resolve records in the zone.</li>
+                        <li><i class="fa-li fas fa-autorenew"></i>Supports auto-registration of VM DNS records.</li>
+                        <li><i class="fa-li fas fa-sitemap"></i>Enables name resolution across peered VNets (by linking the zone to all peered VNets).</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand default Azure DNS behavior. Know when and how to use custom DNS servers. Understand Public IP DNS name labels. Know the purpose of Azure Private DNS Zones for private resolution across VNets.</p>
+                </div>
+            </div>
+
+            <!-- Card 5: VNet Peering -->
+            <div class="card">
+                <input type="checkbox" id="vnet-peering-toggle" class="card-toggle">
+                <label for="vnet-peering-toggle" class="card-header" style="background-color: var(--peering-color);">
+                    <h2><i class="fas fa-link"></i>VNet Peering</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--peering-color);"><i class="fas fa-project-diagram"></i>Connecting Virtual Networks</h3>
+                    <p class="description">VNet peering enables you to seamlessly connect two Azure Virtual Networks. Once peered, the VNets appear as one for connectivity purposes, allowing resources in either VNet to communicate with each other using private IP addresses.</p>
+
+                    <div class="diagram">
+                        <div class="diagram-box" style="border-color:var(--peering-color);"><i class="fas fa-network-wired" style="color:var(--vnet-color)"></i><span>VNet A</span><span>(e.g., 10.1.0.0/16)</span></div>
+                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 10px;">
+                             <i class="fas fa-arrows-alt-h" style="color:var(--peering-color); font-size:1.5em;"></i>
+                             <span style="font-size:0.8em; font-weight:bold;">Peering Link</span>
+                        </div>
+                        <div class="diagram-box" style="border-color:var(--peering-color);"><i class="fas fa-network-wired" style="color:var(--vnet-color)"></i><span>VNet B</span><span>(e.g., 10.2.0.0/16)</span></div>
+                    </div>
+                    <span class="diagram-label">Traffic flows privately over Azure backbone.</span>
+
+                    <h4>Types of VNet Peering:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-map-pin"></i><strong>Regional VNet Peering:</strong> Connecting VNets within the <span class="key-point">same Azure region</span>.</li>
+                        <li><i class="fa-li fas fa-globe-americas"></i><strong>Global VNet Peering:</strong> Connecting VNets in <span class="key-point">different Azure regions</span>. (Subject to inter-region data transfer costs).</li>
+                    </ul>
+
+                    <h4>Key Characteristics & Benefits:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-route"></i>Traffic between peered VNets is <span class="key-point">private</span> and remains on the Microsoft Azure backbone network.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i><span class="key-point">Low latency, high bandwidth</span> connectivity.</li>
+                        <li><i class="fa-li fas fa-not-equal"></i>Address spaces of peered VNets <span class="warning-text">cannot overlap</span>.</li>
+                        <li><i class="fa-li fas fa-arrows-alt-h"></i>Peering is <span class="key-point">non-transitive</span>. If VNet A is peered with VNet B, and VNet B is peered with VNet C, VNet A is NOT automatically peered with VNet C. A separate peering must be established.</li>
+                        <li><i class="fa-li fas fa-shield-alt"></i>NSGs can be applied to control traffic flow between peered VNets.</li>
+                        <li><i class="fa-li fas fa-door-open"></i><strong>Gateway Transit:</strong> Allows a peered VNet to use the VPN/ExpressRoute gateway in another peered VNet to connect to on-premises or other networks. Reduces need for multiple gateways.
+                            <ul><li>The VNet with the gateway must enable "Allow gateway transit."</li><li>The VNet using the remote gateway must enable "Use remote gateway."</li></ul>
+                        </li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand regional vs. global peering. Know the non-transitive nature. Crucially, understand non-overlapping address space requirement. Be familiar with Gateway Transit configuration and use cases.</p>
+                </div>
+            </div>
+
+                        <!-- Card: Intro to Azure VPN Gateways -->
+            <div class="card">
+                <input type="checkbox" id="vpn-gateway-intro-toggle" class="card-toggle">
+                <label for="vpn-gateway-intro-toggle" class="card-header" style="background-color: #1ABC9C;"> <!-- A distinct teal color -->
+                    <h2><i class="fas fa-lock"></i>Intro to Azure VPN Gateways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:#1ABC9C;"><i class="fas fa-route"></i>Creating Secure Tunnels to Your VNet</h3>
+                    <p class="description">An Azure VPN Gateway is a specific type of Virtual Network Gateway that sends encrypted traffic between your Azure Virtual Network and other locations over the public internet.</p>
+
+                    <h4>Core Purpose:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-shield-alt"></i>To establish <span class="key-point">secure, encrypted connections</span> to your VNet from outside of Azure's private network.</li>
+                        <li><i class="fa-li fas fa-key"></i>It acts as the secure "front door" for your VNet for specific types of remote connections.</li>
+                    </ul>
+                    
+                    <div class="diagram">
+                        <div class="diagram-box" style="border-color:#1ABC9C;">
+                           <i class="fas fa-building" style="color:var(--text-dark)"></i>
+                           <strong>On-Premises / Remote User</strong>
+                        </div>
+                        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; margin:0 10px;">
+                             <i class="fas fa-globe-americas" style="color:var(--azure-blue)"></i>
+                             <span style="font-size:0.8em; font-weight:bold;">Encrypted Tunnel (Internet)</span>
+                        </div>
+                         <div class="diagram-box" style="border-color:#1ABC9C;">
+                           <i class="fas fa-dungeon" style="color:var(--vnet-color)"></i> <!-- fas fa-dungeon is a good icon for a gateway -->
+                           <strong>Azure VPN Gateway</strong>
+                           <span>(in GatewaySubnet)</span>
+                        </div>
+                    </div>
+
+                    <h4>Key Characteristics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-sitemap"></i><strong>Deployment:</strong> A VPN Gateway is deployed into a special, dedicated subnet in your VNet that <span class="key-point">must be named `GatewaySubnet`</span>.</li>
+                        <li><i class="fa-li fas fa-server"></i><strong>Underlying Resources:</strong> It is a managed service, but it consists of two or more Azure VMs (in an active-standby or active-active configuration) that Azure manages for you.</li>
+                         <li><i class="fa-li fas fa-tachometer-alt"></i><strong>SKUs:</strong> Comes in different SKUs (e.g., `VpnGw1`, `VpnGw2`, `VpnGw1AZ`) which determine performance, throughput, and number of connections. The `Basic` SKU is not recommended for production.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand that a VPN Gateway is the resource you deploy to create secure, encrypted tunnels over the internet. Know that it requires a dedicated subnet named `GatewaySubnet`.</p>
+                </div>
+            </div>
+
+                        <!-- Card: Differentiator: VPN Connection Types -->
+            <div class="card">
+                <input type="checkbox" id="vpn-types-toggle" class="card-toggle">
+                <label for="vpn-types-toggle" class="card-header" style="background-color: #E67E22;"> <!-- A distinct orange color -->
+                    <h2><i class="fas fa-balance-scale-left"></i>Differentiator: VPN Connection Types</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:#E67E22;"><i class="fas fa-question-circle"></i>Which VPN Connection to Use?</h3>
+                    <p class="description">Choosing the right VPN connection type depends on what you are connecting to your Azure VNet.</p>
+
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Connection Type</th>
+                                <th>Connects What?</th>
+                                <th>Primary Use Case</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Site-to-Site (S2S)</strong></td>
+                                <td>An <span class="key-point">entire on-premises network</span> (e.g., your corporate office) to an Azure VNet.</td>
+                                <td>Extending your corporate network to Azure. All servers on-prem can potentially reach Azure resources.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Point-to-Site (P2S)</strong></td>
+                                <td>An <span class="key-point">individual client computer</span> (e.g., a developer's laptop) to an Azure VNet.</td>
+                                <td>Allowing remote workers or administrators to securely connect to Azure from anywhere, like a coffee shop or home office.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>VNet-to-VNet</strong></td>
+                                <td><span class="key-point">One Azure VNet</span> to another Azure VNet.</td>
+                                <td>Connecting two VNets using the VPN Gateway infrastructure. <span class="warning-text">Note: VNet Peering is often the preferred method for this.</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h4 style="margin-top:20px;">Key Differentiators & "Gotchas":</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-network-wired"></i><strong>Site-to-Site (S2S):</strong> Think "Site" = Office or Datacenter. It's a permanent or semi-permanent link between networks. Requires a VPN device on-premises.</li>
+                        <li><i class="fa-li fas fa-laptop"></i><strong>Point-to-Site (P2S):</strong> Think "Point" = A single computer/laptop. Requires client VPN software to be installed on that computer.</li>
+                        <li><i class="fa-li fas fa-exchange-alt"></i><strong>VNet-to-VNet vs. VNet Peering:</strong>
+                            <ul>
+                                <li><strong>Use VNet Peering first</strong> for connecting VNets. It's simpler, has higher performance, and is generally cheaper.</li>
+                                <li>Use VNet-to-VNet (via VPN Gateway) only if you have a specific requirement that peering doesn't meet (like needing transitive routing, which peering doesn't support without extra configuration).</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Be able to read a scenario and determine if it requires a Site-to-Site or Point-to-Site connection. Understand that VNet Peering is usually the better choice for connecting VNets in Azure.</p>
+                </div>
+            </div>
+
+                        <!-- Card 6: VNet Traffic Routing (Routes & UDRs) - REVISED -->
+            <div class="card">
+                <input type="checkbox" id="vnet-routing-toggle" class="card-toggle">
+                <label for="vnet-routing-toggle" class="card-header" style="background-color: var(--routing-color);">
+                    <h2><i class="fas fa-route"></i>VNet Traffic Routing (Routes & UDRs)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--routing-color);"><i class="fas fa-directions"></i>Controlling Traffic Flow</h3>
+                    <p class="description">Azure automatically routes traffic based on system routes. You can override this default behavior using User Defined Routes (UDRs) to precisely control how traffic flows from your subnets.</p>
+
+                    <h4><i class="fas fa-cogs" style="color:var(--azure-blue);"></i>1. System Routes (Default Routes)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-magic"></i>Azure creates system routes automatically. These define default paths for traffic.</li>
+                        <li><i class="fa-li fas fa-list-ul"></i><strong>Common System Routes:</strong>
+                            <ul>
+                                <li>Within VNet: Traffic to addresses in the VNet's address space (Next Hop: VirtualNetwork).</li>
+                                <li>Peered VNets: Traffic to peered VNet address spaces (Next Hop: VNetPeering).</li>
+                                <li>Internet Default: Traffic to <code class="code-term">0.0.0.0/0</code> (Next Hop: Internet).</li>
+                                <li>VPN/ExpressRoute: Traffic to on-prem via gateways (Next Hop: VirtualNetworkGateway).</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-ban"></i>System routes cannot be created or deleted but can be overridden by more specific UDRs.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-user-edit" style="color:var(--success-color);"></i>2. User Defined Routes (UDRs)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-pencil-alt"></i>Allow you to <span class="key-point">override Azure's default routing</span> or add custom routes for specific address prefixes.</li>
+                        <li><i class="fa-li fas fa-road"></i>UDRs are grouped in a <span class="key-point">Route Table</span>, which is then associated with one or more subnets. (A subnet can have zero or one route table).</li>
+                        <li><i class="fa-li fas fa-arrow-right"></i>Each route specifies:
+                            <ul>
+                                <li><strong>Address Prefix:</strong> Destination CIDR block (e.g., <code class="code-term">10.2.0.0/16</code>, <code class="code-term">0.0.0.0/0</code>).</li>
+                                <li><strong>Next Hop Type:</strong> Where to send the traffic.
+                                    <ul>
+                                        <li><code class="code-term">VirtualAppliance</code>: To an NVA (e.g., Azure Firewall). Requires Next Hop IP address of NVA.</li>
+                                        <li><code class="code-term">VirtualNetworkGateway</code>: To a VPN or ExpressRoute gateway.</li>
+                                        <li><code class="code-term">Internet</code>: Directly to the internet.</li>
+                                        <li><code class="code-term">None</code>: Drops the traffic. Useful for creating isolated subnets.</li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-fire-extinguisher"></i><strong>Common Use Case:</strong> Force tunneling all internet-bound traffic from a subnet through an NVA (firewall) for inspection.</li>
+                    </ul>
+                    
+                    <h4><i class="fas fa-sitemap" style="color:var(--warning-color);"></i>3. Routing Precedence & How Routes are Selected</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-greater-than-equal"></i>Azure selects a route based on <span class="key-point">Longest Prefix Match (LPM)</span>. A more specific route (e.g., <code class="code-term">10.0.1.0/24</code>) will always be chosen over a less specific route (e.g., <code class="code-term">10.0.0.0/16</code> or <code class="code-term">0.0.0.0/0</code>) if both could apply to the destination IP.</li>
+                        <li><i class="fa-li fas fa-user-edit"></i><strong>UDRs take precedence over System Routes</strong> if both define a route for the same prefix.</li>
+                        <li><i class="fa-li fas fa-broadcast-tower"></i><strong>Interaction with NAT Gateway:</strong>
+                            <ul>
+                                <li>If a subnet has a NAT Gateway associated, the NAT Gateway provides the outbound path to the internet for that subnet, overriding the default system route to "Internet".</li>
+                                <li>However, if a UDR on that subnet explicitly routes <code class="code-term">0.0.0.0/0</code> (or more specific internet prefixes) to a <code class="code-term">VirtualAppliance</code> (like Azure Firewall), that UDR <span class="key-point">will take precedence over the NAT Gateway</span> for the traffic matching the UDR. Traffic will go to the NVA, and the NVA would then handle SNAT.</li>
+                            </ul>
+                        </li>
+                         <li><i class="fa-li fas fa-info-circle"></i>BGP routes learned via VPN/ExpressRoute gateways can also influence routing.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-search" style="color:var(--info-color);"></i>Effective Routes</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-list-alt"></i>For troubleshooting, view the <span class="key-point">effective routes</span> for a specific NIC.</li>
+                        <li><i class="fa-li fas fa-info-circle"></i>This shows the combined effect of system routes, UDRs, and BGP routes being applied to that NIC.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand system routes vs. UDRs. Know how to create UDRs in a Route Table. Understand next hop types (especially VirtualAppliance). Grasp Longest Prefix Match and how UDRs can override default internet paths, including those potentially provided by a NAT Gateway.</p>
+                </div>
+            </div>
+
+            <!-- CARD: Virtual Network NAT (NAT Gateway) - CONVERTED TO PROPER CARD -->
+            <div class="card">
+                <input type="checkbox" id="vnet-nat-gateway-toggle" class="card-toggle">
+                <label for="vnet-nat-gateway-toggle" class="card-header" style="background-color: var(--nat-color);">
+                    <h2><i class="fas fa-broadcast-tower"></i>Virtual Network NAT (NAT Gateway)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--nat-color);"><i class="fas fa-sign-out-alt"></i>Simplifying Outbound Internet Connectivity</h3>
+                    <p class="description">Azure NAT Gateway is a fully managed and highly resilient Network Address Translation (NAT) service. It simplifies outbound-only internet connectivity for virtual networks.</p>
+
+                    <h4>Purpose:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-wifi"></i>Provide <span class="key-point">dedicated, static outbound IP addresses</span> for resources in a subnet.</li>
+                        <li><i class="fa-li fas fa-users-slash"></i>It's <span class="key-point">outbound-only</span>; no inbound connections are initiated through NAT Gateway.</li>
+                        <li><i class="fa-li fas fa-retweet"></i>Helps avoid SNAT (Source NAT) port exhaustion issues.</li>
+                    </ul>
+
+                    <h4>How it Works:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-sitemap"></i>Associate a NAT Gateway resource with one or more <span class="key-point">subnets</span>.</li>
+                        <li><i class="fa-li fas fa-globe"></i>Configure the NAT Gateway with one or more <span class="key-point">static Public IP addresses</span> or a Public IP Prefix.</li>
+                        <li><i class="fa-li fas fa-arrow-up"></i>All outbound TCP and UDP traffic from the associated subnets to the internet automatically uses the NAT Gateway's public IPs for SNAT.</li>
+                    </ul>
+
+                    <h4>Key Benefits:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-check-circle"></i><strong>Scalable & Resilient:</strong> Fully managed by Azure.</li>
+                        <li><i class="fa-li fas fa-signature"></i><strong>Predictable Outbound IPs:</strong> Useful for whitelisting with external services.</li>
+                        <li><i class="fa-li fas fa-plug-and-play"></i><strong>Simplified Configuration:</strong> Generally no UDRs needed for basic outbound internet via NAT Gateway.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-exclamation-triangle" style="color:var(--warning-color);"></i>Precedence and Interaction with Other Routing:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-route"></i>NAT Gateway <span class="key-point">takes precedence over</span> other outbound scenarios for internet-destined traffic from its associated subnet. This includes:
+                            <ul>
+                                <li>Default outbound connectivity for VMs (without individual Public IPs).</li>
+                                <li>Outbound rules of a Load Balancer.</li>
+                                <li>Public IP addresses assigned directly to VMs (for outbound traffic, NAT Gateway's IPs will be used for SNAT).</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-user-edit"></i><strong>User Defined Routes (UDRs):</strong> If a UDR is configured on the subnet to route internet-bound traffic (<code class="code-term">0.0.0.0/0</code> or more specific internet prefixes) to a <code class="code-term">VirtualAppliance</code> (e.g., Azure Firewall) or <code class="code-term">VirtualNetworkGateway</code>, that UDR <span class="key-point">will override</span> the NAT Gateway for that specific traffic. The traffic will follow the UDR.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand NAT Gateway's purpose (simplified, scalable outbound NAT with dedicated IPs). Know it's associated with subnets. Recognize its precedence for outbound internet traffic unless explicitly overridden by a UDR sending traffic to an NVA or Gateway.</p>
+                </div>
+            </div>
+
+            <!-- CARD: Differentiating NAT Gateway vs. Azure Firewall - CONVERTED TO PROPER CARD -->
+            <div class="card">
+                <input type="checkbox" id="nat-vs-firewall-toggle" class="card-toggle">
+                <label for="nat-vs-firewall-toggle" class="card-header" style="background-color: #D35400;"> <!-- An orange/brown color for differentiation -->
+                    <h2><i class="fas fa-exchange-alt"></i>NAT Gateway vs. Azure Firewall</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:#D35400;"><i class="fas fa-balance-scale"></i>Choosing the Right Service</h3>
+                    <p class="description">Both Azure NAT Gateway and Azure Firewall can provide SNAT for outbound traffic with static public IPs, but their primary purposes, features, and ideal use cases are very different.</p>
+
+                    <div class="diagram" style="align-items: flex-start; gap: 20px;">
+                        <div class="diagram-box" style="border-color:var(--nat-color); min-width: 220px;">
+                            <i class="fas fa-broadcast-tower" style="color:var(--nat-color); font-size: 2em;"></i>
+                            <strong>Azure NAT Gateway</strong>
+                            <span style="font-size:0.8em; margin-top:5px;"><strong>Primary:</strong> Outbound SNAT</span>
+                            <span style="font-size:0.75em;">Simplified, scalable outbound internet connectivity with static IPs. No inbound protection.</span>
+                        </div>
+                        <div class="diagram-box" style="border-color:var(--firewall-color); min-width: 220px;"> <!-- Using firewall-color (red) -->
+                            <i class="fas fa-fire-alt" style="color:var(--firewall-color); font-size: 2em;"></i>
+                            <strong>Azure Firewall</strong>
+                            <span style="font-size:0.8em; margin-top:5px;"><strong>Primary:</strong> Network Security</span>
+                            <span style="font-size:0.75em;">Managed L3-L7 stateful firewall. Filters inbound/outbound traffic. Threat intelligence. Also provides SNAT/DNAT.</span>
+                        </div>
+                    </div>
+
+                    <h4><i class="fas fa-broadcast-tower" style="color:var(--nat-color);"></i>Azure NAT Gateway</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-bullseye"></i><strong>Primary Focus:</strong> <span class="key-point">Outbound-only</span> internet connectivity.</li>
+                        <li><i class="fa-li fas fa-sign-out-alt"></i><strong>Mechanism:</strong> Provides Source Network Address Translation (SNAT) for resources in associated subnets.</li>
+                        <li><i class="fa-li fas fa-globe"></i><strong>IPs:</strong> Uses dedicated static Public IP addresses or Public IP Prefixes that you assign to it.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i><strong>Security:</strong> Does <span class="warning-text">not</span> provide inbound traffic filtering or protection. It's not a security device itself. Security for resources still relies on NSGs.</li>
+                        <li><i class="fa-li fas fa-cogs"></i><strong>Complexity & Cost:</strong> Simpler to configure and generally less expensive if only outbound NAT with static IPs is needed.</li>
+                        <li><i class="fa-li fas fa-check-circle"></i><strong>Use Case:</strong> VMs in a private subnet need to initiate connections to the internet using a predictable public IP (e.g., for whitelisting by external services) without exposing individual VMs with public IPs. Prevents SNAT port exhaustion.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-fire-alt" style="color:var(--firewall-color);"></i>Azure Firewall</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-bullseye"></i><strong>Primary Focus:</strong> <span class="key-point">Centralized network security</span> and traffic filtering.</li>
+                        <li><i class="fa-li fas fa-filter"></i><strong>Mechanism:</strong> Stateful firewall inspecting L3-L7 traffic. Applies network rules, application rules, and threat intelligence.</li>
+                        <li><i class="fa-li fas fa-globe"></i><strong>IPs:</strong> Has its own Public IP for both inbound (via DNAT rules) and outbound (via SNAT) traffic.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i><strong>Security:</strong> Provides robust inbound and outbound traffic filtering, threat protection, FQDN filtering, etc.</li>
+                        <li><i class="fa-li fas fa-cogs"></i><strong>Complexity & Cost:</strong> More features, more complex to configure, and generally more expensive. Deployed into a dedicated `AzureFirewallSubnet`.</li>
+                        <li><i class="fa-li fas fa-check-circle"></i><strong>Use Case:</strong> Securing VNet boundaries, filtering all internet-bound traffic, protecting against threats, centralized logging, implementing hub-spoke security. Can also perform SNAT for outbound traffic.</li>
+                    </ul>
+
+                    <h4 style="margin-top:15px;">Key Differentiators & "Gotchas":</h4>
+                    <table class="comparison-table" style="width:100%; border-collapse: collapse; margin-top:10px; font-size:0.9em;">
+                        <thead>
+                            <tr>
+                                <th style="border:1px solid var(--border-color); padding:8px; background-color:var(--diagram-bg);">Aspect</th>
+                                <th style="border:1px solid var(--border-color); padding:8px; background-color:var(--diagram-bg);">NAT Gateway</th>
+                                <th style="border:1px solid var(--border-color); padding:8px; background-color:var(--diagram-bg);">Azure Firewall</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Primary Goal</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Outbound NAT</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Network Security / Filtering</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Inbound Traffic Protection</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><span class="warning-text">No</span></td>
+                                <td style="border:1px solid var(--border-color); padding:8px;"><span class="success-color">Yes</span> (via DNAT, rules)</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Traffic Filtering Capabilities</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;">None (only NAT)</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Extensive (L3-L7, FQDN, Threat Intel)</td>
+                            </tr>
+                             <tr>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Deployment Complexity</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Low (associate with subnet)</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Medium (dedicated subnet, policies, routes)</td>
+                            </tr>
+                            <tr>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Typical Cost</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Lower</td>
+                                <td style="border:1px solid var(--border-color); padding:8px;">Higher</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top:10px;"><strong>Scenario Gotcha Example:</strong></p>
+                    <p class="description">If your sole requirement is to ensure VMs in a private subnet can reach the internet using a static public IP for whitelisting purposes, and you don't need advanced traffic inspection for this outbound flow, <span class="key-point">NAT Gateway is often the more cost-effective and simpler solution</span>. Using Azure Firewall just for this SNAT purpose would be overkill unless its security features are also needed.</p>
+                    
+                    <p><strong>AZ-104 Focus:</strong> Understand the primary use case for each. NAT Gateway = simplified outbound NAT. Azure Firewall = comprehensive network security. Know that Firewall *can* do SNAT, but that's not its only or primary function.</p>
+                </div>
+            </div>
+
+            <!-- NEW CARD: Azure Firewall (Intro - Placeholder) -->
+            <div class="card">
+                <input type="checkbox" id="azure-firewall-intro-toggle" class="card-toggle">
+                <label for="azure-firewall-intro-toggle" class="card-header" style="background-color: var(--firewall-color);">
+                    <h2><i class="fas fa-fire-alt"></i>Azure Firewall (Intro - Placeholder)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--firewall-color);"><i class="fas fa-shield-alt"></i>Managed, Stateful Network Security</h3>
+                    <p class="description">Azure Firewall is a managed, cloud-native network security service that provides threat protection for your Azure Virtual Network resources. It's a stateful firewall that inspects all traffic flows.</p>
+
+                    <h4>Key Characteristics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-cogs"></i><strong>Managed Service:</strong> No need to manage underlying infrastructure.</li>
+                        <li><i class="fa-li fas fa-filter"></i><strong>Stateful:</strong> Inspects traffic at Layer 3 to Layer 7.</li>
+                        <li><i class="fa-li fas fa-network-wired"></i><strong>Deployment:</strong> Requires a dedicated subnet named <span class="key-point">`AzureFirewallSubnet`</span> within your VNet.</li>
+                        <li><i class="fa-li fas fa-lock"></i><strong>Centralized Security:</strong> Provides inbound (DNAT) and outbound (SNAT) filtering, FQDN filtering, threat intelligence, and more.</li>
+                    </ul>
+
+                    <p class="important-note" style="border-left-color: var(--firewall-color); background-color: #fcebeb;">
+                        <i class="fas fa-info-circle" style="color:var(--firewall-color);"></i><strong>AZ-104 Focus:</strong> Understand Azure Firewall's primary role as a centralized network security solution. Know its key capabilities and that it requires a dedicated `AzureFirewallSubnet`. This card serves as a high-level introduction; a full deep-dive guide would cover rule types (Network, Application, DNAT) and advanced features.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Final VNet Deep Dive Summary Card -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="vnet-summary-toggle" class="card-toggle" checked>
+                <label for="vnet-summary-toggle" class="card-header default-summary-header">
+                    <h2><i class="fas fa-graduation-cap"></i>VNet Deep Dive: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-blue-dark);"><i class="fas fa-check-double"></i>Exam Essentials & Design Considerations</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-cloud"></i><strong>VNet Basics:</strong> Foundation of private network in Azure. Logical isolation, secure comms.</li>
+                        <li><i class="fa-li fas fa-map-signs"></i><strong>Address Space & Subnets:</strong> RFC 1918 ranges, non-overlapping. Know the 5 reserved IPs per subnet. Some services require dedicated subnets (e.g., `GatewaySubnet`, `AzureBastionSubnet`, `AzureFirewallSubnet`).</li>
+                        <li><i class="fa-li fas fa-map-marked-alt"></i><strong>IP Addressing:</strong> Private (dynamic/static) for internal, Public (Basic/Standard, static only for Standard) for internet access. Understand Basic vs. Standard PIP SKUs.</li>
+                        <li><i class="fa-li fas fa-search-location"></i><strong>DNS:</strong> Azure-provided (default, VNet-local), Custom (on-prem AD), Private DNS Zones (for private FQDNs across VNets).</li>
+                        <li><i class="fa-li fas fa-link"></i><strong>VNet Peering:</strong> Connects VNets privately, low-latency. Regional/Global. <span class="key-point">Non-transitive.</span> Gateway Transit allows shared gateway use.</li>
+                        <li><i class="fa-li fas fa-lock"></i><strong>VPN Gateway:</strong> Secure, encrypted tunnels (S2S, P2S, VNet-to-VNet). Requires `GatewaySubnet`. <span class="key-point">VNet Peering generally preferred for VNet-to-VNet.</span></li>
+                        <li><i class="fa-li fas fa-route"></i><strong>Routing (UDRs):</strong> Override system routes. Associate Route Table with subnet. Next hop types (VirtualAppliance, Internet, None). <span class="key-point">Longest Prefix Match</span> wins.</li>
+                        <li><i class="fa-li fas fa-broadcast-tower"></i><strong>NAT Gateway:</strong> Simplifies <span class="key-point">outbound-only</span> internet connectivity with static IPs. Takes precedence over other outbound methods unless overridden by UDR to NVA/Gateway.</li>
+                        <li><i class="fa-li fas fa-exchange-alt"></i><strong>NAT Gateway vs. Azure Firewall:</strong> NAT Gateway for simple, scalable outbound SNAT. Azure Firewall for <span class="key-point">centralized L3-L7 network security and filtering (inbound & outbound)</span>.</li>
+                        <li><i class="fa-li fas fa-fire-alt"></i>**Azure Firewall (Intro):** Managed, stateful firewall for VNet security. Requires `AzureFirewallSubnet`. Provides comprehensive inbound/outbound filtering.</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--vnet-color); background-color: #e0f0ff;">
+                        <i class="fas fa-lightbulb" style="color:var(--vnet-color);"></i>**Exam Tip:** Focus on the *purpose* and *scope* of each networking component. Understand how they integrate and when to choose one over another based on scenario requirements.
+                    </p>
+                </div>
+            </div>
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => { /* CSS :checked handles expand/collapse */ });
+            });
+        });
+    </script>
+</body>
+</html>

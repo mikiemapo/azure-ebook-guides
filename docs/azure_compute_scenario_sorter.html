@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Compute Options - Scenario Sorter (AZ-104)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Compute Colors */
+            --vm-color: #0078FF;
+            --avd-color: #1F2A3A;
+            --container-color: #762F76; /* General container color */
+            --aci-color: #9b59b6;   /* Specific for ACI */
+            --aks-color: var(--container-color);
+            --vmss-color: #00a4ef;  /* Lighter blue for VMSS */
+            --sorter-main-color: #6f42c1; /* Purple for sorter theme */
+            --selected-item-bg: #e9d8f8; /* Light purple for selected */
+            --hint-color: #777;
+        }
+
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            color: var(--text-dark); line-height: 1.6;
+            display: flex; flex-direction: column; align-items: center;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .sorter-container {
+            max-width: 1100px; width: 100%; margin: 20px auto; padding: 25px;
+            background-color: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 8px; box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark); text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px; margin-bottom: 25px;
+        }
+        h1 i { margin-right: 10px; color: var(--sorter-main-color); }
+
+        .instructions {
+            text-align: center; margin-bottom: 20px; font-size: 0.95em;
+            background-color: var(--diagram-bg); padding: 10px; border-radius: 4px;
+        }
+        .instructions strong { color: var(--sorter-main-color); }
+        .back-to-hub {
+            margin-bottom: 20px; padding: 10px; background-color: #e6f2ff; 
+            border-radius: 5px; text-align: center;
+        }
+        .back-to-hub a {
+            text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em;
+        }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .main-layout { display: flex; flex-direction: column; gap: 20px; }
+        @media (min-width: 900px) { /* Wider breakpoint for side-by-side */
+            .main-layout { flex-direction: row; justify-content: space-between; }
+            .clickable-items-pool { flex-basis: 35%; }
+            .drop-zones-container { flex-basis: 60%; }
+        }
+
+        .clickable-items-pool, .drop-zone {
+            padding: 15px; border: 2px dashed var(--border-color); border-radius: 6px;
+            background-color: var(--diagram-bg); min-height: 150px; /* Adjusted min-height */
+            max-height: 500px; overflow-y: auto;
+        }
+        .clickable-items-pool h3, .drop-zone h3 {
+            margin-top: 0; text-align: center; color: var(--azure-blue-dark);
+            font-size: 1.1em; display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+
+        .drop-zones-container { display: flex; flex-direction: column; gap: 15px; }
+        .drop-zone { cursor: pointer; transition: background-color 0.2s ease; }
+        .drop-zone:hover { background-color: #e9ecef; }
+
+        /* Drop Zone Specific Colors */
+        .drop-zone.vm-zone { border-color: var(--vm-color); }
+        .drop-zone.vm-zone h3 { color: var(--vm-color); }
+        .drop-zone.avd-zone { border-color: var(--avd-color); }
+        .drop-zone.avd-zone h3 { color: var(--avd-color); }
+        .drop-zone.aci-zone { border-color: var(--aci-color); }
+        .drop-zone.aci-zone h3 { color: var(--aci-color); }
+        .drop-zone.aks-zone { border-color: var(--aks-color); }
+        .drop-zone.aks-zone h3 { color: var(--aks-color); }
+        .drop-zone.vmss-zone { border-color: var(--vmss-color); }
+        .drop-zone.vmss-zone h3 { color: var(--vmss-color); }
+
+
+        .clickable-item {
+            background-color: var(--card-bg); padding: 10px 15px; margin-bottom: 10px;
+            border: 1px solid var(--border-color); border-radius: 4px; cursor: pointer;
+            box-shadow: 0 1px 2px var(--shadow-color); transition: all 0.2s ease;
+        }
+        .clickable-item:hover { border-color: var(--azure-blue); transform: scale(1.02); }
+        .clickable-item.selected {
+            background-color: var(--selected-item-bg); border: 2px solid var(--sorter-main-color);
+            box-shadow: 0 2px 5px rgba(111, 66, 193, 0.3);
+        }
+        .clickable-item-content { display: flex; align-items: center; gap: 10px; }
+        .clickable-item-content i.item-icon { color: var(--azure-blue); font-size: 1.2em; width:20px; text-align:center;}
+        .clickable-text-container { display: flex; flex-direction: column; flex-grow: 1; }
+        .item-text { font-size: 0.9em; font-weight: 500; } /* Smaller scenario text */
+        .item-hint { display: none; } /* No hints for this sorter type by default */
+        .clickable-item i.feedback-icon { margin-left: auto; font-size: 1.1em; min-width: 1.2em; }
+
+        .clickable-item.correct { border-left: 5px solid var(--success-color) !important; background-color: #e7f3e7; }
+        .clickable-item.incorrect { border-left: 5px solid var(--warning-color) !important; background-color: #fdeceb; }
+        .clickable-item.correct i.feedback-icon::before { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f00c"; color: var(--success-color); }
+        .clickable-item.incorrect i.feedback-icon::before { font-family: "Font Awesome 6 Free"; font-weight: 900; content: "\f00d"; color: var(--warning-color); }
+
+        .submit-button {
+            display: block; width: 100%; max-width: 200px; margin: 30px auto 10px auto;
+            padding: 12px 20px; font-size: 1.1em; font-weight: 600;
+            color: var(--text-light); background-color: var(--success-color);
+            border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease;
+        }
+        .submit-button:hover { background-color: #0d6a0d; }
+        .submit-button:disabled { background-color: #94d3a2; cursor: not-allowed; }
+
+        #result-message {
+            text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 20px;
+            padding: 10px; border-radius: 4px; display: none;
+        }
+        #result-message.success { background-color: #dff0d8; border: 1px solid var(--success-color); color: var(--success-color);}
+        #result-message.some-incorrect { background-color: #fcf8e3; border: 1px solid #f0ad4e; color: #8a6d3b;}
+    </style>
+</head>
+<body>
+    <div class="sorter-container">
+        <h1><i class="fas fa-random"></i>Azure Compute - Scenario Sorter</h1>
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+        <p class="instructions"><strong>1. Tap a Scenario</strong> from "Scenarios to Assign" to select it.<br><strong>2. Tap the best Azure Compute Service</strong> column to move the scenario there. Click "Check Answers" when done.</p>
+
+        <div class="main-layout">
+            <div id="items-pool" class="clickable-items-pool drop-zone" data-zone="pool">
+                <h3><i class="fas fa-tasks"></i> Scenarios to Assign</h3>
+            </div>
+
+            <div class="drop-zones-container">
+                <div id="vm-zone" class="drop-zone vm-zone" data-zone="vm">
+                    <h3><i class="fas fa-server"></i> Virtual Machines (VMs)</h3>
+                </div>
+                <div id="avd-zone" class="drop-zone avd-zone" data-zone="avd">
+                    <h3><i class="fas fa-desktop"></i> Azure Virtual Desktop (AVD)</h3>
+                </div>
+                <div id="aci-zone" class="drop-zone aci-zone" data-zone="aci">
+                    <h3><i class="fas fa-shipping-fast"></i> Container Instances (ACI)</h3>
+                </div>
+                <div id="aks-zone" class="drop-zone aks-zone" data-zone="aks">
+                    <h3><i class="fas fa-dharmachakra"></i> Kubernetes Service (AKS)</h3>
+                </div>
+                <div id="vmss-zone" class="drop-zone vmss-zone" data-zone="vmss">
+                    <h3><i class="fas fa-layer-group"></i> VM Scale Sets (VMSS)</h3>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" id="check-answers-btn" class="submit-button">Check Answers</button>
+        <div id="result-message"></div>
+    </div>
+
+    <script>
+        const scenarios = [
+            { id: 'sc_legacy_app', text: 'Migrate a complex legacy on-premises application requiring full OS control and specific configurations.', correctZone: 'vm', icon: 'fa-cloud-upload-alt' },
+            { id: 'sc_remote_desktops', text: 'Provide scalable Windows 10/11 multi-session desktops to 200 remote users for office productivity.', correctZone: 'avd', icon: 'fa-users' },
+            { id: 'sc_simple_task', text: 'Run a single, short-lived containerized data processing task quickly without managing any servers.', correctZone: 'aci', icon: 'fa-cog' },
+            { id: 'sc_microservices', text: 'Deploy and orchestrate a large, complex microservices-based application needing auto-scaling, service discovery, and rolling updates.', correctZone: 'aks', icon: 'fa-project-diagram' },
+            { id: 'sc_stateless_web', text: 'Host a stateless web front-end using a pool of identical VMs that automatically scale based on CPU load.', correctZone: 'vmss', icon: 'fa-globe' },
+            { id: 'sc_custom_os_db', text: 'Run a database server that requires a very specific operating system version and kernel modules.', correctZone: 'vm', icon: 'fa-database' },
+            { id: 'sc_byod_apps', text: 'Enable secure access to a few specific Windows legacy applications for employees using their own devices (BYOD).', correctZone: 'avd', icon: 'fa-briefcase' },
+            { id: 'sc_quick_container_test', text: 'Quickly test a new containerized application idea without setting up a cluster.', correctZone: 'aci', icon: 'fa-flask' },
+            { id: 'sc_k8s_control', text: 'Manage containerized applications using the full power and flexibility of Kubernetes APIs and ecosystem tools.', correctZone: 'aks', icon: 'fa-cogs' }
+        ];
+
+        const itemsPool = document.getElementById('items-pool');
+        const dropZoneElements = document.querySelectorAll('.drop-zone');
+        const checkAnswersBtn = document.getElementById('check-answers-btn');
+        const resultMessage = document.getElementById('result-message');
+        let activeSelectedItem = null;
+
+        function deselectCurrentItem() {
+            if (activeSelectedItem) {
+                activeSelectedItem.classList.remove('selected');
+                activeSelectedItem = null;
+            }
+        }
+
+        scenarios.forEach(itemData => {
+            const div = document.createElement('div');
+            div.classList.add('clickable-item');
+            div.id = itemData.id;
+            div.dataset.correctZone = itemData.correctZone;
+
+            const contentDiv = document.createElement('div');
+            contentDiv.classList.add('clickable-item-content');
+
+            const iconEl = document.createElement('i');
+            iconEl.className = `fas ${itemData.icon} item-icon`;
+
+            const textContainer = document.createElement('div');
+            textContainer.classList.add('clickable-text-container');
+
+            const itemText = document.createElement('span');
+            itemText.classList.add('item-text');
+            itemText.textContent = itemData.text;
+
+            // No hint for this sorter
+            // const itemHint = document.createElement('span');
+            // itemHint.classList.add('item-hint');
+            // itemHint.textContent = `Hint: ${itemData.hint}`;
+
+            const feedbackIcon = document.createElement('i');
+            feedbackIcon.classList.add('feedback-icon');
+
+            textContainer.appendChild(itemText);
+            // textContainer.appendChild(itemHint);
+            contentDiv.appendChild(iconEl);
+            contentDiv.appendChild(textContainer);
+            contentDiv.appendChild(feedbackIcon);
+            div.appendChild(contentDiv);
+
+            itemsPool.appendChild(div);
+
+            div.addEventListener('click', (e) => {
+                if (checkAnswersBtn.disabled) return;
+                const clickedItem = e.currentTarget;
+                if (activeSelectedItem === clickedItem) {
+                    deselectCurrentItem();
+                } else {
+                    deselectCurrentItem();
+                    activeSelectedItem = clickedItem;
+                    activeSelectedItem.classList.add('selected');
+                }
+                e.stopPropagation();
+            });
+        });
+
+        dropZoneElements.forEach(zone => {
+            zone.addEventListener('click', (e) => {
+                if (checkAnswersBtn.disabled) return;
+                if (activeSelectedItem && (e.target === zone || e.target.closest('.drop-zone') === zone )) {
+                    // Check if the click is on the zone itself or its h3 child, not on an item within it
+                    if (!e.target.closest('.clickable-item')) {
+                         zone.appendChild(activeSelectedItem);
+                         activeSelectedItem.classList.remove('correct', 'incorrect');
+                         deselectCurrentItem();
+                    }
+                }
+            });
+        });
+        
+        checkAnswersBtn.addEventListener('click', () => {
+            let correctCount = 0;
+            let totalItemsInSortingZones = 0;
+            const allClickableItems = document.querySelectorAll('.clickable-item');
+
+            allClickableItems.forEach(item => {
+                item.classList.remove('correct', 'incorrect', 'selected');
+            });
+
+            dropZoneElements.forEach(zone => {
+                if (zone.id !== 'items-pool') { // Only evaluate items in the actual target drop zones
+                    const zoneType = zone.dataset.zone;
+                    zone.querySelectorAll('.clickable-item').forEach(item => {
+                        totalItemsInSortingZones++;
+                        const correctZone = item.dataset.correctZone;
+                        if (zoneType === correctZone) {
+                            item.classList.add('correct');
+                            correctCount++;
+                        } else {
+                            item.classList.add('incorrect');
+                        }
+                    });
+                }
+            });
+
+            itemsPool.querySelectorAll('.clickable-item').forEach(item => {
+                item.classList.add('incorrect'); // Items left in pool are unsorted
+            });
+
+            resultMessage.style.display = 'block';
+            const totalScenarios = scenarios.length;
+            const itemsStillInPool = itemsPool.querySelectorAll('.clickable-item').length;
+
+            if (itemsStillInPool === totalScenarios && totalScenarios > 0) {
+                 resultMessage.textContent = 'Please sort the scenarios into the compute service columns!';
+                 resultMessage.className = 'some-incorrect';
+            } else if (correctCount === totalScenarios && itemsStillInPool === 0) {
+                resultMessage.textContent = `Excellent! All ${correctCount} scenarios sorted correctly!`;
+                resultMessage.className = 'success';
+            } else {
+                let message = `You got ${correctCount} correct out of ${totalItemsInSortingZones} sorted scenarios. `;
+                if (itemsStillInPool > 0) {
+                    message += `${itemsStillInPool} scenario(s) still unsorted (marked incorrect). `;
+                }
+                message += `Total scenarios: ${totalScenarios}. Review the highlights.`;
+                resultMessage.textContent = message;
+                resultMessage.className = 'some-incorrect';
+            }
+            checkAnswersBtn.disabled = true;
+            checkAnswersBtn.textContent = 'Answers Checked';
+            deselectCurrentItem();
+        });
+    </script>
+</body>
+</html>

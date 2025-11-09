@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comparing Azure Compute Options Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Compute Option Colors (from image) */
+            --vm-color: #0078FF;
+            --avd-color: #1F2A3A;
+            --container-color: #762F76;
+            --aci-color: #9b59b6;
+            --aks-color: var(--container-color);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 1100px; /* Slightly wider for 3 columns */ }
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-cogs { font-size: 1.1em; color: var(--azure-blue); }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--azure-blue-dark); }
+
+        /* --- Mind Map Diagram (Simplified) --- */
+        .mindmap-container {
+            background-color: var(--card-bg); border-radius: 8px; padding: 20px;
+            margin: 0 auto 30px auto; width: 100%;
+            box-shadow: 0 2px 8px var(--shadow-color); border: 1px solid var(--border-color);
+            display: flex; flex-wrap: wrap; /* Allow items to wrap */
+            justify-content: space-around; /* Distribute items */
+            align-items: flex-start; /* Align items at the top */
+            gap: 15px;
+        }
+        .mindmap-item { /* Renamed from mindmap-branch for clarity */
+            background-color: var(--diagram-bg); padding: 15px; /* More padding */
+            border-radius: 6px; font-size: 0.9em; /* Slightly larger */
+            text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 8px; /* Increased gap */
+            width: calc(33.33% - 20px); /* Aim for 3 items per row, adjust for gap */
+            min-width: 150px; /* Ensure some minimum width */
+            box-sizing: border-box;
+        }
+        .mindmap-item i { font-size: 2em; margin-bottom: 8px; } /* Larger icon */
+        .mindmap-item strong { display: block; font-size: 1em; margin-bottom: 5px; color: var(--text-dark);}
+        .mindmap-item span {font-size: 0.85em; color: #555;}
+
+        /* Specific item colors for mind map */
+        .mindmap-item.vm i { color: var(--vm-color); }
+        .mindmap-item.vm strong { color: var(--vm-color); }
+        .mindmap-item.avd i { color: var(--avd-color); }
+        .mindmap-item.avd strong { color: var(--avd-color); }
+        .mindmap-item.container i { color: var(--container-color); }
+        .mindmap-item.container strong { color: var(--container-color); }
+
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1200px) {
+             .card-container { grid-template-columns: repeat(3, 1fr); }
+             .card.comparison-summary-card { grid-column: span 3; order: 5; } /* Make summary full width & last */
+        }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+        }
+        /* Custom header colors from image */
+        .card-header.vm-header { background-color: var(--vm-color); border-bottom-color: #0056b3;}
+        .card-header.avd-header { background-color: var(--avd-color); border-bottom-color: #111;}
+        .card-header.container-header, .card-header.aks-header { background-color: var(--container-color); border-bottom-color: #512051;}
+        .card-header.aci-header { background-color: var(--aci-color); border-bottom-color: #6c3483;}
+
+        .card-header:hover { filter: brightness(110%); }
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { font-size: 0.9em;}
+         .vm-card h3 i { color: var(--vm-color); }
+         .avd-card h3 i { color: var(--avd-color); }
+         .container-card h3 i { color: var(--container-color); }
+         .aci-card h3 i { color: var(--aci-color); }
+         .aks-card h3 i { color: var(--aks-color); }
+
+
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em;
+          }
+        /* Custom list icons for different sections */
+        .vm-card li i.fa-li { color: var(--vm-color); }
+        .avd-card li i.fa-li { color: var(--avd-color); }
+        .container-card li i.fa-li { color: var(--container-color); }
+        .aci-card li i.fa-li { color: var(--aci-color); }
+        .aks-card li i.fa-li { color: var(--aks-color); }
+
+
+        /* General icons for points */
+        .card-content li i.fa-server { color: var(--azure-blue-dark); }
+        .card-content li i.fa-users, .card-content li i.fa-user-friends { color: var(--info-color); }
+        .card-content li i.fa-cloud-upload-alt { color: var(--success-color); }
+        .card-content li i.fa-window-maximize, .card-content li i.fa-linux, .card-content li i.fa-windows { color: #605e5c; }
+        .card-content li i.fa-cogs { color: #605e5c; }
+        .card-content li i.fa-arrows-alt-v, .card-content li i.fa-retweet { color: var(--success-color); }
+        .card-content li i.fa-box, .card-content li i.fa-boxes { color: var(--container-color); }
+        .card-content li i.fa-shipping-fast { color: var(--info-color); }
+        .card-content li i.fa-dharmachakra { color: var(--container-color); }
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+        .card-content li i.fa-desktop { color: var(--avd-color); }
+        .card-content li i.fa-browser { color: var(--info-color); }
+
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: space-around; gap: 10px; flex-wrap: wrap;
+        }
+        .diagram-box {
+            background-color: #fff; padding: 8px 12px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 90px; font-size: 0.9em;
+        }
+        .diagram-box i { font-size: 1.6em; } /* Larger icons for main diagrams */
+        .diagram-box span { font-size: 0.8em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; margin: 0 5px; }
+        .diagram-label { font-size: 0.75em; color: #605e5c; font-style: italic; width: 100%; text-align: center; margin-top: 5px;}
+
+        /* Specific Diagram Styles */
+        .vm-diagram i.fa-server { color: var(--vm-color); }
+        .avd-diagram i.fa-users { color: var(--avd-color); }
+        .avd-diagram i.fa-cloud { color: var(--azure-blue); }
+        .container-diagram i.fa-boxes { color: var(--container-color); }
+        .container-diagram i.fa-server { color: #605e5c; }
+        .container-diagram .container-item i {font-size: 1em; color: #777;}
+
+        /* Comparison Table */
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9em;}
+        .comparison-table th, .comparison-table td { border: 1px solid var(--border-color); padding: 8px 10px; text-align: left; vertical-align: top;}
+        .comparison-table th { background-color: var(--diagram-bg); font-weight: 600; }
+        .comparison-table td ul { margin:0; padding-left: 15px; list-style: disc; font-size: 0.95em;}
+        .comparison-table td li { padding-left: 0; margin-bottom: 3px;}
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .important-note { background-color: #e6f2ff; border-left: 4px solid var(--azure-blue); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--azure-blue); margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-cogs"></i>Comparing Azure Compute Options</h1>
+
+    <!-- Mind Map (Simplified) -->
+    <div class="mindmap-container">
+         <div class="mindmap-item vm"><i class="fas fa-server"></i><strong>Virtual Machines</strong><span>IaaS - Full Control</span></div>
+         <div class="mindmap-item avd"><i class="fas fa-desktop"></i><strong>Azure Virtual Desktop</strong><span>PaaS - Managed VDI</span></div>
+         <div class="mindmap-item container"><i class="fas fa-box-open"></i><strong>Containers</strong><span>Lightweight - ACI/AKS</span></div>
+    </div>
+
+    <p class="instructions">Understand the key differences between Azure's core compute services (VMs, AVD, Containers via ACI/AKS) to choose the right one for your workload. <strong>Click/Tap</strong> headers to explore.</p>
+
+    <div class="card-container">
+
+        <!-- Virtual Machines -->
+        <div class="card vm-card">
+            <input type="checkbox" id="vm-toggle" class="card-toggle" checked>
+            <label for="vm-toggle" class="card-header vm-header">
+                <h2><i class="fas fa-server"></i>Virtual Machines (VMs)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-cloud"></i>Purpose: Cloud-Based Servers (IaaS)</h3>
+                <p class="description">Provides on-demand, scalable computing resources with full control over the operating system (Windows/Linux) and installed software. This is Infrastructure as a Service.</p>
+                <div class="diagram vm-diagram">
+                     <div class="diagram-box"> <i class="fas fa-server"></i><span>Azure VM</span><span style="font-size:0.7em;">(OS: You Manage)</span></div>
+                     <div class="diagram-box"> <i class="fas fa-hdd"></i><span>Attached Disks</span></div>
+                     <div class="diagram-box"> <i class="fas fa-network-wired"></i><span>Virtual Network</span></div>
+                </div>
+                 <ul>
+                    <li><i class="fa-li fas fa-window-maximize"></i><span class="key-point">Complete OS Control:</span> Supports Windows & Linux. You manage OS patching, updates, software.</li>
+                    <li><i class="fa-li fas fa-cloud-upload-alt"></i><span class="key-point">Lift-and-Shift:</span> Ideal for migrating existing on-premises applications with minimal changes.</li>
+                    <li><i class="fa-li fas fa-cogs"></i>Offers the highest level of control and flexibility.</li>
+                 </ul>
+                 <p><strong>AZ-104 Focus:</strong> VM Sizes, Disk types (Managed Disks - Standard HDD/SSD, Premium SSD, Ultra Disk), Availability Sets & Availability Zones, VM Scale Sets (VMSS), OS patching (your responsibility), Backup, Networking (NICs, NSGs). Shared Responsibility: You manage from the OS upwards.</p>
+                 <p><strong>Implication:</strong> Maximum flexibility but also maximum management overhead for the customer.</p>
+            </div>
+        </div>
+
+        <!-- Azure Virtual Desktop -->
+        <div class="card avd-card">
+            <input type="checkbox" id="avd-toggle" class="card-toggle">
+            <label for="avd-toggle" class="card-header avd-header">
+                <h2><i class="fas fa-desktop"></i>Azure Virtual Desktop (AVD)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-users"></i>Purpose: Cloud-Based Windows Desktops & Apps (PaaS for Control Plane)</h3>
+                <p class="description">A managed Virtual Desktop Infrastructure (VDI) service for delivering Windows desktops (single or multi-session) and applications from Azure.</p>
+                <div class="diagram avd-diagram">
+                     <div class="diagram-box"><i class="fas fa-user-friends"></i><span>Users</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"><i class="fas fa-cloud"></i><span>AVD Service<br/>(Azure Managed)</span></div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"><i class="fas fa-desktop"></i><span>Session Hosts<br/>(VMs - You Manage OS/Apps)</span></div>
+                </div>
+                 <ul>
+                    <li><i class="fa-li fas fa-desktop"></i>Provides a <span class="key-point">cloud-based personal computer Windows desktop experience</span>.</li>
+                    <li><i class="fa-li fas fa-browser"></i>Access <span class="key-point">dedicated applications</span> or full desktops from any modern browser or native clients.</li>
+                    <li><i class="fa-li fas fa-users"></i><span class="key-point">Multi-client login</span> (Windows 10/11 Enterprise multi-session) allows multiple users on one VM, optimizing costs.</li>
+                    <li><i class="fa-li fas fa-cogs"></i>Microsoft manages AVD control plane (Gateway, Broker, Web Access). Customer manages session host VMs (OS, apps, images) and user profiles (often with FSLogix).</li>
+                 </ul>
+                 <p><strong>AZ-104 Focus:</strong> Host Pools, Session Hosts, Application Groups (Desktop/RemoteApp), FSLogix for user profiles, Azure AD integration, networking for session hosts.</p>
+                 <p><strong>Implication:</strong> Simplifies VDI deployment. Good for remote work, BYOD. Cost savings via multi-session.</p>
+            </div>
+        </div>
+
+        <!-- Containers (General & Azure Options) -->
+        <div class="card container-card">
+            <input type="checkbox" id="container-toggle" class="card-toggle">
+            <label for="container-toggle" class="card-header container-header">
+                <h2><i class="fas fa-box-open"></i>Containers (General & Azure Options)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-boxes"></i>Purpose: Lightweight, Portable Application Environments</h3>
+                <p class="description">Package applications and their dependencies together, isolated from the host system and other containers, running consistently across environments.</p>
+                 <div class="diagram container-diagram">
+                     <div class="diagram-box"> <i class="fas fa-server"></i><span>Host OS (VM/Physical)</span>
+                        <div style="display:flex; gap:5px; margin-top:5px; justify-content:center;">
+                           <div class="diagram-box container-item"><i class="fas fa-box"></i><span>App A</span></div>
+                           <div class="diagram-box container-item"><i class="fas fa-box"></i><span>App B</span></div>
+                        </div>
+                     </div>
+                     <span class="diagram-label">Multiple containers on one Host OS</span>
+                 </div>
+                 <ul>
+                    <li><i class="fa-li fas fa-box"></i><span class="key-point">Lightweight, miniature environment</span> well suited for running microservices.</li>
+                    <li><i class="fa-li fas fa-shipping-fast"></i><span class="key-point">Designed for scalability and resiliency</span> through orchestration.</li>
+                    <li><i class="fa-li fas fa-layer-group"></i>Applications and services are packaged in a container that <span class="key-point">sits on top of the host operating system</span>. Multiple containers can sit on one host OS.</li>
+                    <li><i class="fa-li fas fa-cogs"></i>Shares host OS kernel, faster startup than VMs.</li>
+                 </ul>
+                 <h4>Azure Services for Containers:</h4>
+                 <ul>
+                    <li><i class="fa-li fas fa-shipping-fast" style="color:var(--aci-color)"></i><strong>Azure Container Instances (ACI):</strong> Simplest way to run a single Docker container or a small group. No VM or orchestrator management (PaaS for containers). Good for simple tasks, batch jobs, quick tests.</li>
+                    <li><i class="fa-li fas fa-dharmachakra" style="color:var(--aks-color)"></i><strong>Azure Kubernetes Service (AKS):</strong> Managed Kubernetes service for deploying, scaling, and managing containerized applications using full orchestration capabilities. Ideal for complex, microservice-based applications.</li>
+                 </ul>
+                 <p><strong>AZ-104 Focus:</strong> Difference between ACI (simple, per-container) and AKS (orchestration, cluster-based). Basic concepts of Pods, Deployments, Services if AKS is discussed. When to use ACI vs. AKS.</p>
+                 <p><strong>Implication:</strong> Offers efficiency, portability. Requires understanding container concepts and orchestration (for AKS).</p>
+            </div>
+        </div>
+
+                <!-- Card: Understanding the Kernel -->
+        <div class="card">
+            <input type="checkbox" id="kernel-concepts-toggle" class="card-toggle">
+            <label for="kernel-concepts-toggle" class="card-header" style="background-color: #4A5459;"> <!-- A neutral dark grey -->
+                <h2><i class="fas fa-heartbeat"></i>Understanding the Kernel: VMs vs. Containers</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3 style="color: #4A5459;"><i class="fas fa-cogs"></i>The Core of the Operating System</h3>
+                <p class="description">The kernel is the central component of an operating system (OS) that manages the system's resources and acts as a bridge between hardware and software applications.</p>
+                
+                <h4><i class="fas fa-microchip" style="color:#4A5459;"></i>What Does the Kernel Do?</h4>
+                <ul>
+                    <li><i class="fa-li fas fa-tasks"></i><strong>Resource Management:</strong> Controls CPU scheduling, memory allocation, and access to I/O devices (disks, network).</li>
+                    <li><i class="fa-li fas fa-link"></i><strong>System Calls:</strong> Provides an interface for applications to request services from the OS (e.g., read a file, send network data).</li>
+                    <li><i class="fa-li fas fa-shield-alt"></i><strong>Process & Memory Isolation:</strong> Ensures processes don't interfere with each other or the kernel itself.</li>
+                </ul>
+
+                <h4><i class="fas fa-exchange-alt" style="color:var(--azure-blue-dark);"></i>Kernel in VMs vs. Containers: A Key Difference</h4>
+                <div class="diagram" style="align-items: flex-start;">
+                    <div class="diagram-box" style="border-color: var(--vm-color); min-width: 200px;">
+                        <i class="fas fa-server" style="color:var(--vm-color); font-size: 2em;"></i>
+                        <strong>Virtual Machines (VMs)</strong>
+                        <span style="font-size:0.8em; margin-top:5px;">Host Hardware</span>
+                        <span style="font-size:0.7em;">Hypervisor</span>
+                        <div style="border:1px dashed #ccc; padding:5px; margin-top:5px; background-color:#f9f9f9; width:90%;">
+                            <span>VM 1 OS</span><br/>
+                            <i class="fas fa-heart" style="color:red; font-size:0.8em;"></i> <strong style="font-size:0.8em;">Own Kernel 1</strong><br/>
+                            <span>App A</span>
+                        </div>
+                        <div style="border:1px dashed #ccc; padding:5px; margin-top:5px; background-color:#f9f9f9; width:90%;">
+                            <span>VM 2 OS</span><br/>
+                            <i class="fas fa-heart" style="color:red; font-size:0.8em;"></i> <strong style="font-size:0.8em;">Own Kernel 2</strong><br/>
+                            <span>App B</span>
+                        </div>
+                        <span class="diagram-label" style="font-weight:bold; color:var(--vm-color)">Each VM has its own dedicated OS & Kernel.</span>
+                    </div>
+
+                    <div class="diagram-box" style="border-color: var(--container-color); min-width: 200px;">
+                        <i class="fas fa-box-open" style="color:var(--container-color); font-size: 2em;"></i>
+                        <strong>Containers (Linux)</strong>
+                        <span style="font-size:0.8em; margin-top:5px;">Host Hardware</span>
+                        <div style="border:1px dashed #ccc; padding:5px; margin-top:5px; background-color:#f9f9f9; width:90%;">
+                            <span>Host OS</span><br/>
+                            <i class="fas fa-heart" style="color:green; font-size:0.8em;"></i> <strong style="font-size:0.8em;">Shared Kernel</strong>
+                            <div style="display:flex; justify-content:space-around; margin-top:5px;">
+                                <div style="border:1px solid #ddd; padding:3px; font-size:0.7em;"><span>Container 1 (App X)</span></div>
+                                <div style="border:1px solid #ddd; padding:3px; font-size:0.7em;"><span>Container 2 (App Y)</span></div>
+                            </div>
+                        </div>
+                        <span class="diagram-label" style="font-weight:bold; color:var(--container-color)">Containers share the Host OS Kernel.</span>
+                    </div>
+                </div>
+                <ul>
+                    <li><i class="fa-li fas fa-server" style="color:var(--vm-color)"></i><strong>Virtual Machines (VMs):</strong>
+                        <ul>
+                            <li>Each VM runs a full, independent operating system.</li>
+                            <li>Therefore, <span class="key-point">each VM has its own dedicated kernel</span>.</li>
+                            <li>This provides strong isolation but means higher resource overhead (CPU, memory, disk space for the full OS).</li>
+                        </ul>
+                    </li>
+                    <li style="margin-top:10px;"><i class="fa-li fas fa-box" style="color:var(--container-color)"></i><strong>Containers (especially Linux Containers):</strong>
+                        <ul>
+                            <li>Containers are isolated user-space processes.</li>
+                            <li>They <span class="key-point">share the kernel of the host operating system</span> they run on (e.g., the kernel of the VM acting as an AKS node or an ACI host).</li>
+                            <li>This shared kernel model is why containers are much more lightweight and start faster than VMs – no need to boot a separate OS.</li>
+                            <li>(Windows containers have different isolation modes, including Hyper-V isolation which provides a utility VM with its own kernel for stronger isolation, but process isolation shares the host kernel).</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p><strong>Implications for Azure Compute:</strong></p>
+                <ul>
+                    <li><i class="fa-li fas fa-shield-alt"></i>VMs offer stronger OS-level isolation due to separate kernels.</li>
+                    <li><i class="fa-li fas fa-tachometer-alt"></i>Containers offer greater density and faster startup due to sharing the host kernel.</li>
+                </ul>
+                <p><strong>AZ-104 Focus:</strong> Understand this fundamental difference as it explains the resource efficiency and speed benefits of containers compared to VMs. You don't need deep kernel programming knowledge, but the conceptual difference is important for choosing compute options.</p>
+            </div>
+        </div>
+
+        
+
+        <!-- Comparison Summary Card -->
+        <div class="card comparison-summary-card">
+            <input type="checkbox" id="summary-toggle" class="card-toggle">
+            <label for="summary-toggle" class="card-header"> <!-- Default header color -->
+                <h2><i class="fas fa-balance-scale-right"></i>When to Use Which? (Quick Comparison)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-question-circle"></i>Key Differentiators</h3>
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th>Feature / Aspect</th>
+                            <th><i class="fas fa-server" style="color:var(--vm-color)"></i> VMs</th>
+                            <th><i class="fas fa-desktop" style="color:var(--avd-color)"></i> AVD</th>
+                            <th><i class="fas fa-box-open" style="color:var(--container-color)"></i> Containers (ACI/AKS)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Primary Use</strong></td>
+                            <td>General purpose servers, lift-and-shift, full OS control.</td>
+                            <td>Secure remote desktops & apps, VDI, multi-session Windows.</td>
+                            <td>Microservices, modern apps, web apps, scalability, portability.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Management Overhead</strong></td>
+                            <td>High (OS, patching, apps).</td>
+                            <td>Medium (Session host VMs, images, apps; Azure manages control plane).</td>
+                            <td>Low (ACI) to Medium/High (AKS cluster ops, but less than VMs).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Isolation</strong></td>
+                            <td>OS Level (Strong).</td>
+                            <td>OS Level (Strong for session hosts).</td>
+                            <td>Process Level (Shares host OS kernel).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Startup Time</strong></td>
+                            <td>Minutes.</td>
+                            <td>Minutes (for session hosts).</td>
+                            <td>Seconds (for containers).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Density</strong></td>
+                            <td>Lower.</td>
+                            <td>Medium (with multi-session).</td>
+                            <td>Higher (many containers per host).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Scalability</strong></td>
+                            <td>VM Scale Sets.</td>
+                            <td>Host pool scaling.</td>
+                            <td>Rapid (ACI), Advanced via K8s (AKS).</td>
+                        </tr>
+                         <tr>
+                            <td><strong>Typical Scenario</strong></td>
+                            <td>Legacy app, DB server.</td>
+                            <td>Remote work, specialized app delivery.</td>
+                            <td>New web app, API backend, batch job.</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p class="important-note"><i class="fas fa-info-circle"></i>For AZ-104, understand these core differences to select the appropriate compute option for given requirements (control, scalability, management effort, application type).</p>
+            </div>
+        </div>
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

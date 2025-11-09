@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Study Guide</title>
+
+    <!-- Include Tailwind and Flowbite CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      
+    </style>
+  </head>
+  <body>
+    <!-- Add your content here. You can find flowbite components at https://flowbite.com/docs/components/ -->
+    
+    <main class="pt-16 pb-16 lg:pt-16 lg:pb-24 bg-white dark:bg-gray-900 antialiased">
+      <div class="flex px-4 justify-between mx-auto ">
+        <article class="mx-auto w-full max-w-2xl">
+          <img class="h-auto rounded-lg mb-6" src="https://learn.microsoft.com/en-us/media/open-graph-image.png" alt="image description">
+          <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Getting Started with AzCopy</h1>
+          <p class="mb-6 text-xl font-normal text-gray-500">A comprehensive guide to using AzCopy for Azure Storage data transfer</p>
+          
+          <!-- Key Terms -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key Terms</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">AzCopy</mark> - A command-line utility used to copy blobs or files to or from Azure storage accounts</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Primary tool discussed in the document for data transfer and management in Azure storage systems</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Blob Storage</mark> - A storage service in Azure for storing large amounts of unstructured data</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">One of the main storage services that AzCopy interacts with for data transfer operations</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Azure Files</mark> - A file sharing service in Azure that provides fully managed file shares in the cloud</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Another key storage service that AzCopy can interact with for data transfer</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Batch File</mark> - A file with .cmd extension containing script commands for Windows systems</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Important for understanding how to properly format AzCopy commands in scripted operations</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Command-line Utility</mark> - A program that operates through text commands entered in a terminal or command prompt</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Describes the interface method for using AzCopy</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Portable Binary</mark> - An executable file that can run without installation and can be moved between systems</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">One method of obtaining and using AzCopy without formal installation</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">SAS Token</mark> - Shared Access Signature token that provides secure delegated access to resources in storage accounts</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">One of the two main methods for authorizing AzCopy operations</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Storage Account</mark> - An Azure container that groups together related storage services</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">The fundamental resource that AzCopy interacts with for data operations</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">System Path</mark> - An environment variable that tells the operating system where to look for executable files</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Important for making AzCopy accessible from any directory in the command line</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-semibold tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-blue-600 rounded">Transport Layer Security (TLS)</mark> - A security protocol that provides privacy and data integrity between communicating applications</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Used to secure connections to storage accounts when the 'Secure transfer required' setting is enabled</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+          
+          <!-- Key People -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key People & Entities</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Amazon S3</mark> - Referenced as a data source/destination for AzCopy transfers</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Important integration point showing AzCopy's cross-platform storage capabilities</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure</mark> - Primary cloud platform discussed throughout the document</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">The main platform that AzCopy is designed to work with for storage operations</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Blob Storage</mark> - Main storage service discussed in the documentation</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Primary storage service that AzCopy is designed to work with</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Data Factory</mark> - Listed in navigation/content structure</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Related Azure service that integrates with storage solutions</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Files</mark> - Referenced as a storage service compatible with AzCopy</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Secondary storage service that AzCopy can work with</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Azure Stack</mark> - Mentioned in transfer options</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Shows AzCopy's compatibility with hybrid cloud scenarios</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">AzCopy</mark> - Main subject of the documentation</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">The primary tool being documented for data transfer operations</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">GitHub</mark> - Mentioned as feedback platform</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Platform for submitting issues and feedback about AzCopy</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Google Cloud Storage</mark> - Referenced as a data source/destination for AzCopy transfers</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Shows AzCopy's ability to work with multiple cloud providers</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Jenkins</mark> - Mentioned in scripting section</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Integration point for automation with AzCopy</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Microsoft</mark> - Company name appearing throughout document</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Creator and maintainer of AzCopy and Azure services</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Microsoft Entra ID</mark> - Referenced in authentication sections</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Primary authentication method for AzCopy with Azure services</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-pink-600 rounded">Storage Explorer</mark> - Mentioned as GUI alternative</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Related tool that uses AzCopy for its operations</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Key Dates -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key Dates</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">January 27, 2025</mark> - Article publication date</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Most recent update to the AzCopy documentation</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">May 19-22, 2025</mark> - Microsoft Build conference dates</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Upcoming Microsoft developer conference mentioned in the header</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">2018-03-28</mark> - SAS token example date</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Used in example SAS token URL showing token creation date</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">April 30, 2019 21:01:17</mark> - SAS token start time</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Start time in example SAS token showing when the token becomes valid</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">May 1, 2019 05:01:17</mark> - SAS token expiration</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Expiration time in example SAS token showing when the token becomes invalid</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-green-600 rounded">2025</mark> - Copyright year</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Microsoft documentation copyright date indicating current version</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+          <!-- Key Concepts -->
+          <section class="py-6">
+            <h2 class="mb-4 text-2xl font-extrabold leading-none tracking-tight">Key concepts</h2>
+            <ul class="space-y-4 text-gray-500 list-none list-inside">
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">AzCopy</mark> - A command-line utility used to copy blobs or files to or from Azure storage accounts</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Essential tool for data transfer and management in Azure storage environments</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Authorization Methods</mark> - Two main ways to authorize AzCopy: Microsoft Entra ID or Shared Access Signature (SAS) token</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Security is crucial for storage operations; users must authenticate before performing any data transfers</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Common Use Cases</mark> - Primary uses include copying data between on-premises and Azure storage, and between different Azure storage accounts</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Demonstrates the tool's flexibility in handling various data migration scenarios</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Installation Methods</mark> - Can be installed via package managers on Linux or downloaded as portable binary for Windows/Mac/Linux</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides flexibility in deployment across different operating systems and environments</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Core Commands</mark> - Key commands include copy, sync, list, login, logout, make, remove, and set-properties</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">These commands form the foundation for managing and transferring data using AzCopy</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Scripting Support</mark> - AzCopy can be integrated into scripts with static download links and special character handling</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Enables automation of data transfer tasks and integration with existing workflows</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Storage Explorer Integration</mark> - AzCopy is used by Azure Storage Explorer to perform data transfer operations with a GUI</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Provides an alternative interface for users who prefer graphical interfaces over command line</p>
+                </div>
+              </li>
+              <li>
+                <div class="p-4 bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700">
+                  <h5 class="mb-2 text-lg font-medium tracking-tight text-gray-900"><mark class="px-1.5 py-0.5 text-white font-bold bg-violet-600 rounded">Performance Optimization</mark> - Includes features for benchmarking and optimizing transfer performance</h5>
+                  <p class="text-gray-500 text-lg dark:text-gray-400">Helps users achieve optimal data transfer speeds and efficiency</p>
+                </div>
+              </li>
+            </ul>
+          </section>
+
+
+          <!-- Full Doc -->
+          <section class="pb-6">
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Introduction to AzCopy</h1>
+              <p class="mb-3 text-xl text-gray-500">Understanding the basics of AzCopy and its primary use cases</p>
+              <p class="text-gray-500 dark:text-gray-900">AzCopy is a command-line utility designed for copying blobs and files to and from Azure storage accounts. It serves as a powerful tool for data transfer operations, supporting various scenarios including copying data between on-premises and cloud storage, as well as between different storage accounts. The tool offers native commands for both one-time copy operations and ongoing synchronization scenarios, making it highly versatile for different data management needs. AzCopy V10 is the current supported version and works across Windows, Linux, and macOS platforms that are officially maintained.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      AzCopy is a command-line tool for Azure Storage data transfer
+                  </li>
+                  <li>
+                      Supports transfers between on-premises and cloud storage
+                  </li>
+                  <li>
+                      Offers both copy and sync capabilities
+                  </li>
+                  <li>
+                      Currently on version 10 with cross-platform support
+                  </li>
+                  <li>
+                      Requires proper authorization through Microsoft Entra ID or SAS tokens
+                  </li>
+              </ul>
+            </div>
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Installation and Setup</h1>
+              <p class="mb-3 text-xl text-gray-500">Methods to install and configure AzCopy across different platforms</p>
+              <p class="text-gray-500 dark:text-gray-900">AzCopy can be installed through multiple methods depending on your operating system. For Linux users, installation is available through package managers like dnf, zypper, apt, and tdnf. Alternatively, users can download portable binaries for Windows (64-bit, 32-bit, ARM64), Linux (x86-64, ARM64), and macOS platforms. After installation, it's recommended to add the AzCopy executable location to your system path for easier access. The tool requires proper authorization before use, which can be achieved either through Microsoft Entra ID authentication or by using SAS tokens for specific operations.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      Multiple installation options available for different platforms
+                  </li>
+                  <li>
+                      Can be installed via package managers or as portable binaries
+                  </li>
+                  <li>
+                      Adding to system path enables easier command access
+                  </li>
+                  <li>
+                      Requires proper authorization setup before use
+                  </li>
+                  <li>
+                      Supports both Microsoft Entra ID and SAS token authentication
+                  </li>
+              </ul>
+            </div>
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Core Functionality and Commands</h1>
+              <p class="mb-3 text-xl text-gray-500">Essential commands and operations available in AzCopy</p>
+              <p class="text-gray-500 dark:text-gray-900">AzCopy provides a comprehensive set of commands for managing data transfer operations. Key commands include 'copy' for transferring data, 'sync' for replicating data between locations, 'list' for viewing storage entities, and 'remove' for deletion operations. The tool also offers job management capabilities through commands like 'jobs list', 'jobs resume', and 'jobs clean'. Advanced features include performance benchmarking with 'bench' command and property management with 'set-properties'. Each command can be explored in detail using the built-in help system by appending '-h' to any command.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      Offers comprehensive command set for data management
+                  </li>
+                  <li>
+                      Includes job management and monitoring capabilities
+                  </li>
+                  <li>
+                      Provides built-in help system for command documentation
+                  </li>
+                  <li>
+                      Supports various storage operations including copy, sync, and list
+                  </li>
+                  <li>
+                      Features performance benchmarking capabilities
+                  </li>
+              </ul>
+            </div>
+            <div class="py-6">
+              <h1 class="mb-4 text-3xl font-extrabold leading-none tracking-tight">Scripting and Automation</h1>
+              <p class="mb-3 text-xl text-gray-500">Implementing AzCopy in automated workflows and scripts</p>
+              <p class="text-gray-500 dark:text-gray-900">AzCopy can be effectively integrated into automated workflows and scripts. When using AzCopy in scripts, it's important to obtain static download links to ensure version consistency. The tool provides specific considerations for different scripting environments, including batch files and Jenkins pipelines. Special handling is required for SAS tokens in batch files, where characters like '%' need to be escaped. For Jenkins implementations, a specific command (/usr/bin/keyctl new_session) must be included at the script's beginning. The tool also integrates with Azure Storage Explorer, providing a graphical interface option for users who prefer GUI-based interactions.</p>
+              <h2 class="mb-2 mt-4 text-lg font-bold text-gray-900 dark:text-white">Key Takeaways:</h2>
+              <ul class="space-y-1 text-gray-500 list-disc list-inside dark:text-gray-400">
+                  <li>
+                      Can be integrated into automated workflows
+                  </li>
+                  <li>
+                      Requires special handling for SAS tokens in scripts
+                  </li>
+                  <li>
+                      Supports Jenkins pipeline integration
+                  </li>
+                  <li>
+                      Integrates with Azure Storage Explorer
+                  </li>
+                  <li>
+                      Provides static download links for version consistency
+                  </li>
+              </ul>
+            </div>
+            
+          </section>
+        </article>
+      </div>
+        
+      </div>
+      <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700">
+      <footer>
+        <span class="block text-sm text-center text-gray-500">End of study guide.
+          </span>
+      </footer>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.js"></script>
+  </body>
+</html>

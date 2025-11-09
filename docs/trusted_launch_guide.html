@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Trusted Launch for Gen2 VMs Guide</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --trustedlaunch-color: #8b5cf6;
+            --secureboot-color: #10b981;
+            --vtpm-color: #f59e0b;
+            --attestation-color: #ef4444;
+            --defender-color: #3b82f6;
+            --vm-color: #6b7280;
+            --info-color: #0ea5e9;
+            --security-color: #dc2626;
+            --success-color: #16a34a;
+            --warning-color: #ea580c;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        h1 {
+            background: linear-gradient(135deg, var(--azure-blue) 0%, var(--azure-blue-dark) 100%);
+            color: white;
+            padding: 30px;
+            margin: 0;
+            text-align: center;
+            font-size: 2.2em;
+            font-weight: 600;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 i {
+            margin-right: 15px;
+            font-size: 1.1em;
+        }
+
+        .instructions {
+            background: #f8fafc;
+            padding: 20px 30px;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 1.1em;
+            text-align: center;
+            color: #64748b;
+        }
+
+        .instructions strong {
+            color: var(--azure-blue);
+            font-weight: 600;
+        }
+
+        .mindmap-container {
+            padding: 30px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .mindmap-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--azure-blue);
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .mindmap-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .mindmap-item i {
+            font-size: 1.5em;
+            color: var(--azure-blue);
+            margin-right: 10px;
+        }
+
+        .mindmap-item.whatis { border-left-color: var(--trustedlaunch-color); }
+        .mindmap-item.whatis i { color: var(--trustedlaunch-color); }
+        .mindmap-item.secureboot { border-left-color: var(--secureboot-color); }
+        .mindmap-item.secureboot i { color: var(--secureboot-color); }
+        .mindmap-item.vtpm { border-left-color: var(--vtpm-color); }
+        .mindmap-item.vtpm i { color: var(--vtpm-color); }
+        .mindmap-item.attestation { border-left-color: var(--attestation-color); }
+        .mindmap-item.attestation i { color: var(--attestation-color); }
+        .mindmap-item.defender { border-left-color: var(--defender-color); }
+        .mindmap-item.defender i { color: var(--defender-color); }
+        .mindmap-item.enablement { border-left-color: var(--info-color); }
+        .mindmap-item.enablement i { color: var(--info-color); }
+
+        .card-container {
+            padding: 30px;
+        }
+
+        .card {
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            background: white;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card-toggle {
+            display: none;
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--azure-blue) 0%, var(--azure-blue-dark) 100%);
+            color: white;
+            padding: 20px 25px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .card-header:hover {
+            background: linear-gradient(135deg, var(--azure-blue-dark) 0%, #004578 100%);
+        }
+
+        .card-header h2 {
+            font-size: 1.4em;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .card-header h2 i {
+            margin-right: 12px;
+            font-size: 1.1em;
+        }
+
+        .toggle-icon {
+            font-size: 1.2em;
+            transition: transform 0.3s ease;
+        }
+
+        .card-toggle:checked + .card-header .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        .card-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease, padding 0.4s ease;
+        }
+
+        .card-toggle:checked + .card-header + .card-content {
+            max-height: 2000px;
+            padding: 25px;
+        }
+
+        .card-content h3 {
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .card-content h3 i {
+            margin-right: 10px;
+            font-size: 1.1em;
+        }
+
+        .description {
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            color: #4b5563;
+            line-height: 1.7;
+        }
+
+        .card-content ul {
+            list-style: none;
+            margin: 20px 0;
+        }
+
+        .card-content li {
+            margin-bottom: 12px;
+            padding-left: 30px;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .fa-li {
+            position: absolute;
+            left: 0;
+            top: 2px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .diagram {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            flex-wrap: wrap;
+        }
+
+        .diagram-box {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            min-width: 180px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 2px solid #e2e8f0;
+            transition: transform 0.3s ease;
+        }
+
+        .diagram-box:hover {
+            transform: translateY(-2px);
+        }
+
+        .diagram-box i {
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .diagram-box strong {
+            display: block;
+            font-size: 1.1em;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .diagram-box span {
+            font-size: 0.9em;
+            color: #6b7280;
+        }
+
+        .diagram-arrow {
+            font-size: 1.5em;
+            color: var(--azure-blue);
+        }
+
+        .component-diagram {
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .component-diagram .diagram-box {
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .boot-flow-diagram {
+            overflow-x: auto;
+        }
+
+        .component-box {
+            min-width: 150px;
+            padding: 15px;
+        }
+
+        .secureboot-header {
+            background: linear-gradient(135deg, var(--secureboot-color) 0%, #059669 100%) !important;
+        }
+
+        .vtpm-header {
+            background: linear-gradient(135deg, var(--vtpm-color) 0%, #d97706 100%) !important;
+        }
+
+        .attestation-header {
+            background: linear-gradient(135deg, var(--attestation-color) 0%, #dc2626 100%) !important;
+        }
+
+        .secureboot-icon {
+            color: var(--secureboot-color);
+        }
+
+        .vtpm-icon {
+            color: var(--vtpm-color);
+        }
+
+        .attestation-icon {
+            color: var(--attestation-color);
+        }
+
+        .key-point {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 600;
+            color: #92400e;
+        }
+
+        .warning-text {
+            color: var(--warning-color);
+            font-weight: 600;
+        }
+
+        .important-note {
+            background: linear-gradient(135deg, #e0f2fe 0%, #b3e5fc 100%);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--info-color);
+            margin-top: 20px;
+            font-size: 1.05em;
+            line-height: 1.7;
+        }
+
+        .important-note i {
+            color: var(--info-color);
+            margin-right: 10px;
+            font-size: 1.2em;
+        }
+
+        .howitworks-card {
+            border-left: 4px solid var(--trustedlaunch-color);
+        }
+
+        .howitworks-card .card-header {
+            background: linear-gradient(135deg, var(--trustedlaunch-color) 0%, #7c3aed 100%) !important;
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                margin: 10px;
+                border-radius: 8px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+                padding: 20px;
+            }
+
+            .instructions {
+                padding: 15px 20px;
+                font-size: 1em;
+            }
+
+            .mindmap-container {
+                padding: 20px;
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .card-container {
+                padding: 20px;
+            }
+
+            .card-header {
+                padding: 15px 20px;
+            }
+
+            .card-header h2 {
+                font-size: 1.2em;
+            }
+
+            .card-toggle:checked + .card-header + .card-content {
+                padding: 20px;
+            }
+
+            .diagram {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .diagram-box {
+                min-width: auto;
+                width: 100%;
+            }
+
+            .boot-flow-diagram {
+                flex-direction: column;
+            }
+
+            .component-box {
+                min-width: auto;
+            }
+        }
+
+        /* Print Styles */
+        @media print {
+            .card-content {
+                max-height: none !important;
+                padding: 20px !important;
+            }
+
+            .card-toggle {
+                display: none;
+            }
+
+            .toggle-icon {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <h1><i class="fas fa-user-shield"></i>Azure Trusted Launch for Gen2 VMs Guide</h1>
+        <p class="instructions">Understanding how Trusted Launch enhances the security of Azure Generation 2 Virtual Machines by verifying the boot process. Key for AZ-104. <strong>Click/Tap</strong> headers to explore.</p>
+
+        <!-- Mind Map -->
+        <div class="mindmap-container">
+            <div class="mindmap-item whatis" onclick="toggleCard('what-tl-toggle')">
+                <i class="fas fa-question-circle"></i><span>What is Trusted Launch?</span>
+            </div>
+            <div class="mindmap-item secureboot" onclick="toggleCard('secureboot-toggle')">
+                <i class="fas fa-signature"></i><span>Secure Boot</span>
+            </div>
+            <div class="mindmap-item vtpm" onclick="toggleCard('vtpm-toggle')">
+                <i class="fas fa-microchip"></i><span>vTPM</span>
+            </div>
+            <div class="mindmap-item attestation" onclick="toggleCard('attestation-toggle')">
+                <i class="fas fa-clipboard-check"></i><span>Attestation</span>
+            </div>
+            <div class="mindmap-item defender" onclick="toggleCard('attestation-toggle')">
+                <i class="fas fa-shield-alt"></i><span>Defender for Cloud</span>
+            </div>
+            <div class="mindmap-item enablement" onclick="toggleCard('enablement-toggle')">
+                <i class="fas fa-toggle-on"></i><span>Enablement</span>
+            </div>
+        </div>
+
+        <div class="card-container">
+            <!-- What is Trusted Launch? -->
+            <div class="card">
+                <input type="checkbox" id="what-tl-toggle" class="card-toggle" checked>
+                <label for="what-tl-toggle" class="card-header">
+                    <h2><i class="fas fa-shield-alt"></i>What is Trusted Launch?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--trustedlaunch-color);"><i class="fas fa-rocket"></i>Secure Boot for Gen2 VMs</h3>
+                    <p class="description">A security capability for Azure Generation 2 VMs designed to protect against advanced and persistent attack vectors like bootkits and rootkits by ensuring a verified boot path.</p>
+                    <div class="diagram">
+                        <div class="diagram-box" style="border-color: var(--trustedlaunch-color);">
+                            <i class="fas fa-user-shield" style="color:var(--trustedlaunch-color); font-size:2em;"></i>
+                            <strong>Trusted Launch</strong>
+                            <span>Verifies Boot Chain</span>
+                        </div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box">
+                            <i class="fas fa-server" style="color:var(--vm-color); font-size:2em;"></i>
+                            <strong>Securely Booted Gen2 VM</strong>
+                        </div>
+                    </div>
+                    <ul>
+                        <li><i class="fa-li fas fa-server"></i><strong>Gen2 VMs Only:</strong> Exclusively for Generation 2 Azure Virtual Machines and VM Scale Sets.</li>
+                        <li><i class="fa-li fas fa-shield-alt"></i><strong>Defense Against Boot Malware:</strong> Protects boot loaders, OS kernel, and early drivers from tampering.</li>
+                        <li><i class="fa-li fas fa-key"></i><strong>Protects Secrets:</strong> Enables secure storage of keys, certificates, and secrets within the VM using vTPM.</li>
+                        <li><i class="fa-li fas fa-cogs"></i><strong>Becoming Standard:</strong> Increasingly the default security setting for new Gen2 VMs.</li>
+                    </ul>
+                    <p><strong>Implication:</strong> Provides foundational compute layer security, enhancing defense-in-depth from the moment the VM powers on.</p>
+                </div>
+            </div>
+
+            <!-- How Trusted Launch Works / Core Components -->
+            <div class="card howitworks-card">
+                <input type="checkbox" id="how-tl-toggle" class="card-toggle">
+                <label for="how-tl-toggle" class="card-header">
+                    <h2><i class="fas fa-cogs"></i>How Trusted Launch Works: Core Components</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--trustedlaunch-color);"><i class="fas fa-link"></i>Secure Boot + vTPM + Attestation</h3>
+                    <p class="description">A combination of features working together to verify boot integrity.</p>
+                    <div class="diagram component-diagram">
+                        <div class="diagram-box">
+                            <i class="fas fa-signature secureboot-icon"></i>
+                            <strong>Secure Boot</strong>
+                            <span>Verifies Signatures of Boot Software</span>
+                        </div>
+                        <div class="diagram-box">
+                            <i class="fas fa-microchip vtpm-icon"></i>
+                            <strong>vTPM (Virtual TPM 2.0)</strong>
+                            <span>Measures Boot Components, Stores Keys</span>
+                        </div>
+                        <div class="diagram-box">
+                            <i class="fas fa-clipboard-check attestation-icon"></i>
+                            <strong>Attestation</strong>
+                            <span>Verifies Boot Integrity via Measurements</span>
+                        </div>
+                    </div>
+                    <p>These components can often be enabled separately but provide the strongest protection when used together.</p>
+                </div>
+            </div>
+            
+            <!-- Secure Boot -->
+            <div class="card">
+                <input type="checkbox" id="secureboot-toggle" class="card-toggle">
+                <label for="secureboot-toggle" class="card-header secureboot-header">
+                    <h2><i class="fas fa-signature"></i>Component: Secure Boot</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--secureboot-color);"><i class="fas fa-user-check"></i>Verifying Software Signatures</h3>
+                    <p class="description">A platform firmware feature (virtual BIOS/UEFI) that ensures only trusted, digitally signed software (bootloaders, OS kernel, drivers) can run during the VM boot process.</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-shield-alt"></i><strong>Gatekeeper Role:</strong> Prevents unsigned or maliciously signed code from executing early in the boot sequence.</li>
+                        <li><i class="fa-li fas fa-bug" style="color:var(--security-color)"></i><strong>Defense against Rootkits/Bootkits:</strong> Primary protection against malware that tries to load before the OS.</li>
+                        <li><i class="fa-li fas fa-check-double"></i><strong>Foundation for Attestation:</strong> Must be enabled for successful attestation checks.</li>
+                    </ul>
+                    <p><strong>Implication:</strong> Hardens the VM against pre-OS malware by ensuring only authorized code initiates the boot process.</p>
+                </div>
+            </div>
+
+            <!-- vTPM -->
+            <div class="card">
+                <input type="checkbox" id="vtpm-toggle" class="card-toggle">
+                <label for="vtpm-toggle" class="card-header vtpm-header">
+                    <h2><i class="fas fa-microchip"></i>Component: vTPM (Virtual TPM)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--vtpm-color);"><i class="fas fa-key"></i>Secure Vault & Boot Measurement</h3>
+                    <p class="description">A virtualized Trusted Platform Module (TPM 2.0 spec) providing a secure cryptoprocessor in the VM's virtual hardware.</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-lock"></i><strong>Secure Key Storage:</strong> Securely stores cryptographic keys, certificates, and secrets (e.g., for BitLocker, machine identity).</li>
+                        <li><i class="fa-li fas fa-fingerprint"></i><strong>Boot Integrity Measurement:</strong> Takes cryptographic "fingerprints" (hashes) of firmware, bootloader, OS kernel, and critical drivers during boot.</li>
+                        <li><i class="fa-li fas fa-clipboard-list"></i><strong>Enables Attestation:</strong> These secure measurements form the basis for verifying the boot integrity (attestation).</li>
+                    </ul>
+                    <p><strong>Implication:</strong> Provides hardware-backed security for sensitive data within the VM and enables verifiable boot integrity.</p>
+                </div>
+            </div>
+
+            <!-- Attestation -->
+            <div class="card">
+                <input type="checkbox" id="attestation-toggle" class="card-toggle">
+                <label for="attestation-toggle" class="card-header attestation-header">
+                    <h2><i class="fas fa-clipboard-check"></i>Component: Attestation</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--attestation-color);"><i class="fas fa-check-double"></i>Verifying Boot Integrity</h3>
+                    <p class="description">The process of remotely verifying that the VM booted securely, based on the measurements collected by the vTPM.</p>
+                    <div class="diagram boot-flow-diagram">
+                        <div class="diagram-box component-box">
+                            <i class="fas fa-power-off"></i>
+                            <span>Power On</span>
+                        </div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box component-box">
+                            <i class="fas fa-microchip"></i>
+                            <span>Secure Boot Checks Signatures</span>
+                        </div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box component-box">
+                            <i class="fas fa-fingerprint"></i>
+                            <span>vTPM Measures Boot Components</span>
+                        </div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box component-box">
+                            <i class="fas fa-check-double"></i>
+                            <span>Attestation Verifies Measurements</span>
+                        </div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box component-box">
+                            <i class="fas fa-desktop"></i>
+                            <span>OS Loads</span>
+                        </div>
+                    </div>
+                    <ul>
+                        <li><i class="fa-li fas fa-plug"></i><strong>Guest Attestation Extension:</strong> An optional VM extension that allows Azure services (like Defender for Cloud) to securely query the vTPM for its boot measurements.</li>
+                        <li><i class="fa-li fas fa-user-shield" style="color:var(--defender-color)"></i><strong>Microsoft Defender for Cloud Integration:</strong> Uses vTPM measurements (via the extension) for guest attestation and threat identification. Alerts can be raised if measurements don't match a known good baseline.</li>
+                        <li><i class="fa-li fas fa-shield-alt"></i><strong>Chain of Trust:</strong> Confirms the integrity of the entire boot sequence.</li>
+                    </ul>
+                    <p><strong>Implication:</strong> Provides ongoing assurance that the VM started in a known, trustworthy state, free from boot-level tampering.</p>
+                </div>
+            </div>
+
+            <!-- Enablement -->
+            <div class="card">
+                <input type="checkbox" id="enablement-toggle" class="card-toggle">
+                <label for="enablement-toggle" class="card-header">
+                    <h2><i class="fas fa-toggle-on"></i>Enabling Trusted Launch</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--info-color);"><i class="fas fa-cogs"></i>Configuration Steps</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-plus-circle"></i><strong>New Gen2 VMs:</strong>
+                            <ul style="margin-top: 10px;">
+                                <li>In Azure portal, when creating a VM, select "Security type" as <span class="key-point">Trusted launch virtual machines</span>.</li>
+                                <li>Then, check boxes to "Enable Secure Boot" and "Enable vTPM".</li>
+                                <li>Optionally enable "Guest Attestation".</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top:15px;"><i class="fa-li fas fa-edit"></i><strong>Existing Gen2 VMs:</strong>
+                            <ul style="margin-top: 10px;">
+                                <li>VM must be <span class="key-point warning-text">stopped (deallocated)</span>.</li>
+                                <li>VM size <span class="key-point warning-text">must support</span> Trusted Launch. If not, resize to a compatible Gen2 size first.</li>
+                                <li>Enable via VM's configuration settings (Security section in portal).</li>
+                                <li><span class="warning-text">Warning:</span> Do not resize a Trusted Launch VM to an unsupported size later.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Knowing it's for Gen2 VMs, the portal options to enable it, and the critical prerequisite of VM being stopped and on a supported size for existing VMs.</p>
+                </div>
+            </div>
+
+            <!-- AZ-104 Summary -->
+            <div class="card">
+                <input type="checkbox" id="summary-tl-toggle" class="card-toggle">
+                <label for="summary-tl-toggle" class="card-header" style="background: linear-gradient(135deg, var(--azure-blue-dark) 0%, #003d6b 100%);">
+                    <h2><i class="fas fa-graduation-cap"></i>Trusted Launch: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-blue-dark);"><i class="fas fa-lightbulb"></i>Core Understanding for the Exam</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-server"></i>Trusted Launch enhances security for <span class="key-point">Generation 2 VMs</span> only.</li>
+                        <li><i class="fa-li fas fa-shield-alt"></i>Protects against bootkits/rootkits by verifying the boot chain <span class="key-point">before the OS loads</span>.</li>
+                        <li><i class="fa-li fas fa-signature" style="color:var(--secureboot-color)"></i><strong>Secure Boot:</strong> Checks digital signatures of boot components.</li>
+                        <li><i class="fa-li fas fa-microchip" style="color:var(--vtpm-color)"></i><strong>vTPM:</strong> Securely measures boot components and can store keys.</li>
+                        <li><i class="fa-li fas fa-clipboard-check" style="color:var(--attestation-color)"></i><strong>Attestation:</strong> Verifies boot integrity using vTPM measurements, often via Guest Attestation Extension and integrated with Microsoft Defender for Cloud.</li>
+                        <li><i class="fa-li fas fa-toggle-on"></i>Know how to enable for new and existing (stopped, compatible size) Gen2 VMs.</li>
+                        <li><i class="fa-li fas fa-info-circle"></i>It's a foundational layer in Azure's defense-in-depth security model for compute.</li>
+                    </ul>
+                    <div class="important-note">
+                        <i class="fas fa-user-shield"></i>Trusted Launch ensures VMs start securely. Complement it with other security layers (NSGs, Azure Firewall, endpoint protection, identity management, patching) for ongoing protection once the OS is running.
+                    </div>
+                </div>

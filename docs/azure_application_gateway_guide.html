@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Application Gateway Deep Dive (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors for Application Gateway Guide */
+            --app-gateway-color: #107c10; /* Green (same as l7-color) */
+            --components-color: #0078d4;
+            --listeners-color: #E67E22;
+            --rules-color: #8E44AD;
+            --waf-color: #A4262C;
+            --ssl-color: #00A1F1;
+            --integration-color: #34495E; /* Dark grey for integration */
+            --scenarios-color: #2ECC71; /* Another shade of green for scenarios */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6; 
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--app-gateway-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-globe { font-size: 1.1em; } 
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--app-gateway-color); }
+
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; } 
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+        }
+        .card-header.ag-header { background-color: var(--app-gateway-color); border-bottom-color: #0d6a0d;}
+        .card-header.ag-header:hover { background-color: #0d6a0d;}
+        .card-header.default-summary-header { background-color: var(--azure-blue-dark); border-bottom-color: #004578;}
+        .card-header.default-summary-header:hover { background-color: #004578;}
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+ 
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; 
+            padding: 0 18px; 
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); 
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 3000px; opacity: 1; /* Increased max-height for comprehensive cards */
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            overflow-y: auto;
+        }
+
+        .card-content h3, .card-content h4 {
+             color: var(--azure-blue-dark); margin-top: 15px; margin-bottom: 10px; font-size: 1.1em;
+             font-weight: 600; padding-bottom: 6px;
+             display: flex; align-items: center; gap: 8px;
+         }
+        .card-content h3 { border-bottom: 1px solid #eee; font-size: 1.15em; margin-top: 0;}
+        .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+        .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+        .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--app-gateway-color); 
+          }
+        
+        .key-point { font-weight: 600; color: var(--app-gateway-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em;}
+        .comparison-table th, .comparison-table td { border: 1px solid var(--border-color); padding: 6px 8px; text-align: left; vertical-align: top;}
+        .comparison-table th { background-color: var(--diagram-bg); font-weight: 600; }
+        .mnemonic { 
+            background-color: #fff3cd; 
+            border-left: 5px solid #ffc107; 
+            padding: 10px 15px; 
+            margin: 15px 0; 
+            font-size: 1em; 
+            font-weight: bold;
+            color: #856404;
+            text-align: center;
+        }
+        .mnemonic i { margin-right: 8px; color: #ffc107;}
+        .important-note { background-color: #e7f3e7; border-left: 4px solid var(--app-gateway-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--app-gateway-color); margin-right: 8px; }
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-globe"></i>Azure Application Gateway Deep Dive</h1>
+        <p class="instructions">Explore Azure Application Gateway's Layer 7 capabilities, WAF, SSL offloading, and advanced routing for your web applications. Essential for AZ-104.</p>
+
+        <div class="card-container">
+
+            <!-- Card 1: What is Azure Application Gateway? -->
+            <div class="card">
+                <input type="checkbox" id="what-is-app-gw-toggle" class="card-toggle" checked> 
+                <label for="what-is-app-gw-toggle" class="card-header ag-header">
+                    <h2><i class="fas fa-info-circle"></i>What is Application Gateway?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--app-gateway-color);"><i class="fas fa-cogs"></i>Azure's Dedicated Layer 7 Load Balancer</h3>
+                    <p class="description">Azure Application Gateway is a managed web traffic load balancer that operates at <span class="key-point">Layer 7 (Application Layer)</span> of the OSI model. It enables intelligent traffic management to your web applications, APIs, and containerized workloads.</p>
+
+                    <div class="mnemonic"><i class="fas fa-brain"></i>AGW: App Logic, Region Locked.</div>
+                    <p class="description">Application Gateway is all about understanding the *content* of the application request and making smart routing decisions within a *single Azure region*.</p>
+
+                    <h4>Core Purpose & Capabilities:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-route"></i>Distribute HTTP/HTTPS traffic across multiple backend web servers.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i>Provide Web Application Firewall (WAF) functionality to protect against common web attacks.</li>
+                        <li><i class="fa-li fas fa-lock-open"></i>Offload CPU-intensive SSL/TLS encryption from your backend servers.</li>
+                        <li><i class="fa-li fas fa-sync-alt"></i>Support advanced routing features based on URL paths, hostnames, and HTTP headers.</li>
+                        <li><i class="fa-li fas fa-sitemap"></i>Centralize web application security and traffic management.</li>
+                        <li><i class="fa-li fab fa-docker"></i><strong>Container Support:</strong> Application Gateway for containers supports advanced features like automatic retries, mutual authentication (mTLS), traffic splitting, weighted round robin, and integrates with standard Kubernetes Ingress and Gateway APIs.</li>
+                    </ul>
+
+                    <h4>Key Characteristics:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-map-pin"></i><strong>Regional Scope:</strong> Primarily operates within a <span class="key-point">single Azure region</span>.</li>
+                        <li><i class="fa-li fas fa-http"></i><strong>Layer 7 Protocol Support:</strong> Supports HTTP, HTTPS, HTTP/2, and WebSocket. (Also offers TLS and TCP via its Layer 4 proxy in Preview).</li>
+                        <li><i class="fa-li fas fa-server"></i><strong>Backend Pool Targets:</strong> Can route traffic to Azure VMs, VMSS, App Services, on-premises servers, IP addresses, or FQDNs.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand that Application Gateway is for **regional, web-specific (Layer 7) traffic management**. Differentiate its content-aware routing from simpler Layer 4 load balancing. Know its capabilities for advanced web features and security.</p>
+                </div>
+            </div>
+
+            <!-- Card 2: Application Gateway Components Deep Dive -->
+            <div class="card">
+                <input type="checkbox" id="ag-components-toggle" class="card-toggle">
+                <label for="ag-components-toggle" class="card-header" style="background-color: var(--components-color);">
+                    <h2><i class="fas fa-cubes"></i>Application Gateway Components</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--components-color);"><i class="fas fa-network-wired"></i>The Core Building Blocks of Traffic Flow</h3>
+                    <p class="description">An Application Gateway routes requests by combining several core components that define the flow from client to backend server.</p>
+
+                    <div class="diagram">
+                        <div class="diagram-box"><strong>Frontend IP</strong><span>Public or Private Client Access</span></div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box"><strong>Listener</strong><span>Checks for Incoming Requests</span></div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box"><strong>Routing Rule</strong><span>Determines Backend Pool</span></div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box"><strong>Backend Pool</strong><span>Collection of Servers</span></div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box"><strong>Backend Instances</strong><span>VMs, App Services, etc.</span></div>
+                    </div>
+                    <span class="diagram-label">Simplified Flow: Client Request -> Frontend IP -> Listener -> Rule -> Backend Pool -> Instance</span>
+                    <ul style="margin-top:15px;">
+                        <li><i class="fa-li fas fa-id-card" style="color:var(--components-color);"></i><strong>Frontend IP:</strong> The public or private IP address that clients use to connect to your application.</li>
+                        <li><i class="fa-li fas fa-microphone" style="color:var(--listeners-color);"></i><strong>Listeners:</strong>
+                            <ul>
+                                <li>These are the "entry points" to the Application Gateway. They actively listen for incoming connections that match specific criteria: <span class="key-point">protocol (HTTP/HTTPS), port, hostname, and IP address</span>.</li>
+                                <li>Think of the listener as the <span class="key-point">"bouncer at the club door"</span> – if an incoming request doesn't match the listener's configuration, it's not even accepted or processed further.</li>
+                                <li>At least one listener is required for the gateway to function.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-route" style="color:var(--rules-color);"></i><strong>Request Routing Rules:</strong>
+                            <ul>
+                                <li>These are the <span class="key-point">"brains of the operation."</span> They connect a listener to a backend pool.</li>
+                                <li>They define how to forward (or redirect) traffic based on criteria like the URL path, hostname, or HTTP settings.</li>
+                                <li>Each listener is typically associated with one request routing rule.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-server" style="color:var(--components-color);"></i><strong>Backend Pools:</strong>
+                            <ul>
+                                <li>These are collections of backend instances that will serve the client requests.</li>
+                                <li>Can include Azure VMs, Virtual Machine Scale Sets (VMSS), App Services, on-premises servers (via VPN/ExpressRoute), IP addresses, or Fully Qualified Domain Names (FQDNs).</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-heartbeat" style="color:var(--success-color);"></i><strong>Health Probes:</strong>
+                            <ul>
+                                <li>Application Gateway constantly uses health probes to check the availability and responsiveness of servers in the backend pool.</li>
+                                <li>If a server becomes unhealthy, the probe detects it, and the gateway automatically stops sending traffic to it. This allows the gateway to <span class="key-point">"route around failures"</span> and maintain reliability.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-cog" style="color:var(--components-color);"></i><strong>HTTP Settings:</strong>
+                            <ul>
+                                <li>Define properties for routing requests from the Application Gateway to the backend pool.</li>
+                                <li>Includes settings like the backend port, protocol (HTTP/HTTPS), cookie-based session affinity, connection draining, and request timeouts.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand the purpose of each main component (especially Listeners and Routing Rules) and how they interact to route web traffic intelligently.</p>
+                </div>
+            </div>
+
+            <!-- Card 3: Application Gateway Key Features -->
+            <div class="card">
+                <input type="checkbox" id="ag-features-toggle" class="card-toggle">
+                <label for="ag-features-toggle" class="card-header ag-header">
+                    <h2><i class="fas fa-star"></i>Application Gateway Key Features</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--app-gateway-color);"><i class="fas fa-tools"></i>Powerful Capabilities for Web Applications</h3>
+                    <p class="description">Application Gateway offers several stand-out features that make it a powerful choice for specific web application scenarios.</p>
+
+                    <h4><i class="fas fa-route" style="color:var(--rules-color);"></i>1. Path-Based Routing & Multi-Site Hosting</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-code-branch"></i><strong>Path-Based Routing:</strong> Allows you to route requests to different backend pools based purely on the <span class="key-point">URL path</span>. For example, requests for <code class="code-term">/images/*</code> might go to servers optimized for static content, while requests for <code class="code-term">/api/*</code> go to your backend application servers. Useful for microservices architectures.</li>
+                        <li><i class="fa-li fas fa-sitemap"></i><strong>Multi-Site Hosting:</strong> Enables hosting multiple websites (e.g., <code class="code-term">contoso.com</code>, <code class="code-term">fabrikam.com</code>) on a single Application Gateway instance, routing traffic based on the hostname. Supports wildcard hostnames.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-lock-open" style="color:var(--ssl-color);"></i>2. SSL/TLS Termination (Offload)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-certificate"></i>The Application Gateway can handle incoming encrypted SSL/TLS traffic. It <span class="key-point">decrypts it</span> at the gateway's edge, processes the request, and then <span class="key-point">optionally re-encrypts it</span> before sending it to the backend server.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i>This <span class="key-point">offloads the CPU-intensive encryption work</span> from your backend web servers, allowing them to focus purely on application logic, which is a huge performance boost.</li>
+                        <li><i class="fa-li fas fa-lock"></i>Supports end-to-end SSL encryption where traffic is re-encrypted before reaching the backend.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-cookie-bite" style="color:var(--listeners-color);"></i>3. Cookie-Based Session Affinity (Sticky Sessions)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-sticky-note"></i>Ensures that <span class="key-point">all requests from a specific user (client) hit the same backend server</span> during their session.</li>
+                        <li><i class="fa-li fas fa-shopping-cart"></i>Critical for stateful applications (e.g., shopping carts, complex forms) where session data is stored on the backend server and must persist across multiple requests.</li>
+                        <li><i class="fa-li fas fa-exchange-alt"></i>This is achieved by injecting a cookie into the first response from the backend server.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-arrows-alt-v" style="color:var(--app-gateway-color);"></i>4. Autoscaling (V2 SKU)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-chart-line"></i>The <span class="key-point">V2 SKU</span> of Application Gateway (recommended) can automatically scale its own capacity (compute units) up or down based on actual traffic load.</li>
+                        <li><i class="fa-li fas fa-fire"></i>This ensures consistent performance during traffic spikes and optimizes costs during low-traffic periods, without manual intervention.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand the purpose and use cases for path-based routing, SSL offloading, and session affinity. Know that autoscaling and Availability Zone support are key benefits of the V2 SKU.</p>
+                </div>
+            </div>
+
+            <!-- Card 4: Web Application Firewall (WAF) & SKUs -->
+            <div class="card">
+                <input type="checkbox" id="ag-waf-ssl-sku-toggle" class="card-toggle">
+                <label for="ag-waf-ssl-sku-toggle" class="card-header" style="background-color: var(--waf-color);">
+                    <h2><i class="fas fa-shield-alt"></i>Web Application Firewall (WAF) & SKUs</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--waf-color);"><i class="fas fa-key"></i>Protecting Your Web Applications</h3>
+                    <p class="description">Application Gateway provides robust security through its integrated Web Application Firewall and offers different SKUs that determine its capabilities and performance.</p>
+
+                    <h4><i class="fas fa-fire-alt" style="color:var(--waf-color);"></i>1. Web Application Firewall (WAF)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-check"></i>An <span class="key-point">optional, integrated component</span> of Application Gateway (WAF_v1 or WAF_v2 SKU).</li>
+                        <li><i class="fa-li fas fa-bug"></i>Protects web applications from common web vulnerabilities (OWASP Top 10) like SQL injection, cross-site scripting, and other web exploits.</li>
+                        <li><i class="fa-li fas fa-list-check"></i>Uses OWASP Core Rule Sets (CRS) to detect and block attacks.</li>
+                        <li><i class="fa-li fas fa-filter"></i>Operates at Layer 7, inspecting HTTP/HTTPS traffic content *before* it reaches your backend servers.</li>
+                    </ul>
+                    
+                    <h4><i class="fas fa-tags" style="color:var(--app-gateway-color);"></i>2. Application Gateway SKUs</h4>
+                    <p>Application Gateway is available in different Stock-Keeping Units that define its performance, features, and pricing.</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-server"></i><strong>V1 SKU:</strong> Legacy generation. Supports Basic, Standard, and WAF tiers. Manual scaling only.</li>
+                        <li><i class="fa-li fas fa-cloud-upload-alt"></i><strong>V2 SKU (Recommended):</strong>
+                            <ul>
+                                <li>Supports <span class="key-point">Autoscaling</span> to dynamically adjust capacity.</li>
+                                <li>Supports <span class="key-point">Availability Zones</span> for higher resiliency.</li>
+                                <li>Offers better performance, faster deployment times, and fixed pricing for egress.</li>
+                                <li>Includes WAF_v2 for integrated WAF capabilities.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand WAF's purpose and integration within Application Gateway. Know that V2 SKU is the recommended choice due to autoscaling, Availability Zone support, and improved performance.</p>
+                </div>
+            </div>
+
+            <!-- Card 5: Application Gateway & Azure DNS Integration -->
+            <div class="card">
+                <input type="checkbox" id="ag-dns-integration-toggle" class="card-toggle">
+                <label for="ag-dns-integration-toggle" class="card-header" style="background-color: var(--integration-color);">
+                    <h2><i class="fas fa-link"></i>App Gateway & Azure DNS Integration</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--integration-color);"><i class="fas fa-puzzle-piece"></i>Working Together for Seamless Access</h3>
+                    <p class="description">Application Gateway handles the sophisticated Layer 7 routing, but it relies on Azure DNS to make your application discoverable, whether publicly or privately.</p>
+
+                    <div class="mnemonic"><i class="fas fa-cloud"></i>DNS gets you to the building. Application Gateway tells you which room to go to.</div>
+                    <p class="description">DNS is about *finding the address* of your Application Gateway. Application Gateway's logic kicks in *after* the connection is made to its listener, to direct traffic internally.</p>
+
+                    <h4><i class="fas fa-globe-americas" style="color:var(--azure-blue);"></i>1. Public-Facing Applications (Azure Public DNS)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-id-card"></i>Your Application Gateway will have a <span class="key-point">public front-end IP address</span>. Azure often assigns a default FQDN (e.g., <code class="code-term">yourapp.westus.cloudapp.azure.com</code>) to this IP.</li>
+                        <li><i class="fa-li fas fa-link"></i>In your <span class="key-point">Azure Public DNS zone</span>, you'd create a record for your custom domain (e.g., <code class="code-term">www.mycompany.com</code>).
+                            <ul>
+                                <li>This record can be an <span class="key-point">A record</span> pointing directly to the Application Gateway's public IP.</li>
+                                <li>More commonly, it's a <span class="key-point">CNAME record</span> pointing to the Azure-provided FQDN of the Application Gateway. This is generally preferred as it tolerates underlying IP changes better.</li>
+                                <li><span class="key-point">Most robustly:</span> Use an <span class="key-point">Alias record</span> in Azure Public DNS directly targeting the Application Gateway's public IP *resource*. This automatically handles any underlying IP changes, preventing "dangling DNS" issues, and allows pointing the zone apex (e.g., <code class="code-term">mycompany.com</code>) directly to the Application Gateway.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fab fa-docker"></i>Application Gateway for Containers can also integrate directly with Azure DNS to manage these public records dynamically.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-lock" style="color:var(--info-color);"></i>2. Internal Applications (Azure Private DNS)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-network-wired"></i>If your Application Gateway has a <span class="key-point">private front-end IP</span> (common for line-of-business applications accessed only within your Azure network or hybrid networks), you use <span class="key-point">Azure Private DNS zones</span>.</li>
+                        <li><i class="fa-li fas fa-sitemap"></i>You'd create a record in your linked private DNS zone (e.g., <code class="code-term">internalapp.mycorp.local</code>) that resolves to the Application Gateway's private IP address.</li>
+                        <li><i class="fa-li fas fa-user-check"></i>This ensures that only clients within your linked Virtual Networks (VNets) can discover and access that internal Application Gateway, keeping internal traffic off the public internet.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand how DNS (A, CNAME, and especially Alias records) maps custom domains to Application Gateway's public endpoint. For internal apps, know that Private DNS zones map to the Application Gateway's private IP. Grasp the fundamental distinction: DNS finds, Application Gateway routes.</p>
+                </div>
+            </div>
+
+            <!-- Card 6: Common Scenarios for Application Gateway -->
+            <div class="card">
+                <input type="checkbox" id="ag-scenarios-toggle" class="card-toggle">
+                <label for="ag-scenarios-toggle" class="card-header" style="background-color: var(--scenarios-color);">
+                    <h2><i class="fas fa-check-circle"></i>Common Scenarios for Application Gateway</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--scenarios-color);"><i class="fas fa-lightbulb"></i>Practical Deployments and Use Cases</h3>
+                    <p class="description">Application Gateway fits into various architectural patterns, especially when dealing with web-based applications.</p>
+
+                    <h4><i class="fas fa-globe" style="color:var(--app-gateway-color);"></i>1. Hosting a Secure Regional Web App</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-layer-group"></i>Use Application Gateway for <span class="key-point">Layer 7 load balancing</span> across your web servers (VMs, App Services) within a single Azure region.</li>
+                        <li><i class="fa-li fas fa-lock-open"></i>Enable <span class="key-point">SSL Offload</span> to free up CPU cycles on your backend servers.</li>
+                        <li><i class="fa-li fas fa-shield-alt"></i>Crucially, enable its <span class="key-point">Web Application Firewall (WAF)</span> to protect against common web attacks like SQL injection and cross-site scripting.</li>
+                        <li><i class="fa-li fas fa-link"></i>Your Azure Public DNS zone (using an A, CNAME, or ideally an Alias record) points your custom domain (<code class="code-term">www.yourcompany.com</code>) to the Application Gateway's public IP.</li>
+                        <li><i class="fa-li fas fa-info-circle"></i>This provides a simple, secure, and scalable regional setup for public-facing web applications.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-network-wired" style="color:var(--integration-color);"></i>2. Integrating with Global Services (Traffic Manager / Front Door)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-route"></i>While Application Gateway is regional, it's often used as the "regional entry point" behind global load balancing services like <span class="key-point">Azure Traffic Manager</span> or <span class="key-point">Azure Front Door</span>.</li>
+                        <li><i class="fa-li fas fa-globe"></i>**Global DNS Direction (Traffic Manager):**
+                            <ul>
+                                <li>For global failover or performance-based routing across continents, you'd deploy Application Gateways in multiple regions (e.g., East US, West Europe).</li>
+                                <li><span class="key-point">Azure Traffic Manager</span> (a DNS-based global load balancer) sits in front, directing users to the closest or healthiest Application Gateway's public IP, based on DNS queries.</li>
+                                <li>Traffic Manager handles "which region" via DNS, and then Application Gateway handles "which server within that region" via Layer 7 routing.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-door-open"></i>**Global Layer 7 Acceleration (Front Door):**
+                            <ul>
+                                <li>Azure Front Door also works globally but operates at Layer 7, providing WAF, caching, and performance acceleration at the edge.</li>
+                                <li>Front Door can route traffic to regional Application Gateways, effectively extending their Layer 7 capabilities globally with added CDN benefits.</li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Be able to identify scenarios where Application Gateway is the primary regional web load balancer. Understand how it fits into a larger global architecture alongside Traffic Manager or Front Door, recognizing their distinct roles (DNS-based vs. L7, regional vs. global).</p>
+                </div>
+            </div>
+
+            <!-- Card 7: Application Gateway: AZ-104 Key Takeaways (Final Summary) -->
+            <div class="card" style="grid-column: 1 / -1;">
+                <input type="checkbox" id="ag-summary-toggle" class="card-toggle" checked>
+                <label for="ag-summary-toggle" class="card-header default-summary-header">
+                    <h2><i class="fas fa-graduation-cap"></i>Application Gateway: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-blue-dark);"><i class="fas fa-check-double"></i>Exam Essentials & Differentiators</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-globe" style="color:var(--app-gateway-color);"></i><strong>Regional Layer 7 (HTTP/HTTPS):</strong> Understand that AG is for <span class="key-point">web traffic only</span> within a <span class="key-point">single Azure region</span>.</li>
+                        <li><i class="fa-li fas fa-shield-alt" style="color:var(--waf-color);"></i><strong>Key Security Features:</strong> Integrated <span class="key-point">Web Application Firewall (WAF)</span> and <span class="key-point">SSL/TLS Termination</span> (offloading).</li>
+                        <li><i class="fa-li fas fa-route" style="color:var(--rules-color);"></i><strong>Advanced Routing:</strong> Supports <span class="key-point">Path-based Routing</span> and <span class="key-point">Multi-site Hosting</span> to direct traffic intelligently.</li>
+                        <li><i class="fa-li fas fa-server" style="color:var(--components-color);"></i><strong>Backend Pool Versatility:</strong> Can route to VMs, VMSS, App Services, on-premises, IPs, or FQDNs.</li>
+                        <li><i class="fa-li fas fa-arrows-alt" style="color:var(--app-gateway-color);"></i><strong>Autoscaling (V2 SKU):</strong> V2 SKU offers autoscaling and Availability Zone support, making it the recommended choice.</li>
+                        <li><i class="fa-li fas fa-cookie-bite" style="color:var(--listeners-color);"></i><strong>Session Affinity:</strong> Uses cookie-based session affinity for persistence (sticky sessions).</li>
+                        <li><i class="fa-li fas fa-heartbeat" style="color:var(--success-color);"></i>**Health Probes:** Critical for monitoring backend health; traffic is only sent to healthy instances.</li>
+                        <li><i class="fa-li fas fa-link" style="color:var(--integration-color);"></i>**DNS Integration:** DNS (A, CNAME, Alias) points to Application Gateway's IP. Application Gateway then handles the Layer 7 routing. Remember the mnemonic: <span class="key-point">"DNS gets you to the building. Application Gateway tells you which room to go to."</span></li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--app-gateway-color); background-color: #e7f3e7;">
+                        <i class="fas fa-lightbulb" style="color:var(--app-gateway-color);"></i>**Remember the "Why":** Use Application Gateway when you need **application-level control, security (WAF), or SSL management** for your web applications within a region.
+                    </p>
+                </div>
+            </div>
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => { /* CSS :checked handles expand/collapse */ });
+            });
+        });
+    </script>
+</body>
+</html>

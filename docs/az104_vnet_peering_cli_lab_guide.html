@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Review: VNet Peering with Azure CLI (AZ-104)</title>
+     <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #2d2d2d; 
+            --code-text-color: #dcdcdc; 
+            --code-border: #444;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --vnet-color: #0072C6; 
+            --cli-color: #444; 
+            --peering-color: #2980B9;
+        }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+       .main-container { width: 100%; max-width: 1000px; } /* Consistent width */
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+         h1 i { color: var(--peering-color); } /* Peering color for main icon */
+
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+       
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1200px) { 
+             .card-container { grid-template-columns: repeat(3, 1fr); }
+             .card.full-width-card, .card.workflow-card { grid-column: 1 / -1; } /* For wider cards */
+         }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+        }
+        /* Default Lab Card Header */
+        .card-header { background-color: var(--azure-blue); border-bottom-color: var(--azure-blue-dark);}
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+        .card-header.cli-header { background-color: var(--cli-color); border-bottom-color: #222;}
+        .card-header.cli-header:hover { background-color: #222;}
+        .card-header.peering-header { background-color: var(--peering-color); border-bottom-color: #1F618D;}
+        .card-header.peering-header:hover { background-color: #1F618D;}
+        .card-header.lessons-header { background-color: var(--warning-color); border-bottom-color: #B03A2E; color:var(--text-light);}
+        .card-header.lessons-header:hover { background-color: #B03A2E;}
+
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 3000px; /* Increased for potentially long CLI outputs */
+            opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em;
+          }
+        /* Custom list icons */
+        .card-content li i.fa-terminal { color: var(--cli-color); }
+        .card-content li i.fa-network-wired { color: var(--vnet-color); }
+        .card-content li i.fa-server { color: var(--vnet-color); } /* Re-using vnet-color for VM icon in this context */
+        .card-content li i.fa-link { color: var(--peering-color); }
+        .card-content li i.fa-check-circle { color: var(--success-color); }
+        .card-content li i.fa-exclamation-circle, .card-content li i.fa-times-circle { color: var(--warning-color); }
+        .card-content li i.fa-lightbulb { color: var(--warning-color); } /* For lessons */
+        .card-content li i.fa-route { color: var(--info-color); }
+        .card-content li i.fa-handshake { color: var(--success-color); }
+        .card-content li i.fa-globe-americas { color: var(--info-color); }
+
+         pre {
+             background-color: var(--code-bg); border: 1px solid var(--code-border);
+             padding: 15px; border-radius: 4px; overflow-x: auto; font-size: 0.9em; 
+             color: var(--code-text-color); margin-top: 10px;
+        }
+        pre code { background: none; border: none; padding: 0; font-size: 1em; color: var(--code-text-color); }
+        .param { color: #4ec9b0; } 
+        .value { color: #ce9178; } 
+        .comment { color: #6a9955; font-style: italic; } 
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-link"></i>Lab Review: VNet Peering with Azure CLI</h1>
+        <p class="instructions">This guide reviews your lab session on creating Virtual Networks (VNets), deploying VMs, and establishing VNet Peering using the Azure CLI.</p>
+
+        <div class="card-container">
+
+            <!-- Lab Objective & Workflow Card -->
+            <div class="card workflow-card">
+                <input type="checkbox" id="lab-objective-toggle" class="card-toggle" checked>
+                <label for="lab-objective-toggle" class="card-header">
+                    <h2><i class="fas fa-bullseye"></i>Lab Objective & Workflow</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3><i class="fas fa-project-diagram"></i>Goal: Inter-VNet Communication</h3>
+                    <p>The lab aimed to create multiple VNets, deploy VMs into them, and configure VNet Peering to enable private IP communication between VMs in different VNets. This involved both regional and global peering.</p>
+                    <h4>High-Level Steps:</h4>
+                    <ol style="padding-left:20px;">
+                        <li>Create `SalesVNet` and `MarketingVNet` in North Europe.</li>
+                        <li>Create `ResearchVNet` in West Europe.</li>
+                        <li>Deploy a Linux VM into each VNet (`SalesVM`, `MarketingVM`, `ResearchVM`).</li>
+                        <li>Establish Regional VNet Peering between `SalesVNet` &harr; `MarketingVNet`.</li>
+                        <li>Establish Global VNet Peering between `MarketingVNet` &harr; `ResearchVNet`.</li>
+                        <li>Verify peering status and examine effective routes on VM NICs.</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- VNet & VM Creation Card -->
+            <div class="card">
+                <input type="checkbox" id="vnet-vm-creation-toggle" class="card-toggle">
+                <label for="vnet-vm-creation-toggle" class="card-header cli-header">
+                    <h2><i class="fas fa-terminal"></i>VNet & VM Creation (CLI)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--cli-color);"><i class="fas fa-network-wired"></i>Building the Foundation</h3>
+                    <p class="description">The lab started by provisioning the necessary VNets, subnets, and VMs.</p>
+                    <h4>1. VNet Creation (<code class="code-term">az network vnet create</code>):</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-network-wired"></i>`SalesVNet`: 10.1.0.0/16 (North Europe)
+                            <ul><li>Subnet `Apps`: 10.1.1.0/24</li></ul>
+                        </li>
+                        <li><i class="fa-li fas fa-network-wired"></i>`MarketingVNet`: 10.2.0.0/16 (North Europe)
+                            <ul><li>Subnet `Apps`: 10.2.1.0/24</li></ul>
+                        </li>
+                        <li><i class="fa-li fas fa-network-wired"></i>`ResearchVNet`: 10.3.0.0/16 (West Europe)
+                             <ul><li>Subnet `Data`: 10.3.1.0/24</li></ul>
+                        </li>
+                    </ul>
+                    <pre><code class="language-bash"># Example for SalesVNet
+az network vnet create -g "learn-52f4..." --name SalesVNet --address-prefixes 10.1.0.0/16 --subnet-name Apps --subnet-prefixes 10.1.1.0/24 --location northeurope</code></pre>
+                    
+                    <h4 style="margin-top:15px;">2. VM Creation (<code class="code-term">az vm create</code>):</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-server"></i>`SalesVM` deployed into `SalesVNet/Apps`.</li>
+                        <li><i class="fa-li fas fa-server"></i>`MarketingVM` deployed into `MarketingVNet/Apps`.</li>
+                        <li><i class="fa-li fas fa-server"></i>`ResearchVM` deployed into `ResearchVNet/Data`.</li>
+                        <li><i class="fa-li fas fa-cogs"></i>All used `Ubuntu2204` image with specified admin credentials.</li>
+                    </ul>
+                     <pre><code class="language-bash"># Example for SalesVM
+az vm create -g "learn-52f4..." --name SalesVM --location northeurope --vnet-name SalesVNet --subnet Apps --image Ubuntu2204 --admin-username azureuser --admin-password YourPassword</code></pre>
+                </div>
+            </div>
+
+            <!-- VNet Peering Creation & Verification Card -->
+            <div class="card">
+                <input type="checkbox" id="peering-creation-toggle" class="card-toggle">
+                <label for="peering-creation-toggle" class="card-header peering-header">
+                    <h2><i class="fas fa-link"></i>VNet Peering Creation & Verification</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--peering-color);"><i class="fas fa-code-branch"></i>Linking the Networks</h3>
+                     <h4>1. Peering Commands (<code class="code-term">az network vnet peering create</code>):</h4>
+                     <p>Key parameter: <code class="param">--allow-vnet-access</code> was used.</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-exchange-alt"></i>**SalesVNet &harr; MarketingVNet (Regional):**
+                            <ul>
+                                <li>`SalesVNet-To-MarketingVNet` (from SalesVNet)</li>
+                                <li>`MarketingVNet-To-SalesVNet` (from MarketingVNet)</li>
+                            </ul>
+                        </li>
+                        <li style="margin-top:5px;"><i class="fa-li fas fa-globe"></i>**MarketingVNet &harr; ResearchVNet (Global):**
+                            <ul>
+                                <li>`MarketingVNet-To-ResearchVNet` (from MarketingVNet)</li>
+                                <li>`ResearchVNet-To-MarketingVNet` (from ResearchVNet)</li>
+                            </ul>
+                        </li>
+                    </ul>
+                     <h4 style="margin-top:15px;">2. Verification Steps:</h4>
+                     <ul>
+                        <li><i class="fa-li fas fa-list"></i>Used <code class="code-term">az network vnet peering list</code> to check `PeeringState`. Initially "Initiated", then "Connected".</li>
+                        <li><i class="fa-li fas fa-route"></i>Used <code class="code-term">az network nic show-effective-route-table</code> for each VM's NIC. This confirmed routes to peered VNet address spaces with `Next Hop Type: VNetPeering` or `VNetGlobalPeering`.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Lessons Learned & AZ-104 Takeaways Card -->
+            <div class="card full-width-card lessons-header"> <!-- Applying lessons-header for distinct color -->
+                <input type="checkbox" id="lab-lessons-takeaways-toggle" class="card-toggle">
+                <label for="lab-lessons-takeaways-toggle" class="card-header lessons-header">
+                    <h2><i class="fas fa-lightbulb"></i>Lab Learnings & AZ-104 Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color: var(--warning-color);"><i class="fas fa-exclamation-triangle"></i>Key Observations & Exam Pointers</h3>
+                     <ul>
+                        <li><i class="fa-li fas fa-exclamation-circle"></i><strong>Resource Dependency:</strong> The initial error `(ResourceNotFound) The Resource 'Microsoft.Network/virtualNetworks/SalesVNet' ... was not found` occurred when trying to create a peering from `SalesVNet` *before* `SalesVNet` itself was created. <span class="key-point">Lesson: Ensure dependent resources (like the source VNet for a peering) exist before attempting to use them.</span></li>
+                        <li><i class="fa-li fas fa-handshake"></i><strong>Bidirectional Peering:</strong> VNet peering is <span class="key-point">not automatically reciprocal</span>. A peering connection must be created from VNet-A to VNet-B AND from VNet-B to VNet-A for the peering state to become "Connected" and traffic to flow. Your lab correctly demonstrated this.</li>
+                        <li><i class="fa-li fas fa-route"></i><strong>Effective Routes are Key:</strong> The `show-effective-route-table` command is crucial for verifying that peered VNet address spaces are routable. It clearly shows the `Next Hop Type` as `VNetPeering` or `VNetGlobalPeering`.</li>
+                        <li><i class="fa-li fas fa-globe-americas"></i><strong>Regional vs. Global Distinction:</strong> The CLI output and effective routes differentiate between same-region (`VNetPeering`) and cross-region (`VNetGlobalPeering`) peering.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i><strong>NSG Consideration (Implicit):</strong> Although not explicitly configured with custom rules in this lab, the VNet creation output showed subnets being associated with NSGs from `SandboxNSGs`. Remember that even with peering allowing routing, <span class="key-point">NSGs still filter traffic</span> and would need appropriate rules to permit communication between resources in peered VNets.</li>
+                        <li><i class="fa-li fas fa-ban"></i><strong>Non-Transitive Peering (Important Concept):</strong> While SalesVNet is peered to MarketingVNet, and MarketingVNet is peered to ResearchVNet, SalesVNet <span class="key-point">cannot</span> directly communicate with ResearchVNet through MarketingVNet unless Gateway Transit is configured (which was not part of this specific CLI lab for peering creation). This is a common AZ-104 point.</li>
+                    </ul>
+                    <p style="margin-top:15px;"><strong>AZ-104 Exam Focus:</strong></p>
+                    <ul>
+                        <li><i class="fa-li fas fa-terminal"></i>Understand the syntax and purpose of `az network vnet peering create`.</li>
+                        <li><i class="fa-li fas fa-link"></i>Know that peering is a two-way setup and its states (`Initiated`, `Connected`).</li>
+                        <li><i class="fa-li fas fa-check-circle"></i>Be able to interpret effective routes to confirm peering.</li>
+                        <li><i class="fa-li fas fa-arrows-alt-h"></i>Remember non-transitivity and the non-overlapping IP address space requirement for peering.</li>
+                         <li><i class="fa-li fas fa-door-open"></i>Know about `--allow-vnet-access`, `--allow-forwarded-traffic`, and `--use-remote-gateways` parameters for peering, even if not all were used in this basic lab.</li>
+                    </ul>
+                </div>
+            </div>
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.querySelectorAll('.card-toggle').forEach(checkbox => {
+           checkbox.addEventListener('change', (e) => { /* CSS handles expand/collapse */ });
+        });
+    </script>
+</body>
+</html>

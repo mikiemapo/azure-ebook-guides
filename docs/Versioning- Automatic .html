@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Blob Versioning Explained (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #f3f2f1;
+            --code-border: #e0e0e0;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors */
+            --versioning-color: #6f42c1; /* Purple */
+            --lifecycle-color: var(--success-color);
+            --replication-color: #038387; /* Teal */
+            --softdelete-color: var(--warning-color);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 950px; }
+
+        h1 {
+            color: var(--versioning-color); margin-bottom: 15px; text-align: center; /* Title Color */
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-history { font-size: 1.1em; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--versioning-color); }
+
+        /* --- Mind Map Diagram --- */
+        .mindmap-container {
+            background-color: var(--card-bg); border-radius: 8px; padding: 25px;
+            margin: 0 auto 30px auto; width: 100%; max-width: 700px;
+            box-shadow: 0 2px 8px var(--shadow-color); border: 1px solid var(--border-color);
+            position: relative; min-height: 280px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .mindmap-center {
+            background-color: var(--versioning-color); color: var(--text-light); padding: 15px;
+            border-radius: 8px; text-align: center; font-weight: 600; font-size: 1.1em;
+            width: 160px; height: auto; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(111, 66, 193, 0.5);
+            z-index: 10;
+        }
+        .mindmap-center i { font-size: 1.6em; margin-bottom: 8px; }
+
+        .mindmap-branch {
+            position: absolute; background-color: var(--diagram-bg); padding: 8px 12px;
+            border-radius: 6px; font-size: 0.85em; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+            display: flex; align-items: center; gap: 6px; min-width: 110px;
+            z-index: 5;
+        }
+        .mindmap-branch i { font-size: 1em; color: var(--versioning-color);}
+        .mindmap-branch.purpose i { color: var(--info-color); }
+        .mindmap-branch.trigger i { color: var(--warning-color); }
+        .mindmap-branch.feature i { color: var(--success-color); }
+        .mindmap-branch.consider i { color: #605e5c; }
+
+        /* Positioning */
+        .branch-what { top: 10px; left: 50%; transform: translateX(-50%); }
+        .branch-purpose { top: 15px; left: calc(50% + 120px); }
+
+        .branch-trigger { bottom: 10px; left: 50%; transform: translateX(-50%); }
+        .branch-trigger-overwrite { bottom: 15px; left: calc(50% - 180px); }
+        .branch-trigger-delete { bottom: 65px; left: calc(50% - 170px); }
+
+        .branch-feature { top: 50%; left: 10px; transform: translateY(-50%); }
+        .branch-feature-auto { top: calc(50% - 45px); left: -70px; transform: rotate(-25deg);}
+        .branch-feature-history { top: calc(50% + 25px); left: -70px; transform: rotate(25deg);}
+
+        .branch-consider { top: 50%; right: 10px; transform: translateY(-50%); }
+        .branch-consider-cost { top: calc(50% - 45px); right: -70px; transform: rotate(25deg); }
+        .branch-consider-enable { top: calc(50% + 25px); right: -70px; transform: rotate(-25deg); }
+
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1100px) { .card-container { grid-template-columns: repeat(3, 1fr); } }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--versioning-color); color: var(--text-light); cursor: pointer; /* Purple Header */
+            transition: background-color 0.2s ease; border-bottom: 1px solid #4a2c87; /* Darker Purple */
+        }
+        .card-header:hover { background-color: #4a2c87; }
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--versioning-color); font-size: 0.9em;} /* Use versioning color for H3 icons */
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--versioning-color); font-size: 0.9em; /* Use versioning color for list icons */
+          }
+        /* Custom list icons */
+         .card-content li i.fa-save { color: var(--success-color); }
+         .card-content li i.fa-edit { color: var(--warning-color); }
+         .card-content li i.fa-trash { color: var(--warning-color); }
+         .card-content li i.fa-copy { color: var(--azure-blue); }
+         .card-content li i.fa-magic { color: var(--success-color); }
+         .card-content li i.fa-lock { color: #605e5c; }
+         .card-content li i.fa-fingerprint { color: var(--info-color); }
+         .card-content li i.fa-undo { color: var(--success-color); }
+         .card-content li i.fa-shield-alt { color: var(--success-color); }
+         .card-content li i.fa-clock-rotate-left { color: var(--info-color); }
+         .card-content li i.fa-dollar-sign { color: var(--warning-color); }
+         .card-content li i.fa-power-off { color: var(--azure-blue-dark); }
+         .card-content li i.fa-link { color: var(--azure-blue); }
+         .card-content li i.fa-exclamation-triangle { color: var(--warning-color); }
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-vertical { flex-direction: column; align-items: stretch; gap: 10px;}
+        .diagram-box {
+            background-color: #fff; padding: 10px 15px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px;
+        }
+        .diagram-box i { font-size: 1.5em; color: var(--azure-blue); }
+        .diagram-box span { font-size: 0.85em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; }
+        .diagram-arrow-down { transform: rotate(90deg); margin: 5px 0; }
+        .diagram-label { font-size: 0.8em; color: #605e5c; font-style: italic; margin-top: -10px; margin-bottom: 10px;}
+
+        /* Specific Diagram Styles */
+        .versioning-flow .diagram-box { min-width: 120px; }
+        .versioning-flow .fa-file-alt { color: var(--info-color); } /* Current Blob */
+        .versioning-flow .fa-history { color: var(--versioning-color); } /* Version */
+        .versioning-flow .fa-edit, .versioning-flow .fa-trash, .versioning-flow .fa-copy { color: var(--warning-color); font-size: 1.2em; margin-bottom: 5px;}
+        .versioning-flow .version-label { font-size: 0.75em; color: var(--versioning-color); font-style: italic; margin-top: 3px;}
+
+        /* --- Code formatting --- */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: var(--code-bg);
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid var(--code-border); color: var(--info-color);
+        }
+        .code-term { font-weight: bold; }
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--versioning-color); } /* Use versioning color for key points */
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .warning-text { color: var(--warning-color); font-weight: 600; }
+        .important-note { background-color: #e8dfff; border-left: 4px solid var(--versioning-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--versioning-color); margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-history"></i>Azure Blob Versioning Explained</h1>
+
+    <!-- Mind Map -->
+    <div class="mindmap-container">
+         <div class="mindmap-center"><i class="fas fa-history"></i>Blob Versioning</div>
+
+         <div class="mindmap-branch branch-what"><i class="fas fa-info-circle"></i>What it Is</div>
+         <div class="mindmap-branch branch-purpose purpose"><i class="fas fa-shield-alt"></i>Purpose</div>
+
+         <div class="mindmap-branch branch-trigger trigger"><i class="fas fa-bolt"></i>Triggers</div>
+         <div class="mindmap-branch branch-trigger-overwrite trigger"><i class="fas fa-edit"></i>Overwrite</div>
+         <div class="mindmap-branch branch-trigger-delete trigger"><i class="fas fa-trash"></i>Delete</div>
+
+         <div class="mindmap-branch branch-feature feature"><i class="fas fa-star"></i>Features</div>
+         <div class="mindmap-branch branch-feature-auto feature"><i class="fas fa-magic"></i>Automatic</div>
+         <div class="mindmap-branch branch-feature-history feature"><i class="fas fa-clock-rotate-left"></i>History</div>
+
+         <div class="mindmap-branch branch-consider consider"><i class="fas fa-cog"></i>Considerations</div>
+         <div class="mindmap-branch branch-consider-cost consider"><i class="fas fa-dollar-sign"></i>Cost</div>
+         <div class="mindmap-branch branch-consider-enable consider"><i class="fas fa-power-off"></i>Enablement</div>
+    </div>
+
+    <p class="instructions">Understand how Azure Blob Versioning automatically protects your data by saving previous states. <strong>Click/Tap</strong> headers to explore.</p>
+
+    <div class="card-container">
+
+        <!-- What is Versioning? -->
+        <div class="card">
+            <input type="checkbox" id="what-toggle" class="card-toggle" checked> <!-- Start expanded -->
+            <label for="what-toggle" class="card-header versioning-header">
+                <h2><i class="fas fa-question-circle"></i>What is Blob Versioning?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-save"></i>Automatic Data Protection</h3>
+                <p class="description">A feature that automatically maintains previous versions of a blob when it's overwritten or deleted.</p>
+                 <ul>
+                    <li><i class="fas fa-magic fa-li"></i><strong>Automatic Capture:</strong> You don't manually create versions; Azure does it automatically when specific actions occur.</li>
+                    <li><i class="fas fa-clock-rotate-left fa-li"></i><strong>Historical Record:</strong> Each version is a full, read-only snapshot of the blob at a specific point in time.</li>
+                    <li><i class="fas fa-undo fa-li"></i><strong>Recovery:</strong> Allows you to view, download, or restore previous states of your data.</li>
+                    <li><i class="fas fa-shield-alt fa-li"></i><strong>Protection:</strong> Guards against accidental overwrites or deletions by preserving prior states.</li>
+                 </ul>
+            </div>
+        </div>
+
+         <!-- How it Works / Triggers -->
+        <div class="card">
+            <input type="checkbox" id="how-toggle" class="card-toggle">
+            <label for="how-toggle" class="card-header versioning-header">
+                <h2><i class="fas fa-cogs"></i>How Versioning is Triggered</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-bolt"></i>Actions Creating New Versions</h3>
+                <p class="description">Specific operations on a blob cause its current state to become a previous version.</p>
+
+                 <h4><i class="fas fa-edit"></i> On Overwrite:</h4>
+                 <div class="diagram versioning-flow">
+                    <div class="diagram-box"> <i class="fas fa-file-alt"></i> <span>Blob (Current Data V1)</span> </div>
+                    <i class="fas fa-arrow-right diagram-arrow"></i>
+                    <div class="diagram-box" style="background-color: #fff8db;"> <i class="fas fa-edit"></i> <span>Overwrite Operation<br/>(e.g., Put Blob, Put Block List, Copy Blob)</span> </div>
+                    <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"> <i class="fas fa-history"></i> <span>Version 1</span> <span class="version-label">(Old Data)</span></div>
+                     <div style="position: relative; top: -30px; left: 10px; font-size: 1.5em;">+</div>
+                    <div class="diagram-box"> <i class="fas fa-file-alt"></i> <span>Blob (Current Data V2)</span> </div>
+                 </div>
+                 <p>When a blob is overwritten, the state just before the overwrite becomes a new version.</p>
+
+                 <h4><i class="fas fa-trash"></i> On Delete:</h4>
+                  <div class="diagram versioning-flow" style="margin-top: 10px;">
+                     <div class="diagram-box"> <i class="fas fa-file-alt"></i> <span>Blob (Current Data V2)</span> </div>
+                    <i class="fas fa-arrow-right diagram-arrow"></i>
+                    <div class="diagram-box" style="background-color: #ffeaea;"> <i class="fas fa-trash"></i> <span>Delete Operation</span> </div>
+                    <i class="fas fa-arrow-right diagram-arrow"></i>
+                    <div class="diagram-box"> <i class="fas fa-history"></i> <span>Version 2</span> <span class="version-label">(Old Data, Marked Deleted*)</span></div>
+                     <div style="position: relative; top: -30px; left: 10px; font-size: 1.5em;">+</div>
+                     <div class="diagram-box" style="opacity: 0.6;"> <i class="fas fa-ghost"></i> <span>No Current Blob</span> </div>
+                 </div>
+                 <p>When the <span class="key-point">current</span> blob is deleted, its state just before deletion becomes a new version. (*If Soft Delete is also enabled, this version is technically soft-deleted).</p>
+
+                <ul>
+                    <li><i class="fas fa-edit fa-li"></i><strong>Overwrite Triggers:</strong> `Put Blob`, `Put Block List`, `Copy Blob` (when destination exists).</li>
+                    <li><i class="fas fa-trash fa-li"></i><strong>Delete Trigger:</strong> `Delete Blob`.</li>
+                    <li><i class="fas fa-ban fa-li" style="color: #605e5c;"></i>Deleting a <span class="key-point">specific version</span> does NOT create a new version.</li>
+                </ul>
+            </div>
+        </div>
+
+
+        <!-- Key Features -->
+        <div class="card">
+            <input type="checkbox" id="features-toggle" class="card-toggle">
+            <label for="features-toggle" class="card-header versioning-header">
+                <h2><i class="fas fa-star"></i>Key Features</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-check-circle"></i>Core Characteristics</h3>
+                <ul>
+                    <li><i class="fas fa-magic fa-li"></i><strong>Automatic:</strong> No manual steps needed to create versions once enabled.</li>
+                    <li><i class="fas fa-clock-rotate-left fa-li"></i><strong>Complete History:</strong> Captures all overwrites and deletions of the current blob.</li>
+                    <li><i class="fas fa-lock fa-li"></i><strong>Immutable Versions:</strong> Once created, a version's content cannot be changed.</li>
+                    <li><i class="fas fa-fingerprint fa-li"></i><strong>Unique Version IDs:</strong> Each version is identified by a timestamp. The current blob has no version ID.</li>
+                    <li><i class="fas fa-layer-group fa-li"></i><strong>Full Objects:</strong> Each version is a complete copy of the blob at that time, not just a delta.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Benefits -->
+        <div class="card">
+            <input type="checkbox" id="benefits-toggle" class="card-toggle">
+            <label for="benefits-toggle" class="card-header versioning-header">
+                <h2><i class="fas fa-thumbs-up"></i>Benefits of Versioning</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-shield-alt"></i>Why Enable It?</h3>
+                 <ul>
+                    <li><i class="fas fa-undo fa-li"></i><strong>Accidental Overwrite/Delete Recovery:</strong> Easily restore a previous state if the current blob is modified or deleted unintentionally.</li>
+                    <li><i class="fas fa-history fa-li"></i><strong>Audit Trail / History:</strong> Provides a historical record of changes to a blob.</li>
+                     <li><i class="fas fa-link fa-li"></i><strong>Foundation for Other Features:</strong> Required for Object Replication and works alongside Point-in-Time Restore (for block blobs).</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Considerations & Interaction -->
+        <div class="card">
+            <input type="checkbox" id="considerations-toggle" class="card-toggle">
+            <label for="considerations-toggle" class="card-header versioning-header">
+                <h2><i class="fas fa-cog"></i>Considerations & Interactions</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-info-circle"></i>Important Points</h3>
+                 <ul>
+                    <li><i class="fas fa-power-off fa-li"></i><strong>Enablement:</strong> Must be enabled at the <span class="key-point">storage account level</span>. Cannot be disabled once enabled (though future versions might not be created if interactions change).</li>
+                    <li><i class="fas fa-dollar-sign fa-li"></i><strong>Cost:</strong> Each version is a full blob and incurs <span class="key-point warning-text">storage costs</span> based on its size and tier. You pay for all versions + the current blob.</li>
+                    <li><i class="fas fa-recycle fa-li" style="color: var(--lifecycle-color)"></i><strong>Lifecycle Management Interaction:</strong> Use Lifecycle rules to manage the cost of versions by tiering older versions to cheaper tiers (Cool, Cold, Archive) or deleting them after a certain time (`daysAfterVersionCreation`).</li>
+                    <li><i class="fas fa-trash-restore fa-li" style="color: var(--softdelete-color)"></i><strong>Soft Delete Interaction:</strong> If Soft Delete is also enabled, deleting the *current* blob creates a version which is then soft-deleted. Deleting a *specific version* makes that version soft-deleted.</li>
+                    <li><i class="fas fa-copy fa-li" style="color: var(--replication-color)"></i><strong>Object Replication Dependency:</strong> <span class="key-point">Required</span> on both source and destination for Object Replication to function. Replication copies *new versions* created on the source.</li>
+                 </ul>
+                 <div class="important-note"><i class="fas fa-exclamation-triangle"></i>Plan for version management using Lifecycle policies to avoid excessive storage costs from accumulated versions.</div>
+            </div>
+        </div>
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

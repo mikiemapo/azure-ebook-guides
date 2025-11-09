@@ -1,0 +1,743 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Network Security Groups (NSGs) Explained (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors for NSG Guide */
+            --nsg-color: #E74C3C; /* A distinct red/orange for NSG/Security */
+            --rule-color: #3498DB; 
+            --asg-color: #9B59B6; 
+            --tag-color: #F1C40F;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark);
+            line-height: 1.6; 
+        }
+
+        .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--nsg-color); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-user-shield { font-size: 1.1em; } 
+        
+        .back-to-hub-container { 
+            width: 100%; max-width: 1000px; margin: 0 auto 20px auto; 
+            padding: 0 20px; box-sizing: border-box;
+        }
+        .back-to-hub {
+            padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: left;
+            border: 1px solid var(--azure-blue);
+        }
+        .back-to-hub a { text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em; }
+        .back-to-hub a i { margin-right: 8px; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--nsg-color); }
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1200px) { 
+            .card-container { grid-template-columns: repeat(3, 1fr); }
+            .card.rule-processing-card { grid-column: span 3; } /* Example for wider card */
+        }
+
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; } 
+
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid;
+        }
+        /* Header colors for NSG guide cards */
+        .card-header.nsg-header { background-color: var(--nsg-color); border-bottom-color: #A93226;}
+        .card-header.nsg-header:hover { background-color: #A93226;}
+        .card-header.rule-header { background-color: var(--rule-color); border-bottom-color: #21618C;}
+        .card-header.rule-header:hover { background-color: #21618C;}
+        .card-header.asg-header { background-color: var(--asg-color); border-bottom-color: #7D3C98;}
+        .card-header.asg-header:hover { background-color: #7D3C98;}
+        .card-header.default-summary-header { background-color: var(--azure-blue-dark); border-bottom-color: #004578;} 
+        .card-header.default-summary-header:hover { background-color: #004578;}
+
+
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 1em; opacity: 0.9;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+ 
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; 
+            padding: 0 18px; 
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); 
+            border-top: 0px solid var(--border-color);
+            flex-grow: 1;
+        }
+
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 3500px; /* Increased max-height */
+            opacity: 1;
+            padding: 15px 18px; 
+            border-top: 1px solid var(--border-color); 
+            overflow-y: auto;
+        }
+
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { font-size: 0.9em; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              font-size: 0.9em; color: var(--nsg-color); 
+          }
+        
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; 
+            justify-content: space-around; gap: 10px; flex-wrap: wrap;
+        }
+        .diagram-box {
+            background-color: #fff; padding: 8px 12px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px; font-size: 0.9em;
+        }
+        .diagram-box i { font-size: 1.6em; }
+        .diagram-box strong { font-size: 1em; color: var(--azure-blue-dark); margin-bottom: 3px;}
+        .diagram-box span { font-size: 0.85em; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; margin: 0 5px; align-self: center;}
+        
+        .key-point { font-weight: 600; color: var(--nsg-color); } 
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .important-note { background-color: #FADBD8; border-left: 4px solid var(--nsg-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--nsg-color); margin-right: 8px; }
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+        .comparison-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em;}
+        .comparison-table th, .comparison-table td { border: 1px solid var(--border-color); padding: 6px 8px; text-align: left; vertical-align: top;}
+        .comparison-table th { background-color: var(--diagram-bg); font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="back-to-hub-container">
+        <div class="back-to-hub">
+            <a href="index.html"><i class="fas fa-arrow-left"></i>Back to Study Hub</a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <h1><i class="fas fa-user-shield"></i>Azure Network Security Groups (NSGs) Explained</h1>
+        <p class="instructions">Learn how NSGs filter network traffic to and from Azure resources in your Virtual Network. Core for AZ-104 security. <strong>Click/Tap</strong> headers.</p>
+
+        <div class="card-container">
+
+                        <!-- Card 0: Networking Fundamentals for NSGs -->
+            <div class="card">
+                <input type="checkbox" id="nsg-fundamentals-toggle" class="card-toggle" checked> 
+                <label for="nsg-fundamentals-toggle" class="card-header" style="background-color: var(--info-color);">
+                    <h2><i class="fas fa-book-open"></i>Networking Fundamentals for NSGs</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--info-color);"><i class="fas fa-lightbulb"></i>Core Concepts Refresher</h3>
+                    <p class="description">Understanding a few basic networking concepts is key to effectively using Network Security Groups.</p>
+
+                    <h4><i class="fas fa-project-diagram" style="color:var(--azure-blue);"></i>1. TCP (Transmission Control Protocol)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-link"></i>A <span class="key-point">connection-oriented</span> protocol.</li>
+                        <li><i class="fa-li fas fa-check-double"></i>Establishes a session (three-way handshake) before data transfer.</li>
+                        <li><i class="fa-li fas fa-tasks"></i>Provides <span class="key-point">reliable, ordered delivery</span> of data packets.</li>
+                        <li><i class="fa-li fas fa-retweet"></i>Includes error checking and retransmission of lost packets.</li>
+                        <li><i class="fa-li fas fa-globe"></i>Commonly used for: Web traffic (HTTP/HTTPS), email (SMTP), file transfer (FTP), SSH, RDP.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-network-wired" style="color:var(--success-color);"></i>2. UDP (User Datagram Protocol)</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-unlink"></i>A <span class="key-point">connectionless</span> protocol.</li>
+                        <li><i class="fa-li fas fa-shipping-fast"></i>Sends data packets (datagrams) without establishing a prior session.</li>
+                        <li><i class="fa-li fas fa-tachometer-alt"></i>Faster but <span class="key-point">less reliable</span> than TCP (no guarantee of delivery, order, or extensive error checking beyond a basic checksum).</li>
+                        <li><i class="fa-li fas fa-info-circle"></i>Packets might arrive out of order or be lost.</li>
+                        <li><i class="fa-li fas fa-gamepad"></i>Commonly used for: DNS queries, DHCP, streaming media (video/audio), online gaming, VoIP where speed is prioritized.</li>
+                    </ul>
+                    <p class="description" style="margin-top:10px;">NSG rules allow you to specify TCP, UDP, ICMP, or Any as the protocol to filter.</p>
+
+                    <h4><i class="fas fa-ethernet" style="color:var(--vnet-color);"></i>3. RFC 1918 - Private IP Address Spaces</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-book-reader"></i>RFC 1918 is a standard from the Internet Engineering Task Force (IETF) that defines <span class="key-point">private IP address ranges</span>.</li>
+                        <li><i class="fa-li fas fa-lock"></i>These IP addresses are <span class="key-point">not routable on the public internet</span> and are intended for use within private networks (like your home network, corporate intranets, and Azure VNets).</li>
+                        <li><i class="fa-li fas fa-list-ol"></i>The defined ranges are:
+                            <ul>
+                                <li><code class="code-term">10.0.0.0</code> to <code class="code-term">10.255.255.255</code> (10.0.0.0/8 prefix)</li>
+                                <li><code class="code-term">172.16.0.0</code> to <code class="code-term">172.31.255.255</code> (172.16.0.0/12 prefix)</li>
+                                <li><code class="code-term">192.168.0.0</code> to <code class="code-term">192.168.255.255</code> (192.168.0.0/16 prefix)</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-info-circle"></i>When creating Azure VNets, it's best practice to use IP addresses from these RFC 1918 ranges to avoid conflicts with public IP addresses.</li>
+                        <li><i class="fa-li fas fa-exchange-alt"></i>If you need to connect your VNet to your on-premises network, ensure your VNet address space doesn't overlap with your on-premises IP ranges.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Recognize TCP and UDP as protocol options in NSG rules. Understand that RFC 1918 addresses are for private networks and are used for VNet address spaces.</p>
+                </div>
+            </div>
+
+            <!-- Card 1: What is a Network Security Group (NSG)? -->
+            <div class="card">
+                <input type="checkbox" id="what-is-nsg-toggle" class="card-toggle" checked> 
+                <label for="what-is-nsg-toggle" class="card-header nsg-header">
+                    <h2><i class="fas fa-shield-alt"></i>What is an NSG?</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--nsg-color);"><i class="fas fa-filter"></i>Your Virtual Network Firewall</h3>
+                    <p class="description">An Azure Network Security Group (NSG) acts as a stateful packet inspection firewall. It filters network traffic to and from Azure resources within an Azure Virtual Network (VNet).</p>
+
+                    <h4>Core Purpose:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-traffic-light"></i>Control network traffic flow at the <span class="key-point">IP and port level</span>.</li>
+                        <li><i class="fa-li fas fa-lock"></i>Enhance security by allowing or denying traffic based on defined rules.</li>
+                        <li><i class="fa-li fas fa-info-circle"></i>NSGs are free resources; you pay for the resources they protect.</li>
+                    </ul>
+
+                    <h4>How NSGs Work:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-list-ol"></i>NSGs contain a list of <span class="key-point">security rules</span>.</li>
+                        <li><i class="fa-li fas fa-check-double"></i>Each rule specifies:
+                            <ul>
+                                <li><strong>Source:</strong> IP address/range, Service Tag, or Application Security Group.</li>
+                                <li><strong>Source Port Ranges.</strong></li>
+                                <li><strong>Destination:</strong> IP address/range, Service Tag, or Application Security Group.</li>
+                                <li><strong>Destination Port Ranges.</strong></li>
+                                <li><strong>Protocol:</strong> TCP, UDP, ICMP, ESP, AH, or Any.</li>
+                                <li><strong>Direction:</strong> Inbound or Outbound.</li>
+                                <li><strong>Action:</strong> Allow or Deny.</li>
+                                <li><strong>Priority:</strong> A number between 100 and 4096 (lower numbers processed first).</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-retweet"></i>NSGs are <span class="key-point">stateful</span>: If you allow an outbound connection, return traffic for that connection is automatically allowed, regardless of inbound rules.</li>
+                    </ul>
+
+                    <h4>Association:</h4>
+                     <ul>
+                        <li><i class="fa-li fas fa-sitemap"></i>An NSG can be associated with:
+                            <ul>
+                                <li>A <span class="key-point">Subnet</span>: Rules apply to all resources within that subnet.</li>
+                                <li>A <span class="key-point">Network Interface (NIC)</span>: Rules apply only to the specific VM/resource the NIC is attached to.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-info-circle"></i>A resource can be affected by rules from NSGs on both its NIC and its subnet.</li>
+                    </ul>
+                    
+                    <p><strong>AZ-104 Focus:</strong> Understanding NSGs as fundamental traffic filters. Knowing how rules are defined (5-tuple, priority, action) and where NSGs can be associated.</p>
+                </div>
+            </div>
+
+                        <!-- Card 2: NSG Security Rules In-Depth -->
+            <div class="card">
+                <input type="checkbox" id="nsg-rules-depth-toggle" class="card-toggle">
+                <label for="nsg-rules-depth-toggle" class="card-header rule-header"> <!-- Using rule-header class -->
+                    <h2><i class="fas fa-list-check"></i>NSG Security Rules In-Depth</h2> <!-- fas fa-list-check is Pro, alt: fas fa-tasks or fas fa-list-ul -->
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--rule-color);"><i class="fas fa-gavel"></i>Defining Your Traffic Policies</h3>
+                    <p class="description">Security rules are the core of an NSG, defining what traffic is allowed or denied. Understanding default rules and how to craft custom rules is essential.</p>
+
+                    <h4><i class="fas fa-magic" style="color:var(--info-color);"></i>1. Default Security Rules</h4>
+                    <p>Azure creates a set of default rules in every NSG. These rules ensure basic connectivity and provide a baseline security posture.</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-check-circle"></i>**Inbound Default Rules:**
+                            <ul>
+                                <li>`AllowVNetInBound` (Priority 65000): Allows traffic originating from any IP in the VNet.</li>
+                                <li>`AllowAzureLoadBalancerInBound` (Priority 65001): Allows Azure Load Balancer health probes.</li>
+                                <li>`DenyAllInBound` (Priority 65500): Denies all other inbound traffic. <span class="key-point">This is crucial.</span></li>
+                            </ul>
+                        </li>
+                        <li style="margin-top:10px;"><i class="fa-li fas fa-check-circle"></i>**Outbound Default Rules:**
+                            <ul>
+                                <li>`AllowVnetOutBound` (Priority 65000): Allows traffic destined to any IP in the VNet.</li>
+                                <li>`AllowInternetOutBound` (Priority 65001): Allows all outbound traffic to the Internet.</li>
+                                <li>`DenyAllOutBound` (Priority 65500): Denies all other outbound traffic.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-ban"></i>Default rules <span class="key-point">cannot be deleted</span>.</li>
+                        <li><i class="fa-li fas fa-sort-amount-up"></i>They have the <span class="key-point">lowest priority</span> (highest numbers).</li>
+                        <li><i class="fa-li fas fa-user-edit"></i>You can <span class="key-point">override</span> default rules by creating custom rules with a lower priority number (higher precedence).</li>
+                    </ul>
+
+                    <h4><i class="fas fa-pencil-ruler" style="color:var(--success-color);"></i>2. Custom Security Rules</h4>
+                    <p>You create custom rules to define specific traffic flows allowed or denied to/from your resources.</p>
+                    <table class="comparison-table" style="font-size:0.85em;">
+                        <thead>
+                            <tr><th>Property</th><th>Explanation</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Name</strong></td>
+                                <td>A unique name within the NSG (up to 80 chars). Must begin/end with a word character.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Priority</strong></td>
+                                <td>A number between <code class="code-term">100</code> and <code class="code-term">4096</code>. Lower numbers have higher priority and are processed first. Processing stops once traffic matches a rule.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Source / Destination</strong></td>
+                                <td>Can be: Any, IP Address/CIDR block (e.g., <code class="code-term">10.0.0.0/24</code>, <code class="code-term">203.0.113.5</code>), Service Tag, or Application Security Group.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Source Port Ranges / Destination Port Ranges</strong></td>
+                                <td>Specific port (e.g., <code class="code-term">80</code>), range (e.g., <code class="code-term">10000-10005</code>), or Any (<code class="code-term">*</code>). Multiple ports/ranges can be specified in Resource Manager NSGs (Augmented Rules).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Protocol</strong></td>
+                                <td>TCP, UDP, ICMP, ESP, AH, or Any. (ESP/AH via ARM/CLI/PS).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Direction</strong></td>
+                                <td>Inbound or Outbound.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Action</strong></td>
+                                <td>Allow or Deny.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p style="margin-top:10px;"><i class="fa-li fas fa-info-circle"></i>You cannot create two rules with the same priority and direction.</p>
+
+
+                    <h4><i class="fas fa-plus-square" style="color:var(--azure-blue-dark);"></i>3. Augmented Security Rules</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-list"></i>For NSGs deployed via Azure Resource Manager (standard model).</li>
+                        <li><i class="fa-li fas fa-check"></i>Allow specifying <span class="key-point">multiple individual IP addresses, IP ranges, and port numbers</span> within a single rule's source, destination, or port fields.</li>
+                        <li><i class="fa-li fas fa-file-alt"></i>Simplifies rule definition and reduces the total number of rules needed for complex policies.</li>
+                        <li><i class="fa-li fas fa-exclamation-triangle"></i>You still cannot specify multiple Service Tags or Application Security Groups in a single source/destination field of one rule.</li>
+                    </ul>
+
+                    <p><strong>AZ-104 Focus:</strong> Understand the default rules (especially `DenyAllInBound`). Know all properties of a custom rule and how priority works. Be aware of how to allow common traffic like RDP (3389) or HTTP (80) by creating custom allow rules with higher priority than default deny rules.</p>
+                </div>
+            </div>
+                        <!-- Card 3: Rule Processing Order & Effective Security Rules -->
+            <div class="card rule-processing-card"> <!-- rule-processing-card class can be used for specific styling e.g. grid-column: span 3; -->
+                <input type="checkbox" id="nsg-rule-processing-toggle" class="card-toggle">
+                <label for="nsg-rule-processing-toggle" class="card-header" style="background-color: #F39C12; color:var(--text-dark);"> <!-- Orange for processing -->
+                    <h2><i class="fas fa-sort-numeric-down"></i>Rule Processing & Effective Rules</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:#F39C12;"><i class="fas fa-traffic-light"></i>How Azure Evaluates NSG Rules</h3>
+                    <p class="description">Understanding how Azure processes NSG rules is critical for predicting and troubleshooting network traffic flow.</p>
+
+                    <h4><i class="fas fa-stream" style="color:var(--azure-blue);"></i>Rule Processing Order:</h4>
+                    <p>As per your notes, Azure processes rules differently for inbound and outbound traffic when both subnet and NIC NSGs are present:</p>
+                    <ul>
+                        <li><i class="fa-li fas fa-arrow-circle-down" style="color:var(--success-color);"></i><strong>Inbound Traffic:</strong>
+                            <ol style="list-style-type: decimal; padding-left: 20px; margin-top:5px;">
+                                <li>Rules in the NSG associated with the <span class="key-point">subnet</span> are processed first (if one exists).</li>
+                                <li>If traffic is allowed by the subnet NSG (or no subnet NSG), rules in the NSG associated with the <span class="key-point">Network Interface (NIC)</span> are processed next (if one exists).</li>
+                            </ol>
+                            Traffic must be allowed by <span class="key-point">both</span> (if both exist) to reach the resource.
+                        </li>
+                        <li style="margin-top:10px;"><i class="fa-li fas fa-arrow-circle-up" style="color:var(--warning-color);"></i><strong>Outbound Traffic:</strong>
+                            <ol style="list-style-type: decimal; padding-left: 20px; margin-top:5px;">
+                                <li>Rules in the NSG associated with the <span class="key-point">NIC</span> are processed first (if one exists).</li>
+                                <li>If traffic is allowed by the NIC NSG (or no NIC NSG), rules in the NSG associated with the <span class="key-point">subnet</span> are processed next (if one exists).</li>
+                            </ol>
+                            Traffic must be allowed by <span class="key-point">both</span> (if both exist) to leave the resource.
+                        </li>
+                        <li><i class="fa-li fas fa-users"></i><strong>Intra-Subnet Traffic:</strong> By default, a system rule allows VMs within the same subnet to communicate. However, if an NSG is associated with that subnet, its rules (including custom deny rules) can affect this intra-subnet connectivity.</li>
+                    </ul>
+                    <div class="diagram">
+                        <div class="diagram-box" style="width:auto;"><span>User/Internet</span></div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box" style="border-color:var(--nsg-color);"><i class="fas fa-object-group"></i><span>Subnet NSG Rules</span></div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box" style="border-color:var(--nsg-color);"><i class="fas fa-network-wired"></i><span>NIC NSG Rules</span></div>
+                        <i class="fas fa-arrow-right diagram-arrow"></i>
+                        <div class="diagram-box"><i class="fas fa-server" style="color:var(--azure-blue)"></i><span>VM</span></div>
+                    </div>
+                    <span class="diagram-label">Simplified Inbound Flow Example</span>
+
+
+                    <h4><i class="fas fa-check-square" style="color:var(--success-color);"></i>Effective Security Rules</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-search"></i>To understand the <span class="key-point">final set of rules applied</span> to a NIC, you can view its "Effective security rules" in the Azure portal.</li>
+                        <li><i class="fa-li fas fa-list-alt"></i>This view aggregates rules from both the subnet NSG and the NIC NSG (if present), taking into account rule priorities and default rules.</li>
+                        <li><i class="fa-li fas fa-wrench"></i>Essential for troubleshooting connectivity issues and verifying your NSG configuration.</li>
+                    </ul>
+                    
+                    <h4><i class="fas fa-water" style="color:var(--info-color);"></i>IP Flow Verify (Azure Network Watcher)</h4>
+                     <ul>
+                        <li><i class="fa-li fas fa-tools"></i>A Network Watcher tool that helps diagnose connectivity issues by checking if traffic is allowed or denied to/from a VM based on its effective NSG rules.</li>
+                        <li><i class="fa-li fas fa-info-circle"></i>It will indicate which specific security rule is allowing or denying the traffic.</li>
+                    </ul>
+
+                    <p><strong>AZ-104 Focus:</strong> Know the processing order for inbound and outbound traffic (Subnet then NIC for inbound, NIC then Subnet for outbound). Understand what "Effective security rules" represent and how IP Flow Verify aids troubleshooting.</p>
+                </div>
+            </div>
+
+            <!-- Card 4: Service Tags -->
+            <div class="card">
+                <input type="checkbox" id="nsg-service-tags-toggle" class="card-toggle">
+                <label for="nsg-service-tags-toggle" class="card-header" style="background-color: var(--tag-color); color:var(--text-dark);">
+                    <h2><i class="fas fa-tags"></i>Service Tags</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--tag-color);"><i class="fas fa-cloud-meatball"></i>Simplifying Rules for Azure Services</h3> <!-- fas fa-cloud-meatball is Pro, alt: fas fa-cloud -->
+                    <p class="description">Service Tags represent a group of IP address prefixes from a given Azure service, managed by Microsoft. They help simplify NSG rule creation and maintenance.</p>
+
+                    <h4>Purpose & Benefits:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-pencil-alt"></i><strong>Simplify Rule Creation:</strong> Instead of listing many IP addresses for an Azure service, you use a single Service Tag (e.g., <code class="code-term">Storage.EastUS</code>, <code class="code-term">Sql.EastUS</code>, <code class="code-term">AzureCloud</code>).</li>
+                        <li><i class="fa-li fas fa-sync-alt"></i><strong>Automatic Updates:</strong> Microsoft manages the IP address prefixes included in each Service Tag. As service IPs change, your NSG rules using the tag are automatically updated.</li>
+                        <li><i class="fa-li fas fa-shield-alt"></i><strong>Reduce Complexity:</strong> Fewer rules needed, making NSGs easier to manage.</li>
+                    </ul>
+
+                    <h4>How to Use:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-hand-pointer"></i>When creating an NSG rule, in the <span class="key-point">Source</span> or <span class="key-point">Destination</span> field, you can select "Service Tag" and then choose from a list of available tags.</li>
+                        <li><i class="fa-li fas fa-globe-americas"></i>Some tags are global (e.g., <code class="code-term">Internet</code>, <code class="code-term">AzureCloud</code>), while others are regional (e.g., <code class="code-term">Storage.WestEurope</code>).</li>
+                    </ul>
+
+                    <h4>Common Service Tags:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-cloud"></i><code class="code-term">AzureCloud</code>: All Azure datacenter public IP addresses.</li>
+                        <li><i class="fa-li fas fa-network-wired"></i><code class="code-term">VirtualNetwork</code>: The VNet address space (all subnets).</li>
+                        <li><i class="fa-li fas fa-globe"></i><code class="code-term">Internet</code>: All IP addresses NOT covered by VNet or AzureCloud (effectively, the public internet).</li>
+                        <li><i class="fa-li fas fa-hdd"></i><code class="code-term">Storage</code> (and regional variants like <code class="code-term">Storage.EastUS</code>): Azure Storage service IPs.</li>
+                        <li><i class="fa-li fas fa-database"></i><code class="code-term">Sql</code> (and regional variants): Azure SQL Database and Azure Synapse Analytics service IPs.</li>
+                        <li><i class="fa-li fas fa-traffic-light"></i><code class="code-term">AzureTrafficManager</code>: Azure Traffic Manager probe IPs.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i><code class="code-term">AzureKeyVault</code>: Azure Key Vault service IPs.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand the purpose of Service Tags and how they simplify NSG rule management by representing groups of Azure service IP prefixes. Know common tags like `Internet`, `VirtualNetwork`, `AzureCloud`.</p>
+                </div>
+            </div>
+
+            <!-- Card 5: Application Security Groups (ASGs) -->
+            <div class="card asg-card"> <!-- asg-card class for potential specific styling -->
+                <input type="checkbox" id="nsg-asgs-toggle" class="card-toggle">
+                <label for="nsg-asgs-toggle" class="card-header asg-header">
+                    <h2><i class="fas fa-object-group"></i>Application Security Groups (ASGs)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--asg-color);"><i class="fas fa-layer-group"></i>Grouping VMs for Network Policies</h3>
+                    <p class="description">Application Security Groups (ASGs) enable you to configure network security as a natural extension of an application's structure, allowing you to group VMs and define network security policies based on those groups.</p>
+
+                    <h4>Purpose & Benefits:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-network-wired"></i>Group <span class="key-point">Network Interfaces (NICs)</span> of VMs logically (e.g., "WebServers", "AppServers", "DbServers").</li>
+                        <li><i class="fa-li fas fa-pencil-alt"></i>Use ASGs as the <span class="key-point">source or destination</span> in NSG security rules, instead of explicit IP addresses.</li>
+                        <li><i class="fa-li fas fa-sync-alt"></i><strong>Simplified Management:</strong> When VMs are added to or removed from an ASG, their network access (as defined by NSG rules using that ASG) is automatically updated. No need to change NSG rules with IP addresses.</li>
+                        <li><i class="fa-li fas fa-redo"></i><strong>Reusable Policies:</strong> Define policies based on application structure or workload roles.</li>
+                    </ul>
+
+                    <h4>How it Works:</h4>
+                    <ol style="list-style-type: decimal; padding-left: 20px; margin-top:5px;">
+                        <li>Create an ASG (it's an Azure resource, like an NSG).</li>
+                        <li>Associate VM NICs with one or more ASGs.</li>
+                        <li>In your NSG security rules, specify an ASG as the source and/or destination.</li>
+                    </ol>
+                    <p class="description">Example: Rule to allow traffic from ASG "WebServers" to ASG "AppServers" on TCP port 8080.</p>
+
+                    <h4>Key Constraints (from your notes):</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-exclamation-triangle"></i>There are limits to the number of ASGs per subscription.</li>
+                        <li><i class="fa-li fas fa-link"></i>All NICs assigned to an ASG must exist in the <span class="key-point">same VNet</span> as the first NIC assigned to that ASG.</li>
+                        <li><i class="fa-li fas fa-exchange-alt"></i>If an ASG is used as both source and destination in a rule, all NICs in both ASGs must be in the <span class="key-point">same VNet</span>.</li>
+                    </ul>
+                    <p><strong>AZ-104 Focus:</strong> Understand that ASGs group NICs for policy application. Know how to use ASGs in NSG rules as source/destination. Recognize the benefit of simplified management over IP-based rules.</p>
+                </div>
+            </div>
+
+                        <!-- Card: NSGs with PaaS: Service Endpoints & Private Endpoints -->
+            <div class="card">
+                <input type="checkbox" id="nsg-paas-endpoints-toggle" class="card-toggle">
+                <label for="nsg-paas-endpoints-toggle" class="card-header" style="background-color: #1ABC9C;"> <!-- Teal/Turquoise color for PaaS integration -->
+                    <h2><i class="fas fa-link"></i>NSGs with PaaS: Service & Private Endpoints</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:#1ABC9C;"><i class="fas fa-cloud-upload-alt"></i>Securing PaaS Access from VNets</h3>
+                    <p class="description">Azure PaaS services (like Storage, SQL Database, Key Vault) often have public endpoints. Service Endpoints and Private Endpoints allow you to secure and privatize access to these services from your VNet, with Network Security Groups (NSGs) playing a key role in traffic filtering.</p>
+
+                    <h4><i class="fas fa-puzzle-piece" style="color:var(--service-endpoint-color); "></i>1. VNet Service Endpoints & NSGs</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-info-circle"></i><strong>What they are:</strong> Service Endpoints extend your VNet's identity and private address space to specific Azure PaaS services. Traffic to the PaaS service (still targeting its public endpoint) is routed over the Azure backbone, not the public internet, from enabled subnets.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i><strong>NSG Interaction:</strong>
+                            <ul>
+                                <li>When you enable a Service Endpoint (e.g., for <code class="code-term">Microsoft.Storage</code>) on a subnet, the NSG associated with that <span class="key-point">subnet</span> becomes critical.</li>
+                                <li>You can add rules to this subnet NSG to allow or deny traffic to the PaaS service. The <span class="key-point">Destination</span> in your NSG rule would typically be the <span class="key-point">Service Tag</span> for that PaaS service (e.g., <code class="code-term">Storage</code>, <code class="code-term">Sql</code>).</li>
+                                <li>This effectively locks down the PaaS service resource (via its own firewall settings) to only allow connections originating from the VNet/subnet that has the service endpoint enabled and is permitted by the NSG.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-sitemap"></i><strong>Scope:</strong> Typically enables access from the configured subnet to *all instances of that service type in the Azure region* (e.g., all storage accounts in East US), unless further restricted by the PaaS service's own firewall.</li>
+                        <li><i class="fa-li fas fa-diagram-project"></i><strong>Conceptual Flow:</strong> VM in Subnet (with NSG) → PaaS Service Public Endpoint (traffic routed via Azure backbone).</li>
+                    </ul>
+                    <div class="diagram">
+                         <div class="diagram-box" style="text-align: left; padding: 5px 10px; font-size:0.8em; width:45%;">
+                            <strong>VM in Subnet</strong><br/>
+                            <i class="fas fa-server"></i> VM (Private IP)<br/>
+                            <span style="font-size:0.9em; display:block; margin-left:10px;">→ NSG (on Subnet) filters outbound to Service Tag</span>
+                         </div>
+                         <i class="fas fa-arrow-right diagram-arrow"></i>
+                         <div class="diagram-box" style="text-align: left; padding: 5px 10px; font-size:0.8em; width:45%;">
+                            <strong>Azure PaaS Service</strong><br/>
+                            <i class="fas fa-database"></i> Storage Acct (Public Endpoint)<br/>
+                            <span style="font-size:0.9em; display:block; margin-left:10px;">← Firewall allows VNet/Subnet via Service Endpoint</span>
+                         </div>
+                    </div>
+                     <span class="diagram-label">Service Endpoint: Traffic to Public Endpoint, Routed Privately</span>
+
+
+                    <h4 style="margin-top:20px;"><i class="fas fa-ethernet" style="color:var(--private-link-color);"></i>2. Private Endpoints & NSGs</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-info-circle"></i><strong>What they are:</strong> Private Endpoints use Azure Private Link to project a specific PaaS service instance (or your own Private Link Service) directly into your VNet with a <span class="key-point">private IP address</span> from one of your subnets. A Network Interface (NIC) is created in your VNet for this.</li>
+                        <li><i class="fa-li fas fa-user-shield"></i><strong>NSG Interaction (Layered Security):</strong>
+                            <ul>
+                                <li>The <span class="key-point">subnet hosting the Private Endpoint's NIC</span> can have an NSG applied to it. This NSG controls inbound traffic *to the Private Endpoint's private IP address* from any source within the VNet or connected networks. This is key for securing the private endpoint itself.</li>
+                                <li>NSGs on <span class="key-point">client subnets</span> (where your VMs or other resources reside) can control outbound traffic *from those clients to the Private Endpoint's private IP address*.</li>
+                            </ul>
+                        </li>
+                        <li><i class="fa-li fas fa-sitemap"></i><strong>Scope:</strong> Provides access to a <span class="key-point">specific instance</span> of a PaaS service (e.g., one particular storage account, one specific SQL database).</li>
+                        <li><i class="fa-li fas fa-diagram-project"></i><strong>Conceptual Flow:</strong> VM in Subnet (with NSG) → Private IP of PaaS service's NIC in VNet (itself potentially secured by an NSG).</li>
+                    </ul>
+                     <div class="diagram">
+                         <div class="diagram-box" style="text-align: left; padding: 5px 10px; font-size:0.8em; width:45%;">
+                            <strong>VM in Client Subnet</strong><br/>
+                            <i class="fas fa-server"></i> VM (Private IP)<br/>
+                            <span style="font-size:0.9em; display:block; margin-left:10px;">→ NSG (on Client Subnet) allows outbound to Private Endpoint IP</span>
+                         </div>
+                         <i class="fas fa-arrow-right diagram-arrow"></i>
+                         <div class="diagram-box" style="text-align: left; padding: 5px 10px; font-size:0.8em; width:45%; border-color: var(--private-link-color);">
+                            <strong>PaaS Service via Private Endpoint</strong><br/>
+                            <i class="fas fa-network-wired"></i> NIC in VNet (Private IP)<br/>
+                            <span style="font-size:0.9em; display:block; margin-left:10px;">← NSG (on PE Subnet) allows inbound from Client Subnet</span>
+                         </div>
+                    </div>
+                    <span class="diagram-label">Private Endpoint: Traffic to Private IP within VNet</span>
+
+                    <h4 style="margin-top:20px;"><i class="fas fa-balance-scale-left" style="color:var(--azure-blue-dark);"></i>Key Differences for NSG Application:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-angle-right"></i>With <span class="key-point">Service Endpoints</span>, your NSG on the client subnet filters traffic targeting the PaaS service's public endpoint (using service tags). The PaaS service's own firewall is configured to allow the VNet/subnet.</li>
+                        <li><i class="fa-li fas fa-angle-double-right"></i>With <span class="key-point">Private Endpoints</span>, your NSGs filter traffic to/from the private IP address of the PaaS service's NIC within your VNet. You have more direct L3/L4 control within your VNet boundary.</li>
+                    </ul>
+
+                    <p><strong>AZ-104 Focus:</strong> Understand that Service Endpoints allow subnet NSGs to control access to PaaS service tags. For Private Endpoints, NSGs can secure the Private Endpoint's NIC itself (inbound) and client subnets (outbound to the private IP). Recognize Private Endpoints bring the service "into" the VNet with a private IP.</p>
+                </div>
+            </div>
+
+                        <!-- Card: Azure Bastion & NSG Configuration -->
+            <div class="card">
+                <input type="checkbox" id="nsg-bastion-config-toggle" class="card-toggle">
+                <label for="nsg-bastion-config-toggle" class="card-header" style="background-color: #FF8C00;"> <!-- A distinct Orange for Bastion -->
+                    <h2><i class="fas fa-fort-awesome"></i>Azure Bastion & NSG Configuration</h2> <!-- fab fa-fort-awesome is FontAwesome Brand, fas fa-shield-virus or fas fa-key for alternatives -->
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:#FF8C00;"><i class="fas fa-lock"></i>Secure VM Access via Portal</h3>
+                    <p class="description">Azure Bastion is a fully managed PaaS service that provides secure and seamless RDP and SSH connectivity to your virtual machines directly through the Azure portal over SSL, without needing public IP addresses on your VMs.</p>
+
+                    <h4><i class="fas fa-shield-alt" style="color:var(--success-color);"></i>Why Use Azure Bastion?</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-eye-slash"></i><span class="key-point">Eliminates Public IP Exposure:</span> No need to assign public IPs to your VMs for management access, reducing the attack surface.</li>
+                        <li><i class="fa-li fas fa-user-secret"></i><strong>Secure Connectivity:</strong> Access is via SSL/TLS (port 443) through the Azure portal to the Bastion service.</li>
+                        <li><i class="fa-li fas fa-desktop"></i><strong>Simplified Access:</strong> Connect directly from the browser in the Azure portal.</li>
+                        <li><i class="fa-li fas fa-network-wired"></i><strong>VNet Integration:</strong> Bastion is deployed into a dedicated subnet in your VNet.</li>
+                    </ul>
+
+                    <h4><i class="fas fa-cogs" style="color:var(--azure-blue);"></i>Deployment & Subnet Requirements:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-sitemap"></i>Bastion requires its own dedicated subnet named <code class="code-term">AzureBastionSubnet</code>.</li>
+                        <li><i class="fa-li fas fa-ruler-horizontal"></i>This subnet must have a minimum prefix of <code class="code-term">/26</code> or larger (e.g., /25, /24).</li>
+                        <li><i class="fa-li fas fa-user-shield"></i>An <span class="key-point">NSG must be applied</span> to the <code class="code-term">AzureBastionSubnet</code> with specific rules.</li>
+                    </ul>
+                    
+                    <h4 style="margin-top:15px;"><i class="fas fa-filter" style="color:var(--nsg-color);"></i>Required NSG Rules for <code class="code-term">AzureBastionSubnet</code>:</h4>
+                    <p>The following rules are essential for Bastion functionality. Use high priority numbers (e.g., 100, 110) for these allow rules.</p>
+                    <ul style="font-size:0.9em;">
+                        <li><strong>Inbound Traffic:</strong>
+                            <ul>
+                                <li><i class="fa-li fas fa-check" style="color:var(--success-color);"></i><strong>Allow HTTPS from GatewayManager:</strong>
+                                    <ul>
+                                        <li>Source: Service Tag - <code class="code-term">GatewayManager</code></li>
+                                        <li>Source port ranges: *</li>
+                                        <li>Destination: Any (or specific IP range of AzureBastionSubnet)</li>
+                                        <li>Destination port ranges: <code class="code-term">443</code></li>
+                                        <li>Protocol: TCP</li>
+                                        <li>Action: Allow</li>
+                                    </ul>
+                                </li>
+                                <li style="margin-top:8px;"><i class="fa-li fas fa-check" style="color:var(--success-color);"></i><strong>Allow Control Plane Comms:</strong> (For health probes & connectivity)
+                                    <ul>
+                                        <li>Source: Service Tag - <code class="code-term">AzureCloud</code></li>
+                                        <li>Source port ranges: *</li>
+                                        <li>Destination: Any (or specific IP range of AzureBastionSubnet)</li>
+                                        <li>Destination port ranges: <code class="code-term">443</code></li>
+                                        <li>Protocol: TCP</li>
+                                        <li>Action: Allow</li>
+                                    </ul>
+                                </li>
+                                <!-- Optional for some advanced features or if using Bastion behind Azure Firewall -->
+                                <!-- 
+                                <li style="margin-top:8px;"><i class="fa-li fas fa-info-circle" style="color:var(--info-color);"></i><i>(Optional) Allow from VNet for specific scenarios:</i>
+                                    <ul>
+                                        <li>Source: Service Tag - <code class="code-term">VirtualNetwork</code></li>
+                                        <li>Source port ranges: *</li>
+                                        <li>Destination: Any</li>
+                                        <li>Destination port ranges: <code class="code-term">443</code></li>
+                                        <li>Protocol: TCP</li>
+                                        <li>Action: Allow</li>
+                                    </ul>
+                                </li> 
+                                -->
+                            </ul>
+                        </li>
+                        <li style="margin-top:15px;"><strong>Outbound Traffic:</strong>
+                            <ul>
+                                <li><i class="fa-li fas fa-check" style="color:var(--success-color);"></i><strong>Allow RDP/SSH to Target VMs:</strong>
+                                    <ul>
+                                        <li>Source: Any (or specific IP range of AzureBastionSubnet)</li>
+                                        <li>Source port ranges: *</li>
+                                        <li>Destination: Service Tag - <code class="code-term">VirtualNetwork</code> (to reach any VM in the VNet or peered VNets)</li>
+                                        <li>Destination port ranges: <code class="code-term">22, 3389</code></li>
+                                        <li>Protocol: TCP</li>
+                                        <li>Action: Allow</li>
+                                    </ul>
+                                </li>
+                                <li style="margin-top:8px;"><i class="fa-li fas fa-check" style="color:var(--success-color);"></i><strong>Allow Session/Certificate Comms:</strong>
+                                    <ul>
+                                        <li>Source: Any</li>
+                                        <li>Source port ranges: *</li>
+                                        <li>Destination: Service Tag - <code class="code-term">AzureCloud</code></li>
+                                        <li>Destination port ranges: <code class="code-term">443</code> (for session output, cert validation)</li>
+                                        <li>Protocol: TCP</li>
+                                        <li>Action: Allow</li>
+                                    </ul>
+                                </li>
+                                <!-- Outbound to internet for diagnostics, updates, etc. might be needed based on specific features -->
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="important-note" style="border-left-color:#FF8C00;">
+                        <i class="fas fa-exclamation-triangle" style="color:#FF8C00;"></i>Always refer to the <span class="key-point">latest Microsoft documentation</span> for the most up-to-date required NSG rules for Azure Bastion, as service tag definitions or port requirements can evolve.
+                    </p>
+
+                    <p><strong>AZ-104 Focus:</strong> Understand Bastion's purpose (secure RDP/SSH via portal, no VM public IPs). Know the <code class="code-term">AzureBastionSubnet</code> naming and minimum size. Be familiar with the key NSG rules needed for the Bastion subnet, especially allowing inbound 443 from `GatewayManager` and `AzureCloud`, and outbound RDP/SSH to `VirtualNetwork`.</p>
+                </div>
+            </div>
+            
+            <!-- Card 6: NSG Flow Logs (Brief Overview) -->
+            <div class="card">
+                <input type="checkbox" id="nsg-flow-logs-toggle" class="card-toggle">
+                <label for="nsg-flow-logs-toggle" class="card-header" style="background-color: var(--info-color);">
+                    <h2><i class="fas fa-file-medical-alt"></i>NSG Flow Logs (Overview)</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--info-color);"><i class="fas fa-binoculars"></i>Logging IP Traffic Through NSGs</h3>
+                    <p class="description">NSG Flow Logs is a feature of Azure Network Watcher that allows you to log information about IP traffic flowing through an NSG.</p>
+
+                    <h4>Purpose:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-search-plus"></i>Gain insights into network traffic patterns.</li>
+                        <li><i class="fa-li fas fa-user-secret"></i>Security auditing and compliance.</li>
+                        <li><i class="fa-li fas fa-wrench"></i>Troubleshooting network connectivity issues by seeing what traffic was allowed or denied by NSG rules.</li>
+                        <li><i class="fa-li fas fa-chart-area"></i>Network traffic analysis and capacity planning.</li>
+                    </ul>
+
+                    <h4>How it Works:</h4>
+                    <ul>
+                        <li><i class="fa-li fas fa-toggle-on"></i>Enabled per NSG.</li>
+                        <li><i class="fa-li fas fa-database"></i>Flow log data is written to an <span class="key-point">Azure Storage account</span> in JSON format.</li>
+                        <li><i class="fa-li fas fa-cogs"></i>Can optionally send logs to a <span class="key-point">Log Analytics workspace</span> for advanced analysis with KQL queries and visualization (using Traffic Analytics).</li>
+                        <li><i class="fa-li fas fa-info-circle"></i>Logs information about 5-tuple (source/dest IP & port, protocol), traffic decision (Allowed/Denied), and NSG rule that made the decision.</li>
+                    </ul>
+                    <p class="important-note">
+                        <i class="fas fa-eye"></i>While detailed flow log analysis is more of a monitoring topic, for NSGs, knowing that flow logs exist for auditing and troubleshooting traffic processed by NSGs is important.
+                    </p>
+                    <p><strong>AZ-104 Focus:</strong> Understand the purpose of NSG Flow Logs (auditing/troubleshooting traffic). Know that logs are stored in Azure Storage and can be analyzed with Log Analytics (Traffic Analytics).</p>
+                </div>
+            </div>
+
+            <!-- Card 7: NSGs - AZ-104 Key Takeaways & Best Practices -->
+            <div class="card">
+                <input type="checkbox" id="nsg-summary-toggle" class="card-toggle">
+                <label for="nsg-summary-toggle" class="card-header default-summary-header">
+                    <h2><i class="fas fa-graduation-cap"></i>NSGs: AZ-104 Key Takeaways</h2>
+                    <i class="fas fa-chevron-down toggle-icon"></i>
+                </label>
+                <div class="card-content">
+                    <h3 style="color:var(--azure-blue-dark);"><i class="fas fa-check-double"></i>Essential NSG Concepts for the Exam</h3>
+                    <ul>
+                        <li><i class="fa-li fas fa-filter"></i>NSGs are <span class="key-point">stateful firewalls</span> filtering traffic based on 5-tuple rules.</li>
+                        <li><i class="fa-li fas fa-sitemap"></i>Associated with <span class="key-point">NICs or Subnets</span> (or both).</li>
+                        <li><i class="fa-li fas fa-list-ol"></i>Rules have <span class="key-point">Priorities</span> (100-4096, lower wins), Action (Allow/Deny), Direction (Inbound/Outbound).</li>
+                        <li><i class="fa-li fas fa-magic"></i>Understand <span class="key-point">Default Rules</span> (especially DenyAllInbound) and how to override them.</li>
+                        <li><i class="fa-li fas fa-stream"></i>Know rule <span class="key-point">processing order</span> (Subnet then NIC for inbound; NIC then Subnet for outbound). View <span class="key-point">Effective Security Rules</span> for troubleshooting.</li>
+                        <li><i class="fa-li fas fa-tags"></i>Use <span class="key-point">Service Tags</span> to simplify rules for Azure services.</li>
+                        <li><i class="fa-li fas fa-object-group"></i>Use <span class="key-point">Application Security Groups (ASGs)</span> to group VMs logically for policy definition.</li>
+                        <li><i class="fa-li fas fa-binoculars"></i>Be aware of <span class="key-point">NSG Flow Logs</span> for traffic auditing and troubleshooting.</li>
+                    </ul>
+                    <p class="important-note" style="border-left-color: var(--nsg-color); background-color: #FDEBD0;">
+                        <i class="fas fa-lightbulb" style="color:var(--nsg-color);"></i><strong>Best Practice:</strong> Apply NSGs at the subnet level for broader policy and at the NIC level for more granular control if needed. Use a "least privilege" approach, only allowing necessary traffic. Leverage Service Tags and ASGs to simplify rule management.
+                    </p>
+                </div>
+            </div>
+
+            <!-- More cards for NSG Guide will be appended here -->
+
+        </div> <!-- End card-container -->
+    </div> <!-- End main-container -->
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.card-toggle').forEach(checkbox => {
+                checkbox.addEventListener('change', (e) => { /* CSS :checked handles expand/collapse */ });
+            });
+        });
+    </script>
+</body>
+</html>

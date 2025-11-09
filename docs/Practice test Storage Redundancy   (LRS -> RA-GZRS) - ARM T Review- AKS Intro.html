@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Redundancy, ARM & AKS Quiz (AZ-104)</title>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --correct-color: #107c10;
+            --incorrect-color: #d83b01;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors */
+            --redundancy-color: #ff8c00; /* Dark Orange */
+            --arm-color: #f7630c; /* Orange */
+            --k8s-color: #326ce5;
+            --aks-color: var(--azure-blue);
+        }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light);
+            margin: 0;
+            padding: 20px;
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        .quiz-container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 25px 35px;
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+        }
+
+        h1 {
+            color: var(--azure-blue-dark);
+            text-align: center;
+            border-bottom: 2px solid var(--azure-blue);
+            padding-bottom: 10px;
+            margin-bottom: 25px;
+        }
+        h1 i { margin-right: 10px; color: var(--redundancy-color); } /* Redundancy Icon color */
+
+        .question-block {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed var(--border-color);
+        }
+        .question-block:last-of-type {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .question-text {
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+        }
+        .question-text i {
+            margin-right: 8px;
+            color: var(--azure-blue); /* Default icon color */
+        }
+        /* Specific icon colors for questions */
+        .question-text i.fa-cubes, .question-text i.fa-globe-americas, .question-text i.fa-sync-alt { color: var(--redundancy-color); } /* Redundancy */
+        .question-text i.fa-file-code { color: var(--arm-color); } /* ARM */
+        .question-text i.fa-dharmachakra { color: var(--k8s-color); } /* K8s */
+        .question-text i.fa-microsoft { color: var(--aks-color); } /* AKS */
+
+        .options-list { list-style: none; padding-left: 0; margin: 0; }
+        .options-list li {
+            margin-bottom: 10px; padding: 8px 12px; border: 1px solid var(--border-color);
+            border-radius: 4px; cursor: pointer; transition: background-color 0.2s ease, border-color 0.2s ease;
+        }
+        .options-list li label {
+            display: flex; align-items: center; cursor: pointer; width: 100%; font-size: 0.95em;
+        }
+        .options-list li input[type="radio"] {
+            margin-right: 12px; accent-color: var(--azure-blue); cursor: pointer;
+            width: 18px; height: 18px;
+        }
+        .options-list li:hover { background-color: #eef1f5; border-color: var(--azure-blue); }
+
+        /* Feedback Styles */
+        .feedback {
+            margin-top: 10px; padding: 8px 12px; border-radius: 4px; font-weight: 600;
+            display: none; font-size: 0.9em;
+        }
+        .feedback.correct {
+            background-color: #e7f3e7; border: 1px solid var(--correct-color); color: var(--correct-color);
+        }
+        .feedback.incorrect {
+            background-color: #fdeceb; border: 1px solid var(--incorrect-color); color: var(--incorrect-color);
+        }
+        .feedback i { margin-right: 6px; }
+
+        /* Highlight correct/incorrect options */
+        .options-list li.correct-answer-highlight { background-color: #dff0d8 !important; border-color: var(--correct-color) !important; }
+        .options-list li.incorrect-selection-highlight { background-color: #f2dede !important; border-color: var(--incorrect-color) !important; opacity: 0.7; }
+
+        .submit-button {
+            display: block; width: 100%; max-width: 200px; margin: 30px auto 10px auto; padding: 12px 20px;
+            font-size: 1.1em; font-weight: 600; color: var(--text-light); background-color: var(--success-color);
+            border: none; border-radius: 5px; cursor: pointer; transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .submit-button:hover { background-color: #0d6a0d; }
+        .submit-button:active { transform: scale(0.98); }
+        .submit-button:disabled { background-color: #94d3a2; cursor: not-allowed; }
+
+        #score-area {
+            text-align: center; font-size: 1.2em; font-weight: bold; margin-top: 20px; padding: 10px;
+            background-color: var(--diagram-bg); border-radius: 4px; border: 1px solid var(--border-color);
+            display: none; /* Hidden until checked */
+        }
+        #score-area i { margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+    <div class="quiz-container">
+        <h1><i class="fas fa-sync-alt"></i>Azure Redundancy, ARM & AKS Quiz</h1>
+
+        <form id="quiz-form">
+
+            <!-- == Storage Redundancy Questions == -->
+
+            <!-- Question 1: LRS -->
+            <div class="question-block" data-question="1" data-correct="lrs">
+                <p class="question-text"><i class="fas fa-cubes"></i>Which Azure Storage redundancy option copies data synchronously 3 times within a single physical data center in the primary region?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q1" value="zrs"> Zone-redundant storage (ZRS)</label></li>
+                    <li><label><input type="radio" name="q1" value="grs"> Geo-redundant storage (GRS)</label></li>
+                    <li><label><input type="radio" name="q1" value="lrs"> Locally-redundant storage (LRS)</label></li>
+                    <li><label><input type="radio" name="q1" value="gzrs"> Geo-zone-redundant storage (GZRS)</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 2: ZRS -->
+            <div class="question-block" data-question="2" data-correct="zrs">
+                <p class="question-text"><i class="fas fa-cubes"></i>You need to ensure your storage account data survives the failure of an entire Azure Availability Zone within the primary region. Which redundancy option provides this protection at minimum?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q2" value="lrs"> Locally-redundant storage (LRS)</label></li>
+                    <li><label><input type="radio" name="q2" value="zrs"> Zone-redundant storage (ZRS)</label></li>
+                    <li><label><input type="radio" name="q2" value="grs"> Geo-redundant storage (GRS)</label></li>
+                    <li><label><input type="radio" name="q2" value="ra-grs"> Read-access geo-redundant storage (RA-GRS)</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 3: GRS -->
+            <div class="question-block" data-question="3" data-correct="grs">
+                <p class="question-text"><i class="fas fa-globe-americas"></i>Which redundancy option copies data using LRS in the primary region and then asynchronously replicates it to a secondary region, but provides read access ONLY from the primary region by default?</p>
+                 <ul class="options-list">
+                    <li><label><input type="radio" name="q3" value="lrs"> Locally-redundant storage (LRS)</label></li>
+                    <li><label><input type="radio" name="q3" value="zrs"> Zone-redundant storage (ZRS)</label></li>
+                    <li><label><input type="radio" name="q3" value="grs"> Geo-redundant storage (GRS)</label></li>
+                    <li><label><input type="radio" name="q3" value="ra-grs"> Read-access geo-redundant storage (RA-GRS)</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 4: RA-GRS -->
+            <div class="question-block" data-question="4" data-correct="ra-grs">
+                 <p class="question-text"><i class="fas fa-globe-americas"></i>What is the KEY difference between Geo-redundant storage (GRS) and Read-access geo-redundant storage (RA-GRS)?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q4" value="sync"> RA-GRS uses synchronous replication to the secondary region.</label></li>
+                    <li><label><input type="radio" name="q4" value="zones"> RA-GRS uses ZRS in the primary region instead of LRS.</label></li>
+                    <li><label><input type="radio" name="q4" value="read_secondary"> RA-GRS provides read-only access to the data in the secondary region.</label></li>
+                    <li><label><input type="radio" name="q4" value="durability"> RA-GRS offers significantly higher data durability than GRS.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+             <!-- Question 5: GZRS -->
+            <div class="question-block" data-question="5" data-correct="gzrs">
+                <p class="question-text"><i class="fas fa-sync-alt"></i>Which redundancy option combines Zone-redundant storage (ZRS) in the primary region with asynchronous LRS replication to a secondary region?</p>
+                 <ul class="options-list">
+                    <li><label><input type="radio" name="q5" value="grs"> Geo-redundant storage (GRS)</label></li>
+                    <li><label><input type="radio" name="q5" value="ra-grs"> Read-access geo-redundant storage (RA-GRS)</label></li>
+                    <li><label><input type="radio" name="q5" value="zrs"> Zone-redundant storage (ZRS)</label></li>
+                    <li><label><input type="radio" name="q5" value="gzrs"> Geo-zone-redundant storage (GZRS)</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- == ARM Template Review Questions == -->
+
+            <!-- Question 6: ARM Parameters -->
+            <div class="question-block" data-question="6" data-correct="inputs">
+                 <p class="question-text"><i class="fas fa-file-code"></i>What is the purpose of the `parameters` section in an ARM template?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q6" value="outputs"> To define values returned after deployment.</label></li>
+                    <li><label><input type="radio" name="q6" value="inputs"> To define input values provided during deployment for customization.</label></li>
+                    <li><label><input type="radio" name="q6" value="variables"> To define internal variables used only within the template.</label></li>
+                    <li><label><input type="radio" name="q6" value="resources"> To define the actual Azure resources to be deployed.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 7: ARM Deployment Mode -->
+            <div class="question-block" data-question="7" data-correct="incremental">
+                <p class="question-text"><i class="fas fa-file-code"></i>You deploy an ARM template to a resource group that already contains resources. You want to add the new resources defined in the template but leave the existing, unmanaged resources untouched. Which deployment mode should you use?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q7" value="complete"> Complete</label></li>
+                    <li><label><input type="radio" name="q7" value="validate"> Validate</label></li>
+                    <li><label><input type="radio" name="q7" value="incremental"> Incremental</label></li>
+                    <li><label><input type="radio" name="q7" value="serial"> Serial</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- == AKS Review Questions == -->
+
+            <!-- Question 8: AKS Managed Component -->
+             <div class="question-block" data-question="8" data-correct="control_plane">
+                <p class="question-text"><i class="fab fa-microsoft"></i>In Azure Kubernetes Service (AKS), which major component group is managed by Azure at no cost to the user?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q8" value="agent_nodes"> Agent Nodes / Node Pools</label></li>
+                    <li><label><input type="radio" name="q8" value="control_plane"> The Kubernetes Control Plane (API Server, etcd, etc.)</label></li>
+                    <li><label><input type="radio" name="q8" value="pods"> Application Pods</label></li>
+                    <li><label><input type="radio" name="q8" value="services"> Kubernetes Services</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+            <!-- Question 9: K8s Pod Definition -->
+             <div class="question-block" data-question="9" data-correct="smallest_unit">
+                <p class="question-text"><i class="fas fa-dharmachakra"></i>In Kubernetes terminology, what is a Pod?</p>
+                <ul class="options-list">
+                    <li><label><input type="radio" name="q9" value="vm_node"> A virtual machine worker node.</label></li>
+                    <li><label><input type="radio" name="q9" value="network_service"> A stable network endpoint for accessing applications.</label></li>
+                    <li><label><input type="radio" name="q9" value="smallest_unit"> The smallest deployable unit, holding one or more containers.</label></li>
+                    <li><label><input type="radio" name="q9" value="replica_manager"> A controller that manages application replicas.</label></li>
+                </ul>
+                <div class="feedback"></div>
+            </div>
+
+
+            <button type="button" id="submit-quiz" class="submit-button">Check Answers</button>
+            <div id="score-area"></div>
+
+        </form>
+    </div>
+
+    <script>
+        // JavaScript remains the same
+        const submitButton = document.getElementById('submit-quiz');
+        const quizForm = document.getElementById('quiz-form');
+        const scoreArea = document.getElementById('score-area');
+        const questionBlocks = document.querySelectorAll('.question-block');
+
+        submitButton.addEventListener('click', () => {
+            let score = 0;
+            const totalQuestions = questionBlocks.length;
+
+            questionBlocks.forEach(block => {
+                const questionNumber = block.dataset.question;
+                const correctAnswer = block.dataset.correct;
+                const feedbackEl = block.querySelector('.feedback');
+                const optionsList = block.querySelector('.options-list');
+                const selectedOptionInput = optionsList.querySelector(`input[name="q${questionNumber}"]:checked`);
+
+                optionsList.querySelectorAll('li').forEach(li => {
+                    li.classList.remove('correct-answer-highlight', 'incorrect-selection-highlight');
+                });
+
+                if (selectedOptionInput) {
+                    const userAnswer = selectedOptionInput.value;
+                    const selectedLi = selectedOptionInput.closest('li');
+
+                    if (userAnswer === correctAnswer) {
+                        score++;
+                        feedbackEl.innerHTML = `<i class="fas fa-check-circle"></i> Correct!`;
+                        feedbackEl.className = 'feedback correct';
+                        selectedLi.classList.add('correct-answer-highlight');
+                    } else {
+                        feedbackEl.innerHTML = `<i class="fas fa-times-circle"></i> Incorrect. The correct answer is related to '${correctAnswer}'.`;
+                        feedbackEl.className = 'feedback incorrect';
+                        selectedLi.classList.add('incorrect-selection-highlight');
+                        const correctLi = optionsList.querySelector(`input[value="${correctAnswer}"]`).closest('li');
+                         if (correctLi) {
+                             correctLi.classList.add('correct-answer-highlight');
+                         }
+                    }
+                } else {
+                    feedbackEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Please select an answer.`;
+                     feedbackEl.className = 'feedback incorrect';
+                }
+                feedbackEl.style.display = 'block';
+            });
+
+            scoreArea.innerHTML = `<i class="fas fa-star"></i> Your Score: ${score} out of ${totalQuestions}`;
+            scoreArea.style.display = 'block';
+
+            submitButton.disabled = true;
+            submitButton.textContent = 'Answers Checked';
+        });
+    </script>
+
+</body>
+</html>

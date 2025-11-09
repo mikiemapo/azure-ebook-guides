@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab Guide: Windows VM, Web Server & Image Capture (AZ-104)</title>
+     <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #2d2d2d; 
+            --code-text-color: #dcdcdc; 
+            --code-border: #444;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --vm-color: #0078FF; 
+            --cli-color: #444; 
+            --network-color: var(--success-color);
+            --powershell-color: #012456; /* PowerShell Blue */
+            --extension-color: #6f42c1; /* Purple */
+            --image-color: #ffb900; /* Gold/Yellow */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+       .main-container { width: 100%; max-width: 1000px; }
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+         h1 i { color: var(--vm-color); }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+       
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1200px) { 
+             .card-container { grid-template-columns: repeat(3, 1fr); }
+             .card.workflow-card { grid-column: span 3; }
+             .card.error-card { grid-column: span 3; background-color: #fffbea; border-left: 5px solid var(--warning-color);}
+         }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--azure-blue); color: var(--text-light); cursor: pointer;
+            transition: background-color 0.2s ease; border-bottom: 1px solid var(--azure-blue-dark);
+        }
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+         .card-header.error-header { background-color: var(--warning-color); border-bottom-color: #a4262c; }
+         .card-header.error-header:hover { background-color: #a4262c; }
+         
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--azure-blue); font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--azure-blue); font-size: 0.9em;
+          }
+        /* Custom list icons */
+        .card-content li i.fa-terminal { color: var(--cli-color); }
+        .card-content li i.fa-server { color: var(--vm-color); }
+        .card-content li i.fa-cogs { color: #605e5c; }
+        .card-content li i.fa-plug { color: var(--extension-color); }
+        .card-content li i.fa-network-wired { color: var(--network-color); }
+        .card-content li i.fa-hdd { color: var(--image-color); }
+        .card-content li i.fa-exclamation-triangle { color: var(--warning-color); }
+        .card-content li i.fa-lightbulb { color: #f7b20c; }
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+        .card-content li i.fa-check { color: var(--success-color); }
+
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 10px; flex-wrap: wrap;
+        }
+        .diagram-box {
+            background-color: #fff; padding: 8px 12px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 90px; font-size: 0.9em;
+        }
+        .diagram-box i { font-size: 1.6em; } 
+        .diagram-box span { font-size: 0.8em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; margin: 0 5px; }
+        .diagram-arrow-long { font-size: 2.5em; color: #a19f9d; margin: 0 10px; }
+
+        .command-flow { display: flex; flex-direction: column; align-items: center; gap: 10px;}
+        .command-flow .step { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; width:100%;}
+        .command-flow .step-icon { font-size: 1.5em; width: 30px; text-align:center; }
+        .command-flow .step-action { flex-grow: 1; }
+        .command-flow .step-action code { display: inline-block; margin-bottom: 3px;}
+        .command-flow .step-env { font-size: 0.8em; color: #605e5c; font-style: italic; }
+
+
+        /* --- Code formatting --- */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: #eef1f5;
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid #ddd; color: var(--azure-blue-dark); 
+        }
+         pre {
+             background-color: var(--code-bg);
+             border: 1px solid var(--code-border);
+             padding: 15px; border-radius: 4px;
+             overflow-x: auto; font-size: 0.9em; 
+             color: var(--code-text-color);
+             margin-top: 10px;
+        }
+        pre code { background: none; border: none; padding: 0; font-size: 1em; color: var(--code-text-color); }
+        .param { color: #4ec9b0; } /* Teal for parameters */
+        .value { color: #ce9178; } /* Orange for values */
+        .comment { color: #6a9955; font-style: italic; } /* Green for comments */
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--azure-blue-dark); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .warning-text { color: var(--warning-color); font-weight: 600; }
+        .important-note { background-color: #fffbea; border-left: 4px solid var(--warning-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--warning-color); margin-right: 8px; }
+         
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-vial"></i>Lab Review: Windows VM, Web Server & Image Capture</h1>
+     <div style="margin-bottom: 20px; padding: 10px; background-color: #e6f2ff; border-radius: 5px; text-align: center;">
+         <a href="index.html" style="text-decoration: none; color: #005a9e; font-weight: bold; font-size: 1.1em;">
+             <i class="fas fa-arrow-left" style="margin-right: 8px;"></i>Back to Study Hub
+         </a>
+     </div>
+       
+    <p class="instructions">This guide reinforces the steps and key concepts from your lab session involving Windows VM creation, web server deployment with Custom Script Extension, port opening, and image capture challenges.</p>
+
+    <div class="card-container">
+
+        <!-- Workflow Summary -->
+        <div class="card workflow-card">
+            <input type="checkbox" id="workflow-toggle" class="card-toggle" checked>
+            <label for="workflow-toggle" class="card-header">
+                <h2><i class="fas fa-project-diagram"></i>Lab Workflow Overview</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-route"></i>Sequence of Operations</h3>
+                <p class="description">A visual summary of the steps you performed in the lab.</p>
+                 <div class="diagram command-flow">
+                    <div class="step">
+                        <i class="fas fa-terminal step-icon" style="color:var(--cli-color)"></i>
+                        <div class="step-action"><strong>Cloud Shell:</strong> `az configure --defaults group="..."` <span class="step-env">(Set default RG)</span></div>
+                    </div>
+                    <i class="fas fa-arrow-down diagram-arrow"></i>
+                    <div class="step">
+                         <i class="fas fa-server step-icon" style="color:var(--vm-color)"></i>
+                        <div class="step-action"><strong>Cloud Shell:</strong> `az vm create --name MyWindowsVM ...` <span class="step-env">(Deploy Windows VM)</span></div>
+                    </div>
+                     <i class="fas fa-arrow-down diagram-arrow"></i>
+                     <div class="step">
+                        <i class="fas fa-plug step-icon" style="color:var(--extension-color)"></i>
+                        <div class="step-action"><strong>Cloud Shell:</strong> `az vm extension set --name CustomScriptExtension ...` <span class="step-env">(Install IIS & create Default.htm)</span></div>
+                    </div>
+                     <i class="fas fa-arrow-down diagram-arrow"></i>
+                    <div class="step">
+                        <i class="fas fa-network-wired step-icon" style="color:var(--network-color)"></i>
+                        <div class="step-action"><strong>Cloud Shell:</strong> `az vm open-port --name MyWindowsVM --port 80` <span class="step-env">(Modify NSG to allow HTTP)</span></div>
+                    </div>
+                     <i class="fas fa-arrow-down diagram-arrow"></i>
+                    <div class="step">
+                        <i class="fas fa-link step-icon" style="color:var(--success-color)"></i>
+                        <div class="step-action"><strong>Cloud Shell/Browser:</strong> Test web server access (e.g., `curl http://[PublicIP]`) <span class="step-env">(Verify Nginx/IIS)</span></div>
+                    </div>
+                     <i class="fas fa-arrow-down diagram-arrow"></i>
+                     <div class="step">
+                         <i class="fas fa-power-off step-icon" style="color:var(--vm-color)"></i>
+                        <div class="step-action"><strong>Cloud Shell:</strong> `az vm deallocate --name MyWindowsVM` <span class="step-env">(Prepare for image)</span></div>
+                    </div>
+                     <i class="fas fa-arrow-down diagram-arrow"></i>
+                    <div class="step">
+                        <i class="fas fa-brush step-icon" style="color:var(--vm-color)"></i>
+                        <div class="step-action"><strong>Cloud Shell:</strong> `az vm generalize --name MyWindowsVM` <span class="step-env">(Sysprep for image)</span></div>
+                    </div>
+                     <i class="fas fa-arrow-down diagram-arrow"></i>
+                    <div class="step">
+                        <i class="fas fa-hdd step-icon" style="color:var(--image-color)"></i>
+                        <div class="step-action"><strong>Cloud Shell:</strong> `az image create --name MyVMImage --source MyWindowsVM` <span class="step-env">(Attempt image capture)</span></div>
+                    </div>
+                    <i class="fas fa-arrow-down diagram-arrow"></i>
+                     <div class="step">
+                         <i class="fas fa-exclamation-triangle step-icon" style="color:var(--warning-color)"></i>
+                        <div class="step-action"><strong style="color:var(--warning-color)">Error:</strong> "Creation of managed images are not supported for virtual machine with TrustedLaunch security type."</div>
+                    </div>
+                 </div>
+            </div>
+        </div>
+
+        <!-- Windows VM Creation -->
+        <div class="card">
+            <input type="checkbox" id="vm-create-toggle" class="card-toggle">
+            <label for="vm-create-toggle" class="card-header">
+                <h2><i class="fas fa-server"></i>Creating a Windows VM (CLI)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-terminal"></i>`az vm create`</h3>
+                <p class="description">Deploying a Windows Server VM using Azure CLI.</p>
+                <pre><code class="cmd-example language-bash">az vm create <span class="param">--name</span> MyWindowsVM <span class="param">--image</span> Win2019Datacenter <span class="param">--admin-username</span> azureuser <span class="comment"># Prompts for password</span>
+<span class="comment"># (Default resource group set via 'az configure')</span></code></pre>
+                 <ul>
+                    <li><i class="fa-li fas fa-cogs"></i>The command provisions all necessary components: VM, NIC, OS disk, public IP, and an NSG by default.</li>
+                    <li><i class="fa-li fas fa-key" style="color:var(--warning-color)"></i><span class="key-point">Password Complexity:</span> Azure enforces password complexity (length, uppercase, lowercase, number, special character). This was the source of your initial "Passwords do not match" or complexity errors.</li>
+                    <li><i class="fa-li fas fa-info-circle"></i>The output shows details like public IP, which is needed for connection.</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Custom Script Extension -->
+        <div class="card">
+            <input type="checkbox" id="cse-toggle" class="card-toggle">
+            <label for="cse-toggle" class="card-header">
+                <h2><i class="fas fa-plug" style="color:var(--extension-color)"></i>Custom Script Extension (Windows)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fab fa-windows"></i>Automating Post-Deployment Tasks</h3>
+                <p class="description">Running PowerShell commands on the VM after it's provisioned to install software (IIS in this case) and configure it.</p>
+                <pre><code class="cmd-example language-bash">az vm extension set <span class="param">--name</span> CustomScriptExtension <span class="param">--vm-name</span> MyWindowsVM \<br/>  <span class="param">--publisher</span> Microsoft.Compute \<br/>  <span class="param">--settings</span> '{"commandToExecute":"powershell Add-WindowsFeature Web-Server; Add-Content -Path \"C:\\inetpub\\wwwroot\\Default.htm\" -Value $(hostname)"}'</code></pre>
+                 <ul>
+                    <li><i class="fa-li fas fa-code"></i><span class="key-point">`commandToExecute`</span>: Specifies the PowerShell commands.
+                        <ul>
+                            <li>`Add-WindowsFeature Web-Server`: Installs the IIS Web Server role.</li>
+                            <li>`Add-Content ... $(hostname)`: Creates/overwrites `Default.htm` with the VM's hostname.</li>
+                        </ul>
+                    </li>
+                    <li><i class="fa-li fas fa-check"></i>This is a common way to automate initial software setup on Windows VMs.</li>
+                 </ul>
+            </div>
+        </div>
+
+       <!-- Opening Port 80 -->
+        <div class="card">
+            <input type="checkbox" id="openport-toggle" class="card-toggle">
+            <label for="openport-toggle" class="card-header">
+                <h2><i class="fas fa-network-wired" style="color:var(--network-color)"></i>Opening Port 80 (NSG)</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-shield-alt"></i>Allowing Web Traffic</h3>
+                <p class="description">The `az vm open-port` command modifies the Network Security Group (NSG) associated with the VM's NIC.</p>
+                 <pre><code class="cmd-example language-bash"><span class="comment"># Run this from CLOUD SHELL, not inside the VM!</span>
+az vm open-port <span class="param">--name</span> MyWindowsVM <span class="param">--port</span> 80 <span class="comment">(Resource group from defaults)</span></code></pre>
+                 <ul>
+                    <li><i class="fa-li fas fa-user-shield"></i>By default, NSGs block most inbound internet traffic.</li>
+                    <li><i class="fa-li fas fa-plus-circle"></i>This command adds an inbound rule to the NSG to <span class="key-point">allow traffic on TCP port 80</span> from any source (`*`) with a default priority (often 900, lower than the default deny rules).</li>
+                    <li><i class="fa-li fas fa-check"></i>This makes the web server (IIS) accessible from the internet via the VM's Public IP.</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Deallocate & Generalize -->
+        <div class="card">
+            <input type="checkbox" id="prepimage-toggle" class="card-toggle">
+            <label for="prepimage-toggle" class="card-header">
+                <h2><i class="fas fa-hdd" style="color:var(--image-color)"></i>Preparing for Image Capture</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-brush"></i>Deallocate & Generalize (Sysprep for Windows)</h3>
+                <p class="description">Steps taken to prepare the VM for image creation.</p>
+                <pre><code class="cmd-example language-bash"><span class="comment"># Run from CLOUD SHELL</span>
+az vm deallocate <span class="param">--name</span> MyWindowsVM
+az vm generalize <span class="param">--name</span> MyWindowsVM</code></pre>
+                 <ul>
+                    <li><i class="fa-li fas fa-power-off"></i><code class="code-term">az vm deallocate</code>: Shuts down the VM and releases the compute resources. <span class="key-point">Required</span> before generalizing.</li>
+                    <li><i class="fa-li fas fa-broom"></i><code class="code-term">az vm generalize</code>: For Windows VMs, this effectively runs Sysprep. It removes machine-specific information (like computer name, SID) so the image can be used to create multiple new, unique VMs. Sets the VM to a "Generalized" state.</li>
+                 </ul>
+                 <p class="important-note"><i class="fas fa-info-circle"></i>Once a VM is generalized, it cannot be started again in its original state. The next step must be to create an image or delete the VM.</p>
+            </div>
+        </div>
+
+        <!-- The Image Creation Error -->
+        <div class="card error-card">
+            <input type="checkbox" id="error-toggle" class="card-toggle" checked>
+            <label for="error-toggle" class="card-header error-header">
+                <h2><i class="fas fa-exclamation-triangle"></i>Error: Image Creation & Trusted Launch</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-times-circle"></i>"OperationNotAllowed...TrustedLaunch security type"</h3>
+                <p class="description">The reason your `az image create` command failed.</p>
+                <pre><code class="cmd-example language-bash"><span class="comment"># Run from CLOUD SHELL</span>
+az image create <span class="param">--name</span> MyVMImage <span class="param">--source</span> MyWindowsVM
+<span class="comment"># Error Output:</span>
+<span class="comment">(OperationNotAllowed) Creation of managed images are not supported for virtual machine with TrustedLaunch security type.</span></code></pre>
+                 <ul>
+                    <li><i class="fa-li fas fa-shield-alt"></i><strong>Trusted Launch VMs:</strong> This is an Azure VM security feature that protects against advanced and persistent attack techniques. It uses Gen2 VMs and features like Secure Boot, vTPM, and Virtualization-based Security (VBS).</li>
+                    <li><i class="fa-li fas fa-ban" style="color:var(--warning-color)"></i><span class="key-point warning-text">Limitation:</span> As of the typical knowledge cutoff for AZ-104 and current Azure capabilities, you <span class="warning-text">cannot</span> create a traditional "Managed Image" directly from a generalized VM that was deployed with Trusted Launch security type.</li>
+                    <li><i class="fa-li fas fa-lightbulb"></i><strong>Why?</strong> Trusted Launch relies on specific boot configurations and security attestations that are tied to the VM's identity and generation. Traditional image capture doesn't preserve these correctly for creating new Trusted Launch VMs from that image.</li>
+                 </ul>
+                 <h4>Alternative for Trusted Launch VMs (AZ-104 Context):</h4>
+                 <ul>
+                     <li><i class="fa-li fas fa-cogs"></i><strong>Azure Compute Gallery (formerly Shared Image Gallery):</strong> This is the <span class="key-point">recommended method</span> for creating and managing reusable images, especially for Gen2 and Trusted Launch VMs.
+                        <ul>
+                            <li>You would capture the VM (or its disk) into an Image Version within a Compute Gallery.</li>
+                            <li>This preserves the necessary properties for deploying new Trusted Launch VMs.</li>
+                        </ul>
+                     </li>
+                      <li><i class="fa-li fas fa-info-circle"></i>For AZ-104, know that Trusted Launch is a security feature, and for image creation with it, Azure Compute Gallery is the way to go. The direct `az image create` on a generalized Trusted Launch VM will fail.</li>
+                 </ul>
+            </div>
+        </div>
+
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+    <script>
+        document.querySelectorAll('.card-toggle').forEach(checkbox => {
+           checkbox.addEventListener('change', (e) => { /* CSS handles expand/collapse */ });
+        });
+    </script>
+
+</body>
+</html>

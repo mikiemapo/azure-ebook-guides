@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Blob Copy Operation Explained (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #f3f2f1;
+            --code-border: #e0e0e0;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors */
+            --copy-color: #038387; /* Teal - reusing replication color */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 950px; }
+
+        h1 {
+            color: var(--copy-color); margin-bottom: 15px; text-align: center; /* Title Color */
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-copy { font-size: 1.1em; }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--copy-color); }
+
+        /* --- Mind Map Diagram --- */
+        .mindmap-container {
+            background-color: var(--card-bg); border-radius: 8px; padding: 25px;
+            margin: 0 auto 30px auto; width: 100%; max-width: 700px;
+            box-shadow: 0 2px 8px var(--shadow-color); border: 1px solid var(--border-color);
+            position: relative; min-height: 280px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .mindmap-center {
+            background-color: var(--copy-color); color: var(--text-light); padding: 15px;
+            border-radius: 8px; text-align: center; font-weight: 600; font-size: 1.1em;
+            width: 160px; height: auto; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(3, 131, 135, 0.5);
+            z-index: 10;
+        }
+        .mindmap-center i { font-size: 1.6em; margin-bottom: 8px; }
+
+        .mindmap-branch {
+            position: absolute; background-color: var(--diagram-bg); padding: 8px 12px;
+            border-radius: 6px; font-size: 0.85em; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+            display: flex; align-items: center; gap: 6px; min-width: 110px;
+            z-index: 5;
+        }
+        .mindmap-branch i { font-size: 1em; color: var(--copy-color);}
+        .mindmap-branch.mechanism i { color: #605e5c; }
+        .mindmap-branch.usecase i { color: var(--info-color); }
+        .mindmap-branch.aspect i { color: var(--success-color); }
+        .mindmap-branch.consider i { color: var(--warning-color); }
+
+        /* Positioning */
+        .branch-what { top: 10px; left: 50%; transform: translateX(-50%); }
+
+        .branch-mechanism { top: 50%; left: 10px; transform: translateY(-50%); }
+        .branch-mechanism-async { top: calc(50% - 45px); left: -80px; transform: rotate(-25deg);}
+        .branch-mechanism-server { top: calc(50% + 25px); left: -80px; transform: rotate(25deg);}
+
+        .branch-usecase { top: 50%; right: 10px; transform: translateY(-50%); }
+        .branch-usecase-backup { top: calc(50% - 45px); right: -70px; transform: rotate(25deg); }
+        .branch-usecase-move { top: calc(50% + 25px); right: -70px; transform: rotate(-25deg); }
+
+        .branch-aspect { bottom: 10px; left: 25%; transform: translateX(-50%); }
+        .branch-consider { bottom: 10px; right: 25%; transform: translateX(50%); }
+
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1100px) { .card-container { grid-template-columns: repeat(3, 1fr); } }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--copy-color); color: var(--text-light); cursor: pointer; /* Teal Header */
+            transition: background-color 0.2s ease; border-bottom: 1px solid #026467; /* Darker Teal */
+        }
+        .card-header:hover { background-color: #026467; }
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--copy-color); font-size: 0.9em;} /* Use copy color for H3 icons */
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--copy-color); font-size: 0.9em; /* Use copy color for list icons */
+          }
+        /* Custom list icons */
+        .card-content li i.fa-server { color: #605e5c; }
+        .card-content li i.fa-clock { color: var(--warning-color); }
+        .card-content li i.fa-cogs { color: var(--azure-blue-dark); }
+        .card-content li i.fa-cloud { color: var(--azure-blue); }
+        .card-content li i.fa-arrows-alt-h { color: var(--info-color); }
+        .card-content li i.fa-layer-group { color: var(--info-color); }
+        .card-content li i.fa-key { color: var(--success-color); }
+        .card-content li i.fa-play { color: var(--success-color); }
+        .card-content li i.fa-spinner { color: var(--warning-color); }
+        .card-content li i.fa-check-circle { color: var(--success-color); }
+        .card-content li i.fa-times-circle { color: var(--warning-color); }
+        .card-content li i.fa-ban { color: var(--warning-color); }
+        .card-content li i.fa-database { color: var(--azure-blue); }
+        .card-content li i.fa-puzzle-piece { color: var(--info-color); }
+        .card-content li i.fa-exchange-alt { color: var(--success-color); }
+        .card-content li i.fa-dollar-sign { color: var(--warning-color); }
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-vertical { flex-direction: column; align-items: stretch; gap: 10px;}
+        .diagram-box {
+            background-color: #fff; padding: 10px 15px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 100px;
+        }
+        .diagram-box i { font-size: 1.5em; color: var(--azure-blue); }
+        .diagram-box span { font-size: 0.85em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; }
+        .diagram-arrow-down { transform: rotate(90deg); margin: 5px 0; }
+        .diagram-label { font-size: 0.8em; color: #605e5c; font-style: italic; margin-top: -10px; margin-bottom: 10px;}
+
+        /* Specific Diagram Styles */
+        .copy-flow i.fa-user, .copy-flow i.fa-cogs { font-size: 1.3em; }
+        .copy-flow i.fa-server { color: #605e5c; }
+        .copy-flow .fa-file-alt { color: var(--info-color); }
+        .copy-flow .status-label { font-size: 0.8em; color: #605e5c; font-style: italic; margin-top: 5px;}
+
+        /* --- Code formatting --- */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: var(--code-bg);
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid var(--code-border); color: var(--copy-color); /* Use copy color */
+        }
+        .code-term { font-weight: bold; }
+        pre {
+             background-color: var(--code-bg); border: 1px solid var(--code-border); padding: 15px;
+             border-radius: 4px; overflow-x: auto; font-size: 0.85em; margin-top: 10px;
+        }
+        pre code { background: none; border: none; padding: 0; font-size: 1em; color: #333;}
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--copy-color); } /* Use copy color */
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .warning-text { color: var(--warning-color); font-weight: 600; }
+        .important-note { background-color: #e1f3f3; border-left: 4px solid var(--copy-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--copy-color); margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-copy"></i>Azure Blob Copy Operation Explained</h1>
+
+    <!-- Mind Map -->
+    <div class="mindmap-container">
+         <div class="mindmap-center"><i class="fas fa-copy"></i>Copy Blob Operation</div>
+
+         <div class="mindmap-branch branch-what"><i class="fas fa-info-circle"></i>What it Is</div>
+
+         <div class="mindmap-branch branch-mechanism mechanism"><i class="fas fa-cogs"></i>Mechanism</div>
+         <div class="mindmap-branch branch-mechanism-async mechanism"><i class="fas fa-clock"></i>Asynchronous</div>
+         <div class="mindmap-branch branch-mechanism-server mechanism"><i class="fas fa-server"></i>Server-Side</div>
+
+         <div class="mindmap-branch branch-usecase usecase"><i class="fas fa-lightbulb"></i>Use Cases</div>
+         <div class="mindmap-branch branch-usecase-backup usecase"><i class="fas fa-save"></i>Backups</div>
+         <div class="mindmap-branch branch-usecase-move usecase"><i class="fas fa-arrows-alt-h"></i>Move Data</div>
+
+         <div class="mindmap-branch branch-aspect aspect"><i class="fas fa-check-circle"></i>Key Aspects</div>
+         <div class="mindmap-branch branch-consider consider"><i class="fas fa-exclamation-triangle"></i>Considerations</div>
+    </div>
+
+    <p class="instructions">Learn how to copy individual Azure blobs asynchronously using the `Copy Blob` operation. <strong>Click/Tap</strong> headers to explore.</p>
+
+    <div class="card-container">
+
+        <!-- What is Copy Blob? -->
+        <div class="card">
+            <input type="checkbox" id="what-toggle" class="card-toggle" checked> <!-- Start expanded -->
+            <label for="what-toggle" class="card-header">
+                <h2><i class="fas fa-question-circle"></i>What is the `Copy Blob` Operation?</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-server"></i>Server-Side Asynchronous Copy</h3>
+                <p class="description">An operation to copy a single blob to a destination within the same or a different storage account.</p>
+                 <ul>
+                    <li><i class="fas fa-cogs fa-li"></i><strong>Operation Type:</strong> It's an API call (or SDK function / CLI command) you initiate.</li>
+                    <li><i class="fas fa-server fa-li"></i><strong>Server-Side:</strong> Once initiated, Azure performs the copy <span class="key-point">internally</span> between the source and destination. Your client doesn't need to stay connected or download/upload the data.</li>
+                    <li><i class="fas fa-clock fa-li"></i><strong>Asynchronous:</strong> The copy operation starts in the background. The initial request returns quickly, but the actual data transfer takes time. You need to <span class="key-point">check the status</span> to know when it's complete.</li>
+                    <li><i class="fas fa-file-alt fa-li"></i><strong>Individual Blob Focus:</strong> Operates on one blob at a time. To copy multiple blobs, you need to initiate multiple copy operations (often via scripting).</li>
+                 </ul>
+                 <div class="important-note"><i class="fas fa-info-circle"></i> This is different from <span class="code-term">Object Replication</span>, which is a policy-based, continuous replication service requiring versioning. `Copy Blob` is a one-time, per-blob copy request.</div>
+            </div>
+        </div>
+
+         <!-- How it Works -->
+        <div class="card">
+            <input type="checkbox" id="how-toggle" class="card-toggle">
+            <label for="how-toggle" class="card-header">
+                <h2><i class="fas fa-project-diagram"></i>How `Copy Blob` Works</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-sync-alt"></i>The Asynchronous Flow</h3>
+                <p class="description">Understanding the steps involved.</p>
+                 <div class="diagram copy-flow">
+                     <div class="diagram-box"> <i class="fas fa-user"></i><span>Client / Script</span> </div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"> <i class="fas fa-cogs"></i><span>Initiate Copy Blob<br/>(Source URL -> Dest)</span> </div>
+                     <i class="fas fa-arrow-right diagram-arrow"></i>
+                     <div class="diagram-box"> <i class="fas fa-server"></i><span>Azure Storage Service</span><span class="status-label">(Copy Queued)</span> </div>
+                     <i class="fas fa-arrow-down diagram-arrow-down"></i>
+                     <div class="diagram-box"> <i class="fas fa-copy"></i><span>Azure Copies Data...<br/>(Internal Transfer)</span><span class="status-label">(Status: Pending)</span></div>
+                     <i class="fas fa-arrow-down diagram-arrow-down"></i>
+                     <div class="diagram-box" style="border-color: var(--success-color)"> <i class="fas fa-file-alt"></i><span>Destination Blob Created / Overwritten</span><span class="status-label">(Status: Success)</span></div>
+                 </div>
+                <ol style="padding-left: 20px;">
+                    <li>Client (e.g., script, application, tool) sends a `Copy Blob` request, specifying the <span class="code-term">source blob URL</span> and the destination account, container, and blob name.</li>
+                    <li>Azure Storage validates the request and queues the copy operation. It returns a response immediately with a <span class="code-term">copy ID</span> and initial <span class="code-term">status</span> (usually `pending`).</li>
+                    <li>Azure performs the data transfer server-side in the background.</li>
+                    <li>Client must periodically <span class="key-point">check the copy status</span> using the destination blob name or the copy ID (e.g., via `Get Blob Properties`) until the status is `success` or `failed`.</li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Use Cases -->
+        <div class="card">
+            <input type="checkbox" id="usecases-toggle" class="card-toggle">
+            <label for="usecases-toggle" class="card-header">
+                <h2><i class="fas fa-lightbulb"></i>Use Cases</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-check"></i>When to Use `Copy Blob`</h3>
+                 <ul>
+                    <li><i class="fas fa-save fa-li"></i><strong>Creating Manual Backups:</strong> Copying important blobs to a separate container or account.</li>
+                    <li><i class="fas fa-arrows-alt-h fa-li"></i><strong>Moving Blobs:</strong> Copy a blob to a new location and then delete the original (effectively a move).</li>
+                    <li><i class="fas fa-database fa-li"></i><strong>Aggregating Data:</strong> Copying logs or results from multiple sources into a central location.</li>
+                    <li><i class="fas fa-layer-group fa-li"></i><strong>Changing Tiers During Copy:</strong> You can specify a different access tier for the destination blob during the copy initiation (e.g., copy from Hot to Archive).</li>
+                    <li><i class="fas fa-puzzle-piece fa-li"></i><strong>Hydrating Archive Blobs:</strong> Initiate a copy from an Archive blob to a Hot/Cool/Cold destination to rehydrate it (copy operation handles rehydration priority).</li>
+                 </ul>
+            </div>
+        </div>
+
+        <!-- Key Aspects -->
+        <div class="card">
+            <input type="checkbox" id="aspects-toggle" class="card-toggle">
+            <label for="aspects-toggle" class="card-header">
+                <h2><i class="fas fa-star"></i>Key Aspects</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-info-circle"></i>Important Characteristics</h3>
+                 <ul>
+                    <li><i class="fas fa-clock fa-li"></i><strong>Asynchronous:</strong> Completion time varies based on size, load, source/destination regions. Don't assume immediate availability.</li>
+                    <li><i class="fas fa-server fa-li"></i><strong>Server-Side:</strong> Frees up client resources; Azure does the heavy lifting.</li>
+                    <li><i class="fas fa-cloud fa-li"></i><strong>Source/Destination Flexibility:</strong> Can copy within the same account, between accounts in the same region, or between accounts in different regions.</li>
+                     <li><i class="fas fa-key fa-li"></i><strong>Authentication:</strong> Needs appropriate permissions (SAS token, RBAC, Account Key - depending on scenario) for both source read and destination write.</li>
+                     <li><i class="fas fa-exchange-alt fa-li"></i><strong>Overwriting:</strong> By default, `Copy Blob` overwrites the destination blob if it exists. If versioning is enabled on the destination, the overwrite creates a new version.</li>
+                      <li><i class="fas fa-layer-group fa-li"></i><strong>Tiering Options:</strong> Can specify destination tier (`x-ms-access-tier` header) and rehydration priority (`x-ms-rehydrate-priority` header) for Archive source.</li>
+                 </ul>
+            </div>
+        </div>
+
+         <!-- Copy Status -->
+        <div class="card">
+            <input type="checkbox" id="status-toggle" class="card-toggle">
+            <label for="status-toggle" class="card-header">
+                <h2><i class="fas fa-tv"></i>Checking Copy Status</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-tasks"></i>Monitoring Progress</h3>
+                <p class="description">Crucial due to the asynchronous nature.</p>
+                 <ul>
+                    <li><i class="fas fa-play fa-li"></i><strong>Initiation:</strong> Returns HTTP status `202 Accepted` and copy information in headers.</li>
+                    <li><i class="fas fa-cogs fa-li"></i><strong>Checking Method:</strong> Use `Get Blob Properties` on the <span class="key-point">destination</span> blob.</li>
+                    <li><i class="fas fa-spinner fa-li" style="color:var(--warning-color)"></i><strong>Status `pending`:</strong > Copy is in progress. `Copy Progress` header shows `bytes_copied/total_bytes`.</li>
+                    <li><i class="fas fa-check-circle fa-li"></i><strong>Status `success`:</strong > Copy completed successfully.</li>
+                    <li><i class="fas fa-times-circle fa-li"></i><strong>Status `failed` / `aborted`:</strong > Copy did not complete. Check `Copy Status Description` for error details.</li>
+                     <li><i class="fas fa-ban fa-li"></i><strong>Abort Copy Blob:</strong> You can attempt to cancel a pending copy operation.</li>
+                 </ul>
+            </div>
+        </div>
+
+         <!-- Considerations -->
+        <div class="card">
+            <input type="checkbox" id="considerations-toggle" class="card-toggle">
+            <label for="considerations-toggle" class="card-header">
+                <h2><i class="fas fa-exclamation-triangle"></i>Considerations</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-info-circle"></i>Important Notes</h3>
+                <ul>
+                    <li><i class="fas fa-clock fa-li"></i><strong>Latency:</strong> Factor in the asynchronous delay, especially for large blobs or cross-region copies.</li>
+                    <li><i class="fas fa-dollar-sign fa-li"></i><strong>Cost:</strong> Incur costs for:
+                        <ul>
+                            <li>Read operations on the source.</li>
+                            <li>Write operations on the destination.</li>
+                            <li>Data Egress (if copying cross-region).</li>
+                            <li>Storage costs for the new blob at the destination.</li>
+                         </ul>
+                     </li>
+                     <li><i class="fas fa-history fa-li" style="color:var(--versioning-color)"></i><strong>Versioning Interaction:</strong> If versioning is enabled on destination, overwriting creates a version. `Copy Blob` copies only the *specified* source blob/version, not its entire history.</li>
+                     <li><i class="fas fa-copy fa-li" style="color: var(--replication-color)"></i><strong>vs. Object Replication:</strong> `Copy Blob` is manual, per-blob, one-time async. Object Replication is automatic, policy-based, continuous async (for new versions), and requires versioning enabled everywhere.</li>
+                     <li><i class="fas fa-archive fa-li" style="color: #777"></i><strong>Archive Tier Source:</strong> Copying *from* Archive requires rehydration first (unless using Copy Blob to rehydrate to Hot/Cool/Cold). Copying *to* Archive is possible directly.</li>
+                </ul>
+            </div>
+        </div>
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>

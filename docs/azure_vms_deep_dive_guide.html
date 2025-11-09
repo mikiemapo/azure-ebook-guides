@@ -1,0 +1,2026 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azure Compute Deep Dive (AZ-104) - VMs, App Service, ACI</title>
+    <!-- Font Awesome CDN -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style>
+      .quick-jump-container {
+        background-color: var(--azure-bg-light);
+        border: 1px solid var(--border-color);
+        padding: 10px 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        text-align: center;
+        font-size: 0.95em;
+        box-shadow: 0 1px 3px var(--shadow-color);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .quick-jump-container a {
+        color: var(--azure-blue-dark);
+        text-decoration: none;
+        font-weight: 600;
+        margin: 0 5px;
+        transition: color 0.2s ease;
+      }
+
+      .quick-jump-container a:hover {
+        color: var(--vm-color);
+        text-decoration: underline;
+      }
+      :root {
+        --azure-blue: #0078d4;
+        --azure-blue-dark: #005a9e;
+        --azure-bg-light: #f0f4f8;
+        --text-dark: #323130;
+        --text-light: #ffffff;
+        --border-color: #d1d1d1;
+        --card-bg: #ffffff;
+        --diagram-bg: #f8f9fa;
+        --code-bg: #2d2d2d;
+        --code-text-color: #dcdcdc;
+        --code-border: #444;
+        --success-color: #107c10;
+        --warning-color: #d83b01;
+        --info-color: #005a9e;
+        --shadow-color: rgba(0, 0, 0, 0.1);
+        /* Feature Colors */
+        --vm-color: #0078ff;
+        --storage-color: #605e5c;
+        --network-color: var(--success-color);
+        --availability-color: #ffb900;
+        --management-color: #6f42c1;
+        --encryption-color: var(--success-color);
+        --keyvault-color: var(--azure-blue);
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+          Helvetica, Arial, sans-serif;
+        background-color: var(--azure-bg-light);
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        color: var(--text-dark);
+        line-height: 1.6;
+      }
+
+      .main-container {
+        width: 100%;
+        max-width: 1000px;
+      }
+
+      h1 {
+        color: var(--azure-blue-dark);
+        margin-bottom: 15px;
+        text-align: center;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+      }
+      h1 .fa-server {
+        font-size: 1.1em;
+        color: var(--vm-color);
+      }
+
+      .back-to-hub-container {
+        /* Renamed and styled container for back link */
+        width: 100%;
+        max-width: 1000px; /* Match main container */
+        margin: 0 auto 20px auto; /* Centered, with bottom margin */
+        padding: 0 20px; /* Match body padding for alignment */
+        box-sizing: border-box;
+      }
+      .back-to-hub {
+        padding: 10px;
+        background-color: #e6f2ff;
+        border-radius: 5px;
+        text-align: left; /* Aligned left for better placement */
+        border: 1px solid var(--azure-blue);
+      }
+      .back-to-hub a {
+        text-decoration: none;
+        color: #005a9e;
+        font-weight: bold;
+        font-size: 1.1em;
+      }
+      .back-to-hub a i {
+        margin-right: 8px;
+      }
+
+      .instructions {
+        background-color: var(--card-bg);
+        padding: 12px 18px;
+        border-radius: 6px;
+        margin-bottom: 25px;
+        text-align: center;
+        font-size: 0.95em;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px var(--shadow-color);
+      }
+      .instructions strong {
+        color: var(--vm-color);
+      }
+
+      /* --- Mind Map Diagram --- */
+      .mindmap-container {
+        background-color: var(--card-bg);
+        border-radius: 8px;
+        padding: 20px;
+        margin: 0 auto 30px auto;
+        width: 100%;
+        box-shadow: 0 2px 8px var(--shadow-color);
+        border: 1px solid var(--border-color);
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+        align-items: flex-start;
+        gap: 15px;
+      }
+      .mindmap-item {
+        background-color: var(--diagram-bg);
+        padding: 10px 15px;
+        border-radius: 6px;
+        font-size: 0.9em;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 3px var(--shadow-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        width: calc(33.33% - 20px);
+        min-width: 140px;
+        transition: transform 0.2s ease;
+      }
+      .mindmap-item:hover {
+        transform: translateY(-3px);
+      }
+      .mindmap-item i {
+        font-size: 1.8em;
+        margin-bottom: 5px;
+      }
+      .mindmap-item span {
+        font-weight: 600;
+      }
+      .mindmap-item.whatis i {
+        color: var(--vm-color);
+      }
+      .mindmap-item.planning i {
+        color: var(--info-color);
+      }
+      .mindmap-item.storage i {
+        color: var(--storage-color);
+      }
+      .mindmap-item.network i {
+        color: var(--network-color);
+      }
+      .mindmap-item.availability i {
+        color: var(--availability-color);
+      }
+      .mindmap-item.management i {
+        color: var(--management-color);
+      }
+
+      /* --- Card Section --- */
+      .card-container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 20px;
+        width: 100%;
+      }
+      @media (min-width: 768px) {
+        .card-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (min-width: 1200px) {
+        .card-container {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      /* General Card Styles */
+      .card {
+        background-color: var(--card-bg);
+        border-radius: 6px;
+        box-shadow: 0 2px 5px var(--shadow-color);
+        overflow: hidden;
+        border: 1px solid var(--border-color);
+        transition: box-shadow 0.3s ease;
+        display: flex;
+        flex-direction: column;
+      }
+      .card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      }
+      .card-toggle {
+        display: none;
+      }
+      .card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 12px 18px;
+        background-color: var(--vm-color);
+        color: var(--text-light);
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+        border-bottom: 1px solid #0056b3;
+      }
+      .card-header:hover {
+        background-color: #0056b3;
+      }
+      .card-header.availability-header {
+        background-color: var(--availability-color);
+        border-bottom-color: #c88f00;
+        color: var(--text-dark);
+      }
+      .card-header.availability-header:hover {
+        background-color: #e0a800;
+      }
+      .card-header.storage-header {
+        background-color: var(--storage-color);
+        border-bottom-color: #444;
+      }
+      .card-header.storage-header:hover {
+        background-color: #444;
+      }
+      .card-header.encryption-header {
+        background-color: var(--encryption-color);
+        border-bottom-color: #0d6a0d;
+      }
+      .card-header.encryption-header:hover {
+        background-color: #0d6a0d;
+      }
+
+      .card-header h2 {
+        margin: 0;
+        font-size: 1.2em;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-header h2 i {
+        font-size: 1em;
+        opacity: 0.9;
+      }
+      .card-header .toggle-icon {
+        font-size: 1.1em;
+        transition: transform 0.3s ease;
+      }
+      .card-content {
+        max-height: 0;
+        opacity: 0;
+        overflow: hidden;
+        padding: 0 18px;
+        transition: max-height 0.4s ease-out, opacity 0.3s ease-in,
+          padding 0.4s ease-out, border-top 0.4s ease-out;
+        background-color: var(--card-bg);
+        border-top: 0px solid var(--border-color);
+        flex-grow: 1;
+      }
+      .card-toggle:checked + .card-header {
+        border-bottom-color: transparent;
+      }
+      .card-toggle:checked + .card-header .toggle-icon {
+        transform: rotate(180deg);
+      }
+      .card-toggle:checked ~ .card-content {
+        max-height: 2500px;
+        opacity: 1;
+        padding: 15px 18px;
+        border-top: 1px solid var(--border-color);
+        overflow-y: auto;
+      }
+
+      /* --- Content Styling --- */
+      .card-content h3 {
+        color: var(--azure-blue-dark);
+        margin-top: 0;
+        margin-bottom: 12px;
+        font-size: 1.1em;
+        font-weight: 600;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .card-content h3 i {
+        font-size: 0.9em;
+      }
+      .card-content ul {
+        font-size: 0.95em;
+        padding-left: 0;
+        margin-top: 5px;
+        margin-bottom: 15px;
+        list-style: none;
+      }
+      .card-content li {
+        margin-bottom: 8px;
+        position: relative;
+        padding-left: 25px;
+      }
+      .card-content li i.fa-li {
+        position: absolute;
+        left: 0;
+        top: 3px;
+        width: 20px;
+        text-align: center;
+        font-size: 0.9em;
+        color: var(--vm-color);
+      }
+      .availability-card li i.fa-li {
+        color: var(--availability-color);
+      }
+      .storage-card li i.fa-li {
+        color: var(--storage-color);
+      }
+      .encryption-card li i.fa-li {
+        color: var(--encryption-color);
+      }
+
+      /* General icons for points */
+      .card-content li i.fa-cloud,
+      .card-content li i.fa-server {
+        color: var(--vm-color);
+      }
+      .card-content li i.fa-cogs {
+        color: #605e5c;
+      }
+      .card-content li i.fa-shield-alt {
+        color: var(--success-color);
+      }
+      .card-content li i.fa-info-circle {
+        color: var(--info-color);
+      }
+      .card-content li i.fa-map-marker-alt {
+        color: var(--azure-blue-dark);
+      }
+      .card-content li i.fa-building,
+      .card-content li i.fa-cubes {
+        color: var(--availability-color);
+      }
+      .card-content li i.fa-exclamation-triangle {
+        color: var(--warning-color);
+      }
+      .card-content li i.fa-hdd,
+      .card-content li i.fa-database,
+      .card-content li i.fa-compact-disc {
+        color: var(--storage-color);
+      }
+      .card-content li i.fa-tachometer-alt,
+      .card-content li i.fa-history,
+      .card-content li i.fa-layer-group {
+        color: var(--storage-color);
+      }
+      .card-content li i.fa-key {
+        color: var(--keyvault-color);
+      }
+      .card-content li i.fa-lock {
+        color: var(--encryption-color);
+      }
+      .card-content li i.fa-plug {
+        color: var(--encryption-color);
+      }
+      .card-content li i.fa-user-shield {
+        color: var(--info-color);
+      }
+      .card-content li i.fa-clock {
+        color: var(--warning-color);
+      }
+
+      /* --- Diagram Styles --- */
+      .diagram {
+        border: 1px dashed var(--border-color);
+        padding: 15px;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        border-radius: 4px;
+        background-color: var(--diagram-bg);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+      .diagram-box {
+        background-color: #fff;
+        padding: 8px 12px;
+        border-radius: 4px;
+        text-align: center;
+        border: 1px solid var(--border-color);
+        box-shadow: 0 1px 2px var(--shadow-color);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 5px;
+        min-width: 90px;
+        font-size: 0.9em;
+      }
+      .diagram-box i {
+        font-size: 1.6em;
+      }
+      .diagram-box span {
+        font-size: 0.8em;
+        font-weight: 600;
+        color: var(--text-dark);
+      }
+      .diagram-arrow {
+        font-size: 1.8em;
+        color: #a19f9d;
+        margin: 0 5px;
+      }
+      .diagram-arrow-down {
+        transform: rotate(90deg);
+        margin: 5px 0;
+      }
+      .diagram-label {
+        font-size: 0.75em;
+        color: #605e5c;
+        font-style: italic;
+        width: 100%;
+        text-align: center;
+        margin-top: 5px;
+      }
+
+      .iaas-diagram .fa-server {
+        color: var(--vm-color);
+      }
+      .iaas-diagram .fa-user {
+        color: var(--azure-blue-dark);
+      }
+      .iaas-diagram .fa-cloud {
+        color: #605e5c;
+      }
+      .iaas-diagram .responsibility-label {
+        font-size: 0.7em;
+        font-weight: bold;
+        margin-top: 3px;
+      }
+
+      .availability-diagram .zone-box,
+      .availability-diagram .set-box {
+        border: 2px solid;
+        padding: 10px;
+        margin: 5px;
+        background-color: #fff;
+        min-width: 120px;
+      }
+      .availability-diagram .zone-box {
+        border-color: var(--availability-color);
+      }
+      .availability-diagram .zone-box i.fa-cubes {
+        color: var(--availability-color);
+      }
+      .availability-diagram .set-box {
+        border-color: var(--info-color);
+      }
+      .availability-diagram .set-box i.fa-object-group {
+        color: var(--info-color);
+      }
+      .availability-diagram .fd-ud-box {
+        border: 1px dotted #aaa;
+        padding: 5px;
+        margin-top: 5px;
+        font-size: 0.75em;
+      }
+      .availability-diagram .fd-ud-box i {
+        font-size: 0.9em;
+        margin-right: 3px;
+      }
+
+      .ade-flow-diagram .fa-key {
+        color: var(--keyvault-color);
+      }
+      .ade-flow-diagram .fa-lock {
+        color: var(--encryption-color);
+      }
+      .ade-flow-diagram .fa-hdd {
+        color: #605e5c;
+      }
+      .ade-flow-diagram .fa-server {
+        color: var(--vm-color);
+      }
+      .ade-flow-diagram .diagram-box {
+        min-width: 120px;
+      }
+
+      /* --- Code formatting --- */
+      code,
+      .code-term {
+        font-family: "Consolas", "Courier New", monospace;
+        background-color: #eef1f5;
+        padding: 0.1em 0.4em;
+        border-radius: 3px;
+        font-size: 0.9em;
+        border: 1px solid #ddd;
+        color: var(--azure-blue-dark);
+      }
+      pre {
+        background-color: var(--code-bg);
+        border: 1px solid var(--code-border);
+        padding: 15px;
+        border-radius: 4px;
+        overflow-x: auto;
+        font-size: 0.9em;
+        color: var(--code-text-color);
+        margin-top: 10px;
+      }
+      pre code {
+        background: none;
+        border: none;
+        padding: 0;
+        font-size: 1em;
+        color: var(--code-text-color);
+      }
+      .param {
+        color: #4ec9b0;
+      }
+      .value {
+        color: #ce9178;
+      }
+      .comment {
+        color: #6a9955;
+        font-style: italic;
+      }
+      .cmdlet {
+        color: #dcdcaa;
+      }
+      .variable {
+        color: #9cdcfe;
+      }
+
+      /* Helper classes */
+      .key-point {
+        font-weight: 600;
+        color: var(--azure-blue-dark);
+      }
+      .description {
+        font-style: italic;
+        color: #605e5c;
+        margin-bottom: 15px;
+        display: block;
+      }
+      .important-note {
+        background-color: #e6f2ff;
+        border-left: 4px solid var(--vm-color);
+        padding: 10px 15px;
+        margin: 15px 0;
+        font-size: 0.9em;
+      }
+      .important-note i {
+        color: var(--vm-color);
+        margin-right: 8px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="back-to-hub-container">
+      <div class="back-to-hub">
+        <a href="index.html"
+          ><i class="fas fa-arrow-left"></i>Back to Study Hub</a
+        >
+      </div>
+    </div>
+
+    <div class="main-container">
+      <h1><i class="fas fa-server"></i>Azure Compute Deep Dive (AZ-104)</h1>
+      <p class="instructions">
+        A comprehensive guide covering Azure Virtual Machines, App Service, Container Instances, and key compute scenarios.
+        Includes VM planning, deployment, management, plus critical exam topics: App Service runtimes, ACI scaling, and encrypted VM migration.
+        <strong>Click/Tap</strong> headers to explore.
+      </p>
+      <div class="quick-jump-container">
+        <strong>Quick Jump:</strong>
+        <a href="#pillar1-vm-foundations-toggle" class="quick-link">VM Foundations</a> |
+        <a href="#pillar2-storage-encryption-toggle" class="quick-link">Storage & Encryption</a> |
+        <a href="#pillar3-operations-toggle" class="quick-link">Operations & Resilience</a> |
+        <a href="#pillar4-vmss-scaling-toggle" class="quick-link">VMSS & Scaling</a> |
+        <a href="#pillar5-automation-iac-toggle" class="quick-link">Automation & IaC</a> |
+        <a href="#vm-os-images-toggle" class="quick-link">OS Images</a> |
+        <a href="#vm-deployment-methods-toggle" class="quick-link">Deployment Methods</a> |
+        <a href="#vm-networking-toggle" class="quick-link">Networking</a> |
+        <a href="#vm-management-ops-toggle" class="quick-link">Management & Ops</a> |
+        <a href="#app-service-runtimes-toggle" class="quick-link weak-area" style="background-color: #ff9800; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold;">⚠️ App Service Runtimes</a> |
+        <a href="#aci-scaling-toggle" class="quick-link weak-area" style="background-color: #ff9800; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold;">⚠️ ACI Scaling</a> |
+        <a href="#encrypted-vm-migration-toggle" class="quick-link weak-area" style="background-color: #ff9800; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold;">⚠️ Encrypted VM Migration</a> |
+        <a href="#compute-key-takeaways-toggle" class="quick-link">📚 Key Takeaways</a>
+      </div>
+
+      <!-- Mind Map -->
+      <div class="mindmap-container">
+        <div class="mindmap-item whatis">
+          <i class="fas fa-server"></i><span>What are VMs? (IaaS)</span>
+        </div>
+        <div class="mindmap-item planning">
+          <i class="fas fa-map-signs"></i><span>Planning & Creation</span>
+        </div>
+        <div class="mindmap-item storage">
+          <i class="fas fa-hdd"></i><span>VM Storage</span>
+        </div>
+        <div class="mindmap-item network">
+          <i class="fas fa-network-wired"></i><span>VM Networking</span>
+        </div>
+        <div class="mindmap-item availability">
+          <i class="fas fa-shield-alt"></i><span>Availability</span>
+        </div>
+        <div class="mindmap-item management">
+          <i class="fas fa-cogs"></i><span>Management</span>
+        </div>
+      </div>
+
+      <div class="card-container">
+        <!-- PILLAR 1: VM Foundations -->
+        <div class="card">
+          <input type="checkbox" id="pillar1-vm-foundations-toggle" class="card-toggle" checked />
+          <label id="card1" for="pillar1-vm-foundations-toggle" class="card-header" style="background-color: var(--vm-color)">
+            <h2>
+              <i class="fas fa-server"></i>Pillar 1: VM Foundations
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-cloud"></i>What are Azure VMs? (IaaS)
+            </h3>
+            <div class="diagram iaas-diagram">
+              <div class="diagram-box">
+                <i class="fas fa-user"></i><span>YOU Manage</span>
+                <span class="responsibility-label">Data, Apps, OS, Network Config</span>
+              </div>
+              <div class="diagram-box">
+                <i class="fas fa-cloud"></i><span>AZURE Manages</span>
+                <span class="responsibility-label">Physical Hardware, Virtualization</span>
+              </div>
+            </div>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cogs"></i>
+                <span class="key-point">Full Control:</span> Choose OS, install software, manage storage, networking.
+              </li>
+              <li>
+                <i class="fa-li fas fa-cloud-upload-alt"></i>
+                <strong>Use Cases:</strong> Lift-and-shift, custom apps, dev/test, databases.
+              </li>
+              <li>
+                <i class="fa-li fas fa-user-shield"></i>
+                <strong>Your Responsibility:</strong> OS patching, networking config (Shared Responsibility Model).
+              </li>
+            </ul>
+            <h3>
+              <i class="fas fa-map-marker-alt"></i>Planning: Regions & Availability
+            </h3>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-globe-americas"></i>
+                <strong>Region:</strong> Choose based on proximity, sovereignty, cost.
+              </li>
+              <li>
+                <i class="fa-li fas fa-server"></i>
+                <strong>Single VM SLA:</strong> Premium/Ultra SSD = 99.9%+
+              </li>
+              <li>
+                <i class="fa-li fas fa-object-group"></i>
+                <strong>Availability Sets:</strong> Hardware failure protection (FDs/UDs). 99.95% SLA (2+ VMs).
+              </li>
+              <li>
+                <i class="fa-li fas fa-building"></i>
+                <strong>Availability Zones:</strong> Datacenter failure protection. 99.99% SLA.
+              </li>
+            </ul>
+            <div class="diagram availability-diagram">
+              <div class="diagram-box set-box">
+                <i class="fas fa-object-group"></i><span>Availability Set</span>
+                <div class="fd-ud-box"><i class="fas fa-bolt"></i>FD0 <i class="fas fa-sync-alt"></i>UD0 (VM1)</div>
+                <div class="fd-ud-box"><i class="fas fa-bolt"></i>FD1 <i class="fas fa-sync-alt"></i>UD1 (VM2)</div>
+              </div>
+              <div class="diagram-box zone-box"><i class="fas fa-cubes"></i><span>Zone 1 (VM A)</span></div>
+              <div class="diagram-box zone-box"><i class="fas fa-cubes"></i><span>Zone 2 (VM B)</span></div>
+            </div>
+            <div class="important-note" style="border-left-color: var(--availability-color)">
+              <i class="fas fa-shield-alt"></i>
+              <strong>AZ-104 Focus:</strong> Know the difference between Sets and Zones, their SLAs, and when to use each.
+            </div>
+            <h3>
+              <i class="fas fa-th-large"></i>VM Sizes & Series (Choosing Compute)
+            </h3>
+            <div class="diagram" style="flex-direction: column; align-items: stretch; gap: 8px">
+              <div class="diagram-box" style="width: auto; padding: 10px; background-color: #e9ecef">
+                <i class="fas fa-tasks" style="color: var(--azure-blue-dark)"></i>
+                <strong>Key Sizing:</strong><br /><span>vCPUs, RAM, Temp Storage, Max Data Disks, IOPS, Bandwidth, GPU, Cost</span>
+              </div>
+              <div style="display: flex; flex-wrap: wrap; justify-content: space-around; gap: 10px; margin-top: 10px;">
+                <div class="diagram-box" style="min-width: 130px; border-left: 3px solid var(--vm-color)">
+                  <i class="fas fa-cogs" style="color: var(--vm-color)"></i><span>General (D, B, Av2)</span>
+                </div>
+                <div class="diagram-box" style="min-width: 130px; border-left: 3px solid var(--warning-color)">
+                  <i class="fas fa-rocket" style="color: var(--warning-color)"></i><span>Compute (F)</span>
+                </div>
+                <div class="diagram-box" style="min-width: 130px; border-left: 3px solid var(--success-color)">
+                  <i class="fas fa-memory" style="color: var(--success-color)"></i><span>Memory (E, M)</span>
+                </div>
+                <div class="diagram-box" style="min-width: 130px; border-left: 3px solid var(--storage-color)">
+                  <i class="fas fa-hdd" style="color: var(--storage-color)"></i><span>Storage (L)</span>
+                </div>
+                <div class="diagram-box" style="min-width: 130px; border-left: 3px solid #6f42c1">
+                  <i class="fas fa-microchip" style="color: #6f42c1"></i><span>GPU (N)</span>
+                </div>
+                <div class="diagram-box" style="min-width: 130px; border-left: 3px solid #fd7e14">
+                  <i class="fas fa-tachometer-alt" style="color: #fd7e14"></i><span>HPC (H)</span>
+                </div>
+              </div>
+            </div>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cogs" style="color: var(--vm-color)"></i>
+                <strong>General:</strong> D, B, Av2 - Balanced; web, dev/test, small DB.
+              </li>
+              <li>
+                <i class="fa-li fas fa-rocket" style="color: var(--warning-color)"></i>
+                <strong>Compute:</strong> F - High CPU; app servers, batch.
+              </li>
+              <li>
+                <i class="fa-li fas fa-memory" style="color: var(--success-color)"></i>
+                <strong>Memory:</strong> E, M - High RAM; DB, cache.
+              </li>
+              <li>
+                <i class="fa-li fas fa-hdd" style="color: var(--storage-color)"></i>
+                <strong>Storage:</strong> L - High IOPS; big data.
+              </li>
+              <li>
+                <i class="fa-li fas fa-microchip" style="color: #6f42c1"></i>
+                <strong>GPU:</strong> N - AI/ML, graphics.
+              </li>
+              <li>
+                <i class="fa-li fas fa-tachometer-alt" style="color: #fd7e14"></i>
+                <strong>HPC:</strong> H - Scientific computing.
+              </li>
+              <li>
+                <i class="fa-li fas fa-arrows-alt-v"></i>
+                <strong>Resizing:</strong> <code class="code-term">az vm resize</code> (requires restart).
+              </li>
+            </ul>
+            <div class="important-note"><i class="fas fa-info-circle"></i>
+              <strong>AZ-104 Focus:</strong> Know D/E/F/L/N/H series, B-series burst, and how/why to resize.
+            </div>
+          </div>
+        </div>
+
+        <!-- PILLAR 2: Storage & Encryption -->
+        <div class="card storage-card">
+          <input type="checkbox" id="pillar2-storage-encryption-toggle" class="card-toggle" />
+          <label id="card2" for="pillar2-storage-encryption-toggle" class="card-header storage-header">
+            <h2>
+              <i class="fas fa-hdd"></i>Pillar 2: Storage & Encryption
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-compact-disc"></i>Disks: OS, Data & Temp
+            </h3>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cog"></i>
+                <strong>OS Disk:</strong> One per VM, managed, typical size ~127GB, max 2TB (MBR)/4TB (GPT).
+              </li>
+              <li>
+                <i class="fa-li fas fa-database"></i>
+                <strong>Data Disks:</strong> Add for app/data; up to 32TB per disk; attach/detach, must initialize in-OS.
+              </li>
+              <li>
+                <i class="fa-li fas fa-history"></i>
+                <strong>Temporary Disk:</strong> Ephemeral, SSD on host; use for page/swap/tempdb; <span class="key-point">data lost on deallocate, resize, host fail</span>.
+              </li>
+              <li>
+                <i class="fa-li fas fa-layer-group"></i>
+                <strong>Caching:</strong> OS disk: Read/Write; Data disk: None/ReadOnly/ReadWrite (ReadOnly best for SQL data).
+              </li>
+            </ul>
+            <div class="diagram" style="gap: 8px; flex-wrap: wrap;">
+              <div class="diagram-box"><i class="fas fa-hdd"></i><span>OS Disk</span></div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div class="diagram-box"><i class="fas fa-database"></i><span>Data Disk(s)</span></div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div class="diagram-box"><i class="fas fa-history"></i><span>Temp Disk</span></div>
+            </div>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-tachometer-alt"></i>
+                <strong>Disk Types:</strong>
+                <ul>
+                  <li><i class="fas fa-circle fa-xs fa-li" style="color: #6c757d"></i>Standard HDD: dev/test, backup, high latency.</li>
+                  <li><i class="fas fa-circle fa-xs fa-li" style="color: var(--azure-blue)"></i>Standard SSD: better latency, web/light app.</li>
+                  <li><i class="fas fa-circle fa-xs fa-li" style="color: var(--success-color)"></i>Premium SSD: prod, DB, high IOPS.</li>
+                  <li><i class="fas fa-circle fa-xs fa-li" style="color: var(--warning-color)"></i>Ultra Disk: top-tier, SAP HANA, dynamic perf.</li>
+                </ul>
+              </li>
+            </ul>
+            <div class="important-note"><i class="fas fa-info-circle"></i>
+              <strong>AZ-104 Focus:</strong> Pick right disk type, attach/detach, temp disk use, caching, performance limits.
+            </div>
+            <h3>
+              <i class="fas fa-lock"></i>Azure Disk Encryption (ADE) End-to-End Flow
+            </h3>
+            <div class="diagram ade-flow-diagram" style="flex-direction: column; align-items: stretch; gap: 8px">
+              <div class="diagram-box">
+                <i class="fas fa-server" style="color: var(--vm-color)"></i>
+                <span><strong>1. Create VM</strong><br><span style="font-weight: 400;">(Portal, CLI, or PowerShell)</span></span>
+              </div>
+              <div style="text-align: center"><i class="fas fa-arrow-down diagram-arrow"></i></div>
+              <div class="diagram-box">
+                <i class="fas fa-key" style="color: var(--keyvault-color)"></i>
+                <span><strong>2. Create Key Vault</strong><br><span style="font-weight: 400;">with <code>-EnabledForDiskEncryption</code></span></span>
+              </div>
+              <div style="text-align: center"><i class="fas fa-arrow-down diagram-arrow"></i></div>
+              <div class="diagram-box" style="border-color: var(--encryption-color)">
+                <i class="fab fa-windows" style="color: var(--encryption-color)"></i>
+                <span><strong>3. Enable ADE via PowerShell</strong><br><span style="font-weight: 400;">(<code>Set-AzVmDiskEncryptionExtension</code>)</span></span>
+              </div>
+              <div style="text-align: center"><i class="fas fa-arrow-down diagram-arrow"></i></div>
+              <div class="diagram-box" style="border-color: var(--success-color)">
+                <i class="fas fa-lock" style="color: var(--success-color)"></i>
+                <span><strong>4. Disks are Encrypted</strong></span>
+              </div>
+              <div style="text-align: center"><i class="fas fa-arrow-down diagram-arrow"></i></div>
+              <div class="diagram-box" style="background-color: #e9ecef">
+                <i class="fas fa-file-code" style="color: var(--arm-color)"></i>
+                <span><strong>5. (If needed) Disable/Decrypt via ARM Template</strong><br><span style="font-weight: 400;">(Quickstart/Portal)</span></span>
+              </div>
+              <div style="text-align: center"><i class="fas fa-arrow-down diagram-arrow"></i></div>
+              <div class="diagram-box" style="border-color: var(--warning-color)">
+                <i class="fas fa-unlock" style="color: var(--warning-color)"></i>
+                <span><strong>6. Disks are Decrypted</strong></span>
+              </div>
+            </div>
+            <ol style="font-size: 0.98em; margin-top: 12px; margin-bottom: 12px;">
+              <li>
+                <strong>Create the VM:</strong> Deploy a VM using your preferred method (Portal, CLI, or PowerShell).
+              </li>
+              <li>
+                <strong>Create the Key Vault:</strong> Provision an Azure Key Vault with the <code class="code-term">-EnabledForDiskEncryption</code> property enabled to store encryption keys/secrets.
+              </li>
+              <li>
+                <strong>Enable ADE via PowerShell:</strong> Use <code class="code-term">Set-AzVmDiskEncryptionExtension</code> to configure the VM to use ADE, referencing the Key Vault.
+              </li>
+              <li>
+                <strong>Disks are Encrypted:</strong> The OS and/or data disks are encrypted at rest using BitLocker (Windows) or DM-Crypt (Linux), keys managed in Key Vault.
+              </li>
+              <li>
+                <strong>Disable/Decrypt (if needed) via ARM Template:</strong> Use an ARM template (available in Azure Quickstart Templates) to disable ADE and decrypt disks. This is the recommended method for removing ADE at scale or in a repeatable way.
+              </li>
+              <li>
+                <strong>Manual vs ARM-based Management:</strong> Note that manual (PowerShell/Portal) and ARM template-based encryption settings can override each other. If an ARM template sets encryption state, it will enforce that state on deployment, potentially undoing manual changes.
+              </li>
+            </ol>
+            <div class="important-note" style="border-left-color: var(--encryption-color)">
+              <i class="fas fa-lock"></i>
+              <strong>AZ-104 Focus:</strong> Know the full ADE flow: VM & Key Vault creation, enabling via PowerShell, disk encryption, disabling/decrypting with ARM templates, and the interaction between manual and ARM-based encryption management.
+            </div>
+          </div>
+        </div>
+
+        <!-- PILLAR 3: Operations & Resilience -->
+        <div class="card">
+          <input type="checkbox" id="pillar3-operations-toggle" class="card-toggle" />
+          <label id="card3" for="pillar3-operations-toggle" class="card-header" style="background-color: var(--management-color)">
+            <h2>
+              <i class="fas fa-cogs"></i>Pillar 3: Operations & Resilience
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-tasks"></i>Day-to-Day Management
+            </h3>
+            <ul>
+              <li>
+                <i class="fa-li fab fa-windows"></i>
+                <strong>Windows VMs (RDP):</strong> Use RDP client; open port 3389 in NSG.
+              </li>
+              <li>
+                <i class="fa-li fab fa-linux"></i>
+                <strong>Linux VMs (SSH):</strong> Use SSH client; open port 22 in NSG.
+              </li>
+              <li>
+                <i class="fa-li fas fa-shield-alt"></i>
+                <strong>Azure Bastion:</strong> Secure RDP/SSH via portal, no open public ports.
+              </li>
+              <li>
+                <i class="fa-li fas fa-terminal"></i>
+                <strong>Serial Console:</strong> Troubleshoot boot/network issues.
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-play-circle"></i>
+                <strong>Start/Stop/Deallocate:</strong> Start = compute billed; Stop (Deallocate) = release compute, keep disks (no compute charges).
+              </li>
+              <li>
+                <i class="fa-li fas fa-ban"></i>
+                <strong>Stop (OS):</strong> OS shutdown only, compute still charged.
+              </li>
+              <li>
+                <i class="fa-li fas fa-redo"></i>
+                <strong>Restart:</strong> Reboot VM.
+              </li>
+              <li>
+                <i class="fa-li fas fa-trash-alt"></i>
+                <strong>Delete:</strong> Removes VM, deletes OS disk/NICs by default.
+              </li>
+            </ul>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-expand-arrows-alt"></i>
+                <strong>Resizing:</strong> Change size for perf/cost; may require deallocate if not available on current host.
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>
+                <strong>Check:</strong> Target size must be available in region/zone.
+              </li>
+            </ul>
+            <h3>
+              <i class="fas fa-desktop"></i>Monitoring & Maintenance
+            </h3>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-tachometer-alt"></i>
+                <strong>Metrics:</strong> CPU, Disk, Network (host-level).
+              </li>
+              <li>
+                <i class="fa-li fas fa-file-alt"></i>
+                <strong>Guest Diagnostics:</strong> Use Azure Monitor Agent for in-OS metrics/logs.
+              </li>
+              <li>
+                <i class="fa-li fas fa-binoculars"></i>
+                <strong>Boot Diagnostics:</strong> Screenshot/serial log for boot issues.
+              </li>
+              <li>
+                <i class="fa-li fas fa-bell"></i>
+                <strong>Alerts:</strong> Set up on metrics/logs.
+              </li>
+            </ul>
+            <div class="important-note"><i class="fas fa-info-circle"></i>
+              For details, see <a href="azure_monitor_maintenance_guide.html" target="_blank" style="color: var(--azure-blue-dark); font-weight: bold">Azure Monitor & Maintenance Guide</a>.
+            </div>
+            <h3>
+              <i class="fas fa-shield-alt"></i>Backup & Site Recovery
+            </h3>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-database"></i>
+                <strong>Azure Backup:</strong> Agentless VM backup; supports file, disk, and full VM restore.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sync-alt"></i>
+                <strong>Azure Site Recovery (ASR):</strong> VM replication for DR; failover to another region.
+              </li>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>
+                <strong>AZ-104 Focus:</strong> How to enable/restore backups, basics of ASR for VM DR.
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- PILLAR 4: VMSS & Scaling -->
+        <div class="card">
+          <input type="checkbox" id="pillar4-vmss-scaling-toggle" class="card-toggle" />
+          <label id="card4" for="pillar4-vmss-scaling-toggle" class="card-header availability-header">
+            <h2>
+              <i class="fas fa-layer-group"></i>Pillar 4: VMSS & Scaling
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-cubes"></i>VM Scale Sets (VMSS) & Autoscale
+            </h3>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-layer-group"></i>
+                <strong>VMSS:</strong> Deploy/manage a set of identical VMs; supports autoscale and rolling upgrades.
+              </li>
+              <li>
+                <i class="fa-li fas fa-arrows-alt-h"></i>
+                <strong>Scaling:</strong> Increase/decrease VM instances based on demand.
+              </li>
+              <li>
+                <i class="fa-li fas fa-balance-scale"></i>
+                <strong>Autoscale:</strong> <span class="key-point">Static</span> (manual count) or <span class="key-point">Dynamic</span> (CPU, schedule, etc.).
+              </li>
+              <li>
+                <i class="fa-li fas fa-redo"></i>
+                <strong>Upgrade Policies:</strong> <span class="key-point">Automatic</span> (all at once), <span class="key-point">Manual</span>, <span class="key-point">Rolling</span> (phased, with health checks).
+              </li>
+              <li>
+                <i class="fa-li fas fa-network-wired"></i>
+                <strong>Load Balancer:</strong> Integrate with LB for traffic distribution; health probes control instance pool.
+              </li>
+              <li>
+                <i class="fa-li fas fa-image"></i>
+                <strong>Custom Images & Shared Gallery:</strong> Use custom images for VMSS; distribute via Azure Compute Gallery.
+              </li>
+            </ul>
+            <div class="diagram" style="gap: 8px;">
+              <div class="diagram-box"><i class="fas fa-layer-group"></i><span>VMSS</span></div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div class="diagram-box"><i class="fas fa-network-wired"></i><span>Load Balancer</span></div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div class="diagram-box"><i class="fas fa-heartbeat"></i><span>Health Probe</span></div>
+            </div>
+            <div class="important-note" style="border-left-color: var(--availability-color)">
+              <i class="fas fa-info-circle"></i>
+              <strong>AZ-104 Focus:</strong> VMSS basics, autoscale rules, upgrade modes, load balancer integration, custom images/gallery.
+            </div>
+          </div>
+        </div>
+
+        <!-- PILLAR 5: Automation & IaC -->
+        <div class="card">
+          <input type="checkbox" id="pillar5-automation-iac-toggle" class="card-toggle" />
+          <label id="card5" for="pillar5-automation-iac-toggle" class="card-header" style="background-color: #6a0dad">
+            <h2>
+              <i class="fas fa-robot"></i>Pillar 5: Automation & IaC
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-file-code"></i>Infrastructure as Code (IaC)
+            </h3>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-file-invoice"></i>
+                <strong>ARM Templates:</strong> Declarative JSON, define resources and config; repeatable, consistent deployments.
+              </li>
+              <li>
+                <i class="fa-li fas fa-dna"></i>
+                <strong>Bicep:</strong> Simpler, modular DSL for Azure; transpiles to ARM JSON.
+              </li>
+              <li>
+                <i class="fa-li fas fa-redo"></i>
+                <strong>Idempotency:</strong> Re-running templates produces same state; safe for updates.
+              </li>
+              <li>
+                <i class="fa-li fas fa-rocket"></i>
+                <strong>Deployment:</strong> Use Portal, CLI (<code class="code-term">az deployment group create</code>), or PowerShell.
+              </li>
+              <li>
+                <i class="fa-li fas fa-check"></i>
+                <strong>AZ-104 Focus:</strong> Know basics of ARM/Bicep, idempotency, and deployment options.
+              </li>
+            </ul>
+            <div class="diagram" style="gap: 8px;">
+              <div class="diagram-box"><i class="fas fa-file-code"></i><span>ARM/Bicep Template</span></div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div class="diagram-box"><i class="fas fa-cloud"></i><span>Azure Resource Manager</span></div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div class="diagram-box"><i class="fas fa-server"></i><span>VM/Infra Deployed</span></div>
+            </div>
+            <div class="important-note" style="border-left-color: #6a0dad">
+              <i class="fas fa-robot"></i>
+              <strong>Tip:</strong> Portal/CLI/PowerShell all use ARM APIs behind the scenes. Use IaC for repeatable, auditable deployments.
+            </div>
+          </div>
+        </div>
+      </div>
+        <!-- Card: VM Operating System Images -->
+        <div class="card">
+          <input type="checkbox" id="vm-os-images-toggle" class="card-toggle" />
+          <label
+            id="card6"
+            for="vm-os-images-toggle"
+            class="card-header"
+            style="background-color: #008080"
+          >
+            <!-- Teal color -->
+            <h2>
+              <i class="fas fa-compact-disc"></i>VM Operating System Images
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: #008080">
+              <i class="fas fa-layer-group"></i>OS Images Overview
+            </h3>
+
+            <h4>
+              <i class="fas fa-store" style="color: var(--azure-blue)"></i>1.
+              Azure Marketplace Images
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>Pre-configured Windows/Linux OS images and apps (SQL Server, WordPress, etc.).
+              </li>
+              <li>
+                <i class="fa-li fas fa-users"></i>From Microsoft, open-source communities, third-party vendors.
+              </li>
+              <li>
+                <i class="fa-li fas fa-dollar-sign"></i>May include licensing costs or BYOL/BYOS options.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-tools" style="color: var(--management-color)"></i
+              >2. Custom Images
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-bullseye"></i
+                ><strong>Purpose:</strong> Standardized deployments with pre-installed apps/configs.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sliders-h"></i
+                ><strong>Generalized vs. Specialized:</strong>
+                <ul>
+                  <li>
+                    <i class="fas fa-clone fa-xs fa-li"></i
+                    ><u>Generalized:</u> Sysprep/waagent removes machine-specific info; use as template.
+                  </li>
+                  <li>
+                    <i class="fas fa-copy fa-xs fa-li"></i><u>Specialized:</u> Exact VM snapshot; for backups/migration.
+                  </li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fas fa-plus-circle"></i
+                ><strong>Creation:</strong> From existing VM, Azure Image Builder, or upload VHD.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-images" style="color: var(--availability-color)"></i
+              >3. Azure Compute Gallery
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-share-alt"></i>Manage and share images at scale; versioning and regional replication.
+              </li>
+              <li>
+                <i class="fa-li fas fa-users-cog"></i>Control access via RBAC; share across subscriptions/tenants.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-cogs" style="color: var(--text-dark)"></i>Key Considerations
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-id-card"></i
+                ><strong>Licensing:</strong> Ensure compliance for OS/software.
+              </li>
+              <li>
+                <i class="fa-li fas fa-server"></i
+                ><strong>VM Generation:</strong> Gen1 (BIOS) vs Gen2 (UEFI, Trusted Launch).
+              </li>
+              <li>
+                <i class="fa-li fas fa-sync-alt"></i
+                ><strong>Updates:</strong> Periodically patch custom images.
+              </li>
+            </ul>
+
+            <p>
+              <strong>AZ-104 Focus:</strong> Marketplace vs custom; generalized vs specialized; Compute Gallery benefits; VM Gen1/Gen2.
+            </p>
+          </div>
+        </div>
+
+        <!-- Card: VM Deployment Methods -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="vm-deployment-methods-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card7"
+            for="vm-deployment-methods-toggle"
+            class="card-header"
+            style="background-color: #6a0dad"
+          >
+            <!-- A deep purple color -->
+            <h2><i class="fas fa-rocket"></i>VM Deployment Methods</h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: #6a0dad">
+              <i class="fas fa-tools"></i>VM Deployment Methods
+            </h3>
+
+            <h4>
+              <i class="fas fa-mouse-pointer" style="color: #0078d4"></i>1.
+              Azure Portal
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-desktop"></i>GUI for learning and one-off deployments.
+              </li>
+              <li>
+                <i class="fa-li fas fa-history"></i>Not ideal for automation/scale.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-terminal" style="color: #1e1e1e"></i>2. Azure CLI
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-keyboard"></i>Cross-platform; <code class="code-term">az vm create</code>.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sync-alt"></i>Excellent for scripting/automation.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fab fa-windows" style="color: #0078d4"></i>3. Azure
+              PowerShell
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-code"></i>.NET-based; <code class="code-term">New-AzVm</code> cmdlet.
+              </li>
+              <li>
+                <i class="fa-li fas fa-sync-alt"></i>Preferred by Windows admins; powerful for automation.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-file-invoice" style="color: #f25022"></i>4. ARM
+              Templates
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-dna"></i>Declarative JSON; defines desired state.
+              </li>
+              <li>
+                <i class="fa-li fas fa-check-double"></i>Consistent, repeatable, idempotent deployments.
+              </li>
+              <li>
+                <i class="fa-li fas fa-project-diagram"></i>Foundation for IaC in Azure.
+              </li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-cubes" style="color: #7fba00"></i>5. Other Tools
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-puzzle-piece"></i>Terraform (multi-cloud IaC).
+              </li>
+              <li>
+                <i class="fa-li fas fa-language"></i>Bicep (simpler DSL; transpiles to ARM JSON).
+              </li>
+            </ul>
+
+            <p><strong>AZ-104 Focus:</strong> Portal, CLI, PowerShell for deployment; ARM templates for IaC.</p>
+          </div>
+        </div>
+
+        <!-- Card: VM Networking -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="vm-networking-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card8"
+            for="vm-networking-toggle"
+            class="card-header"
+            style="background-color: var(--network-color)"
+          >
+            <!-- Using your network-color -->
+            <h2>
+              <i class="fas fa-network-wired"></i>VM Networking Essentials
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--network-color)">
+              <i class="fas fa-ethernet"></i>VM Networking Essentials
+            </h3>
+
+            <h4>
+              <i class="fas fa-plug" style="color: var(--azure-blue-dark)"></i
+              >1. Network Interface Cards (NICs)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-info-circle"></i>VM needs ≥1 NIC to connect to VNet/subnet.
+              </li>
+              <li>
+                <i class="fa-li fas fa-star"></i
+                ><strong>Primary NIC:</strong> Cannot delete without deleting VM; has default gateway.
+              </li>
+              <li>
+                <i class="fa-li fas fa-plus-circle"></i
+                ><strong>Secondary NICs:</strong> VM size-dependent; for network appliances, routing, separate management.
+              </li>
+              <li>
+                <i class="fa-li fas fa-link"></i>Can associate with Public/Private IPs and NSGs.
+              </li>
+            </ul>
+
+            <h4>
+              <i
+                class="fas fa-map-marked-alt"
+                style="color: var(--info-color)"
+              ></i
+              >2. IP Addressing
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-lock-open"></i
+                ><strong>Private IP:</strong> From subnet range; <code class="code-term">Dynamic</code> (default) or <code class="code-term">Static</code> (recommended for servers).
+              </li>
+              <li>
+                <i class="fa-li fas fa-globe"></i
+                ><strong>Public IP (PIP):</strong>
+                <ul>
+                  <li>Enables inbound/outbound internet access.</li>
+                  <li><strong>SKUs:</strong> Basic (older) or Standard (zone-redundant, secure by default).</li>
+                  <li><strong>Assignment:</strong> Dynamic (Basic only) or Static (recommended).</li>
+                </ul>
+              </li>
+            </ul>
+
+            <h4>
+              <i
+                class="fas fa-search-location"
+                style="color: var(--success-color)"
+              ></i
+              >3. DNS
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cloud"></i
+                ><strong>Azure-provided DNS:</strong> Default; internal VNet resolution.
+              </li>
+              <li>
+                <i class="fa-li fas fa-cogs"></i
+                ><strong>Custom DNS:</strong> Configure at VNet or NIC level (for AD, on-prem).
+              </li>
+              <li>
+                <i class="fa-li fas fa-signature"></i
+                ><strong>Public DNS Label:</strong> Optional; creates FQDN for Public IP.
+              </li>
+            </ul>
+
+            <h4>
+              <i
+                class="fas fa-shield-alt"
+                style="color: var(--warning-color)"
+              ></i
+              >4. Network Security Groups (NSGs)
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-filter"></i>Filter inbound/outbound traffic; attach to NICs or subnets.
+              </li>
+              <li>
+                <i class="fa-li fas fa-list-ol"></i>Rules have priority (100-4096); lower = higher priority.
+              </li>
+              <li>
+                <i class="fa-li fas fa-check"></i>Default rules: AllowVNetInbound, DenyAllInbound, AllowInternetOutbound.
+              </li>
+            </ul>
+
+            <p><strong>AZ-104 Focus:</strong> NICs, Private/Public IPs, Static vs Dynamic, NSG rules/priority, DNS options.</p>
+          </div>
+        </div>
+
+        <!-- Card: VM Management & Operations -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="vm-management-ops-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card9"
+            for="vm-management-ops-toggle"
+            class="card-header"
+            style="background-color: var(--management-color)"
+          >
+            <!-- Using your management-color -->
+            <h2><i class="fas fa-tasks-alt"></i>VM Management & Operations</h2>
+            <!-- fas fa-tasks-alt is a Font Awesome 6 Pro icon, if not available, fas fa-tasks or fas fa-cogs can be used -->
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--management-color)">
+              <i class="fas fa-digital-tachograph"></i>Day-to-Day VM
+              Administration
+            </h3>
+            <p class="description">
+              Effectively managing your Azure VMs involves various operational
+              tasks, from connecting and controlling state to monitoring and
+              maintenance.
+            </p>
+
+            <h4>
+              <i class="fas fa-plug" style="color: var(--success-color)"></i>1.
+              Connecting to VMs
+            </h4>
+            <ul>
+              <li><i class="fa-li fab fa-windows"></i><strong>Windows VMs (RDP):</strong> Remote Desktop Protocol; requires port 3389 open in NSG.</li>
+              <li><i class="fa-li fab fa-linux"></i><strong>Linux VMs (SSH):</strong> Secure Shell; requires port 22 open in NSG; key-based or password auth.</li>
+              <li><i class="fa-li fas fa-shield-alt"></i><strong>Azure Bastion:</strong> Secure RDP/SSH over SSL via Azure portal; no public exposure of VM ports.</li>
+              <li><i class="fa-li fas fa-terminal"></i><strong>Serial Console:</strong> Text-based console for troubleshooting boot issues or network loss.</li>
+            </ul>
+
+            <h4>
+              <i
+                class="fas fa-power-off"
+                style="color: var(--warning-color)"
+              ></i
+              >2. VM State Control
+            </h4>
+            <ul>
+              <li><i class="fa-li fas fa-play-circle"></i><strong>Start:</strong> Powers on VM; compute charges apply.</li>
+              <li><i class="fa-li fas fa-stop-circle"></i><strong>Stop (Deallocate):</strong> Releases CPU/memory; compute charges stop; storage charges continue.</li>
+              <li><i class="fa-li fas fa-redo"></i><strong>Restart:</strong> Reboots the VM.</li>
+              <li><i class="fa-li fas fa-trash-alt"></i><strong>Delete:</strong> Removes VM; NICs/OS disks often deleted (configurable).</li>
+            </ul>
+
+            <h4>
+              <i
+                class="fas fa-arrows-alt-v"
+                style="color: var(--info-color)"
+              ></i
+              >3. Resizing VMs
+            </h4>
+            <ul>
+              <li><i class="fa-li fas fa-expand-arrows-alt"></i>Change VM size (CPU, RAM, storage, IOPS) to meet performance/cost needs.</li>
+              <li><i class="fa-li fas fa-info-circle"></i>Requires VM restart (or stop/deallocate if new size not on current hardware).</li>
+              <li><i class="fa-li fas fa-check"></i>Ensure target size available in VM's region/Availability Zone.</li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-desktop" style="color: var(--vm-color)"></i>4.
+              Monitoring VMs
+            </h4>
+            <ul>
+              <li><i class="fa-li fas fa-tachometer-alt"></i><strong>Metrics:</strong> Host-level metrics (CPU, Network, Disk) collected by default.</li>
+              <li><i class="fa-li fas fa-file-alt"></i><strong>Guest Diagnostics:</strong> Enable Azure Monitor Agent (AMA) for OS performance counters/event logs.</li>
+              <li><i class="fa-li fas fa-binoculars"></i><strong>Boot Diagnostics:</strong> For boot failure troubleshooting (screenshot, serial log).</li>
+              <li><i class="fa-li fas fa-bell"></i><strong>Alerts:</strong> Configure based on metrics/logs.</li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-wrench" style="color: #6c757d"></i>5. Patching &
+              Updates
+            </h4>
+            <ul>
+              <li><i class="fa-li fas fa-user-shield"></i>You are responsible for patching guest OS and installed software on IaaS VMs.</li>
+              <li><i class="fa-li fas fa-sync-alt"></i><strong>Azure Update Management:</strong> Service in Azure Automation to assess/deploy OS updates for Windows/Linux; requires Automation Account & Log Analytics Workspace.</li>
+            </ul>
+
+            <h4>
+              <i class="fas fa-save" style="color: var(--success-color)"></i>6.
+              Backup & Disaster Recovery
+            </h4>
+            <ul>
+              <li><i class="fa-li fas fa-shield-alt"></i><strong>Azure Backup:</strong> Native VM backup service; uses Recovery Services Vaults; app-consistent snapshots (Windows), file-consistent (Linux); restore entire VM, disks, or files.</li>
+              <li><i class="fa-li fas fa-route"></i><strong>Azure Site Recovery (ASR):</strong> Disaster recovery for VMs to another Azure region or on-prem; replicates VMs and orchestrates failover/failback.</li>
+            </ul>
+
+            <p style="margin-top: 15px"><strong>AZ-104 Focus:</strong> RDP/SSH/Bastion, Stop (Deallocate) vs OS Shutdown, resizing prerequisites, monitoring tools, Update Management, Azure Backup/ASR basics.</p>
+
+          </div>
+        </div>
+
+        <!-- Card: Azure App Service Deep Dive -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="app-service-runtimes-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card11"
+            for="app-service-runtimes-toggle"
+            class="card-header"
+            style="background-color: #0078d4"
+          >
+            <h2>
+              <i class="fas fa-cloud"></i>Azure App Service: Runtimes & Deployment
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: #0078d4">
+              <i class="fas fa-code"></i>App Service Runtimes – OS Constraints
+            </h3>
+            <p class="description">
+              Understanding runtime/OS limitations is critical for AZ-104. Not all runtimes support both Windows and Linux.
+            </p>
+
+            <div class="diagram" style="gap: 10px; flex-direction: column;">
+              <div style="display: flex; gap: 10px; justify-content: center;">
+                <div class="diagram-box" style="background-color: #e0f7fa;">
+                  <i class="fab fa-windows"></i><span><strong>Windows Only</strong></span>
+                  <span style="font-size: 0.85em;">ASP.NET, .NET Framework</span>
+                </div>
+                <div class="diagram-box" style="background-color: #fff3e0;">
+                  <i class="fab fa-linux"></i><span><strong>Linux Only</strong></span>
+                  <span style="font-size: 0.85em;">Ruby, Docker Multi-Container</span>
+                </div>
+              </div>
+              <div class="diagram-box" style="background-color: #e8f5e9;">
+                <i class="fas fa-check-double"></i><span><strong>Both Windows & Linux</strong></span>
+                <span style="font-size: 0.85em;">.NET Core, Node.js, PHP, Python, Java</span>
+              </div>
+            </div>
+
+            <h4><i class="fas fa-docker" style="color: #2496ed"></i>Publish Options: Code vs Docker</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-code"></i><strong>Code:</strong> Upload source/compiled code directly. Azure manages runtime environment.
+                <ul>
+                  <li><span class="key-point">Best for:</span> Native Azure runtimes (.NET, Node, Python, Java, PHP).</li>
+                  <li><span class="key-point">Limitation:</span> Must match App Service Plan OS (Windows/Linux).</li>
+                </ul>
+              </li>
+              <li>
+                <i class="fa-li fab fa-docker"></i><strong>Docker Container:</strong> Package app + dependencies in container image.
+                <ul>
+                  <li><span class="key-point">Best for:</span> Custom runtimes, specific OS dependencies, multi-container apps (Linux only).</li>
+                  <li><span class="key-point">Flexibility:</span> Works on Linux App Service Plans; Windows supports single container only.</li>
+                </ul>
+              </li>
+            </ul>
+
+            <h4><i class="fas fa-layer-group" style="color: var(--vm-color)"></i>Multiple Apps in Same Plan</h4>
+            <ul>
+              <li><i class="fa-li fas fa-share-alt"></i><strong>Shared Resources:</strong> All apps in a plan share CPU, memory, storage of underlying VM(s).</li>
+              <li><i class="fa-li fas fa-exclamation-triangle"></i><strong>OS Lock-in:</strong> All apps must match plan OS (all Windows OR all Linux).</li>
+              <li><i class="fa-li fas fa-dollar-sign"></i><strong>Cost Optimization:</strong> Run multiple apps on one plan to save costs, but monitor resource consumption.</li>
+              <li><i class="fa-li fas fa-tachometer-alt"></i><strong>Performance Impact:</strong> Heavy app can starve others in same plan; consider separate plans for critical workloads.</li>
+            </ul>
+
+            <div class="important-note" style="border-left-color: #0078d4; background-color: #e3f2fd;">
+              <i class="fas fa-lightbulb" style="color: #0078d4"></i>
+              <strong>Exam Scenario:</strong> "Can I run a .NET Framework app and a Python app in the same App Service Plan?"<br>
+              <strong>Answer:</strong> NO – .NET Framework requires Windows; Python can run on Linux. They need separate plans with different OS types.
+            </div>
+
+            <h4><i class="fas fa-question-circle" style="color: var(--warning-color)"></i>Exam-Style Q&A</h4>
+            
+            <div class="important-note" style="background-color: #fff3e0; border-left-color: #ff9800;">
+              <strong>Q1:</strong> You need to deploy a Ruby application to Azure App Service. Which OS should you choose?<br>
+              <strong>A:</strong> <span class="key-point">Linux only</span> – Ruby runtime is not available on Windows App Service.
+            </div>
+
+            <div class="important-note" style="background-color: #e8f5e9; border-left-color: #4caf50;">
+              <strong>Q2:</strong> Your team wants to run 5 Node.js apps in one App Service Plan (Linux). What's the main risk?<br>
+              <strong>A:</strong> <span class="key-point">Resource contention</span> – All apps share plan resources; one resource-heavy app can impact others. Monitor CPU/memory usage.
+            </div>
+
+            <div class="important-note" style="background-color: #f3e5f5; border-left-color: #9c27b0;">
+              <strong>Q3:</strong> When should you choose Docker Container publish over Code publish?<br>
+              <strong>A:</strong> <span class="key-point">Custom runtime needs, specific OS dependencies, or multi-container architecture</span> (Linux only). Also when you need full control over environment.
+            </div>
+
+            <p style="margin-top: 15px"><strong>AZ-104 Focus:</strong> OS constraints for runtimes, Code vs Docker publish methods, multiple apps sharing plan resources, cost/performance trade-offs.</p>
+          </div>
+        </div>
+
+        <!-- Card: Azure Container Instances (ACI) Scaling -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="aci-scaling-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card12"
+            for="aci-scaling-toggle"
+            class="card-header"
+            style="background-color: #00bcd4"
+          >
+            <h2>
+              <i class="fas fa-box"></i>Azure Container Instances: Scaling Behavior
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: #00bcd4">
+              <i class="fas fa-expand-arrows-alt"></i>ACI Scaling Limitation
+            </h3>
+            <p class="description">
+              Unlike VMs or AKS, Azure Container Instances <strong>do NOT support in-place auto-scaling</strong>. This is a critical exam concept.
+            </p>
+
+            <div class="important-note" style="border-left-color: #f44336; background-color: #ffebee;">
+              <i class="fas fa-times-circle" style="color: #f44336"></i>
+              <strong>Key Limitation:</strong> ACI does not have built-in auto-scaling. To "scale" you must <span class="key-point">delete and redeploy</span> the container group with different resource allocations (CPU/memory) or container count.
+            </div>
+
+            <h4><i class="fas fa-redo" style="color: var(--warning-color)"></i>Scaling Process for ACI</h4>
+            <ol style="line-height: 1.8;">
+              <li><i class="fas fa-trash-alt"></i> <strong>Delete</strong> the existing container group (<code>az container delete</code>).</li>
+              <li><i class="fas fa-edit"></i> <strong>Modify</strong> deployment template/command with new resource specs (CPU cores, memory GB, container count).</li>
+              <li><i class="fas fa-rocket"></i> <strong>Redeploy</strong> the container group (<code>az container create</code> with updated parameters).</li>
+            </ol>
+
+            <div class="diagram" style="gap: 8px;">
+              <div class="diagram-box" style="background-color: #ffebee;">
+                <i class="fas fa-box"></i><span>ACI Group (1 core, 1.5GB)</span>
+              </div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div class="diagram-box" style="background-color: #fff3e0;">
+                <i class="fas fa-trash-alt"></i><span>Delete Group</span>
+              </div>
+              <i class="fas fa-arrow-right diagram-arrow"></i>
+              <div class="diagram-box" style="background-color: #e8f5e9;">
+                <i class="fas fa-rocket"></i><span>Redeploy (2 cores, 4GB)</span>
+              </div>
+            </div>
+
+            <h4><i class="fas fa-balance-scale" style="color: #9c27b0"></i>ACI vs AKS Auto-Scaling Comparison</h4>
+            
+            <table style="width: 100%; border-collapse: collapse; margin-top: 10px;">
+              <thead>
+                <tr style="background-color: var(--azure-bg-light);">
+                  <th style="padding: 10px; border: 1px solid var(--border-color); text-align: left;">Feature</th>
+                  <th style="padding: 10px; border: 1px solid var(--border-color); text-align: left;">ACI</th>
+                  <th style="padding: 10px; border: 1px solid var(--border-color); text-align: left;">AKS</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);"><strong>Auto-Scaling</strong></td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);"><i class="fas fa-times" style="color: #f44336"></i> Not supported</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);"><i class="fas fa-check" style="color: #4caf50"></i> HPA (Horizontal Pod Autoscaler)</td>
+                </tr>
+                <tr style="background-color: #fafafa;">
+                  <td style="padding: 8px; border: 1px solid var(--border-color);"><strong>Scaling Method</strong></td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Delete & Redeploy</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">In-place (add/remove pods)</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);"><strong>Downtime</strong></td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);"><i class="fas fa-exclamation-triangle" style="color: #ff9800"></i> Brief interruption</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);"><i class="fas fa-check" style="color: #4caf50"></i> Zero-downtime</td>
+                </tr>
+                <tr style="background-color: #fafafa;">
+                  <td style="padding: 8px; border: 1px solid var(--border-color);"><strong>Best For</strong></td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Simple, short-lived tasks</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Production workloads, microservices</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);"><strong>Complexity</strong></td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Low (serverless)</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">High (orchestration)</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <h4><i class="fas fa-question-circle" style="color: var(--warning-color)"></i>Exam Scenarios</h4>
+
+            <div class="important-note" style="background-color: #e3f2fd; border-left-color: #2196f3;">
+              <strong>Scenario 1:</strong> Your ACI workload needs more CPU during peak hours. What's the scaling approach?<br>
+              <strong>Answer:</strong> <span class="key-point">Delete the container group and redeploy</span> with increased CPU allocation. ACI does not support in-place auto-scaling.
+            </div>
+
+            <div class="important-note" style="background-color: #fff3e0; border-left-color: #ff9800;">
+              <strong>Scenario 2:</strong> You need a container solution with zero-downtime horizontal scaling. Should you use ACI or AKS?<br>
+              <strong>Answer:</strong> <span class="key-point">AKS</span> – It supports Horizontal Pod Autoscaler (HPA) with in-place scaling and no downtime. ACI requires delete/redeploy.
+            </div>
+
+            <div class="important-note" style="background-color: #e8f5e9; border-left-color: #4caf50;">
+              <strong>Mnemonic:</strong> <strong>ACI = "A Container, Immutable"</strong> – Think of ACI as immutable; to change it, you replace it entirely (delete/redeploy).
+            </div>
+
+            <p style="margin-top: 15px"><strong>AZ-104 Focus:</strong> ACI lacks in-place auto-scaling; scaling = delete/redeploy; compare with AKS HPA; understand downtime implications.</p>
+          </div>
+        </div>
+
+        <!-- Card: VM Migration for Encrypted VMs -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="encrypted-vm-migration-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card13"
+            for="encrypted-vm-migration-toggle"
+            class="card-header"
+            style="background-color: #673ab7"
+          >
+            <h2>
+              <i class="fas fa-lock"></i>Encrypted VM Migration: Step-by-Step
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: #673ab7">
+              <i class="fas fa-shield-alt"></i>Migrating VMs with Azure Disk Encryption (ADE)
+            </h3>
+            <p class="description">
+              Migrating encrypted VMs requires a specific sequence to avoid data loss and ensure encryption integrity. This is a high-value AZ-104 exam topic.
+            </p>
+
+            <div class="important-note" style="border-left-color: #673ab7; background-color: #f3e5f5;">
+              <i class="fas fa-key" style="color: #673ab7"></i>
+              <strong>Critical:</strong> Encrypted VMs (using Azure Disk Encryption) cannot be directly moved between resource groups or subscriptions. You must follow the <span class="key-point">D-G-W-C sequence</span>.
+            </div>
+
+            <h4><i class="fas fa-list-ol" style="color: var(--info-color)"></i>Full Migration Sequence: D-G-W-C</h4>
+            
+            <div class="diagram" style="flex-direction: column; gap: 10px;">
+              <div class="diagram-box" style="background-color: #ffebee;">
+                <i class="fas fa-stop-circle"></i><span><strong>D</strong>eallocate</span>
+                <span style="font-size: 0.85em;">Stop VM, release compute resources</span>
+              </div>
+              <i class="fas fa-arrow-down diagram-arrow"></i>
+              <div class="diagram-box" style="background-color: #fff3e0;">
+                <i class="fas fa-folder-plus"></i><span>Create Target Resource <strong>G</strong>roup</span>
+                <span style="font-size: 0.85em;">Prepare destination RG</span>
+              </div>
+              <i class="fas fa-arrow-down diagram-arrow"></i>
+              <div class="diagram-box" style="background-color: #e3f2fd;">
+                <i class="fas fa-clock"></i><span><strong>W</strong>ait for Deletion Completion</span>
+                <span style="font-size: 0.85em;"><code>az vm wait --deleted</code></span>
+              </div>
+              <i class="fas fa-arrow-down diagram-arrow"></i>
+              <div class="diagram-box" style="background-color: #e8f5e9;">
+                <i class="fas fa-redo"></i><span>Re<strong>C</strong>reate VM</span>
+                <span style="font-size: 0.85em;">Attach encrypted disks to new VM</span>
+              </div>
+            </div>
+
+            <h4><i class="fas fa-terminal" style="color: var(--code-bg)"></i>Step-by-Step CLI Commands</h4>
+
+            <div style="background-color: #2d2d2d; color: #f8f8f2; padding: 15px; border-radius: 5px; font-family: 'Courier New', monospace; font-size: 0.9em; margin: 10px 0;">
+              <div style="color: #6c757d;"># Step 1: Deallocate the encrypted VM</div>
+              <div style="color: #a6e22e;">az vm deallocate \</div>
+              <div style="padding-left: 20px;">--resource-group <span style="color: #e6db74;">SourceRG</span> \</div>
+              <div style="padding-left: 20px;">--name <span style="color: #e6db74;">EncryptedVM</span></div>
+              <br>
+              <div style="color: #6c757d;"># Step 2: Create target resource group</div>
+              <div style="color: #a6e22e;">az group create \</div>
+              <div style="padding-left: 20px;">--name <span style="color: #e6db74;">TargetRG</span> \</div>
+              <div style="padding-left: 20px;">--location <span style="color: #e6db74;">eastus</span></div>
+              <br>
+              <div style="color: #6c757d;"># Step 3: Wait for VM deletion to complete (critical!)</div>
+              <div style="color: #a6e22e;">az vm wait \</div>
+              <div style="padding-left: 20px;">--resource-group <span style="color: #e6db74;">SourceRG</span> \</div>
+              <div style="padding-left: 20px;">--name <span style="color: #e6db74;">EncryptedVM</span> \</div>
+              <div style="padding-left: 20px;">--deleted</div>
+              <br>
+              <div style="color: #6c757d;"># Step 4: Recreate VM with encrypted disk in target RG</div>
+              <div style="color: #a6e22e;">az vm create \</div>
+              <div style="padding-left: 20px;">--resource-group <span style="color: #e6db74;">TargetRG</span> \</div>
+              <div style="padding-left: 20px;">--name <span style="color: #e6db74;">EncryptedVM</span> \</div>
+              <div style="padding-left: 20px;">--attach-os-disk <span style="color: #e6db74;">EncryptedOSDisk</span> \</div>
+              <div style="padding-left: 20px;">--os-type <span style="color: #e6db74;">Linux</span></div>
+            </div>
+
+            <h4><i class="fas fa-exclamation-triangle" style="color: #f44336"></i>Common Pitfalls</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-times-circle" style="color: #f44336"></i>
+                <strong>Skipping <code>az vm wait --deleted</code>:</strong> Can cause "resource still in use" errors during recreation. Always wait!
+              </li>
+              <li>
+                <i class="fa-li fas fa-times-circle" style="color: #f44336"></i>
+                <strong>Attempting direct move:</strong> Azure Portal "Move" button will <span class="key-point">fail for encrypted VMs</span>. Use D-G-W-C sequence.
+              </li>
+              <li>
+                <i class="fa-li fas fa-times-circle" style="color: #f44336"></i>
+                <strong>Not deallocating first:</strong> Trying to delete running VM causes errors. Always deallocate before deletion.
+              </li>
+              <li>
+                <i class="fa-li fas fa-times-circle" style="color: #f44336"></i>
+                <strong>Forgetting Key Vault permissions:</strong> Target RG must have access to the Key Vault containing encryption keys.
+              </li>
+            </ul>
+
+            <h4><i class="fas fa-brain" style="color: #ff9800"></i>Mnemonic: D-G-W-C</h4>
+            <div class="important-note" style="background-color: #fff3e0; border-left-color: #ff9800;">
+              <i class="fas fa-graduation-cap" style="color: #ff9800"></i>
+              <strong>"Don't Go Without Coffee"</strong><br>
+              <ul style="margin-top: 5px; margin-bottom: 0;">
+                <li><strong>D</strong>on't → <strong>D</strong>eallocate</li>
+                <li><strong>G</strong>o → Create Resource <strong>G</strong>roup</li>
+                <li><strong>W</strong>ithout → <strong>W</strong>ait for deletion</li>
+                <li><strong>C</strong>offee → Re<strong>C</strong>reate VM</li>
+              </ul>
+            </div>
+
+            <h4><i class="fas fa-dumbbell" style="color: #4caf50"></i>Scenario Drills</h4>
+
+            <div class="important-note" style="background-color: #e8f5e9; border-left-color: #4caf50;">
+              <strong>Drill 1:</strong> You try to move an encrypted VM using Azure Portal "Move" feature. What happens?<br>
+              <strong>Answer:</strong> <span class="key-point">Operation fails</span>. Encrypted VMs require manual D-G-W-C sequence; Portal move is unsupported.
+            </div>
+
+            <div class="important-note" style="background-color: #e3f2fd; border-left-color: #2196f3;">
+              <strong>Drill 2:</strong> After deallocating and deleting the VM, you immediately run <code>az vm create</code>. It fails with "resource in use". What did you forget?<br>
+              <strong>Answer:</strong> <span class="key-point"><code>az vm wait --deleted</code></span>. You must wait for Azure to complete the deletion process before recreating.
+            </div>
+
+            <div class="important-note" style="background-color: #f3e5f5; border-left-color: #9c27b0;">
+              <strong>Drill 3:</strong> Put these steps in the correct order for encrypted VM migration:<br>
+              A) Create target RG<br>
+              B) Wait for deletion<br>
+              C) Deallocate VM<br>
+              D) Recreate VM<br>
+              <strong>Answer:</strong> <span class="key-point">C → A → B → D</span> (D-G-W-C mnemonic!)
+            </div>
+
+            <div class="important-note" style="background-color: #ffebee; border-left-color: #f44336;">
+              <strong>Drill 4:</strong> After migration, the new VM fails to start with "encryption key not found". What's wrong?<br>
+              <strong>Answer:</strong> <span class="key-point">Target RG lacks Key Vault access</span>. Grant the target RG's managed identity permissions to the Key Vault containing ADE keys.
+            </div>
+
+            <h4><i class="fas fa-clipboard-check" style="color: var(--success-color)"></i>Pre-Migration Checklist</h4>
+            <ul style="list-style-type: none; padding-left: 0;">
+              <li><i class="fas fa-square" style="color: #9e9e9e; margin-right: 8px;"></i> VM is deallocated (not running)</li>
+              <li><i class="fas fa-square" style="color: #9e9e9e; margin-right: 8px;"></i> Target resource group created</li>
+              <li><i class="fas fa-square" style="color: #9e9e9e; margin-right: 8px;"></i> Key Vault access configured for target RG</li>
+              <li><i class="fas fa-square" style="color: #9e9e9e; margin-right: 8px;"></i> Encrypted disk IDs documented</li>
+              <li><i class="fas fa-square" style="color: #9e9e9e; margin-right: 8px;"></i> Backup completed (safety net)</li>
+            </ul>
+
+            <p style="margin-top: 15px"><strong>AZ-104 Focus:</strong> D-G-W-C sequence (Deallocate-Group-Wait-Create); <code>az vm wait --deleted</code> is mandatory; Portal move fails for encrypted VMs; Key Vault permissions required.</p>
+          </div>
+        </div>
+
+        <!-- Card: AZ-104 Compute Deep Dive - Key Takeaways (FINAL) -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="compute-key-takeaways-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card10"
+            for="compute-key-takeaways-toggle"
+            class="card-header"
+            style="background-color: var(--azure-blue-dark)"
+          >
+            <h2>
+              <i class="fas fa-graduation-cap"></i>AZ-104 Compute: Key Takeaways
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3 style="color: var(--azure-blue-dark)">
+              <i class="fas fa-check-double"></i>Essential Compute Concepts for AZ-104 Exam
+            </h3>
+            <p class="description">
+              Comprehensive summary covering VMs, App Service, and Container Instances—critical for your AZ-104 preparation:
+            </p>
+
+            <h4 style="color: var(--vm-color); margin-top: 15px;"><i class="fas fa-server"></i> Azure Virtual Machines</h4>
+            <ul>
+              <li><i class="fa-li fas fa-cloud"></i><strong>IaaS Foundation:</strong> VMs are Infrastructure as a Service; you control and manage the OS.</li>
+              <li><i class="fa-li fas fa-map-signs"></i><strong>Planning:</strong> Choose Regions and VM Sizes/Series (General Purpose, Compute, Memory Optimized) based on workload; use B-series (burstable) for variable workloads.</li>
+              <li><i class="fa-li fas fa-shield-alt"></i><strong>Availability:</strong> Availability Sets (protects against hardware failure in DC) vs. Availability Zones (protects against DC failure). Single VM SLA requires Premium SSD/Ultra Disk.</li>
+              <li><i class="fa-li fas fa-hdd"></i><strong>VM Storage:</strong> OS/Data Disks, non-persistent Temp Disk; Managed Disk types (Std HDD/SSD, Premium SSD, Ultra); Host Caching (ReadOnly, ReadWrite, None); ADE concepts.</li>
+              <li><i class="fa-li fas fa-compact-disc"></i><strong>OS Images:</strong> Marketplace vs. Custom Images (generalized); Azure Compute Gallery for image management.</li>
+              <li><i class="fa-li fas fa-rocket"></i><strong>Deployment Methods:</strong> Portal, Azure CLI, PowerShell; ARM Templates for IaC.</li>
+              <li><i class="fa-li fas fa-network-wired"></i><strong>VM Networking:</strong> NICs, Private/Public IPs (static/dynamic), DNS labels, Azure-provided vs. Custom DNS, NSG traffic filtering.</li>
+              <li><i class="fa-li fas fa-tasks-alt"></i><strong>Management & Operations:</strong> RDP/SSH/Azure Bastion; VM states (Start, Stop (Deallocate), Restart); resizing; monitoring, Update Management, Azure Backup.</li>
+              <li><i class="fa-li fas fa-layer-group"></i><strong>VM Scale Sets (VMSS):</strong> Auto-scaling and managing groups of VMs.</li>
+            </ul>
+
+            <div class="important-note" style="border-left-color: #f44336; background-color: #ffebee; margin-top: 15px;">
+              <i class="fas fa-exclamation-triangle" style="color: #f44336"></i>
+              <strong>⚠️ WEAK AREA - Priority Focus:</strong> The following three topics are common exam pitfalls. Master these!
+            </div>
+
+            <h4 style="color: #0078d4; margin-top: 15px;"><i class="fas fa-cloud"></i> Azure App Service Runtimes (WEAK AREA)</h4>
+            <ul style="background-color: #fff3e0; padding: 15px; border-left: 4px solid #ff9800; margin-bottom: 10px;">
+              <li><i class="fa-li fas fa-exclamation-circle"></i><strong>OS Constraints:</strong> .NET Framework = Windows only; Ruby/Docker multi-container = Linux only; .NET Core/Node/Python/Java/PHP = both.</li>
+              <li><i class="fa-li fas fa-code"></i><strong>Code vs Docker:</strong> Code publish for native runtimes (simpler); Docker for custom runtimes/dependencies (more flexible, Linux multi-container only).</li>
+              <li><i class="fa-li fas fa-share-alt"></i><strong>Multiple Apps in One Plan:</strong> All apps share CPU/memory; must match plan OS (all Windows OR all Linux); monitor resource contention.</li>
+              <li><i class="fa-li fas fa-lightbulb"></i><strong>Exam Trap:</strong> You CANNOT run .NET Framework (Windows) and Ruby (Linux) in the same App Service Plan—they require different OS types.</li>
+            </ul>
+
+            <h4 style="color: #00bcd4; margin-top: 15px;"><i class="fas fa-box"></i> Azure Container Instances Scaling (WEAK AREA)</h4>
+            <ul style="background-color: #fff3e0; padding: 15px; border-left: 4px solid #ff9800; margin-bottom: 10px;">
+              <li><i class="fa-li fas fa-times-circle"></i><strong>NO In-Place Auto-Scaling:</strong> ACI does not support HPA or dynamic scaling. This is a critical exam concept.</li>
+              <li><i class="fa-li fas fa-redo"></i><strong>Scaling Process:</strong> Delete container group → Modify resource specs → Redeploy with new CPU/memory.</li>
+              <li><i class="fa-li fas fa-balance-scale"></i><strong>ACI vs AKS:</strong> ACI = delete/redeploy (brief downtime); AKS = in-place HPA (zero downtime). Choose AKS for production auto-scaling needs.</li>
+              <li><i class="fa-li fas fa-brain"></i><strong>Mnemonic:</strong> "ACI = A Container, Immutable" — to change it, replace it entirely.</li>
+            </ul>
+
+            <h4 style="color: #673ab7; margin-top: 15px;"><i class="fas fa-lock"></i> Encrypted VM Migration (WEAK AREA)</h4>
+            <ul style="background-color: #fff3e0; padding: 15px; border-left: 4px solid #ff9800; margin-bottom: 10px;">
+              <li><i class="fa-li fas fa-shield-alt"></i><strong>D-G-W-C Sequence:</strong> Deallocate → Create Resource Group → Wait for deletion (<code>az vm wait --deleted</code>) → Recreate VM.</li>
+              <li><i class="fa-li fas fa-times-circle"></i><strong>Portal Move Fails:</strong> Azure Portal "Move" button does NOT work for encrypted VMs; must use CLI/PowerShell with D-G-W-C.</li>
+              <li><i class="fa-li fas fa-clock"></i><strong>Critical Step:</strong> <code>az vm wait --deleted</code> is MANDATORY. Skipping this causes "resource still in use" errors.</li>
+              <li><i class="fa-li fas fa-key"></i><strong>Key Vault Access:</strong> Target resource group needs permissions to Key Vault containing ADE encryption keys.</li>
+              <li><i class="fa-li fas fa-brain"></i><strong>Mnemonic:</strong> "Don't Go Without Coffee" = D-G-W-C (Deallocate-Group-Wait-Create).</li>
+            </ul>
+
+            <p
+              class="important-note"
+              style="
+                border-left-color: var(--azure-blue-dark);
+                background-color: #e0eaf3;
+                margin-top: 20px;
+              "
+            >
+              <i
+                class="fas fa-lightbulb"
+                style="color: var(--azure-blue-dark)"
+              ></i>
+              <strong>Best Practice:</strong> For VMs, choose appropriate size, availability option, and storage type for workload balance (performance, cost, resilience). For App Service, understand OS/runtime constraints before deployment. For containers, use ACI for simple tasks, AKS for production workloads needing auto-scaling. Always follow D-G-W-C for encrypted VM migrations. Leverage automation (CLI, PowerShell, ARM Templates) and prioritize security (NSGs, Bastion, ADE, patching).
+            </p>
+
+            <div class="important-note" style="border-left-color: #4caf50; background-color: #e8f5e9; margin-top: 15px;">
+              <i class="fas fa-check-circle" style="color: #4caf50"></i>
+              <strong>Exam Strategy:</strong> The three highlighted weak areas (App Service runtimes, ACI scaling, encrypted VM migration) appear frequently in scenario-based questions. Review the mnemonics, practice the CLI commands, and understand the "why" behind each limitation.
+            </div>
+
+          </div>
+        </div>
+
+      </div>
+      <!-- End card-container -->
+    </div>
+    <!-- End main-container -->
+
+    <script>
+      document.querySelectorAll(".card-toggle").forEach((checkbox) => {
+        checkbox.addEventListener("change", (e) => {
+          if (checkbox.checked) {
+            const card = checkbox.closest('.card');
+            if (card) {
+              card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+          }
+        });
+      });
+
+      // Handle quick jump links
+      document.addEventListener('DOMContentLoaded', function() {
+        // Check hash on page load
+        if (window.location.hash) {
+          const targetId = window.location.hash.substring(1);
+          const checkbox = document.getElementById(targetId);
+          if (checkbox && checkbox.classList.contains('card-toggle')) {
+            checkbox.checked = true;
+            setTimeout(() => {
+              const card = checkbox.closest('.card');
+              if (card) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }
+            }, 100);
+          }
+        }
+
+        // Handle quick jump link clicks
+        document.querySelectorAll('.quick-jump-container a, a.quick-link').forEach(link => {
+          link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const checkbox = document.getElementById(targetId);
+            if (checkbox && checkbox.classList.contains('card-toggle')) {
+              // Open the card
+              checkbox.checked = true;
+              
+              // Scroll to the card after a short delay to allow CSS transition
+              setTimeout(() => {
+                const card = checkbox.closest('.card');
+                if (card) {
+                  card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }, 100);
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

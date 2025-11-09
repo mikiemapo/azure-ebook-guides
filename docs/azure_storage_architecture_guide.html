@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Azure Storage Options & Architecture Guide (AZ-104)</title>
+    <!-- Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        :root {
+            --azure-blue: #0078d4;
+            --azure-blue-dark: #005a9e;
+            --azure-bg-light: #f0f4f8;
+            --text-dark: #323130;
+            --text-light: #ffffff;
+            --border-color: #d1d1d1;
+            --card-bg: #ffffff;
+            --diagram-bg: #f8f9fa;
+            --code-bg: #f3f2f1;
+            --code-border: #e0e0e0;
+            --success-color: #107c10;
+            --warning-color: #d83b01;
+            --info-color: #005a9e;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            /* Feature Colors */
+            --storage-color: var(--azure-blue);
+            --blob-color: var(--info-color);
+            --files-color: var(--success-color);
+            --disk-color: #605e5c; /* Grey */
+            --datalake-color: #0078d4; /* Lighter Blue */
+            --netapp-color: #6f42c1; /* Purple */
+            --container-color: #326ce5; /* K8s Blue */
+            --redundancy-color: #ffb900; /* Gold */
+            --security-color: #a4262c; /* Dark Red */
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--azure-bg-light); margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+            color: var(--text-dark); line-height: 1.6;
+        }
+
+        .main-container { width: 100%; max-width: 1100px; } /* Wider container */
+
+        h1 {
+            color: var(--azure-blue-dark); margin-bottom: 15px; text-align: center;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        h1 .fa-database { font-size: 1.1em; color: var(--storage-color); }
+
+        .instructions {
+            background-color: var(--card-bg); padding: 12px 18px; border-radius: 6px;
+            margin-bottom: 25px; text-align: center; font-size: 0.95em;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .instructions strong { color: var(--storage-color); }
+
+        /* --- Mind Map Diagram --- */
+        .mindmap-container {
+            background-color: var(--card-bg); border-radius: 8px; padding: 25px;
+            margin: 0 auto 30px auto; width: 100%; max-width: 800px; /* Wider */
+            box-shadow: 0 2px 8px var(--shadow-color); border: 1px solid var(--border-color);
+            position: relative; min-height: 320px;
+            display: flex; justify-content: center; align-items: center;
+        }
+        .mindmap-center {
+            background-color: var(--storage-color); color: var(--text-light); padding: 15px;
+            border-radius: 8px; text-align: center; font-weight: 600; font-size: 1.1em;
+            width: 180px; height: auto; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; box-shadow: 0 0 15px rgba(0, 120, 212, 0.5);
+            z-index: 10;
+        }
+        .mindmap-center i { font-size: 1.6em; margin-bottom: 8px; }
+
+        .mindmap-branch {
+            position: absolute; background-color: var(--diagram-bg); padding: 8px 12px;
+            border-radius: 6px; font-size: 0.8em; text-align: center; /* Smaller font */
+            border: 1px solid var(--border-color); box-shadow: 0 1px 3px var(--shadow-color);
+            display: flex; align-items: center; gap: 5px; min-width: 100px;
+            z-index: 5;
+        }
+        .mindmap-branch i { font-size: 0.9em; }
+        .mindmap-branch.core i { color: var(--azure-blue-dark); }
+        .mindmap-branch.blob i { color: var(--blob-color); }
+        .mindmap-branch.files i { color: var(--files-color); }
+        .mindmap-branch.disk i { color: var(--disk-color); }
+        .mindmap-branch.datalake i { color: var(--datalake-color); }
+        .mindmap-branch.features i { color: var(--success-color); }
+        .mindmap-branch.redundancy i { color: var(--redundancy-color); }
+        .mindmap-branch.security i { color: var(--security-color); }
+
+        /* Positioning */
+        .branch-core { top: 10px; left: 50%; transform: translateX(-50%); }
+        .branch-blob { top: 15px; left: calc(50% - 160px); }
+        .branch-files { top: 65px; left: calc(50% - 180px); }
+        .branch-disk { top: 115px; left: calc(50% - 160px); }
+        .branch-datalake { top: 165px; left: calc(50% - 180px); }
+
+        .branch-features { top: 50%; right: 10px; transform: translateY(-50%); }
+        .branch-redundancy { top: calc(50% - 45px); right: -90px; transform: rotate(25deg);}
+        .branch-security { top: calc(50% + 25px); right: -80px; transform: rotate(-25deg);}
+
+        .branch-specialized { bottom: 10px; left: 50%; transform: translateX(-50%); } /* Title */
+
+        /* --- Card Section --- */
+        .card-container { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; }
+        @media (min-width: 768px) { .card-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (min-width: 1100px) {
+             .card-container { grid-template-columns: repeat(3, 1fr); }
+             .card.core-services-card { grid-column: span 3; order: -1; } /* Make core services card full width and first */
+             .card.selection-card { grid-column: span 3; order: 1;} /* Make selection wider */
+             .card.security-card { grid-column: span 2; } /* Make security wider */
+        }
+
+        /* General Card Styles */
+        .card {
+            background-color: var(--card-bg); border-radius: 6px; box-shadow: 0 2px 5px var(--shadow-color);
+            overflow: hidden; border: 1px solid var(--border-color); transition: box-shadow 0.3s ease;
+            display: flex; flex-direction: column;
+        }
+        .card:hover { box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); }
+        .card-toggle { display: none; }
+        .card-header {
+            display: flex; justify-content: space-between; align-items: center; padding: 12px 18px;
+            background-color: var(--storage-color); color: var(--text-light); cursor: pointer; /* Storage Header */
+            transition: background-color 0.2s ease; border-bottom: 1px solid var(--azure-blue-dark);
+        }
+        .card-header:hover { background-color: var(--azure-blue-dark); }
+        .card-header h2 { margin: 0; font-size: 1.2em; font-weight: 600; display: flex; align-items: center; gap: 8px;}
+        .card-header h2 i { font-size: 0.9em; opacity: 0.8;}
+        .card-header .toggle-icon { font-size: 1.1em; transition: transform 0.3s ease; }
+        .card-content {
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px;
+            transition: max-height 0.4s ease-out, opacity 0.3s ease-in, padding 0.4s ease-out, border-top 0.4s ease-out;
+            background-color: var(--card-bg); border-top: 0px solid var(--border-color); flex-grow: 1;
+        }
+        .card-toggle:checked + .card-header { border-bottom-color: transparent; }
+        .card-toggle:checked + .card-header .toggle-icon { transform: rotate(180deg); }
+        .card-toggle:checked ~ .card-content {
+            max-height: 2500px; opacity: 1; padding: 15px 18px;
+            border-top: 1px solid var(--border-color); overflow-y: auto;
+        }
+
+        /* --- Content Styling --- */
+        .card-content h3 {
+             color: var(--azure-blue-dark); margin-top: 0; margin-bottom: 12px; font-size: 1.1em;
+             font-weight: 600; border-bottom: 1px solid #eee; padding-bottom: 8px;
+             display: flex; align-items: center; gap: 8px;
+         }
+         .card-content h3 i { color: var(--storage-color); font-size: 0.9em;}
+         .card-content p { font-size: 0.95em; margin-bottom: 12px; }
+         .card-content ul { font-size: 0.95em; padding-left: 0; margin-top: 5px; margin-bottom: 15px; list-style: none; }
+         .card-content li { margin-bottom: 8px; position: relative; padding-left: 25px; }
+         .card-content li i.fa-li {
+              position: absolute; left: 0; top: 3px; width: 20px; text-align: center;
+              color: var(--storage-color); font-size: 0.9em;
+          }
+        /* Custom list icons */
+        .card-content li i.fa-cloud { color: var(--storage-color); }
+        .card-content li i.fa-cubes { color: var(--blob-color); } /* Blob */
+        .card-content li i.fa-folder-open { color: var(--files-color); } /* Files */
+        .card-content li i.fa-hdd { color: var(--disk-color); } /* Disk */
+        .card-content li i.fa-water { color: var(--datalake-color); } /* Data Lake */
+        .card-content li i.fa-file-invoice { color: var(--netapp-color); } /* NetApp */
+        .card-content li i.fa-box-open { color: var(--container-color); } /* Container */
+        .card-content li i.fa-tachometer-alt { color: #605e5c; } /* Performance */
+        .card-content li i.fa-dollar-sign { color: var(--success-color); }
+        .card-content li i.fa-sync-alt { color: var(--redundancy-color); }
+        .card-content li i.fa-shield-alt { color: var(--security-color); }
+        .card-content li i.fa-lock { color: var(--security-color); }
+        .card-content li i.fa-user-shield { color: var(--rbac-color); }
+        .card-content li i.fa-network-wired { color: var(--info-color); }
+        .card-content li i.fa-balance-scale { color: var(--governance-color); }
+        .card-content li i.fa-info-circle { color: var(--info-color); }
+
+
+        /* --- Diagram Styles --- */
+        .diagram {
+            border: 1px dashed var(--border-color); padding: 15px; margin-top: 15px; margin-bottom: 15px;
+            border-radius: 4px; background-color: var(--diagram-bg); display: flex;
+            align-items: center; justify-content: center; gap: 15px; flex-wrap: wrap;
+        }
+        .diagram-vertical { flex-direction: column; align-items: stretch; gap: 10px;}
+        .diagram-box {
+            background-color: #fff; padding: 10px 15px; border-radius: 4px; text-align: center;
+            border: 1px solid var(--border-color); box-shadow: 0 1px 2px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center; gap: 5px;
+            min-width: 110px; /* Slightly wider */
+        }
+        .diagram-box i { font-size: 1.5em; color: var(--azure-blue); }
+        .diagram-box span { font-size: 0.85em; font-weight: 600; color: var(--text-dark); }
+        .diagram-arrow { font-size: 1.8em; color: #a19f9d; }
+        .diagram-arrow-down { transform: rotate(90deg); margin: 5px 0; }
+        .diagram-label { font-size: 0.8em; color: #605e5c; font-style: italic; margin-top: -10px; margin-bottom: 10px;}
+
+        /* Specific Diagram Styles */
+        .storage-types-diagram i.fa-cubes { color: var(--blob-color); }
+        .storage-types-diagram i.fa-folder-open { color: var(--files-color); }
+        .storage-types-diagram i.fa-hdd { color: var(--disk-color); }
+        .storage-types-diagram i.fa-water { color: var(--datalake-color); }
+
+        .redundancy-diagram { align-items: flex-start; justify-content: space-around; }
+        .redundancy-group { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+        .redundancy-group span { font-weight: bold; font-size: 0.9em; }
+        .redundancy-group .dc-icon { display: flex; gap: 3px; }
+        .redundancy-group .dc-icon i { font-size: 1.2em; color: #605e5c; }
+        .redundancy-group .zone-border { border: 1px dotted #aaa; padding: 5px; margin-top: 3px; border-radius: 3px; }
+        .redundancy-group .region-border { border: 1px solid #888; padding: 8px; margin-top: 5px; border-radius: 4px; }
+        .redundancy-group .region-arrow { margin: 5px 0; font-size: 1.5em; }
+
+        .security-diagram i.fa-lock { color: var(--security-color); }
+        .security-diagram i.fa-key { color: #f7b20c; }
+        .security-diagram i.fa-user-shield { color: var(--rbac-color); }
+        .security-diagram i.fa-network-wired { color: var(--info-color); }
+
+
+        /* --- Code formatting --- */
+        code, .code-term {
+            font-family: "Consolas", "Courier New", monospace; background-color: var(--code-bg);
+            padding: 0.1em 0.4em; border-radius: 3px; font-size: 0.9em;
+            border: 1px solid var(--code-border); color: var(--info-color);
+        }
+        .code-term { font-weight: bold; }
+
+        /* Helper classes */
+        .key-point { font-weight: 600; color: var(--storage-color); }
+        .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
+        .warning-text { color: var(--warning-color); font-weight: 600; }
+        .important-note { background-color: #e6f2ff; border-left: 4px solid var(--storage-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
+        .important-note i { color: var(--storage-color); margin-right: 8px; }
+
+    </style>
+</head>
+<body>
+
+<div class="main-container">
+
+    <h1><i class="fas fa-database"></i>Azure Storage Options & Architecture Guide</h1>
+
+    <!-- Mind Map -->
+    <div class="mindmap-container">
+         <div class="mindmap-center"><i class="fas fa-cloud"></i>Azure Storage Platform</div>
+
+         <div class="mindmap-branch branch-core core"><i class="fas fa-star"></i>Core Services</div>
+         <div class="mindmap-branch branch-blob blob"><i class="fas fa-cubes"></i>Blob</div>
+         <div class="mindmap-branch branch-files files"><i class="fas fa-folder-open"></i>Files</div>
+         <div class="mindmap-branch branch-disk disk"><i class="fas fa-hdd"></i>Disk</div>
+         <div class="mindmap-branch branch-datalake datalake"><i class="fas fa-water"></i>Data Lake</div>
+
+         <div class="mindmap-branch branch-features features"><i class="fas fa-cogs"></i>Key Features</div>
+         <div class="mindmap-branch branch-redundancy redundancy"><i class="fas fa-sync-alt"></i>Redundancy</div>
+         <div class="mindmap-branch branch-security security"><i class="fas fa-shield-alt"></i>Security</div>
+
+         <div class="mindmap-branch branch-specialized"><i class="fas fa-puzzle-piece"></i>Specialized</div>
+    </div>
+
+    <p class="instructions">Explore Azure's diverse storage services, their features, and how to choose the right one. <strong>Click/Tap</strong> headers.</p>
+
+    <div class="card-container">
+
+        <!-- Core Services Overview -->
+        <div class="card core-services-card">
+            <input type="checkbox" id="coreservices-toggle" class="card-toggle" checked> <!-- Start expanded -->
+            <label for="coreservices-toggle" class="card-header">
+                <h2><i class="fas fa-star"></i>Core Azure Storage Services</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-concierge-bell"></i>Primary Storage Solutions</h3>
+                <p class="description">Azure's foundational storage offerings for different data types and access patterns.</p>
+                 <div class="diagram storage-types-diagram">
+                     <div class="diagram-box"> <i class="fas fa-cubes"></i><span>Blob Storage</span><span>(Object)</span></div>
+                     <div class="diagram-box"> <i class="fas fa-folder-open"></i><span>Azure Files</span><span>(File Share)</span></div>
+                     <div class="diagram-box"> <i class="fas fa-hdd"></i><span>Azure Disk</span><span>(Block for VMs)</span></div>
+                     <div class="diagram-box"> <i class="fas fa-water"></i><span>Data Lake Gen2</span><span>(Analytics)</span></div>
+                 </div>
+                 <ul>
+                    <li><i class="fas fa-cubes fa-li" style="color:var(--blob-color)"></i><strong>Blob Storage:</strong> <span class="key-point">Object storage</span> for massive amounts of unstructured data (images, videos, logs, backups, docs). Highly scalable.</li>
+                    <li><i class="fas fa-folder-open fa-li" style="color:var(--files-color)"></i><strong>Azure Files:</strong> <span class="key-point">Managed file shares</span> accessible via standard SMB and NFS protocols. Ideal for lift-and-shift, shared config, dev/test.</li>
+                    <li><i class="fas fa-hdd fa-li" style="color:var(--disk-color)"></i><strong>Azure Disk Storage:</strong> Persistent <span class="key-point">block storage</span> (like virtual hard disks) optimized for Azure VMs. Offers different performance tiers (Standard HDD/SSD, Premium SSD, Ultra Disk).</li>
+                     <li><i class="fas fa-water fa-li" style="color:var(--datalake-color)"></i><strong>Data Lake Storage Gen2:</strong> Built on Blob Storage, but adds a <span class="key-point">hierarchical namespace</span> and features optimized for big data analytics workloads (like Hadoop, Spark).</li>
+                 </ul>
+                 <p><strong>Implication:</strong> Understanding the core data type (Object, File, Block) is the first step in choosing the right service.</p>
+            </div>
+        </div>
+
+        <!-- Blob Storage Deep Dive -->
+        <div class="card">
+            <input type="checkbox" id="blob-toggle" class="card-toggle">
+            <label for="blob-toggle" class="card-header">
+                <h2><i class="fas fa-cubes" style="color:var(--blob-color)"></i>Blob Storage</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-object-group"></i>Object Storage for Unstructured Data</h3>
+                <p class="description">Highly scalable and cost-effective storage for diverse data types.</p>
+                 <ul>
+                    <li><i class="fas fa-check fa-li"></i><strong>Use Cases:</strong> Serving images/documents directly, streaming video/audio, storing logs, backups/DR, data for analysis.</li>
+                    <li><i class="fas fa-layer-group fa-li"></i><strong>Access Tiers:</strong> Hot, Cool, Cold, Archive tiers optimize cost based on access frequency.</li>
+                    <li><i class="fas fa-globe fa-li"></i><strong>Features:</strong> Static website hosting, lifecycle management, versioning, immutability, object replication.</li>
+                 </ul>
+                 <p><strong>Implication:</strong> The go-to service for general-purpose, large-scale data storage in the cloud.</p>
+            </div>
+        </div>
+
+         <!-- Azure Files Deep Dive -->
+        <div class="card">
+            <input type="checkbox" id="files-toggle" class="card-toggle">
+            <label for="files-toggle" class="card-header">
+                <h2><i class="fas fa-folder-open" style="color:var(--files-color)"></i>Azure Files</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-share-alt"></i>Managed Cloud File Shares</h3>
+                <p class="description">Serverless file shares accessible via SMB and NFS protocols.</p>
+                 <ul>
+                    <li><i class="fas fa-check fa-li"></i><strong>Use Cases:</strong> Lift-and-shift file server workloads, shared application settings, dev/test environments, container shared storage (via CSI driver).</li>
+                    <li><i class="fas fa-network-wired fa-li"></i><strong>Protocols:</strong> Supports standard SMB 3.x and NFS 4.1.</li>
+                    <li><i class="fas fa-desktop fa-li"></i><strong>Mountable:</strong> Can be mounted concurrently by cloud (VMs) and on-premises machines (Windows, Linux, macOS).</li>
+                    <li><i class="fas fa-sync-alt fa-li" style="color:var(--info-color)"></i><strong>Azure File Sync:</strong> Service to cache Azure File shares on on-premises Windows Servers for local performance with cloud tiering.</li>
+                 </ul>
+                 <p><strong>Implication:</strong> Simplifies migrating traditional file share dependencies to the cloud and enables hybrid scenarios.</p>
+            </div>
+        </div>
+
+         <!-- Azure Disk Deep Dive -->
+        <div class="card">
+            <input type="checkbox" id="disk-toggle" class="card-toggle">
+            <label for="disk-toggle" class="card-header">
+                <h2><i class="fas fa-hdd" style="color:var(--disk-color)"></i>Azure Disk Storage</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-compact-disc"></i>Persistent Block Storage for VMs</h3>
+                <p class="description">Durable, high-performance disks attached to Azure Virtual Machines.</p>
+                 <ul>
+                    <li><i class="fas fa-check fa-li"></i><strong>Use Cases:</strong> OS disks, data disks for applications running on VMs (databases, web servers, etc.).</li>
+                    <li><i class="fas fa-tachometer-alt fa-li"></i><strong>Performance Tiers:</strong>
+                        <ul>
+                           <li>Standard HDD: Low-cost, dev/test.</li>
+                           <li>Standard SSD: Consistent performance for production web servers, lightly used apps.</li>
+                           <li>Premium SSD: High-performance, low-latency for IO-intensive workloads (databases).</li>
+                           <li>Ultra Disk: Highest performance, sub-millisecond latency for critical workloads (SAP HANA, top tier DBs).</li>
+                        </ul>
+                    </li>
+                    <li><i class="fas fa-lock fa-li"></i><strong>Security:</strong> Server-side encryption by default, options for CMK, Azure Disk Encryption (encrypts OS/data disks within the VM).</li>
+                     <li><i class="fas fa-camera fa-li"></i><strong>Snapshots:</strong> Create point-in-time backups of disks.</li>
+                 </ul>
+                 <p><strong>Implication:</strong> Essential for running stateful applications on Azure VMs, choose tier based on performance needs.</p>
+            </div>
+        </div>
+
+        <!-- Data Lake Gen2 -->
+        <div class="card">
+             <input type="checkbox" id="datalake-toggle" class="card-toggle">
+            <label for="datalake-toggle" class="card-header">
+                <h2><i class="fas fa-water" style="color:var(--datalake-color)"></i>Data Lake Storage Gen2</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-project-diagram"></i>Blob Storage for Big Data</h3>
+                 <p class="description">Combines Blob scalability with a hierarchical filesystem optimized for analytics.</p>
+                 <ul>
+                     <li><i class="fas fa-check fa-li"></i><strong>Use Cases:</strong> Big data analytics (Spark, Hadoop, Databricks, Synapse Analytics), high-performance computing data staging.</li>
+                     <li><i class="fas fa-sitemap fa-li"></i><strong>Hierarchical Namespace (HNS):</strong> Enables directory-level operations (rename, delete) which are atomic and efficient, unlike flat Blob namespaces. Crucial for analytics performance.</li>
+                     <li><i class="fas fa-user-shield fa-li" style="color:var(--rbac-color)"></i><strong>Fine-grained Access Control:</strong> Supports POSIX-like Access Control Lists (ACLs) on directories and files, alongside Azure RBAC.</li>
+                     <li><i class="fas fa-layer-group fa-li"></i><strong>Built on Blob:</strong> Inherits Blob features like tiering, lifecycle management, high availability, security.</li>
+                 </ul>
+                 <p><strong>Implication:</strong> The standard for building data lakes on Azure for analytical processing.</p>
+            </div>
+        </div>
+
+
+        <!-- Specialized Storage -->
+        <div class="card">
+             <input type="checkbox" id="specialized-toggle" class="card-toggle">
+            <label for="specialized-toggle" class="card-header">
+                <h2><i class="fas fa-puzzle-piece"></i>Specialized Storage Options</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-tools"></i>For Specific High-End Needs</h3>
+                 <ul>
+                    <li><i class="fas fa-file-invoice fa-li" style="color:var(--netapp-color)"></i><strong>Azure NetApp Files (ANF):</strong> Enterprise-grade, high-performance file storage service (partner managed). For demanding file workloads (SAP, databases over NFS/SMB, HPC). Offers advanced features (snapshots, cloning, cross-region replication). Higher cost.</li>
+                    <li><i class="fas fa-box-open fa-li" style="color:var(--container-color)"></i><strong>Azure Container Storage (Preview):</strong> Managed volume service specifically for stateful containers on Kubernetes (AKS). Abstracts underlying storage (Disks, Ephemeral Disk).</li>
+                    <li><i class="fas fa-tachometer-alt fa-li"></i><strong>Azure Managed Lustre:</strong> High-performance parallel file system for extreme HPC and AI workloads requiring massive throughput.</li>
+                    <li><i class="fas fa-database fa-li"></i><strong>Data Box Family:</strong> Physical appliances (Data Box, Data Box Disk, Data Box Heavy) for offline bulk data transfer when network transfer is impractical. Data Box Gateway is a virtual appliance for online transfer.</li>
+                </ul>
+                <p><strong>Implication:</strong> These address niche or very high-performance requirements beyond the core services.</p>
+            </div>
+        </div>
+
+        <!-- Redundancy Options -->
+        <div class="card">
+            <input type="checkbox" id="redundancy-toggle" class="card-toggle">
+            <label for="redundancy-toggle" class="card-header">
+                <h2><i class="fas fa-sync-alt" style="color:var(--redundancy-color)"></i>Storage Redundancy Options</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                 <h3><i class="fas fa-copy"></i>Data Protection & Availability</h3>
+                 <p class="description">How Azure protects your data against failures.</p>
+                <div class="diagram redundancy-diagram">
+                    <div class="redundancy-group">
+                        <span>LRS</span>
+                        <div class="dc-icon"><i class="fas fa-building"></i><i class="fas fa-copy"></i><i class="fas fa-copy"></i><i class="fas fa-copy"></i></div>
+                        <span style="font-size:0.8em">(1 DC, 3 Copies)</span>
+                    </div>
+                     <div class="redundancy-group">
+                        <span>ZRS</span>
+                         <div class="zone-border">
+                             <div class="dc-icon"><i class="fas fa-building"></i><i class="fas fa-copy"></i></div> AZ1
+                         </div>
+                          <div class="zone-border">
+                             <div class="dc-icon"><i class="fas fa-building"></i><i class="fas fa-copy"></i></div> AZ2
+                          </div>
+                           <div class="zone-border">
+                             <div class="dc-icon"><i class="fas fa-building"></i><i class="fas fa-copy"></i></div> AZ3
+                           </div>
+                         <span style="font-size:0.8em">(1 Region, 3 Zones, 3 Copies)</span>
+                    </div>
+                     <div class="redundancy-group">
+                        <span>GRS / GZRS</span>
+                         <div class="region-border">
+                             <span>Region 1 (LRS/ZRS)</span>
+                             <div class="dc-icon"><i class="fas fa-copy"></i>x3</div>
+                         </div>
+                         <i class="fas fa-arrow-down region-arrow"></i>(Async)
+                         <div class="region-border">
+                             <span>Region 2 (LRS)</span>
+                              <div class="dc-icon"><i class="fas fa-copy"></i>x3</div>
+                         </div>
+                         <span style="font-size:0.8em">(2 Regions, 6 Copies total)</span>
+                    </div>
+                </div>
+                 <ul>
+                    <li><i class="fas fa-building fa-li" style="color:#605e5c"></i><strong>LRS (Locally-redundant):</strong> 3 copies in one data center. Protects against rack/drive failure. Lowest cost.</li>
+                    <li><i class="fas fa-cubes fa-li" style="color:var(--info-color)"></i><strong>ZRS (Zone-redundant):</strong> 3 copies spread across 3 Availability Zones within one region. Protects against DC failure.</li>
+                    <li><i class="fas fa-globe-americas fa-li" style="color:var(--success-color)"></i><strong>GRS (Geo-redundant):</strong> LRS in primary + Async copy (LRS) to a secondary region. Protects against regional disaster.</li>
+                     <li><i class="fas fa-globe-asia fa-li" style="color:var(--success-color)"></i><strong>RA-GRS (Read-access GRS):</strong> Same as GRS, but allows read-only access to the secondary region copy.</li>
+                     <li><i class="fas fa-sync-alt fa-li" style="color:var(--success-color)"></i><strong>GZRS (Geo-zone-redundant):</strong> ZRS in primary + Async copy (LRS) to secondary region. Protects against zone failure in primary AND regional disaster.</li>
+                     <li><i class="fas fa-eye fa-li" style="color:var(--success-color)"></i><strong>RA-GZRS:</strong> Same as GZRS + read-only access to secondary. Highest availability/redundancy.</li>
+                 </ul>
+                 <p><strong>Implication:</strong> Choice depends on availability needs, RPO/RTO targets, and cost tolerance.</p>
+            </div>
+        </div>
+
+        <!-- Security & Data Protection -->
+        <div class="card security-card">
+            <input type="checkbox" id="security-toggle" class="card-toggle">
+            <label for="security-toggle" class="card-header">
+                <h2><i class="fas fa-shield-alt" style="color:var(--security-color)"></i>Security & Data Protection</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-lock"></i>Securing Your Storage</h3>
+                 <div class="diagram security-diagram">
+                     <div class="diagram-box"> <i class="fas fa-key"></i><span>Encryption at Rest (SSE - Default)</span></div>
+                     <div class="diagram-box"> <i class="fas fa-user-shield"></i><span>Access Control (RBAC/SAS/Key)</span></div>
+                     <div class="diagram-box"> <i class="fas fa-network-wired"></i><span>Network Security (Endpoints/Firewall)</span></div>
+                      <div class="diagram-box"> <i class="fas fa-lock"></i><span>Data Protection (Versioning/Soft Delete/Immutability)</span></div>
+                 </div>
+                 <ul>
+                    <li><i class="fas fa-lock fa-li" style="color:var(--security-color)"></i><strong>Encryption:</strong>
+                        <ul>
+                           <li>Server-Side Encryption (SSE) with Microsoft-Managed Keys (MMK) is enabled <span class="key-point">by default</span> for all services.</li>
+                           <li>Option for Customer-Managed Keys (CMK) using Azure Key Vault.</li>
+                           <li>Client-side encryption is also possible (managed by application).</li>
+                           <li>Encryption in transit via HTTPS (default) or SMB 3.0 encryption for Azure Files.</li>
+                        </ul>
+                    </li>
+                    <li><i class="fas fa-user-shield fa-li" style="color:var(--rbac-color)"></i><strong>Access Control:</strong>
+                        <ul>
+                           <li>Azure RBAC (Role-Based Access Control) for data plane operations (Blobs/Files/Queues/Tables) via Azure AD authentication (Recommended).</li>
+                           <li>Shared Access Signatures (SAS) for delegated, time-bound, specific permissions.</li>
+                           <li>Storage Account Access Keys (Grants full access - use sparingly).</li>
+                           <li>ACLs (ADLS Gen2, Files with AD DS auth).</li>
+                        </ul>
+                    </li>
+                    <li><i class="fas fa-network-wired fa-li"></i><strong>Network Security:</strong> Firewalls, Virtual Network Service Endpoints, Private Endpoints to restrict access.</li>
+                    <li><i class="fas fa-shield-alt fa-li"></i><strong>Data Protection Features:</strong> Soft Delete, Versioning, Immutability (Blobs), Snapshots (Files/Disks).</li>
+                 </ul>
+                 <p><strong>Implication:</strong> Azure provides layered security. Implement appropriate controls based on sensitivity and requirements.</p>
+            </div>
+        </div>
+
+         <!-- Scenario Selection -->
+        <div class="card selection-card">
+            <input type="checkbox" id="selection-toggle" class="card-toggle">
+            <label for="selection-toggle" class="card-header">
+                <h2><i class="fas fa-tasks"></i>Scenario Selection Criteria</h2>
+                <i class="fas fa-chevron-down toggle-icon"></i>
+            </label>
+            <div class="card-content">
+                <h3><i class="fas fa-map-signs"></i>Choosing the Right Service</h3>
+                 <ul>
+                    <li><i class="fa-li fas fa-question"></i>**Is it unstructured data (videos, logs, images, backups)?** <i class="fas fa-arrow-right"></i> Likely **Blob Storage**. Need analytics performance? Consider **Data Lake Gen2**.</li>
+                    <li><i class="fa-li fas fa-question"></i>**Need standard file shares (SMB/NFS)?** <i class="fas fa-arrow-right"></i> Likely **Azure Files**. Need on-prem caching? Add **Azure File Sync**. Need extreme performance/enterprise features? Consider **Azure NetApp Files**.</li>
+                     <li><i class="fa-li fas fa-question"></i>**Need persistent disks for VMs?** <i class="fas fa-arrow-right"></i> **Azure Disk Storage**. Choose tier based on IOPS/throughput needs.</li>
+                     <li><i class="fa-li fas fa-question"></i>**Need persistent volumes for containers?** <i class="fas fa-arrow-right"></i> Options include **Azure Disk**, **Azure Files**, or **Azure Container Storage (Preview)**.</li>
+                    <li><i class="fa-li fas fa-question"></i>**Need high availability / disaster recovery?** <i class="fas fa-arrow-right"></i> Select appropriate **Redundancy Option** (ZRS, GRS, GZRS). Consider **Object Replication** for blob DR.</li>
+                    <li><i class="fa-li fas fa-question"></i>**Cost sensitivity?** <i class="fas fa-arrow-right"></i> Use **Access Tiers** (Blob/ADLS Gen2), choose appropriate Disk tier, consider LRS redundancy if acceptable.</li>
+                 </ul>
+                 <p><strong>Implication:</strong> Matching workload characteristics (data type, access pattern, performance, availability needs) to the storage service features is key.</p>
+            </div>
+        </div>
+
+    </div> <!-- End card-container -->
+
+</div> <!-- End main-container -->
+
+</body>
+</html>
