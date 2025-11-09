@@ -195,6 +195,25 @@
         .description { font-style: italic; color: #605e5c; margin-bottom: 15px; display: block; }
         .important-note { background-color: #fdf3e0; border-left: 4px solid var(--container-color); padding: 10px 15px; margin: 15px 0; font-size: 0.9em; }
         .important-note i { color: var(--container-color); margin-right: 8px; }
+        .weak-areas-box {
+            background: #fff4f4;
+            border: 1px solid #d13438;
+            border-left: 6px solid #d13438;
+            padding: 12px 15px; margin: 18px 0; border-radius:4px;
+            box-shadow: 0 1px 3px var(--shadow-color);
+        }
+        .weak-areas-box h4 { margin:0 0 8px 0; font-size:0.95em; display:flex; align-items:center; gap:6px; color:#a80000; }
+        .weak-areas-box ul { list-style:none; margin:0; padding:0; }
+        .weak-areas-box li { margin-bottom:6px; padding-left:24px; position:relative; font-size:0.9em; }
+        .weak-areas-box li i { position:absolute; left:0; top:3px; color:#a80000; }
+        .badge-inline {
+            display:inline-block; background:#ffe5e5; color:#a80000; font-weight:600; font-size:0.7em;
+            padding:3px 6px; border-radius:10px; border:1px solid #ffb3b3; margin-left:8px; vertical-align:middle;
+        }
+        .mnemonic-bubble {
+            background:#e6f2ff; border:1px solid #b3d7ff; padding:10px 12px; border-radius:6px; font-size:0.85em;
+            display:flex; align-items:center; gap:8px; margin-top:10px; font-weight:600; color:var(--azure-blue-dark);
+        }
 
         /* Quick jump navigation */
         .quick-jump {
@@ -574,13 +593,15 @@
                         <li><i class="fa-li fas fa-arrows-alt-v"></i><strong>Scaling:</strong> ACI itself is not for horizontal auto-scaling of a single application like AKS; you scale by deploying more/larger container groups or use it for burst from AKS.</li>
                     </ul>
 
-                    <h3><i class="fas fa-exclamation-triangle"></i>ACI Scaling Behavior (Exam Weak Spot)</h3>
-                    <ul>
-                        <li><i class="fa-li fas fa-ban" style="color:var(--warning-color);"></i><strong>No in-place scaling:</strong> You cannot change the instance count of a running container group.</li>
-                        <li><i class="fa-li fas fa-redo" style="color:#a80000;"></i><strong>Redeploy to scale:</strong> To scale out/in, deploy a new container group with the desired instance count and replace the old one.</li>
-                        <li><i class="fa-li fas fa-balance-scale" style="color:#a19f9d;"></i><strong>No built-in load balancer or auto-scaling:</strong> For advanced scaling and traffic distribution, use AKS or another orchestrator.</li>
-                    </ul>
-                    <div class="important-note"><i class="fas fa-lightbulb"></i><strong>Mnemonic:</strong> <span class="key-point">ACI = Always Create Instance</span> (to “scale”, create a new container group).</div>
+                    <div class="weak-areas-box">
+                        <h4><i class="fas fa-exclamation-circle"></i>ACI Scaling Weak Areas <span class="badge-inline">Memorize</span></h4>
+                        <ul>
+                            <li><i class="fas fa-ban"></i><strong>No in-place scaling:</strong> You cannot adjust instance count of a running group.</li>
+                            <li><i class="fas fa-redo"></i><strong>Redeploy to scale:</strong> Scaling means creating a new container group with desired resources.</li>
+                            <li><i class="fas fa-balance-scale"></i><strong>No built-in load balancing or auto-scaling:</strong> Use AKS / orchestrators for dynamic scale + traffic distribution.</li>
+                        </ul>
+                        <div class="mnemonic-bubble"><i class="fas fa-lightbulb"></i><span>Mnemonic: <strong>ACI = Always Create Instance</strong></span></div>
+                    </div>
                 </div>
             </div>
             
