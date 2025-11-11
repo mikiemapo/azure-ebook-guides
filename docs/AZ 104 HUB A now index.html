@@ -1608,36 +1608,45 @@
 
       async function loadMediaFiles() {
         try {
-          // Try multiple paths for compatibility with different environments
-          let response;
-          let successPath = null;
-          const paths = [
-            "media_catalog.csv",
-            "./media_catalog.csv",
-            "docs/media_catalog.csv",
-          ];
-
-          for (const path of paths) {
-            try {
-              console.log("Trying path:", path);
-              response = await fetch(path);
-              console.log("Response status:", response.status, "for", path);
-              if (response.ok) {
-                successPath = path;
-                break;
+          // Use XMLHttpRequest for local file compatibility (fetch doesn't work with file://)
+          const text = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            const paths = [
+              "media_catalog.csv",
+              "./media_catalog.csv",
+            ];
+            
+            let attemptedPaths = [];
+            
+            function tryPath(index) {
+              if (index >= paths.length) {
+                reject(new Error("CSV file not found. Tried: " + attemptedPaths.join(", ")));
+                return;
               }
-            } catch (e) {
-              console.log("Error fetching", path, ":", e.message);
-              continue;
+              
+              const path = paths[index];
+              attemptedPaths.push(path);
+              console.log("Trying path:", path);
+              
+              xhr.open("GET", path, true);
+              xhr.onload = function() {
+                if (xhr.status === 200 || xhr.status === 0) { // 0 for local files
+                  console.log("Successfully loaded CSV from:", path);
+                  resolve(xhr.responseText);
+                } else {
+                  console.log("Failed with status:", xhr.status);
+                  tryPath(index + 1);
+                }
+              };
+              xhr.onerror = function() {
+                console.log("Error loading:", path);
+                tryPath(index + 1);
+              };
+              xhr.send();
             }
-          }
-
-          if (!response || !response.ok) {
-            throw new Error("CSV file not found. Tried: " + paths.join(", "));
-          }
-
-          console.log("Successfully loaded CSV from:", successPath);
-          const text = await response.text();
+            
+            tryPath(0);
+          });
           const lines = text.split("\n").slice(1); // Skip header
 
           const mediaByDomain = {
