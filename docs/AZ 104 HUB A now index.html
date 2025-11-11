@@ -1610,6 +1610,7 @@
         try {
           // Try multiple paths for compatibility with different environments
           let response;
+          let successPath = null;
           const paths = [
             "media_catalog.csv",
             "./media_catalog.csv",
@@ -1618,17 +1619,24 @@
 
           for (const path of paths) {
             try {
+              console.log("Trying path:", path);
               response = await fetch(path);
-              if (response.ok) break;
+              console.log("Response status:", response.status, "for", path);
+              if (response.ok) {
+                successPath = path;
+                break;
+              }
             } catch (e) {
+              console.log("Error fetching", path, ":", e.message);
               continue;
             }
           }
 
           if (!response || !response.ok) {
-            throw new Error("CSV file not found in any expected location");
+            throw new Error("CSV file not found. Tried: " + paths.join(", "));
           }
 
+          console.log("Successfully loaded CSV from:", successPath);
           const text = await response.text();
           const lines = text.split("\n").slice(1); // Skip header
 
@@ -1704,7 +1712,9 @@
           document.getElementById("media-content").innerHTML = `
             <div style="padding: 20px; text-align: center; color: rgba(255,255,255,0.9);">
               <i class="fas fa-exclamation-triangle"></i>
-              <p>Unable to load media catalog. Make sure media_catalog.csv exists in the docs folder.</p>
+              <p>Unable to load media catalog.</p>
+              <p style="font-size: 0.9em; margin-top: 10px;">Error: ${error.message}</p>
+              <p style="font-size: 0.85em; margin-top: 10px; opacity: 0.8;">Current page: ${window.location.href}</p>
             </div>
           `;
         }
