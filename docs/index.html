@@ -1608,7 +1608,27 @@
 
       async function loadMediaFiles() {
         try {
-          const response = await fetch("media_catalog.csv");
+          // Try multiple paths for compatibility with different environments
+          let response;
+          const paths = [
+            "media_catalog.csv",
+            "./media_catalog.csv",
+            "docs/media_catalog.csv",
+          ];
+
+          for (const path of paths) {
+            try {
+              response = await fetch(path);
+              if (response.ok) break;
+            } catch (e) {
+              continue;
+            }
+          }
+
+          if (!response || !response.ok) {
+            throw new Error("CSV file not found in any expected location");
+          }
+
           const text = await response.text();
           const lines = text.split("\n").slice(1); // Skip header
 
