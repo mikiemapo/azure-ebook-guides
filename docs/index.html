@@ -1611,7 +1611,11 @@
           // Use XMLHttpRequest for local file compatibility (fetch doesn't work with file://)
           const text = await new Promise((resolve, reject) => {
             const xhr = new XMLHttpRequest();
-            const paths = ["media_catalog.csv", "./media_catalog.csv"];
+            
+            // Try absolute path first (construct from current page location)
+            const currentDir = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+            const absolutePath = currentDir + 'media_catalog.csv';
+            const paths = [absolutePath, "media_catalog.csv", "./media_catalog.csv"];
 
             let attemptedPaths = [];
 
@@ -1631,17 +1635,23 @@
 
               xhr.open("GET", path, true);
               xhr.onload = function () {
+                console.log("XHR onload - status:", xhr.status, "readyState:", xhr.readyState, "responseText length:", xhr.responseText?.length);
                 if (xhr.status === 200 || xhr.status === 0) {
                   // 0 for local files
-                  console.log("Successfully loaded CSV from:", path);
-                  resolve(xhr.responseText);
+                  if (xhr.responseText && xhr.responseText.length > 100) {
+                    console.log("Successfully loaded CSV from:", path);
+                    resolve(xhr.responseText);
+                  } else {
+                    console.log("Response too short, trying next path");
+                    tryPath(index + 1);
+                  }
                 } else {
                   console.log("Failed with status:", xhr.status);
                   tryPath(index + 1);
                 }
               };
               xhr.onerror = function () {
-                console.log("Error loading:", path);
+                console.log("XHR error loading:", path);
                 tryPath(index + 1);
               };
               xhr.send();
@@ -1649,6 +1659,7 @@
 
             tryPath(0);
           });
+          console.log("CSV loaded successfully, length:", text.length);
           const lines = text.split("\n").slice(1); // Skip header
 
           const mediaByDomain = {
