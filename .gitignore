@@ -1,0 +1,13 @@
+# Keep large local study media out of Git
+# Ignore the Conversations folder (note: trailing space in folder name)
+Conversations[ ]/
+
+# Extra safety: ignore common media types globally
+*.wav
+*.m4a
+*.mp3
+*.mp4
+*.mov
+
+# macOS metadata
+.DS_Store
