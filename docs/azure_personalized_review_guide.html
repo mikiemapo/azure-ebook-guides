@@ -583,7 +583,7 @@
         <script id="merged-quiz-scores-json" type="application/json">
         {
   "Identities": { "correct": 25, "total": 44 },
-  "Storage": { "correct": 17, "total": 40 },
+  "Storage": { "correct": 29, "total": 60 },
   "Compute": { "correct": 14, "total": 38 },
   "Networking": { "correct": 18, "total": 31 },
   "Monitoring": { "correct": 14, "total": 26 }
@@ -810,7 +810,7 @@
 
           const mergedQuizScores = {
             Identities: { correct: 25, total: 44 },
-            Storage: { correct: 17, total: 40 },
+            Storage: { correct: 29, total: 60 },
             Compute: { correct: 14, total: 38 },
             Networking: { correct: 18, total: 31 },
             Monitoring: { correct: 14, total: 26 }
@@ -821,25 +821,13 @@
           // that Apply (which writes to localStorage) survives page reloads.
           (function loadMergedQuizScoresFromJson(){
             try {
-              // Try localStorage first
-              try {
-                const raw = localStorage.getItem('mergedQuizScores');
-                if (raw) {
-                  const payloadLS = JSON.parse(raw);
-                  if (payloadLS && typeof payloadLS === 'object') {
-                    Object.keys(payloadLS).forEach(k => {
-                      if (payloadLS[k] && (typeof payloadLS[k].correct !== 'undefined' || typeof payloadLS[k].total !== 'undefined')) {
-                        mergedQuizScores[k] = { correct: payloadLS[k].correct || 0, total: payloadLS[k].total || 0 };
-                      }
-                    });
-                    return; // loaded from localStorage, done
-                  }
-                }
-              } catch(e) {
-                // ignore localStorage parse errors and fallback to inline JSON
-              }
-
-              // Fallback: inline script element in the HTML (editable via Save)
+              // FORCE CLEAR localStorage to ensure fresh data loads
+              localStorage.removeItem('mergedQuizScores');
+              localStorage.removeItem('mergedQuizAdjusted');
+              localStorage.removeItem('quizFlashcardState');
+              console.log('Cleared localStorage for fresh data load');
+              
+              // Force load from inline script element in the HTML
               const el = document.getElementById('merged-quiz-scores-json');
               if (!el || !el.textContent || !el.textContent.trim()) return;
               const payload = JSON.parse(el.textContent);
@@ -850,6 +838,7 @@
                   }
                 });
               }
+              console.log('Loaded fresh mergedQuizScores:', mergedQuizScores);
             } catch (e) {
               console.warn('Failed to load persisted mergedQuizScores', e);
             }
@@ -2330,6 +2319,50 @@
               <strong>Action:</strong> Use the flashcards and labs below to
               reinforce your storage skills.
             </p>
+            <h3><i class="fas fa-dumbbell"></i>Weak Spot Reinforcement</h3>
+            <div style="background: #fff8e1; border: 1px solid #ffcc02; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+              <div style="margin-bottom: 15px; padding: 10px; border-left: 4px solid #ff6b35; background: #ffffff;">
+                <div style="font-weight: bold; color: #b71c1c; margin-bottom: 5px;">🚨 Alert: Azure Files identity-based authentication failure</div>
+                <div style="margin-bottom: 8px; color: #424242;">
+                  • Verify Entra DS domain join status for the storage account<br />
+                  • Check RBAC assignment: "Storage File Data SMB Share Contributor" role<br />
+                  • Validate NTFS permissions alignment on the share<br />
+                  • Test Kerberos authentication: <code>net use \\storageaccount.file.core.windows.net\share</code><br />
+                  • Review firewall rules and private endpoint configuration
+                </div>
+                <div style="font-size: 0.9em; color: #6b6b6b; font-style: italic;">
+                  <strong>AZ-104 Concept:</strong> Azure Files identity-based auth requires both Azure RBAC (cloud-level) and NTFS permissions (file-level) - this dual-layer security model is frequently tested.
+                </div>
+              </div>
+              
+              <div style="margin-bottom: 15px; padding: 10px; border-left: 4px solid #ff6b35; background: #ffffff;">
+                <div style="font-weight: bold; color: #b71c1c; margin-bottom: 5px;">🔄 Alert: Critical file accidentally deleted from Azure Files share</div>
+                <div style="margin-bottom: 8px; color: #424242;">
+                  • Check soft delete retention policy status (enabled/disabled)<br />
+                  • Locate deleted file in Azure portal under "Deleted files" section<br />
+                  • Restore from soft delete if within retention period<br />
+                  • If soft delete expired, check available share snapshots<br />
+                  • Implement automated snapshot policy before future changes
+                </div>
+                <div style="font-size: 0.9em; color: #6b6b6b; font-style: italic;">
+                  <strong>AZ-104 Concept:</strong> Soft delete provides time-based protection (up to 365 days) while snapshots offer point-in-time recovery - understanding both mechanisms and their configuration is essential.
+                </div>
+              </div>
+              
+              <div style="margin-bottom: 0; padding: 10px; border-left: 4px solid #ff6b35; background: #ffffff;">
+                <div style="font-weight: bold; color: #b71c1c; margin-bottom: 5px;">💾 Alert: Storage replication strategy insufficient for disaster recovery</div>
+                <div style="margin-bottom: 8px; color: #424242;">
+                  • Assess current RTO/RPO requirements vs. existing replication tier<br />
+                  • Choose LRS for single datacenter, ZRS for zone redundancy within region<br />
+                  • Select GRS for cross-region protection, RA-GRS for read access to secondary<br />
+                  • Consider cost vs. durability trade-offs (LRS: 99.999999999%, GRS: 99.99999999999999%)<br />
+                  • Plan replication tier change during maintenance window if switching
+                </div>
+                <div style="font-size: 0.9em; color: #6b6b6b; font-style: italic;">
+                  <strong>AZ-104 Concept:</strong> Each replication tier serves specific business continuity needs - exam scenarios often test appropriate tier selection based on RTO/RPO and budget constraints.
+                </div>
+              </div>
+            </div>
             <div class="next-steps-tracker" style="margin-bottom: 18px">
               <h3 style="font-size: 1.1em">
                 <i class="fas fa-arrow-circle-right"></i>Next Steps Tracker

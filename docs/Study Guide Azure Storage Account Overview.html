@@ -361,6 +361,115 @@ html_content = """<!DOCTYPE html>
         color: var(--storage-main-color);
         margin-right: 8px;
       }
+
+      /* Flashcard Styles */
+      .flashcard-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 20px;
+        padding: 20px 0;
+      }
+
+      .flashcard {
+        perspective: 1000px;
+        height: 250px;
+      }
+
+      .flashcard-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.6s;
+        transform-style: preserve-3d;
+        cursor: pointer;
+      }
+
+      .flashcard:hover .flashcard-inner {
+        transform: rotateY(180deg);
+      }
+
+      .flashcard-front,
+      .flashcard-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 8px var(--shadow-color);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .flashcard-front {
+        background: linear-gradient(
+          135deg,
+          var(--azure-blue),
+          var(--azure-blue-dark)
+        );
+        color: var(--text-light);
+      }
+
+      .flashcard-back {
+        background: var(--card-bg);
+        color: var(--text-dark);
+        transform: rotateY(180deg);
+        border: 2px solid var(--azure-blue);
+      }
+
+      .flashcard h3 {
+        margin: 0 0 15px 0;
+        font-size: 1.2em;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .flashcard h4 {
+        margin: 0 0 15px 0;
+        color: var(--azure-blue-dark);
+        font-size: 1.1em;
+        text-align: center;
+      }
+
+      .flashcard p {
+        margin: 8px 0;
+        font-size: 0.9em;
+        line-height: 1.4;
+        text-align: left;
+      }
+
+      .flashcard code {
+        background-color: #f5f5f5;
+        padding: 2px 4px;
+        border-radius: 3px;
+        font-family: "Courier New", monospace;
+        font-size: 0.8em;
+        word-break: break-all;
+      }
+
+      /* Responsive adjustments for flashcards */
+      @media (max-width: 768px) {
+        .flashcard-grid {
+          grid-template-columns: 1fr;
+        }
+        .flashcard {
+          height: 220px;
+        }
+        .flashcard-front,
+        .flashcard-back {
+          padding: 15px;
+        }
+        .flashcard h3 {
+          font-size: 1.1em;
+        }
+        .flashcard p {
+          font-size: 0.85em;
+        }
+      }
     </style>
   </head>
   <body>
@@ -1067,6 +1176,275 @@ html_content = """<!DOCTYPE html>
       <!-- End card-container -->
     </div>
     <!-- End main-container -->
+
+    <!-- Storage Migrations & Movement Techniques Flashcard Section -->
+    <div class="main-container">
+      <div class="card-container">
+        <input
+          type="checkbox"
+          id="storage-migrations-flashcards"
+          class="card-toggle"
+        />
+        <label for="storage-migrations-flashcards" class="card-header">
+          <h2>
+            <i
+              class="fas fa-exchange-alt"
+              style="color: var(--storage-main-color)"
+            ></i>
+            Storage Migrations & Movement Techniques - Flashcards
+          </h2>
+        </label>
+        <div class="card-content">
+          <div class="flashcard-grid">
+            <!-- Flashcard 1: AzCopy Cross-Region Migration -->
+            <div class="flashcard">
+              <div class="flashcard-inner">
+                <div class="flashcard-front">
+                  <h3>
+                    <i class="fas fa-exchange-alt"></i> AzCopy Cross-Region
+                    Migration
+                  </h3>
+                  <p>
+                    <strong>Question:</strong> How do you migrate blobs between
+                    storage accounts across regions using AzCopy?
+                  </p>
+                </div>
+                <div class="flashcard-back">
+                  <h4>AzCopy Cross-Region & Cross-Account Migration</h4>
+                  <p>
+                    <strong>Observation:</strong> AzCopy supports copying blobs
+                    and files between storage accounts, regions, and
+                    subscriptions. Use --recursive for folders and
+                    subdirectories.
+                  </p>
+                  <p>
+                    <strong>Mnemonic:</strong> "AzCopy = Azure's Copy Champion"
+                  </p>
+                  <p>
+                    <strong>CLI:</strong>
+                    <code
+                      >azcopy copy
+                      "https://source.blob.core.windows.net/container/*"
+                      "https://dest.blob.core.windows.net/container/"
+                      --recursive</code
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flashcard 2: Blob Object Replication -->
+            <div class="flashcard">
+              <div class="flashcard-inner">
+                <div class="flashcard-front">
+                  <h3><i class="fas fa-copy"></i> Blob Object Replication</h3>
+                  <p>
+                    <strong>Question:</strong> What is object replication and
+                    how does prefix filtering work?
+                  </p>
+                </div>
+                <div class="flashcard-back">
+                  <h4>Blob Object Replication & Prefix Filtering</h4>
+                  <p>
+                    <strong>Observation:</strong> Object replication
+                    asynchronously copies blobs between storage accounts in same
+                    or different regions. Supports prefix filters to replicate
+                    specific blob paths only.
+                  </p>
+                  <p>
+                    <strong>Mnemonic:</strong> "Object Replication = Automated
+                    Blob Broadcasting"
+                  </p>
+                  <p>
+                    <strong>Note:</strong> Both source and destination accounts
+                    must have blob versioning enabled.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flashcard 3: Storage Account Failover -->
+            <div class="flashcard">
+              <div class="flashcard-inner">
+                <div class="flashcard-front">
+                  <h3>
+                    <i class="fas fa-shield-alt"></i> Storage Account Failover
+                  </h3>
+                  <p>
+                    <strong>Question:</strong> Which storage account types
+                    support failover and what are the requirements?
+                  </p>
+                </div>
+                <div class="flashcard-back">
+                  <h4>Storage Account Failover (GPv2 + RA-GRS)</h4>
+                  <p>
+                    <strong>Observation:</strong> Account failover switches
+                    primary endpoint to secondary region for GRS/RA-GRS
+                    accounts. Only supported on General-purpose v2 accounts, not
+                    v1 or BlobStorage types.
+                  </p>
+                  <p>
+                    <strong>Mnemonic:</strong> "Failover = Flip to Secondary"
+                  </p>
+                  <p>
+                    <strong>Warning:</strong> Data loss possible if last sync
+                    incomplete; test failover scenarios carefully.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flashcard 4: SAS-Based Migrations -->
+            <div class="flashcard">
+              <div class="flashcard-inner">
+                <div class="flashcard-front">
+                  <h3><i class="fas fa-key"></i> SAS-Based Migrations</h3>
+                  <p>
+                    <strong>Question:</strong> How do SAS tokens enable secure
+                    cross-account migrations?
+                  </p>
+                </div>
+                <div class="flashcard-back">
+                  <h4>Shared Access Signature Migration Patterns</h4>
+                  <p>
+                    <strong>Observation:</strong> SAS tokens provide temporary,
+                    delegated access for cross-account migrations without
+                    sharing storage keys. Account SAS covers multiple services;
+                    Service SAS is resource-specific.
+                  </p>
+                  <p>
+                    <strong>Mnemonic:</strong> "SAS = Secure Access Sharing"
+                  </p>
+                  <p>
+                    <strong>Best Practice:</strong> Use short expiration times
+                    and specific permissions (read/write only as needed).
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flashcard 5: Lifecycle Management -->
+            <div class="flashcard">
+              <div class="flashcard-inner">
+                <div class="flashcard-front">
+                  <h3><i class="fas fa-recycle"></i> Lifecycle Management</h3>
+                  <p>
+                    <strong>Question:</strong> How do lifecycle policies
+                    automate blob tier movement?
+                  </p>
+                </div>
+                <div class="flashcard-back">
+                  <h4>Lifecycle Management Rules & Tier Movement</h4>
+                  <p>
+                    <strong>Observation:</strong> Lifecycle policies
+                    automatically move blobs between tiers (Hot→Cool→Archive)
+                    based on age or access patterns. Rules can also delete
+                    expired blobs and versions.
+                  </p>
+                  <p>
+                    <strong>Mnemonic:</strong> "Lifecycle = Life Stages of
+                    Storage"
+                  </p>
+                  <p>
+                    <strong>Movement Path:</strong> Hot → Cool (after 30 days) →
+                    Archive (after 90 days) → Delete (after 365 days)
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flashcard 6: Import/Export Service -->
+            <div class="flashcard">
+              <div class="flashcard-inner">
+                <div class="flashcard-front">
+                  <h3><i class="fas fa-truck"></i> Import/Export Service</h3>
+                  <p>
+                    <strong>Question:</strong> When should you use Import/Export
+                    service for bulk migrations?
+                  </p>
+                </div>
+                <div class="flashcard-back">
+                  <h4>Import/Export Service for Bulk Offline Migration</h4>
+                  <p>
+                    <strong>Observation:</strong> For large datasets (>1TB),
+                    ship physical drives to Azure datacenters. Requires Dataset
+                    CSV and Driveset CSV files before drive preparation.
+                  </p>
+                  <p>
+                    <strong>Mnemonic:</strong> "Import/Export = Ship It, Don't
+                    Stream It"
+                  </p>
+                  <p>
+                    <strong>Use Case:</strong> Initial bulk migration or when
+                    network bandwidth is limited/costly.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flashcard 7: Snapshots vs Versions -->
+            <div class="flashcard">
+              <div class="flashcard-inner">
+                <div class="flashcard-front">
+                  <h3><i class="fas fa-camera"></i> Snapshots vs Versions</h3>
+                  <p>
+                    <strong>Question:</strong> What's the difference between
+                    snapshots and versions during migration?
+                  </p>
+                </div>
+                <div class="flashcard-back">
+                  <h4>Copying Snapshots vs Versions During Migration</h4>
+                  <p>
+                    <strong>Observation:</strong> Snapshots are read-only
+                    point-in-time copies; versions track changes to individual
+                    blobs. Both must be explicitly copied during migrations -
+                    they don't transfer automatically.
+                  </p>
+                  <p>
+                    <strong>Mnemonic:</strong> "Snapshots = Pictures, Versions =
+                    Revisions"
+                  </p>
+                  <p>
+                    <strong>Migration Note:</strong> Use --include-snapshot flag
+                    in AzCopy to preserve snapshots during blob migration.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Flashcard 8: Archive Rehydration -->
+            <div class="flashcard">
+              <div class="flashcard-inner">
+                <div class="flashcard-front">
+                  <h3><i class="fas fa-snowflake"></i> Archive Rehydration</h3>
+                  <p>
+                    <strong>Question:</strong> What must you do before migrating
+                    archived blobs?
+                  </p>
+                </div>
+                <div class="flashcard-back">
+                  <h4>Rehydrating Archived Blobs Before Migration</h4>
+                  <p>
+                    <strong>Observation:</strong> Archived blobs are offline and
+                    cannot be read or copied until rehydrated to Hot or Cool
+                    tier. Rehydration takes hours and incurs costs for both
+                    storage and early deletion fees.
+                  </p>
+                  <p>
+                    <strong>Mnemonic:</strong> "Archive = Frozen, Rehydrate =
+                    Thaw First"
+                  </p>
+                  <p>
+                    <strong>Priority Levels:</strong> Standard (up to 15 hours)
+                    vs High (under 1 hour, costs more)
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
 
     <hr class="h-px my-8 bg-gray-200 border-0 dark:bg-gray-700" />
     <footer>
