@@ -8,9 +8,7 @@
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
-    <meta name="last-modified" content="2025-11-15T21:45:00Z" />
-    <!-- Additional aggressive cache control -->
-    <meta http-equiv="refresh" content="0; url=?t=" />
+    <meta name="last-modified" content="2025-11-15T21:50:00Z" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
@@ -583,10 +581,10 @@
     <!-- merged quiz scores moved to consolidated script -->
     <div class="main-container">
       <!-- UPDATE CONFIRMATION BANNER -->
-      <div id="update-banner" style="background:#d4edda;border:1px solid #c3e6cb;color:#155724;padding:15px;margin-bottom:20px;border-radius:5px;text-align:center;font-weight:bold;">
-        <div style="font-size:18px;margin-bottom:5px;">✅ FRESH PAGE LOAD CONFIRMED</div>
-        <div>Compute scores accumulated: 24/59 total (40.68%) - Added latest quiz: +10/21</div>
-        <div style="font-size:12px;margin-top:5px;color:#0f4c22;">🕒 Loaded: <span id="load-time"></span> | File modified: Nov 15, 2025</div>
+      <div id="update-banner" style="background:#d4edda;border:1px solid #c3e6cb;color:#155724;padding:12px;margin-bottom:20px;border-radius:5px;text-align:center;">
+        <div style="font-size:16px;margin-bottom:5px;">✅ <strong>Compute Scores Updated Successfully</strong></div>
+        <div>Accumulative scores: 24/59 total (40.68%) - Added latest quiz: +10/21</div>
+        <div style="font-size:12px;margin-top:5px;color:#0f4c22;">🕒 Page loaded: <span id="load-time"></span> | Auto-refresh disabled</div>
       </div>
       
       <script>
@@ -1527,22 +1525,15 @@
             }
           }
           
-          // AGGRESSIVE CACHE BUSTING - Always force fresh load
-          const currentUrl = window.location.href;
-          const hasTimestamp = currentUrl.includes('t=');
-          
-          if (!hasTimestamp) {
-            console.log('No timestamp found - forcing cache refresh...');
-            const separator = currentUrl.includes('?') ? '&' : '?';
-            const newUrl = currentUrl + separator + 't=' + Date.now() + '&nocache=1';
-            window.location.replace(newUrl);
-          } else {
-            console.log('Page loaded with timestamp - updates visible');
-            // Add visual confirmation the page loaded fresh
-            document.body.style.border = '3px solid #28a745';
+          // Simple one-time cache check (no infinite loop)
+          const hasTimestamp = window.location.search.includes('t=');
+          if (hasTimestamp) {
+            console.log('Page loaded fresh with timestamp');
+            // Add visual confirmation the page loaded fresh (one time only)
+            document.body.style.border = '2px solid #28a745';
             setTimeout(() => {
               if (document.body.style.border) document.body.style.border = '';
-            }, 2000);
+            }, 3000);
           }
 
           // Wire up confidence select handlers so changes affect recommendations
