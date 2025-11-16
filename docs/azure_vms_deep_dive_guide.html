@@ -623,6 +623,8 @@
         <a href="#vm-deployment-methods-toggle" class="quick-link">Deployment Methods</a> |
         <a href="#vm-networking-toggle" class="quick-link">Networking</a> |
         <a href="#vm-management-ops-toggle" class="quick-link">Management & Ops</a> |
+        <a href="#container-apps-toggle" class="quick-link" style="background-color: #2E8B57; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold;">🆕 Container Apps</a> |
+        <a href="#network-watcher-toggle" class="quick-link" style="background-color: #D32F2F; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold;">🆕 Network Watcher</a> |
         <a href="#app-service-runtimes-toggle" class="quick-link weak-area" style="background-color: #ff9800; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold;">⚠️ App Service Runtimes</a> |
         <a href="#aci-scaling-toggle" class="quick-link weak-area" style="background-color: #ff9800; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold;">⚠️ ACI Scaling</a> |
         <a href="#encrypted-vm-migration-toggle" class="quick-link weak-area" style="background-color: #ff9800; color: white; padding: 3px 8px; border-radius: 3px; font-weight: bold;">⚠️ Encrypted VM Migration</a> |
@@ -1023,6 +1025,59 @@
                 <i class="fa-li fas fa-layer-group"></i>
                 <strong>VMSS:</strong> Deploy/manage a set of identical VMs; supports autoscale and rolling upgrades.
               </li>
+              
+              <!-- Enhanced Orchestration Modes - Critical AZ-104 Topic -->
+              <li style="background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%); padding: 15px; border-radius: 8px; margin: 12px 0; border-left: 4px solid #FF9800;">
+                <i class="fa-li fas fa-cogs" style="color: #F57C00;"></i>
+                <strong>🎯 VMSS Orchestration Modes (Quiz Critical):</strong>
+                <div style="margin-top: 10px;">
+                  <table style="width: 100%; font-size: 0.9em; border-collapse: collapse; background: white; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <thead style="background: #FF9800; color: white;">
+                      <tr>
+                        <th style="padding: 10px; text-align: left; border-radius: 8px 0 0 0;">Feature</th>
+                        <th style="padding: 10px; text-align: left;">Uniform Mode (Default)</th>
+                        <th style="padding: 10px; text-align: left; border-radius: 0 8px 0 0;">Flexible Mode</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style="background: #FFEB3B15;">
+                        <td style="padding: 10px; font-weight: bold; color: #E65100;">Instance Identity</td>
+                        <td style="padding: 10px;">✅ Identical VMs (same size/config)</td>
+                        <td style="padding: 10px;">✅ Mixed VM sizes & types allowed</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px; font-weight: bold; color: #E65100;">Max Fault Domains</td>
+                        <td style="padding: 10px;">⚡ Up to 5 FDs (Platform Managed)</td>
+                        <td style="padding: 10px;">🚀 Up to 1000 FDs (Max Spreading)</td>
+                      </tr>
+                      <tr style="background: #FFEB3B15;">
+                        <td style="padding: 10px; font-weight: bold; color: #E65100;">Scale-in Policy</td>
+                        <td style="padding: 10px;">🔄 Automatic (newest/oldest first)</td>
+                        <td style="padding: 10px;">👤 Manual instance selection</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px; font-weight: bold; color: #E65100;">Load Balancer</td>
+                        <td style="padding: 10px;">📋 Required for auto-scaling</td>
+                        <td style="padding: 10px;">🎛️ Optional (manual assignment)</td>
+                      </tr>
+                      <tr style="background: #FFEB3B15;">
+                        <td style="padding: 10px; font-weight: bold; color: #E65100;">Autoscale Support</td>
+                        <td style="padding: 10px;">✅ Full support (horizontal)</td>
+                        <td style="padding: 10px;">⚠️ Limited (manual management)</td>
+                      </tr>
+                      <tr>
+                        <td style="padding: 10px; font-weight: bold; color: #E65100;">Best Use Case</td>
+                        <td style="padding: 10px;">🌐 Stateless apps, web tiers</td>
+                        <td style="padding: 10px;">🗄️ Stateful apps, databases</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div style="margin-top: 10px; padding: 8px; background: #FFF8E1; border-radius: 6px;">
+                  <strong>💡 AZ-104 Exam Tip:</strong> <em>Uniform = Auto-scaling web apps | Flexible = Manual control for complex workloads</em>
+                </div>
+              </li>
+              
               <li>
                 <i class="fa-li fas fa-arrows-alt-h"></i>
                 <strong>Scaling:</strong> Increase/decrease VM instances based on demand.
@@ -1031,6 +1086,22 @@
                 <i class="fa-li fas fa-balance-scale"></i>
                 <strong>Autoscale:</strong> <span class="key-point">Static</span> (manual count) or <span class="key-point">Dynamic</span> (CPU, schedule, etc.).
               </li>
+              
+              <!-- Enhanced Scaling Policies & Metrics -->
+              <li style="background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%); padding: 12px; border-radius: 6px; margin: 10px 0; border-left: 4px solid #4CAF50;">
+                <i class="fa-li fas fa-chart-line" style="color: #2E7D32;"></i>
+                <strong>Autoscale Triggers & Best Practices:</strong>
+                <ul style="margin-top: 8px; font-size: 0.9em;">
+                  <li><strong>CPU Percentage:</strong> Scale out >70%, scale in <30% (most common)</li>
+                  <li><strong>Memory Percentage:</strong> Available on newer VM generations (DS v3+)</li>
+                  <li><strong>Network In/Out:</strong> Monitor bandwidth utilization patterns</li>
+                  <li><strong>Custom Metrics:</strong> Application Insights counters, Log Analytics KQL</li>
+                  <li><strong>Schedule-based:</strong> Business hours, predictable traffic patterns</li>
+                  <li><strong>Queue Metrics:</strong> Service Bus queue length, Storage Queue depth</li>
+                  <li><strong>Cool-down Period:</strong> 5+ minutes between scale operations (avoid thrashing)</li>
+                </ul>
+              </li>
+              
               <li>
                 <i class="fa-li fas fa-redo"></i>
                 <strong>Upgrade Policies:</strong> <span class="key-point">Automatic</span> (all at once), <span class="key-point">Manual</span>, <span class="key-point">Rolling</span> (phased, with health checks).
@@ -1053,7 +1124,7 @@
             </div>
             <div class="important-note" style="border-left-color: var(--availability-color)">
               <i class="fas fa-info-circle"></i>
-              <strong>AZ-104 Focus:</strong> VMSS basics, autoscale rules, upgrade modes, load balancer integration, custom images/gallery.
+              <strong>AZ-104 Focus:</strong> VMSS basics, orchestration modes (Uniform vs Flexible), autoscale rules, upgrade modes, load balancer integration, custom images/gallery.
             </div>
           </div>
         </div>
@@ -1871,6 +1942,230 @@
             </ul>
 
             <p style="margin-top: 15px"><strong>AZ-104 Focus:</strong> D-G-W-C sequence (Deallocate-Group-Wait-Create); <code>az vm wait --deleted</code> is mandatory; Portal move fails for encrypted VMs; Key Vault permissions required.</p>
+          </div>
+        </div>
+        
+        <!-- Azure Container Apps Section -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="container-apps-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="container-apps-card"
+            for="container-apps-toggle"
+            class="card-header"
+            style="background-color: #2E8B57"
+          >
+            <h2>
+              <i class="fas fa-cube"></i>Azure Container Apps (Quiz Focus)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-rocket"></i>Container Apps Overview
+            </h3>
+            <p class="description">
+              Serverless container platform for microservices and containerized applications without managing infrastructure.
+            </p>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-server"></i>
+                <strong>Serverless:</strong> No VM or Kubernetes cluster management required - Azure handles infrastructure.
+              </li>
+              <li>
+                <i class="fa-li fas fa-code"></i>
+                <strong>Languages:</strong> Any language, any framework - just containerize your app.
+              </li>
+              <li>
+                <i class="fa-li fas fa-expand-arrows-alt"></i>
+                <strong>Scaling:</strong> Scale to zero when idle, scale out based on HTTP traffic or events.
+              </li>
+              <li>
+                <i class="fa-li fas fa-network-wired"></i>
+                <strong>Networking:</strong> Built-in ingress, service discovery, and Envoy proxy.
+              </li>
+            </ul>
+            
+            <h3>
+              <i class="fas fa-globe"></i>Ingress Configuration (Your Quiz Weakness)
+            </h3>
+            <div class="diagram" style="background-color: var(--diagram-bg); padding: 15px; border-radius: 5px; margin: 15px 0;">
+              <div style="display: flex; justify-content: space-around; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div class="diagram-box" style="background: #E3F2FD; border: 2px solid #1976D2; padding: 10px; border-radius: 5px; text-align: center;">
+                  <i class="fas fa-globe" style="color: #1976D2; font-size: 1.2em;"></i><br>
+                  <span style="font-weight: bold;">External Ingress</span><br>
+                  <small>Internet traffic</small>
+                </div>
+                <div class="diagram-box" style="background: #FFF3E0; border: 2px solid #F57C00; padding: 10px; border-radius: 5px; text-align: center;">
+                  <i class="fas fa-shield-alt" style="color: #F57C00; font-size: 1.2em;"></i><br>
+                  <span style="font-weight: bold;">Internal Ingress</span><br>
+                  <small>VNet only</small>
+                </div>
+                <div class="diagram-box" style="background: #F3E5F5; border: 2px solid #7B1FA2; padding: 10px; border-radius: 5px; text-align: center;">
+                  <i class="fas fa-ban" style="color: #7B1FA2; font-size: 1.2em;"></i><br>
+                  <span style="font-weight: bold;">Disabled</span><br>
+                  <small>No HTTP ingress</small>
+                </div>
+              </div>
+            </div>
+            
+            <h4>Key Ingress Configuration Points:</h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-cog"></i>
+                <strong>External Ingress:</strong> Exposes app to internet with public FQDN (e.g., <code>app.kindcliff-123.eastus.azurecontainerapps.io</code>).
+              </li>
+              <li>
+                <i class="fa-li fas fa-lock"></i>
+                <strong>Internal Ingress:</strong> Only accessible within Container Apps Environment VNet - no internet access.
+              </li>
+              <li>
+                <i class="fa-li fas fa-network-wired"></i>
+                <strong>Target Port:</strong> Must match the port your container listens on (common: 80, 8080, 3000).
+              </li>
+              <li>
+                <i class="fa-li fas fa-balance-scale"></i>
+                <strong>Traffic Splitting:</strong> Blue/green deployments with revision weight distribution.
+              </li>
+            </ul>
+            
+            <h3>
+              <i class="fas fa-layer-group"></i>Container Apps vs Other Services
+            </h3>
+            <div class="comparison-table" style="overflow-x: auto; margin: 15px 0;">
+              <table style="width: 100%; border-collapse: collapse; border: 1px solid var(--border-color);">
+                <tr style="background-color: var(--azure-blue); color: white;">
+                  <th style="padding: 10px; border: 1px solid var(--border-color);">Service</th>
+                  <th style="padding: 10px; border: 1px solid var(--border-color);">Best For</th>
+                  <th style="padding: 10px; border: 1px solid var(--border-color);">Management</th>
+                  <th style="padding: 10px; border: 1px solid var(--border-color);">Scaling</th>
+                </tr>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid var(--border-color); font-weight: bold;">Container Apps</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Microservices, APIs, Background jobs</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Serverless (No infrastructure)</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Auto (including scale to zero)</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid var(--border-color); font-weight: bold;">ACI</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Simple containers, Batch jobs</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Minimal (Container groups)</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Manual scaling</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid var(--border-color); font-weight: bold;">AKS</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Complex orchestration, Enterprise</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Full Kubernetes control</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Advanced (HPA, VPA, KEDA)</td>
+                </tr>
+                <tr>
+                  <td style="padding: 8px; border: 1px solid var(--border-color); font-weight: bold;">App Service</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Web apps, APIs (PaaS)</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Managed platform</td>
+                  <td style="padding: 8px; border: 1px solid var(--border-color);">Auto & manual scaling</td>
+                </tr>
+              </table>
+            </div>
+            
+            <p style="margin-top: 15px"><strong>AZ-104 Focus:</strong> Ingress configuration (External vs Internal), target port mapping, traffic splitting for deployments, scaling behaviors including scale-to-zero.</p>
+          </div>
+        </div>
+        
+        <!-- Network Watcher Agent Section -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="network-watcher-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="network-watcher-card"
+            for="network-watcher-toggle"
+            class="card-header"
+            style="background-color: #D32F2F"
+          >
+            <h2>
+              <i class="fas fa-search"></i>Network Watcher Agent (Quiz Focus)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <h3>
+              <i class="fas fa-eye"></i>Network Watcher Overview
+            </h3>
+            <p class="description">
+              Network monitoring and diagnostic service that provides tools to diagnose and gain insights into network performance and health.
+            </p>
+            
+            <h3>
+              <i class="fas fa-download"></i>Network Watcher Agent Deployment (Your Quiz Weakness)
+            </h3>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-server"></i>
+                <strong>VM Extension:</strong> Deployed as Azure VM Extension for packet capture and network diagnostics.
+              </li>
+              <li>
+                <i class="fa-li fas fa-windows"></i>
+                <strong>Windows:</strong> <code>Microsoft.Azure.NetworkWatcher.NetworkWatcherAgentWindows</code>
+              </li>
+              <li>
+                <i class="fa-li fas fa-linux"></i>
+                <strong>Linux:</strong> <code>Microsoft.Azure.NetworkWatcher.NetworkWatcherAgentLinux</code>
+              </li>
+              <li>
+                <i class="fa-li fas fa-robot"></i>
+                <strong>Auto-Install:</strong> Can be automatically deployed when packet capture is initiated.
+              </li>
+            </ul>
+            
+            <h4>Deployment Methods:</h4>
+            <div class="diagram" style="background-color: var(--diagram-bg); padding: 15px; border-radius: 5px; margin: 15px 0;">
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="deployment-box" style="background: #E8F5E8; border: 2px solid #4CAF50; padding: 15px; border-radius: 5px;">
+                  <h4 style="margin: 0 0 10px 0; color: #2E7D32;"><i class="fas fa-mouse"></i> Azure Portal</h4>
+                  <p style="margin: 5px 0; font-size: 0.9em;">VM → Extensions + Applications → Add NetworkWatcherAgent</p>
+                </div>
+                <div class="deployment-box" style="background: #E3F2FD; border: 2px solid #2196F3; padding: 15px; border-radius: 5px;">
+                  <h4 style="margin: 0 0 10px 0; color: #1976D2;"><i class="fas fa-terminal"></i> Azure CLI</h4>
+                  <code style="font-size: 0.8em; display: block; background: #f5f5f5; padding: 5px; border-radius: 3px;">az vm extension set --vm-name myVM --resource-group myRG --name NetworkWatcherAgentLinux --publisher Microsoft.Azure.NetworkWatcher</code>
+                </div>
+              </div>
+            </div>
+            
+            <h3>
+              <i class="fas fa-camera"></i>Packet Capture Features
+            </h3>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-filter"></i>
+                <strong>Filtering:</strong> Capture specific traffic by protocol, local/remote IP, ports.
+              </li>
+              <li>
+                <i class="fa-li fas fa-clock"></i>
+                <strong>Time Limits:</strong> Set maximum capture duration (18000 seconds max).
+              </li>
+              <li>
+                <i class="fa-li fas fa-hdd"></i>
+                <strong>Storage:</strong> Save to VM file system or Azure Storage Account.
+              </li>
+              <li>
+                <i class="fa-li fas fa-download"></i>
+                <strong>Analysis:</strong> Download .cap files for Wireshark or Network Monitor analysis.
+              </li>
+            </ul>
+            
+            <h4>Common Use Cases:</h4>
+            <div style="background: #FFF8E1; border-left: 4px solid #FFC107; padding: 15px; margin: 15px 0;">
+              <p style="margin: 0;"><strong>🔍 Troubleshooting:</strong> Network connectivity issues, packet loss, performance problems</p>
+              <p style="margin: 5px 0 0 0;"><strong>🛡️ Security:</strong> Investigate suspicious traffic patterns, intrusion detection</p>
+              <p style="margin: 5px 0 0 0;"><strong>📊 Monitoring:</strong> Application traffic analysis, bandwidth utilization</p>
+            </div>
+            
+            <p style="margin-top: 15px"><strong>AZ-104 Focus:</strong> Agent installation methods, packet capture configuration, storage options (VM vs Storage Account), common troubleshooting scenarios.</p>
           </div>
         </div>
 
