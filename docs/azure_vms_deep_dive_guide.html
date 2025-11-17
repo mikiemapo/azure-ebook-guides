@@ -1007,6 +1007,147 @@
           </div>
         </div>
 
+        <!-- Fault Domains & Update Domains - Foundational Knowledge -->
+        <div class="card">
+          <input type="checkbox" id="fault-domains-toggle" class="card-toggle" />
+          <label id="card-fault-domains" for="fault-domains-toggle" class="card-header" style="background-color: #673AB7;">
+            <h2>
+              <i class="fas fa-sync-alt"></i>Fault Domains & Update Domains (Foundational)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            
+            <div style="background: #F3E5F5; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #673AB7;">
+              <h4 style="color: #673AB7; margin: 0 0 10px 0;"><i class="fas fa-info-circle"></i> Why This Matters</h4>
+              <p style="margin: 0; font-weight: 500;">Fault and Update Domains are fundamental Azure concepts that determine how VMs are distributed across physical hardware for availability and maintenance. Understanding these is critical for VM placement, availability sets, and VMSS orchestration.</p>
+            </div>
+
+            <h3>
+              <i class="fas fa-exclamation-triangle"></i>Fault Domains (FD)
+            </h3>
+            <p class="description">
+              A fault domain represents a group of VMs that share a common physical rack, power source, and network switch. VMs in the same fault domain can fail together.
+            </p>
+
+            <div style="background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #F44336;">
+              <h4 style="color: #D32F2F; margin: 0 0 12px 0;"><i class="fas fa-bolt"></i> Fault Domain Characteristics</h4>
+              <ul style="margin: 0; padding-left: 20px;">
+                <li><strong>Physical Isolation:</strong> Each FD represents separate physical hardware infrastructure</li>
+                <li><strong>Shared Failure Points:</strong> Power supply, network switch, server rack components</li>
+                <li><strong>Maximum FDs:</strong> Up to 3 fault domains in most Azure regions</li>
+                <li><strong>Automatic Distribution:</strong> Azure spreads VMs across FDs automatically within availability sets</li>
+                <li><strong>Regional Limits:</strong> Some regions support 2 FDs, newer regions support 3 FDs</li>
+              </ul>
+            </div>
+
+            <h3>
+              <i class="fas fa-tools"></i>Update Domains (UD)
+            </h3>
+            <p class="description">
+              An update domain represents a group of VMs that can be updated/rebooted together during planned maintenance. VMs in different UDs ensure service availability during updates.
+            </p>
+
+            <div style="background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #4CAF50;">
+              <h4 style="color: #2E7D32; margin: 0 0 12px 0;"><i class="fas fa-sync-alt"></i> Update Domain Characteristics</h4>
+              <ul style="margin: 0; padding-left: 20px;">
+                <li><strong>Maintenance Isolation:</strong> Only one UD updated at a time during planned maintenance</li>
+                <li><strong>Configurable Count:</strong> Up to 20 update domains (default 5)</li>
+                <li><strong>Sequential Updates:</strong> Azure updates UDs one by one, waiting for completion</li>
+                <li><strong>Application Availability:</strong> Ensures portion of app remains running during updates</li>
+                <li><strong>Reboot Coordination:</strong> Controlled, predictable maintenance windows</li>
+              </ul>
+            </div>
+
+            <h3>
+              <i class="fas fa-layer-group"></i>How They Work Together
+            </h3>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 20px 0;">
+              <!-- Fault Domains Visual -->
+              <div style="background: #FFF3E0; border: 2px solid #FF9800; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #F57C00; margin: 0 0 10px 0; text-align: center;"><i class="fas fa-bolt"></i> Fault Domains</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin: 10px 0;">
+                  <div style="background: #FFEB3B; padding: 8px; border-radius: 4px; text-align: center; font-size: 0.8em;">
+                    <div style="font-weight: bold;">FD 0</div>
+                    <div>Rack A</div>
+                    <div>🔌 Power A</div>
+                  </div>
+                  <div style="background: #FFEB3B; padding: 8px; border-radius: 4px; text-align: center; font-size: 0.8em;">
+                    <div style="font-weight: bold;">FD 1</div>
+                    <div>Rack B</div>
+                    <div>🔌 Power B</div>
+                  </div>
+                  <div style="background: #FFEB3B; padding: 8px; border-radius: 4px; text-align: center; font-size: 0.8em;">
+                    <div style="font-weight: bold;">FD 2</div>
+                    <div>Rack C</div>
+                    <div>🔌 Power C</div>
+                  </div>
+                </div>
+                <div style="text-align: center; font-size: 0.8em; color: #E65100; font-weight: bold;">Hardware Isolation</div>
+              </div>
+              
+              <!-- Update Domains Visual -->
+              <div style="background: #E8F5E8; border: 2px solid #4CAF50; border-radius: 8px; padding: 15px;">
+                <h4 style="color: #2E7D32; margin: 0 0 10px 0; text-align: center;"><i class="fas fa-sync-alt"></i> Update Domains</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap: 4px; margin: 10px 0;">
+                  <div style="background: #81C784; padding: 8px; border-radius: 4px; text-align: center; font-size: 0.7em;">
+                    <div style="font-weight: bold;">UD 0</div>
+                    <div>Group 1</div>
+                  </div>
+                  <div style="background: #81C784; padding: 8px; border-radius: 4px; text-align: center; font-size: 0.7em;">
+                    <div style="font-weight: bold;">UD 1</div>
+                    <div>Group 2</div>
+                  </div>
+                  <div style="background: #81C784; padding: 8px; border-radius: 4px; text-align: center; font-size: 0.7em;">
+                    <div style="font-weight: bold;">UD 2</div>
+                    <div>Group 3</div>
+                  </div>
+                  <div style="background: #81C784; padding: 8px; border-radius: 4px; text-align: center; font-size: 0.7em;">
+                    <div style="font-weight: bold;">UD 3</div>
+                    <div>Group 4</div>
+                  </div>
+                  <div style="background: #81C784; padding: 8px; border-radius: 4px; text-align: center; font-size: 0.7em;">
+                    <div style="font-weight: bold;">UD 4</div>
+                    <div>Group 5</div>
+                  </div>
+                </div>
+                <div style="text-align: center; font-size: 0.8em; color: #2E7D32; font-weight: bold;">Maintenance Isolation</div>
+              </div>
+            </div>
+
+            <h4>
+              <i class="fas fa-cogs"></i>Real-World Application Scenarios
+            </h4>
+            <ul>
+              <li>
+                <i class="fa-li fas fa-server"></i>
+                <strong>Availability Sets:</strong> Azure distributes VMs across FDs/UDs automatically (2-3 FDs, up to 20 UDs)
+              </li>
+              <li>
+                <i class="fa-li fas fa-cubes"></i>
+                <strong>VMSS Uniform Mode:</strong> Up to 5 fault domains with platform-managed spreading
+              </li>
+              <li>
+                <i class="fa-li fas fa-layer-group"></i>
+                <strong>VMSS Flexible Mode:</strong> Up to 1000 fault domains with maximum spreading capability
+              </li>
+              <li>
+                <i class="fa-li fas fa-shield-alt"></i>
+                <strong>High Availability:</strong> Place critical VMs in different FDs/UDs for resilience
+              </li>
+              <li>
+                <i class="fa-li fas fa-clock"></i>
+                <strong>Planned Maintenance:</strong> Only one UD affected at a time, others remain running
+              </li>
+            </ul>
+
+            <div class="important-note" style="border-left-color: #673AB7">
+              <i class="fas fa-graduation-cap"></i>
+              <strong>AZ-104 Key Points:</strong> Understand FD = hardware isolation, UD = maintenance isolation. Know availability sets distribute VMs across both. VMSS orchestration modes affect FD limits (5 vs 1000).
+            </div>
+          </div>
+        </div>
+
         <!-- PILLAR 4: VMSS & Scaling -->
         <div class="card">
           <input type="checkbox" id="pillar4-vmss-scaling-toggle" class="card-toggle" />
