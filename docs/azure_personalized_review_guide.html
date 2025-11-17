@@ -638,7 +638,8 @@
   "Storage": { "correct": 29, "total": 60 },
   "Compute": { "correct": 24, "total": 59 },
   "Networking": { "correct": 18, "total": 31 },
-  "Monitoring": { "correct": 14, "total": 26 }
+  "Monitoring": { "correct": 14, "total": 26 },
+  "App Service & Containers": { "correct": 1, "total": 5 }
 }
         </script>
 
@@ -865,7 +866,8 @@
             Storage: { correct: 29, total: 60 },
             Compute: { correct: 24, total: 59 },
             Networking: { correct: 18, total: 31 },
-            Monitoring: { correct: 14, total: 26 }
+            Monitoring: { correct: 14, total: 26 },
+            "App Service & Containers": { correct: 1, total: 5 }
           };
 
           // If a persisted mergedQuizScores exists in localStorage, prefer it.
@@ -967,7 +969,8 @@
             Storage: "storage-focused-card",
             Compute: "compute-focused-card",
             Networking: "networking-focused-card",
-            Monitoring: "monitoring-focused-card"
+            Monitoring: "monitoring-focused-card",
+            "App Service & Containers": "app-service-containers-focused-card"
           };
 
           const domainNamesMap = {
@@ -3483,6 +3486,171 @@
             </ul>
           </div>
         </div>
+
+        <!-- Domain 6: Azure App Service & Containers -->
+        <div class="card" id="app-service-containers-focused-card">
+          <input type="checkbox" id="domain6-toggle" class="card-toggle" />
+          <label for="domain6-toggle" class="card-header" style="background-color: #28a745;">
+            <h2>
+              <i class="fas fa-cube"></i>Domain 6: Azure App Service & Containers
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            <div
+              class="quiz-focus-summary"
+              style="
+                background: #fff3e0;
+                border-radius: 7px;
+                padding: 12px 18px;
+                margin-bottom: 18px;
+                border: 2px solid #ff9800;
+              "
+            >
+              <strong>🚨 Critical Weak Spot:</strong> Container security scanning, deployment slots with auto-swap, VNet integration with SQL Database, Traffic Manager scaling for ACI.<br />
+              <span id="app-service-containers-quiz-stats" class="domain-quiz-stats" style="color: #d32f2f; font-weight: bold;">
+                (1/5 correct, 20% - IMMEDIATE PRIORITY)
+              </span>
+            </div>
+
+            <h3><i class="fas fa-exclamation-triangle" style="color: #ff9800;"></i>Priority Study Areas</h3>
+            <ul class="review-item-list">
+              
+              <li class="flashcard-item" id="app-service-flash-1-li">
+                <input type="checkbox" id="app-service-flash-1" />
+                <span class="item-text">Container Security: Defender + ACR Tasks + Azure Policy</span>
+                <span class="item-tag" style="background: #ff9800; color: white;">Critical</span>
+                <select class="confidence-select" data-item-id="app-service-flash-1">
+                  <option value="none">Rate Confidence</option>
+                  <option value="weak">Weak</option>
+                  <option value="medium">Medium</option>
+                  <option value="strong">Strong</option>
+                </select>
+                <div class="flashcard-content-area">
+                  <h4><i class="fas fa-shield-alt"></i>Container Image Security Pipeline</h4>
+                  <ul>
+                    <li><strong>Microsoft Defender for Containers:</strong> Native Azure vulnerability scanning for ACR images with detailed reports</li>
+                    <li><strong>ACR Tasks:</strong> Automate image scanning during CI/CD build process (shift-left security)</li>
+                    <li><strong>Azure Policy:</strong> Governance tool to deny deployment of unscanned or vulnerable images</li>
+                    <li><strong>Integration Pattern:</strong> Enable Defender → Configure ACR Tasks in build → Set Policy enforcement → Only approved images reach production</li>
+                  </ul>
+                  <div class="mnemonic-internal">
+                    <i class="fas fa-lightbulb"></i>Mnemonic: "DAP = Defender + ACR + Policy = Secure Container Pipeline"
+                  </div>
+                </div>
+              </li>
+
+              <li class="flashcard-item" id="app-service-flash-2-li">
+                <input type="checkbox" id="app-service-flash-2" />
+                <span class="item-text">App Service: Zero-Downtime Deployment Slots</span>
+                <span class="item-tag" style="background: #ff9800; color: white;">Critical</span>
+                <select class="confidence-select" data-item-id="app-service-flash-2">
+                  <option value="none">Rate Confidence</option>
+                  <option value="weak">Weak</option>
+                  <option value="medium">Medium</option>
+                  <option value="strong">Strong</option>
+                </select>
+                <div class="flashcard-content-area">
+                  <h4><i class="fas fa-exchange-alt"></i>Deployment Slots Configuration</h4>
+                  <ul>
+                    <li><strong>Auto-Swap:</strong> Automatically swaps staging to production after deployment completion and warm-up</li>
+                    <li><strong>Slot Settings:</strong> Environment-specific settings (connection strings, app settings) that maintain isolation</li>
+                    <li><strong>Swap Operation:</strong> Transactional process that can revert automatically on failure</li>
+                    <li><strong>Required Steps:</strong> Enable auto-swap → Configure slot settings → Deploy to staging → Automatic production swap</li>
+                  </ul>
+                  <div class="mnemonic-internal">
+                    <i class="fas fa-lightbulb"></i>Mnemonic: "ASS = Auto-Swap + Slot Settings = Safe deployments"
+                  </div>
+                </div>
+              </li>
+
+              <li class="flashcard-item" id="app-service-flash-3-li">
+                <input type="checkbox" id="app-service-flash-3" />
+                <span class="item-text">VNet Integration + SQL Database Security</span>
+                <span class="item-tag" style="background: #ff9800; color: white;">Critical</span>
+                <select class="confidence-select" data-item-id="app-service-flash-3">
+                  <option value="none">Rate Confidence</option>
+                  <option value="weak">Weak</option>
+                  <option value="medium">Medium</option>
+                  <option value="strong">Strong</option>
+                </select>
+                <div class="flashcard-content-area">
+                  <h4><i class="fas fa-network-wired"></i>Secure App Service to SQL Database</h4>
+                  <ul>
+                    <li><strong>Step 1:</strong> VNet Integration - Connect App Service to VNet subnet</li>
+                    <li><strong>Step 2:</strong> Service Endpoint - Enable on subnet for SQL Database access</li>
+                    <li><strong>Step 3:</strong> Firewall Rules - Update SQL Database to allow subnet traffic</li>
+                    <li><strong>Step 4:</strong> Disable Public Access - Remove internet access to SQL Database</li>
+                    <li><strong>Step 5:</strong> Test Connectivity - Verify end-to-end secure connection</li>
+                  </ul>
+                  <div class="mnemonic-internal">
+                    <i class="fas fa-lightbulb"></i>Mnemonic: "VSFDT = VNet + Service endpoint + Firewall + Disable public + Test"
+                  </div>
+                </div>
+              </li>
+
+              <li class="flashcard-item" id="app-service-flash-4-li">
+                <input type="checkbox" id="app-service-flash-4" />
+                <span class="item-text">ACI Scaling: Traffic Manager vs Load Balancer</span>
+                <span class="item-tag" style="background: #ff9800; color: white;">Critical</span>
+                <select class="confidence-select" data-item-id="app-service-flash-4">
+                  <option value="none">Rate Confidence</option>
+                  <option value="weak">Weak</option>
+                  <option value="medium">Medium</option>
+                  <option value="strong">Strong</option>
+                </select>
+                <div class="flashcard-content-area">
+                  <h4><i class="fas fa-globe"></i>ACI High Traffic Scaling</h4>
+                  <ul>
+                    <li><strong>✅ Traffic Manager:</strong> DNS-based routing to multiple ACI deployments across regions - CORRECT for ACI scaling</li>
+                    <li><strong>❌ Azure Load Balancer:</strong> Not compatible with basic ACI (works within VNet only, ACI is outside VNet)</li>
+                    <li><strong>❌ Manual scaling:</strong> Not responsive for traffic surges like flash sales</li>
+                    <li><strong>❌ AKS migration:</strong> Requires architecture redesign (violates requirement)</li>
+                    <li><strong>Key Point:</strong> Traffic Manager enables fault tolerance and global distribution without app changes</li>
+                  </ul>
+                  <div class="mnemonic-internal">
+                    <i class="fas fa-lightbulb"></i>Mnemonic: "ACI + Traffic Manager = Global scaling without redesign"
+                  </div>
+                </div>
+              </li>
+
+              <li class="flashcard-item" id="app-service-flash-5-li">
+                <input type="checkbox" id="app-service-flash-5" />
+                <span class="item-text">Wildcard SSL Certificates for Subdomains</span>
+                <span class="item-tag" style="background: #28a745; color: white;">Correct</span>
+                <select class="confidence-select" data-item-id="app-service-flash-5">
+                  <option value="none">Rate Confidence</option>
+                  <option value="weak">Weak</option>
+                  <option value="medium">Medium</option>
+                  <option value="strong">Strong</option>
+                </select>
+                <div class="flashcard-content-area">
+                  <h4><i class="fas fa-certificate"></i>Wildcard SSL Certificate Management</h4>
+                  <ul>
+                    <li><strong>Wildcard Pattern:</strong> *.example.com covers app.example.com, blog.example.com, etc.</li>
+                    <li><strong>App Service Support:</strong> Native binding support for wildcard certificates</li>
+                    <li><strong>Management Benefit:</strong> Single certificate for all first-level subdomains</li>
+                    <li><strong>Limitation:</strong> Does NOT cover nested subdomains (e.g., sub.blog.example.com)</li>
+                    <li><strong>Security:</strong> Enables HTTPS/TLS for end-to-end encryption</li>
+                  </ul>
+                  <div class="mnemonic-internal">
+                    <i class="fas fa-lightbulb"></i>Mnemonic: "Wildcard = One cert for many subdomains (but not nested)"
+                  </div>
+                </div>
+              </li>
+
+            </ul>
+
+            <h3><i class="fas fa-flask"></i>Lab Tracker</h3>
+            <ul class="review-item-list">
+              <li class="lab-item"><span class="item-text"><strong>Container security lab: Set up Defender + ACR Tasks + Policy enforcement</strong></span></li>
+              <li class="lab-item"><span class="item-text"><strong>Deployment slots lab: Configure auto-swap with slot-specific settings</strong></span></li>
+              <li class="lab-item"><span class="item-text"><strong>VNet integration lab: Secure App Service to SQL Database connection</strong></span></li>
+              <li class="lab-item"><span class="item-text"><strong>ACI scaling lab: Deploy Traffic Manager with multi-region ACI instances</strong></span></li>
+            </ul>
+          </div>
+        </div>
+
   <!-- End Flashcards/Labs Section -->
 
   <!-- Flashcard expand/collapse handled by consolidated script -->
@@ -3531,7 +3699,12 @@
           'net-flash-4': { cli: 'az network route-table route add --address-prefix 0.0.0.0/0 --next-hop-type VirtualAppliance --route-table-name forceAll --name forceTunnel --next-hop-ip-address <onPremFirewallIP>', ps: 'Add-AzRouteConfig -Name forceTunnel -AddressPrefix 0.0.0.0/0 -NextHopType VirtualAppliance -NextHopIpAddress <onPremFirewallIP> -RouteTable forceAll' },
           'monitoring-flash-1': { cli: 'az monitor metrics list --resource <resId> --metric "Percentage CPU"\naz monitor alert create -n cpuAlert -g <rg> --scopes <resId> --condition "avg Percentage CPU > 80" --action-group <agId>', ps: 'Get-AzMetric -ResourceId <resId> -MetricName "Percentage CPU"\nNew-AzScheduledQueryRule ...' },
           'monitoring-flash-2': { cli: 'az monitor log-analytics query -w <workspaceId> --analytics-query "AzureActivity | summarize count() by ActivityStatusValue"', ps: 'Invoke-AzOperationalInsightsQuery -WorkspaceId <workspaceId> -Query "AzureActivity | summarize count() by ActivityStatusValue"' },
-          'monitoring-flash-5': { cli: 'az backup protection enable-for-vm -g <rg> -v <vmName> -rsv <vaultName> --policy-name DailyPolicy', ps: 'Enable-AzRecoveryServicesBackupProtection -ResourceGroupName <rg> -VaultId <vaultId> -Policy $policy -Name <vmName>' }
+          'monitoring-flash-5': { cli: 'az backup protection enable-for-vm -g <rg> -v <vmName> -rsv <vaultName> --policy-name DailyPolicy', ps: 'Enable-AzRecoveryServicesBackupProtection -ResourceGroupName <rg> -VaultId <vaultId> -Policy $policy -Name <vmName>' },
+          'app-service-flash-1': { cli: 'az security assessment list --assessed-resource-id /subscriptions/<subId>/resourceGroups/<rg>/providers/Microsoft.ContainerRegistry/registries/<acrName>\naz acr task create -r <acrName> -n scanTask --image <imageName> --file Dockerfile --context . --assign-identity', ps: 'Get-AzSecurityAssessment -AssessedResourceId /subscriptions/<subId>/resourceGroups/<rg>/providers/Microsoft.ContainerRegistry/registries/<acrName>' },
+          'app-service-flash-2': { cli: 'az webapp deployment slot create -g <rg> -n <appName> -s staging\naz webapp deployment slot auto-swap -g <rg> -n <appName> -s staging --enable-auto-swap', ps: 'New-AzWebAppSlot -ResourceGroupName <rg> -Name <appName> -Slot staging\nSet-AzWebAppSlot -ResourceGroupName <rg> -Name <appName> -Slot staging -AutoSwapSlotName production' },
+          'app-service-flash-3': { cli: 'az webapp vnet-integration add -g <rg> -n <appName> --vnet <vnetName> --subnet <subnetName>\naz network vnet subnet update -n <subnetName> --vnet-name <vnetName> -g <rg> --service-endpoints Microsoft.Sql', ps: 'Set-AzWebApp -ResourceGroupName <rg> -Name <appName> -VnetName <vnetName> -SubnetName <subnetName>\nSet-AzVirtualNetworkSubnetConfig -Name <subnetName> -VirtualNetwork <vnet> -ServiceEndpoint Microsoft.Sql' },
+          'app-service-flash-4': { cli: 'az network traffic-manager profile create -n <tmProfile> -g <rg> --routing-method Performance\naz container create -n aci-west -g <rg> --image <imageUrl> --location westus', ps: 'New-AzTrafficManagerProfile -Name <tmProfile> -ResourceGroupName <rg> -TrafficRoutingMethod Performance\nNew-AzContainerGroup -ResourceGroupName <rg> -Name aci-west -Image <imageUrl> -Location "West US"' },
+          'app-service-flash-5': { cli: 'az webapp config ssl upload -g <rg> -n <appName> --certificate-file wildcard.pfx\naz webapp config ssl bind -g <rg> -n <appName> --certificate-thumbprint <thumbprint> --ssl-type SNI', ps: 'New-AzWebAppSSLBinding -ResourceGroupName <rg> -WebAppName <appName> -CertificateFilePath wildcard.pfx -Name "*.example.com"' }
         };
 
         const domainMap = {
@@ -3549,6 +3722,9 @@
           },
           'monitoring-focused-card': {
             name: 'Monitoring', related: ['net-flash-4','compute-flash-3','storage-flash-2']
+          },
+          'app-service-containers-focused-card': {
+            name: 'App Service & Containers', related: ['compute-flash-2','storage-flash-4','monitoring-flash-3']
           }
         };
 
@@ -3582,6 +3758,11 @@
           ],
           'monitoring-focused-card': [
             { title: 'Alert Noise Reduction', steps: [ 'Too many CPU alerts across VM fleet.', 'Aggregate via metrics chart.', 'Adjust threshold & evaluation period.', 'Add workbook combining CPU + Disk IO trends.' ] }
+          ],
+          'app-service-containers-focused-card': [
+            { title: 'Security Scan Failure Blocks Deployment', steps: [ 'ACR image deployment blocked by policy.', 'Review Defender for Containers scan results.', 'Fix critical vulnerabilities in base image.', 'Re-trigger ACR task build.', 'Verify policy allows compliant image through.' ] },
+            { title: 'Deployment Slot Swap Rollback', steps: [ 'Auto-swap triggered, but staging has bugs.', 'Transactional swap detects failure.', 'Automatic rollback to previous production.', 'Fix staging issues, test slot-specific settings.', 'Re-enable auto-swap for next deployment.' ] },
+            { title: 'VNet Integration Connectivity Loss', steps: [ 'App Service loses SQL Database connection.', 'Verify VNet integration subnet status.', 'Check service endpoint configuration.', 'Validate SQL Database firewall rules.', 'Test connectivity, update monitoring alerts.' ] }
           ]
         };
 

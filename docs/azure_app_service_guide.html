@@ -1248,6 +1248,22 @@
                 before the swap to minimize/eliminate downtime. The old
                 production code moves to the staging slot (for easy rollback).
               </li>
+              
+              <!-- Enhanced Auto-Swap Configuration - Quiz Critical -->
+              <li style="background: linear-gradient(135deg, #FFF3E0 0%, #FFE0B2 100%); padding: 12px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #FF9800;">
+                <i class="fa-li fas fa-magic" style="color: #F57C00;"></i
+                ><strong>🎯 Auto-Swap (Quiz Focus):</strong> Automatically swaps staging slot to production after deployment completion and warm-up.
+                <div style="margin-top: 8px;">
+                  <ul style="margin: 6px 0; padding-left: 20px;">
+                    <li><strong>Enable Auto-Swap:</strong> Configure during slot creation or in deployment settings</li>
+                    <li><strong>Zero-Downtime:</strong> Ensures seamless transition without manual intervention</li>
+                    <li><strong>Fail-Safe:</strong> Automatically rolls back if deployment health checks fail</li>
+                    <li><strong>CI/CD Integration:</strong> Perfect for automated deployment pipelines</li>
+                    <li><strong>Warm-up Process:</strong> Staging slot is warmed up before swap to ensure performance</li>
+                  </ul>
+                </div>
+              </li>
+              
               <li>
                 <i class="fa-li fas fa-cog"></i
                 ><strong>Configuration Stickiness:</strong> Some settings (like
@@ -1255,6 +1271,22 @@
                 settings" so they don't swap with the code, allowing different
                 configurations for different slots.
               </li>
+              
+              <!-- Enhanced Slot Settings Configuration - Quiz Critical -->
+              <li style="background: linear-gradient(135deg, #E8F5E8 0%, #C8E6C9 100%); padding: 12px; border-radius: 8px; margin: 10px 0; border-left: 4px solid #4CAF50;">
+                <i class="fa-li fas fa-sliders-h" style="color: #2E7D32;"></i
+                ><strong>🎯 Slot Settings (Quiz Focus):</strong> Environment-specific configurations that maintain isolation between slots.
+                <div style="margin-top: 8px;">
+                  <ul style="margin: 6px 0; padding-left: 20px;">
+                    <li><strong>Slot-Specific Settings:</strong> Mark as "Deployment slot setting" to prevent swapping</li>
+                    <li><strong>Connection Strings:</strong> Different databases for staging vs production</li>
+                    <li><strong>App Settings:</strong> Environment variables, API keys, feature flags</li>
+                    <li><strong>Environment Isolation:</strong> Prevents production data exposure in staging</li>
+                    <li><strong>Configuration Management:</strong> Essential for proper testing and compliance</li>
+                  </ul>
+                </div>
+              </li>
+              
               <li>
                 <i
                   class="fa-li fas fa-dollar-sign"
@@ -1512,6 +1544,24 @@
                   </li>
                   <li>Non-transitive across VNet peerings.</li>
                 </ul>
+                
+                <!-- Critical SQL Database Connection Sequence - Quiz Focus -->
+                <div style="background: linear-gradient(135deg, #E3F2FD 0%, #BBDEFB 100%); padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #2196F3;">
+                  <h5 style="margin: 0 0 10px 0; color: #0D47A1;"><i class="fas fa-database"></i> 🎯 VNet + SQL Database Security (Quiz Critical)</h5>
+                  <div style="font-size: 0.9em;">
+                    <strong>Correct Configuration Sequence:</strong>
+                    <ol style="margin: 8px 0; padding-left: 20px;">
+                      <li><strong>VNet Integration:</strong> Connect App Service to VNet subnet first</li>
+                      <li><strong>Service Endpoint:</strong> Enable Microsoft.Sql service endpoint on the subnet</li>
+                      <li><strong>Firewall Rules:</strong> Update SQL Database firewall to allow subnet access</li>
+                      <li><strong>Disable Public Access:</strong> Turn off public internet access to SQL Database</li>
+                      <li><strong>Test Connectivity:</strong> Verify end-to-end secure connection works</li>
+                    </ol>
+                    <div style="background: #FFF8E1; padding: 8px; border-radius: 4px; margin-top: 8px;">
+                      <strong>💡 Key Point:</strong> Must establish VNet integration and service endpoints BEFORE disabling public access to avoid connectivity loss
+                    </div>
+                  </div>
+                </div>
               </li>
               <li style="margin-top: 10px">
                 <i class="fa-li fas fa-globe"></i
@@ -1631,6 +1681,120 @@
               are available, and the role of Application Insights for deeper app
               monitoring.
             </p>
+          </div>
+        </div>
+
+        <!-- Container Security & ACR Integration -->
+        <div class="card">
+          <input
+            type="checkbox"
+            id="appservice-container-security-toggle"
+            class="card-toggle"
+          />
+          <label
+            id="card-security"
+            for="appservice-container-security-toggle"
+            class="card-header"
+            style="background-color: #FF5722"
+          >
+            <h2>
+              <i class="fas fa-shield-alt"></i>Container Security & ACR Integration (Quiz Critical)
+            </h2>
+            <i class="fas fa-chevron-down toggle-icon"></i>
+          </label>
+          <div class="card-content">
+            
+            <div style="background: #FFEBEE; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #D32F2F;">
+              <h4 style="color: #D32F2F; margin: 0 0 10px 0;"><i class="fas fa-exclamation-triangle"></i> Quiz Alert: 80% Failed This Topic</h4>
+              <p style="margin: 0; font-weight: 500;">Container image security scanning with Microsoft Defender, ACR Tasks, and Azure Policy integration was the #1 missed topic.</p>
+            </div>
+
+            <h3 style="color: var(--warning-color); margin-top: 30px">
+              <i class="fas fa-bug"></i>Container Vulnerability Scanning Pipeline
+            </h3>
+            <p class="description">
+              Implement shift-left security by scanning container images for vulnerabilities before deployment to production.
+            </p>
+
+            <div class="diagram" style="align-items: stretch; margin: 20px 0">
+              <div class="diagram-box" style="border-color: #2196F3; min-width: 180px">
+                <i class="fas fa-shield-alt" style="color: #2196F3"></i>
+                <strong>Microsoft Defender for Containers</strong>
+                <span>Native Azure vulnerability scanning</span>
+              </div>
+              <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0 10px;">
+                <i class="fas fa-plus" style="font-size: 1.2em; color: var(--azure-blue);"></i>
+              </div>
+              <div class="diagram-box" style="border-color: #FF9800; min-width: 180px">
+                <i class="fas fa-cogs" style="color: #FF9800"></i>
+                <strong>ACR Tasks</strong>
+                <span>Automated build & scan pipeline</span>
+              </div>
+              <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin: 0 10px;">
+                <i class="fas fa-plus" style="font-size: 1.2em; color: var(--azure-blue);"></i>
+              </div>
+              <div class="diagram-box" style="border-color: #4CAF50; min-width: 180px">
+                <i class="fas fa-gavel" style="color: #4CAF50"></i>
+                <strong>Azure Policy</strong>
+                <span>Governance & compliance enforcement</span>
+              </div>
+            </div>
+
+            <h4><i class="fas fa-list-ol"></i> Implementation Sequence (Quiz Answer)</h4>
+            <ol style="margin-left: 0; padding-left: 20px;">
+              <li style="margin-bottom: 12px;">
+                <strong style="color: #2196F3;">Enable Microsoft Defender for Containers</strong>
+                <ul style="margin-top: 5px;">
+                  <li>Automatically scans ACR images for vulnerabilities</li>
+                  <li>Provides detailed reports integrated with Security Center</li>
+                  <li>Native Azure solution - most efficient approach</li>
+                </ul>
+              </li>
+              <li style="margin-bottom: 12px;">
+                <strong style="color: #FF9800;">Configure ACR Tasks for Build Pipeline</strong>
+                <ul style="margin-top: 5px;">
+                  <li>Automate image scanning during CI/CD process</li>
+                  <li>Implements "shift-left security" principles</li>
+                  <li>Catch vulnerabilities early in development cycle</li>
+                </ul>
+              </li>
+              <li style="margin-bottom: 12px;">
+                <strong style="color: #4CAF50;">Set Up Azure Policy for Enforcement</strong>
+                <ul style="margin-top: 5px;">
+                  <li>Deny deployment of unscanned images</li>
+                  <li>Block images with critical vulnerabilities</li>
+                  <li>Ensure only compliant images reach production</li>
+                </ul>
+              </li>
+            </ol>
+
+            <div style="background: #E8F5E8; padding: 12px; border-radius: 6px; margin: 15px 0; border-left: 4px solid #4CAF50;">
+              <h5 style="margin: 0 0 8px 0; color: #2E7D32;"><i class="fas fa-lightbulb"></i> Why This Combination Works</h5>
+              <ul style="margin: 0; padding-left: 15px; font-size: 0.9em;">
+                <li><strong>Defender:</strong> Detection & reporting</li>
+                <li><strong>ACR Tasks:</strong> Automated scanning in pipeline</li>
+                <li><strong>Policy:</strong> Governance & enforcement</li>
+                <li><strong>Result:</strong> Only approved, secure images in production</li>
+              </ul>
+            </div>
+
+            <h4><i class="fas fa-times-circle"></i> Why Other Options Failed (Quiz Insight)</h4>
+            <ul>
+              <li style="margin-bottom: 8px;">
+                <strong style="color: #D32F2F;">❌ Third-party tools:</strong> Redundant when native Azure solution exists, adds complexity
+              </li>
+              <li style="margin-bottom: 8px;">
+                <strong style="color: #D32F2F;">❌ Webhooks only:</strong> Notifications don't perform scanning - need actual scanning mechanism
+              </li>
+              <li style="margin-bottom: 8px;">
+                <strong style="color: #D32F2F;">❌ Manual processes:</strong> Don't scale for enterprise deployments, prone to human error
+              </li>
+            </ul>
+            
+            <div class="important-note" style="background: #FFEB3B; border-left-color: #FF6F00; color: #E65100;">
+              <i class="fas fa-graduation-cap"></i>
+              <strong>Exam Tip:</strong> Remember the three-layer approach: Defender (scan) + ACR Tasks (automate) + Policy (enforce) = Complete container security pipeline
+            </div>
           </div>
         </div>
 
