@@ -714,8 +714,6 @@
 
     <script>
       const studyTopics = [
-        // === Critical Study Priorities ===
-        // Note: RTO/RPO moved to Azure Monitoring & Management section
         // === Personalized Study Tools ===
         {
           id: "guide-personalized-review",
@@ -1305,7 +1303,6 @@
 
         // Define the desired order of categories
         const categoryOrder = [
-          "Critical Study Priorities", // CRITICAL ITEMS FIRST
           "Personalized Study Tools", // NEW CATEGORY ADDED HERE
           "Lab Reviews & Practical",
           "Interactive Sorters",
@@ -1457,8 +1454,6 @@
       function getCategoryIcon(categoryName) {
         const lowerCategoryName = categoryName.toLowerCase();
         switch (lowerCategoryName) {
-          case "critical study priorities":
-            return "fas fa-exclamation-triangle";
           case "personalized study tools":
             return "fas fa-bullseye";
           case "lab reviews & practical":
