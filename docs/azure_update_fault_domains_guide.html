@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azure Update Domains & Fault Domains - AZ-104 Study Guide</title>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 20px;
+        background-color: #f5f5f5;
+      }
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background-color: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+      }
+      .header {
+        text-align: center;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 2.5em;
+      }
+      .header p {
+        margin: 10px 0 0 0;
+        font-size: 1.2em;
+        opacity: 0.9;
+      }
+      .section {
+        margin: 30px 0;
+        padding: 20px;
+        border-radius: 8px;
+        border-left: 5px solid #667eea;
+        background-color: #f8f9ff;
+      }
+      .section h2 {
+        color: #667eea;
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      .comparison-table th,
+      .comparison-table td {
+        border: 1px solid #ddd;
+        padding: 12px;
+        text-align: left;
+      }
+      .comparison-table th {
+        background-color: #667eea;
+        color: white;
+      }
+      .comparison-table tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      .domain-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 20px;
+        margin: 20px 0;
+      }
+      .domain-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      }
+      .domain-card h4 {
+        color: #667eea;
+        margin-top: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .exam-tip {
+        background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        color: white;
+        padding: 15px;
+        border-radius: 8px;
+        margin: 15px 0;
+      }
+      .exam-tip strong {
+        display: block;
+        margin-bottom: 5px;
+      }
+      .visual-diagram {
+        background: #f0f8ff;
+        border: 2px solid #4169e1;
+        border-radius: 8px;
+        padding: 20px;
+        margin: 20px 0;
+        text-align: center;
+      }
+      .rack-visual {
+        display: inline-block;
+        margin: 10px;
+        padding: 15px;
+        background: #e6f3ff;
+        border: 2px solid #4169e1;
+        border-radius: 5px;
+        width: 100px;
+        text-align: center;
+      }
+      .update-group {
+        background: #fff3e0;
+        border: 2px solid #ff9800;
+        border-radius: 5px;
+        padding: 10px;
+        margin: 5px;
+        display: inline-block;
+      }
+      .highlight {
+        background: linear-gradient(135deg, #ffeaa7, #fab1a0);
+        padding: 3px 6px;
+        border-radius: 3px;
+        color: #2d3436;
+        font-weight: bold;
+      }
+      .code-block {
+        background: #f4f4f4;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 15px 0;
+        overflow-x: auto;
+      }
+      .scenario-card {
+        background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 15px 0;
+      }
+      .scenario-card h4 {
+        margin-top: 0;
+        color: white;
+      }
+      .back-btn {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 20px;
+        background: #667eea;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background 0.3s;
+      }
+      .back-btn:hover {
+        background: #5a67d8;
+      }
+      .vs-container {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        margin: 30px 0;
+        flex-wrap: wrap;
+      }
+      .vs-item {
+        flex: 1;
+        min-width: 250px;
+        margin: 10px;
+      }
+      .vs-divider {
+        font-size: 2em;
+        font-weight: bold;
+        color: #667eea;
+        margin: 0 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>⚡ Update Domains & Fault Domains</h1>
+        <p>
+          Azure High Availability & VM Placement Strategy - AZ-104 Essential
+        </p>
+      </div>
+
+      <div class="section">
+        <h2>🏗️ Fundamentals Overview</h2>
+        <p>
+          Understanding Update Domains and Fault Domains is crucial for
+          designing highly available Azure solutions. These concepts ensure your
+          VMs remain available during planned maintenance and hardware failures.
+        </p>
+
+        <div class="vs-container">
+          <div class="vs-item">
+            <div class="domain-card">
+              <h4>🔧 Update Domains (UDs)</h4>
+              <p><strong>Purpose:</strong> Planned maintenance protection</p>
+              <p>
+                <strong>What it prevents:</strong> All VMs going down during
+                Azure updates
+              </p>
+              <p>
+                <strong>How it works:</strong> Azure updates one UD at a time
+              </p>
+              <p><strong>Max per Availability Set:</strong> 20 UDs</p>
+              <p><strong>Default:</strong> 5 UDs</p>
+            </div>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div class="vs-item">
+            <div class="domain-card">
+              <h4>⚡ Fault Domains (FDs)</h4>
+              <p><strong>Purpose:</strong> Hardware failure protection</p>
+              <p>
+                <strong>What it prevents:</strong> Single point of hardware
+                failure
+              </p>
+              <p>
+                <strong>How it works:</strong> Different power/network sources
+              </p>
+              <p><strong>Max per Availability Set:</strong> 3 FDs</p>
+              <p><strong>Represents:</strong> Physical server racks</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="exam-tip">
+          <strong>🎯 Key Exam Point:</strong> Fault Domains = Hardware racks,
+          Update Domains = Software updates. FDs protect against power/network
+          failures, UDs protect against planned maintenance downtime.
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🏢 Fault Domains Deep Dive</h2>
+
+        <div class="visual-diagram">
+          <h4>Physical Datacenter Layout</h4>
+          <div class="rack-visual">
+            <strong>Rack 1</strong><br />
+            FD 0<br />
+            Power A<br />
+            Network A
+          </div>
+          <div class="rack-visual">
+            <strong>Rack 2</strong><br />
+            FD 1<br />
+            Power B<br />
+            Network B
+          </div>
+          <div class="rack-visual">
+            <strong>Rack 3</strong><br />
+            FD 2<br />
+            Power C<br />
+            Network C
+          </div>
+          <p>
+            <em
+              >Each Fault Domain represents a separate physical rack with
+              independent power and networking</em
+            >
+          </p>
+        </div>
+
+        <h3>Fault Domain Characteristics</h3>
+        <ul>
+          <li>
+            <strong>Physical Isolation:</strong> Each FD is a separate server
+            rack
+          </li>
+          <li>
+            <strong>Independent Power:</strong> Separate power sources and UPS
+            systems
+          </li>
+          <li>
+            <strong>Independent Network:</strong> Separate top-of-rack switches
+          </li>
+          <li>
+            <strong>Maximum 3 FDs:</strong> Per Availability Set (Azure
+            limitation)
+          </li>
+          <li>
+            <strong>Automatic Distribution:</strong> Azure places VMs across FDs
+            automatically
+          </li>
+        </ul>
+
+        <div class="exam-tip">
+          <strong>🎯 Exam Scenario:</strong> "Ensure application survives power
+          failure in datacenter" = Use Availability Set with multiple Fault
+          Domains (FDs protect against power/hardware failures)
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🔄 Update Domains Deep Dive</h2>
+
+        <div class="visual-diagram">
+          <h4>Planned Maintenance Sequence</h4>
+          <div class="update-group">
+            <strong>UD 0</strong><br />
+            VMs 1,6,11<br />
+            <span style="color: red">Update First</span>
+          </div>
+          <div class="update-group">
+            <strong>UD 1</strong><br />
+            VMs 2,7,12<br />
+            <span style="color: orange">Update Second</span>
+          </div>
+          <div class="update-group">
+            <strong>UD 2</strong><br />
+            VMs 3,8,13<br />
+            <span style="color: green">Update Third</span>
+          </div>
+          <div class="update-group">
+            <strong>UD 3</strong><br />
+            VMs 4,9,14<br />
+            <span style="color: blue">Update Fourth</span>
+          </div>
+          <div class="update-group">
+            <strong>UD 4</strong><br />
+            VMs 5,10,15<br />
+            <span style="color: purple">Update Last</span>
+          </div>
+          <p>
+            <em
+              >Azure updates one UD at a time, ensuring continuous service
+              availability</em
+            >
+          </p>
+        </div>
+
+        <h3>Update Domain Characteristics</h3>
+        <ul>
+          <li>
+            <strong>Planned Maintenance:</strong> Azure host OS updates,
+            hardware maintenance
+          </li>
+          <li>
+            <strong>Sequential Updates:</strong> Only one UD updated at a time
+          </li>
+          <li>
+            <strong>30-minute Window:</strong> Between updating different UDs
+          </li>
+          <li><strong>Configurable:</strong> 1-20 UDs (default is 5)</li>
+          <li>
+            <strong>Round-robin Assignment:</strong> VMs distributed evenly
+            across UDs
+          </li>
+        </ul>
+
+        <div class="code-block">
+          <strong
+            >Azure CLI - Create Availability Set with Custom Domains:</strong
+          ><br />
+          az vm availability-set create \<br />
+          &nbsp;&nbsp;--resource-group myResourceGroup \<br />
+          &nbsp;&nbsp;--name myAvailSet \<br />
+          &nbsp;&nbsp;--platform-fault-domain-count 3 \<br />
+          &nbsp;&nbsp;--platform-update-domain-count 10<br /><br />
+
+          <strong>Create VM in Availability Set:</strong><br />
+          az vm create \<br />
+          &nbsp;&nbsp;--resource-group myResourceGroup \<br />
+          &nbsp;&nbsp;--name myVM \<br />
+          &nbsp;&nbsp;--availability-set myAvailSet \<br />
+          &nbsp;&nbsp;--image UbuntuLTS
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>📊 Domain Interaction & Best Practices</h2>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Scenario</th>
+              <th>Fault Domains Impact</th>
+              <th>Update Domains Impact</th>
+              <th>Recommended Configuration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Web Application (2 VMs)</td>
+              <td>Place in different FDs</td>
+              <td>Place in different UDs</td>
+              <td>2 FDs, 2 UDs minimum</td>
+            </tr>
+            <tr>
+              <td>Database Cluster (3 VMs)</td>
+              <td>All 3 FDs used</td>
+              <td>Spread across multiple UDs</td>
+              <td>3 FDs, 3+ UDs</td>
+            </tr>
+            <tr>
+              <td>Large Scale App (10+ VMs)</td>
+              <td>Evenly distributed</td>
+              <td>Evenly distributed</td>
+              <td>3 FDs, 5-10 UDs</td>
+            </tr>
+            <tr>
+              <td>Single VM (Non-HA)</td>
+              <td>N/A (No protection)</td>
+              <td>N/A (No protection)</td>
+              <td>Consider VMSS instead</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="exam-tip">
+          <strong>🎯 Architecture Decision:</strong>
+          <ul>
+            <li>
+              <span class="highlight"
+                >2+ VMs = Always use Availability Set</span
+              >
+            </li>
+            <li>
+              <span class="highlight">3+ VMs = Use all 3 Fault Domains</span>
+            </li>
+            <li>
+              <span class="highlight"
+                >High-traffic apps = Increase Update Domains</span
+              >
+            </li>
+            <li>
+              <span class="highlight"
+                >Mission-critical = VMSS + Load Balancer</span
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🆚 Availability Options Comparison</h2>
+
+        <table class="comparison-table">
+          <thead>
+            <tr>
+              <th>Solution</th>
+              <th>SLA</th>
+              <th>Fault Domains</th>
+              <th>Update Domains</th>
+              <th>Use Case</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Single VM (Premium SSD)</td>
+              <td>99.9%</td>
+              <td>None</td>
+              <td>None</td>
+              <td>Non-critical, dev/test</td>
+            </tr>
+            <tr>
+              <td>Availability Set</td>
+              <td>99.95%</td>
+              <td>2-3 FDs</td>
+              <td>2-20 UDs</td>
+              <td>Multi-VM apps, traditional HA</td>
+            </tr>
+            <tr>
+              <td>Availability Zones</td>
+              <td>99.99%</td>
+              <td>Datacenter-level</td>
+              <td>Zone-level</td>
+              <td>Mission-critical, regional HA</td>
+            </tr>
+            <tr>
+              <td>Virtual Machine Scale Sets</td>
+              <td>99.95%+</td>
+              <td>Automatic</td>
+              <td>Automatic</td>
+              <td>Auto-scaling, modern apps</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="section">
+        <h2>🎯 Common Exam Scenarios</h2>
+
+        <div class="scenario-card">
+          <h4>📝 Scenario 1: Hardware Failure Protection</h4>
+          <p>
+            <strong>Question:</strong> "Company needs to ensure their 3-tier web
+            application survives hardware rack failure"
+          </p>
+          <p>
+            <strong>Answer:</strong> Deploy VMs in an Availability Set with 3
+            Fault Domains (each tier in different FD)
+          </p>
+          <p>
+            <strong>Key Point:</strong> Fault Domains protect against hardware
+            failures
+          </p>
+        </div>
+
+        <div class="scenario-card">
+          <h4>📝 Scenario 2: Planned Maintenance</h4>
+          <p>
+            <strong>Question:</strong> "Ensure web application remains available
+            during Azure host updates"
+          </p>
+          <p>
+            <strong>Answer:</strong> Use Availability Set with multiple Update
+            Domains (Azure updates one UD at a time)
+          </p>
+          <p>
+            <strong>Key Point:</strong> Update Domains protect against planned
+            maintenance
+          </p>
+        </div>
+
+        <div class="scenario-card">
+          <h4>📝 Scenario 3: Maximum Availability</h4>
+          <p>
+            <strong>Question:</strong> "Achieve highest possible SLA for
+            critical application"
+          </p>
+          <p>
+            <strong>Answer:</strong> Use Availability Zones (99.99% SLA) instead
+            of Availability Sets (99.95% SLA)
+          </p>
+          <p>
+            <strong>Key Point:</strong> Zones > Sets for maximum availability
+          </p>
+        </div>
+
+        <div class="scenario-card">
+          <h4>📝 Scenario 4: Load Balanced Application</h4>
+          <p>
+            <strong>Question:</strong> "Deploy 6 identical web servers with load
+            balancing"
+          </p>
+          <p>
+            <strong>Answer:</strong> Use VMSS with Load Balancer (automatic
+            distribution across domains)
+          </p>
+          <p>
+            <strong>Key Point:</strong> VMSS handles domain distribution
+            automatically
+          </p>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🔧 Configuration Best Practices</h2>
+
+        <div class="domain-grid">
+          <div class="domain-card">
+            <h4>✅ Do's</h4>
+            <ul>
+              <li>Always use Availability Sets for multi-VM apps</li>
+              <li>Spread VMs across all available Fault Domains</li>
+              <li>Use 5+ Update Domains for high-traffic apps</li>
+              <li>Consider VMSS for modern applications</li>
+              <li>Test failover scenarios regularly</li>
+            </ul>
+          </div>
+
+          <div class="domain-card">
+            <h4>❌ Don'ts</h4>
+            <ul>
+              <li>Don't put single VM in Availability Set</li>
+              <li>Don't ignore domain distribution in design</li>
+              <li>Don't use Availability Sets with Zones</li>
+              <li>Don't forget about application-level HA</li>
+              <li>Don't over-engineer for non-critical apps</li>
+            </ul>
+          </div>
+
+          <div class="domain-card">
+            <h4>🏆 Pro Tips</h4>
+            <ul>
+              <li>Use Load Balancer health probes</li>
+              <li>Implement application-level retry logic</li>
+              <li>Monitor domain distribution in portal</li>
+              <li>Document HA architecture decisions</li>
+              <li>Test domain failures in staging</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <h2>🧠 Memory Aids & Quick Reference</h2>
+
+        <div class="exam-tip">
+          <strong>🎯 Remember:</strong>
+          <ul>
+            <li><strong>F = Fault = Failure (Hardware)</strong></li>
+            <li><strong>U = Update = Upgrade (Software)</strong></li>
+            <li><strong>FD Max = 3, UD Max = 20</strong></li>
+            <li>
+              <strong>Fault = Physical racks, Update = Logical groups</strong>
+            </li>
+            <li>
+              <strong>"HA needs AvailabilitySet, Critical needs Zones"</strong>
+            </li>
+            <li><strong>VMSS = Automatic domain management</strong></li>
+          </ul>
+        </div>
+
+        <div class="code-block">
+          <strong>PowerShell Quick Commands:</strong><br />
+          # Create Availability Set<br />
+          New-AzAvailabilitySet -ResourceGroupName "myRG" -Name "myAvailSet"
+          -Location "East US" -PlatformFaultDomainCount 3
+          -PlatformUpdateDomainCount 5<br /><br />
+
+          # Check VM placement<br />
+          Get-AzVM -ResourceGroupName "myRG" | Select-Object Name,
+          @{Name="AvailabilitySet";Expression={$_.AvailabilitySetReference.Id}}
+        </div>
+      </div>
+
+      <a href="index.html" class="back-btn">← Back to Study Hub</a>
+    </div>
+  </body>
+</html>
