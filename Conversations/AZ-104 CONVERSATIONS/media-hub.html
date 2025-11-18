@@ -1,0 +1,2343 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AZ-104 Media Library</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.95;
+      }
+
+      .nav-links {
+        padding: 20px 30px;
+        background: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .nav-links a {
+        padding: 10px 20px;
+        background: white;
+        color: #667eea;
+        text-decoration: none;
+        border-radius: 8px;
+        border: 2px solid #667eea;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .nav-links a:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      .controls {
+        padding: 20px 30px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 250px;
+        padding: 12px 20px;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: border-color 0.3s;
+      }
+
+      .search-box:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .search-controls {
+        display: flex;
+        gap: 8px;
+      }
+
+      .search-toggle {
+        padding: 8px 15px;
+        border: 2px solid #dee2e6;
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.85em;
+        font-weight: 500;
+      }
+
+      .search-toggle:hover {
+        border-color: #667eea;
+        color: #667eea;
+      }
+
+      .search-toggle.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+      }
+
+      .filter-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn {
+        padding: 10px 18px;
+        border: 2px solid #dee2e6;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+      }
+
+      .filter-btn:hover {
+        border-color: #667eea;
+        color: #667eea;
+      }
+
+      .filter-btn.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+      }
+
+      .stats {
+        padding: 15px 30px;
+        background: #e7f3ff;
+        color: #004085;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      .export-controls {
+        padding: 15px 30px;
+        background: #e9ecef;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .export-btn {
+        padding: 8px 16px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s;
+      }
+
+      .export-btn:hover {
+        background: #5a6fd8;
+        transform: translateY(-1px);
+      }
+
+      .media-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 30px;
+      }
+
+      .media-card {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 20px;
+        transition: all 0.3s;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .media-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        border-color: #667eea;
+      }
+
+      .media-card.hidden {
+        display: none;
+      }
+
+      .media-card.favorited {
+        border-color: #ffc107;
+        background: linear-gradient(145deg, #fff8e1 0%, #ffffff 100%);
+      }
+
+      .media-card.completed {
+        border-color: #28a745;
+        background: linear-gradient(145deg, #f8fff9 0%, #ffffff 100%);
+      }
+
+      .card-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 5px;
+      }
+
+      .action-btn {
+        width: 30px;
+        height: 30px;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 12px;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .action-btn:hover {
+        transform: scale(1.1);
+      }
+
+      .favorite-btn {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .favorite-btn.active {
+        background: #ffc107;
+        color: white;
+      }
+
+      .complete-btn {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+
+      .complete-btn.active {
+        background: #28a745;
+        color: white;
+      }
+
+      .progress-indicator {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        font-size: 18px;
+      }
+
+      .media-type {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75em;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+      }
+
+      .media-type.audio {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+
+      .media-type.video {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .domain-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 0.7em;
+        font-weight: 600;
+        margin: 5px 5px 5px 0;
+      }
+
+      .domain-Compute {
+        background: #cfe2ff;
+        color: #084298;
+      }
+      .domain-Storage {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      .domain-Networking {
+        background: #d1e7dd;
+        color: #0f5132;
+      }
+      .domain-Identity {
+        background: #fff3cd;
+        color: #664d03;
+      }
+      .domain-Governance {
+        background: #e7e7ff;
+        color: #4a148c;
+      }
+      .domain-Monitor {
+        background: #ffe4e1;
+        color: #8b0000;
+      }
+      .domain-General {
+        background: #e9ecef;
+        color: #495057;
+      }
+
+      .media-title {
+        font-size: 1em;
+        font-weight: 600;
+        color: #212529;
+        margin: 10px 0;
+        line-height: 1.4;
+      }
+
+      .media-info {
+        font-size: 0.85em;
+        color: #6c757d;
+        margin-top: 8px;
+      }
+
+      .play-button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        width: 100%;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .play-button:hover {
+        transform: scale(1.05);
+      }
+
+      .footer {
+        padding: 20px;
+        text-align: center;
+        background: #f8f9fa;
+        color: #6c757d;
+        font-size: 0.9em;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 1.8em;
+        }
+
+        .media-grid {
+          grid-template-columns: 1fr;
+          padding: 15px;
+        }
+
+        .controls {
+          flex-direction: column;
+        }
+
+        .search-box {
+          width: 100%;
+        }
+      }
+
+      @keyframes highlight {
+        0% {
+          background: #fff;
+        }
+        50% {
+          background: linear-gradient(145deg, #ffffcc 0%, #ffeb3b 100%);
+          transform: scale(1.02);
+        }
+        100% {
+          background: #fff;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🎓 AZ-104 Media Library</h1>
+        <p>Complete collection of study audio files and video explainers</p>
+      </div>
+
+      <div class="nav-links">
+        <a href="../../docs/index.html">📚 Back to Study Hub</a>
+        <a href="../../docs/media_catalog.csv" download
+          >📥 Download CSV Catalog</a
+        >
+      </div>
+
+      <div class="controls">
+        <input
+          type="text"
+          class="search-box"
+          id="searchBox"
+          placeholder="🔍 Advanced search: try 'vm', 'virtual machine', or 'networking'..."
+        />
+        <div class="search-controls">
+          <button
+            id="toggleFuzzySearch"
+            class="search-toggle"
+            title="Enable fuzzy matching"
+          >
+            🎯 Fuzzy Search: OFF
+          </button>
+          <button
+            id="clearSearch"
+            class="search-toggle"
+            title="Clear all filters"
+          >
+            ❌ Clear
+          </button>
+        </div>
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="audio">Audio</button>
+          <button class="filter-btn" data-filter="video">Video</button>
+          <button class="filter-btn" data-filter="favorites">
+            ⭐ Favorites
+          </button>
+          <button class="filter-btn" data-filter="completed">
+            ✅ Completed
+          </button>
+          <button class="filter-btn" data-filter="Compute">Compute</button>
+          <button class="filter-btn" data-filter="Storage">Storage</button>
+          <button class="filter-btn" data-filter="Networking">
+            Networking
+          </button>
+          <button class="filter-btn" data-filter="Identity">Identity</button>
+        </div>
+      </div>
+
+      <div class="stats" id="statsBar">Loading media files...</div>
+
+      <div class="export-controls">
+        <button class="export-btn" onclick="exportData('csv')">
+          📥 Export CSV
+        </button>
+        <button class="export-btn" onclick="exportData('json')">
+          📦 Export JSON
+        </button>
+        <button class="export-btn" onclick="exportFavorites()">
+          ⭐ Export Favorites
+        </button>
+        <button class="export-btn" onclick="exportCompleted()">
+          ✅ Export Completed
+        </button>
+        <button class="export-btn" onclick="clearAllData()">
+          🗑️ Clear All Data
+        </button>
+      </div>
+
+      <div class="media-grid" id="mediaGrid">
+        <!-- Media cards will be inserted here by JavaScript -->
+      </div>
+
+      <div class="footer">
+        <p>💜 AZ-104 Administrator Study Resources | 165 Total Media Files</p>
+        <p>Audio files: WAV, M4A | Video explainers: MP4</p>
+      </div>
+    </div>
+
+    <script>
+      // Embedded media data - all 165 files
+      const MEDIA_DATA = [
+        {
+          Original_Name: "ACI_Cost_vs.m4a",
+          New_Name: "AZ-104-Compute-ACI_Cost_vs.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "56",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "ADE_Cross-Region_VM_Migration__The_Mandatory_D-G-W-C_Azure_CLI_.m4a",
+          New_Name:
+            "AZ-104-Compute-ADE_Cross-Region_VM_Migration_The_Mandatory_D-G-W-C_Azure_CLI.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "62",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 : 900 Azure Lynux IAM VMs and containers.wav",
+          New_Name:
+            "AZ-104-Compute-AZ-104_900_Azure_Lynux_IAM_VMs_and_containers.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "66",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 ACI K8S Deepdive container management.wav",
+          New_Name:
+            "AZ-104-Compute-AZ-104_ACI_K8S_Deepdive_container_management.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "64",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104 Lab Review- VM CLI Management & Networkingwav.wav",
+          New_Name:
+            "AZ-104-Compute-AZ-104_Lab_Review-_VM_CLI_Management_Networkingwav.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "97",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104 Lab Review- Windows VM, Web Server & Image Capture.wav",
+          New_Name:
+            "AZ-104-Compute-AZ-104_Lab_Review-_Windows_VM_Web_Server_Image_Capture.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "96",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 Permissions & Azure Compute.wav",
+          New_Name: "AZ-104-Compute-AZ-104_Permissions_Azure_Compute.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "27",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104__Top_Compute_Traps.mp4",
+          New_Name: "AZ-104-Compute-AZ-104_Top_Compute_Traps.mp4",
+          Type: "MP4",
+          Domain: "Compute",
+          Size_MB: "25",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  az104_linux_vm_add_disk_ade_guide.wav",
+          New_Name:
+            "AZ-104-Compute-AZ-104_az104_linux_vm_add_disk_ade_guide.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "24",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  containers to app services .wav",
+          New_Name: "AZ-104-Compute-AZ-104_containers_to_app_services.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "79",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  containers to app services deep dive .wav",
+          New_Name:
+            "AZ-104-Compute-AZ-104_containers_to_app_services_deep_dive.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "22",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104rusted Launch for Azure VMs,.wav",
+          New_Name: "AZ-104-Compute-AZ-104rusted_Launch_for_Azure_VMs.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "54",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_AZ-104_Deep_Dive__Master_Compute_Deployment,_Security,_and_Cost_Optimization (1).m4a",
+          New_Name:
+            "AZ-104-Compute-Azure_AZ-104_Deep_Dive_Master_Compute_Deployment_Security_and_Cost_Optimization_1.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "88",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Admin_s_Journey__From_Zero_to_VM_Hero.mp4",
+          New_Name:
+            "AZ-104-Compute-Azure_Admin_s_Journey_From_Zero_to_VM_Hero.mp4",
+          Type: "MP4",
+          Domain: "Compute",
+          Size_MB: "78",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Admin_s_Journey__From_Zero_to_VM_Hero (1).mp4",
+          New_Name:
+            "AZ-104-Compute-Azure_Admin_s_Journey_From_Zero_to_VM_Hero_1.mp4",
+          Type: "MP4",
+          Domain: "Compute",
+          Size_MB: "52",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Administration_Deep_Dive__Master_Identity,_Compute,_Networking,_and_Cost_Optimization.m4a",
+          New_Name:
+            "AZ-104-Compute-Azure_Administration_Deep_Dive_Master_Identity_Compute_Networking_and_Cost_Optimization.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "78",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Compute_Certification_Traps__Unlocking_AZ-104_Constraints.m4a",
+          New_Name:
+            "AZ-104-Compute-Azure_Compute_Certification_Traps_Unlocking_AZ-104_Constraints.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "83",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Compute_Decision_Guide_IaaS_vs_PaaS_vs_Containers_and_the.m4a",
+          New_Name:
+            "AZ-104-Compute-Azure_Compute_Decision_Guide_IaaS_vs_PaaS_vs_Containers_and_the.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "54",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Compute_&_Disk_Mgmt.mp4",
+          New_Name: "AZ-104-Compute-Azure_Compute_Disk_Mgmt.mp4",
+          Type: "MP4",
+          Domain: "Compute",
+          Size_MB: "56",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Compute_Mastery__Bastion_Security,_B-Series_Costs,_and_th.m4a",
+          New_Name:
+            "AZ-104-Compute-Azure_Compute_Mastery_Bastion_Security_B-Series_Costs_and_th.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "64",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Containers_for_AZ-104.mp4",
+          New_Name: "AZ-104-Compute-Azure_Containers_for_AZ-104.mp4",
+          Type: "MP4",
+          Domain: "Compute",
+          Size_MB: "52",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_VM_Compute Deep Dive Mastery__Stop_Wasting_Money_and_Master_Compute,_Storag.m4a",
+          New_Name:
+            "AZ-104-Compute-Azure_VM_Compute_Deep_Dive_Mastery_Stop_Wasting_Money_and_Master_Compute_Storag.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "75",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Building_Highly_Available_Web_Apps_on_Azure__The_3-VM_Deep_Dive.m4a",
+          New_Name:
+            "AZ-104-Compute-Building_Highly_Available_Web_Apps_on_Azure_The_3-VM_Deep_Dive.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "65",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Compute_Core_Reinforcement.mp4",
+          New_Name: "AZ-104-Compute-Compute_Core_Reinforcement.mp4",
+          Type: "MP4",
+          Domain: "Compute",
+          Size_MB: "45",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Lab Review- Windows VM, Web Server & Image Capture.wav",
+          New_Name:
+            "AZ-104-Compute-Lab_Review-_Windows_VM_Web_Server_Image_Capture.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "47",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: " Linux File Permissions & Azure Compute.wav",
+          New_Name: "AZ-104-Compute-Linux_File_Permissions_Azure_Compute.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "55",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Mastering_Azure_Compute.mp4",
+          New_Name: "AZ-104-Compute-Mastering_Azure_Compute.mp4",
+          Type: "MP4",
+          Domain: "Compute",
+          Size_MB: "29",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Mastering_Azure_VM_Scale_Sets__Scalable,_Resilient_Compute_for_Dynamic_Workloads_&_AZ-104_Exam_Succe.m4a",
+          New_Name:
+            "AZ-104-Compute-Mastering_Azure_VM_Scale_Sets_Scalable_Resilient_Compute_for_Dynamic_Workloads_AZ-104_Exam_Succe.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "55",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Mastering_Compute_Azure_VM_Internals-Compute.mp4",
+          New_Name:
+            "AZ-104-Compute-Mastering_Compute_Azure_VM_Internals-Compute.mp4",
+          Type: "MP4",
+          Domain: "Compute",
+          Size_MB: "47",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Migrating_Encrypted_Azure_VMs.mp4",
+          New_Name: "AZ-104-Compute-Migrating_Encrypted_Azure_VMs.mp4",
+          Type: "MP4",
+          Domain: "Compute",
+          Size_MB: "20",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Sticky_Sessions_Kill_Your_Scale_Why_AzureNetwork_Load_Balancer_Session.m4a",
+          New_Name:
+            "AZ-104-Compute-Sticky_Sessions_Kill_Your_Scale_Why_AzureNetwork_Load_Balancer_Session.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "37",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "VMSS_vs.mp4",
+          New_Name: "AZ-104-Compute-VMSS_vs.mp4",
+          Type: "MP4",
+          Domain: "Compute",
+          Size_MB: "61",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104_Admin_Roadmap.mp4",
+          New_Name: "AZ-104-General-AZ-104_Admin_Roadmap.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "71",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104__App_Service_Engine_Mastery.mp4",
+          New_Name: "AZ-104-General-AZ-104_App_Service_Engine_Mastery.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "35",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  App Service Flash card essentials.wav",
+          New_Name:
+            "AZ-104-General-AZ-104_App_Service_Flash_card_essentials.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "77",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 App Service intro .wav",
+          New_Name: "AZ-104-General-AZ-104_App_Service_intro.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "61",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104 Azure App Service topicsmultiple-choice questions .wav",
+          New_Name:
+            "AZ-104-General-AZ-104_Azure_App_Service_topicsmultiple-choice_questions.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "98",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  Azure Trusted Launchwav.wav",
+          New_Name: "AZ-104-General-AZ-104_Azure_Trusted_Launchwav.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "28",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104__From_Clicks_to_Concepts.mp4",
+          New_Name: "AZ-104-General-AZ-104_From_Clicks_to_Concepts.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "70",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104__From_Fail_to_Master.mp4",
+          New_Name: "AZ-104-General-AZ-104_From_Fail_to_Master.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "51",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104__From_Fail_to_Win.mp4",
+          New_Name: "AZ-104-General-AZ-104_From_Fail_to_Win.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "88",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  _ Import:Export Jobs 2.wav",
+          New_Name: "AZ-104-General-AZ-104_Import_Export_Jobs_2.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "95",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104  Lab- Deploy Static HTML App with `az webapp up`.wav",
+          New_Name:
+            "AZ-104-General-AZ-104_Lab-_Deploy_Static_HTML_App_with_az_webapp_up.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "34",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 Linux basic commands, .wav",
+          New_Name: "AZ-104-General-AZ-104_Linux_basic_commands.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "29",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  _Object Replication Setup .wav",
+          New_Name: "AZ-104-General-AZ-104_Object_Replication_Setup.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "35",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 PowerShell basics,  .wav",
+          New_Name: "AZ-104-General-AZ-104_PowerShell_basics.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "42",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  _ Shared Responsibilit.wav",
+          New_Name: "AZ-104-General-AZ-104_Shared_Responsibilit.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "37",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 Trusted Launch features .wav",
+          New_Name: "AZ-104-General-AZ-104_Trusted_Launch_features.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "64",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  all Azure Plans layers Essentials .wav",
+          New_Name:
+            "AZ-104-General-AZ-104_all_Azure_Plans_layers_Essentials.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "31",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  architecture from root to subscription.wav",
+          New_Name:
+            "AZ-104-General-AZ-104_architecture_from_root_to_subscription.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "51",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 azure_app_service.wav",
+          New_Name: "AZ-104-General-AZ-104_azure_app_service.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "21",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  basics key pillars_0.wav",
+          New_Name: "AZ-104-General-AZ-104_basics_key_pillars_0.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "80",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  basics key pillars 2_0.wav",
+          New_Name: "AZ-104-General-AZ-104_basics_key_pillars_2_0.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "49",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  basics key pillars 3_0.wav",
+          New_Name: "AZ-104-General-AZ-104_basics_key_pillars_3_0.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "78",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104   flip my 4Geeks full-stack skills into Azure .wav",
+          New_Name:
+            "AZ-104-General-AZ-104_flip_my_4Geeks_full-stack_skills_into_Azure.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "37",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 walk through Trusted Launch features .wav",
+          New_Name:
+            "AZ-104-General-AZ-104_walk_through_Trusted_Launch_features.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "56",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_App_Service_Deep_Dive__Engine_vs.m4a",
+          New_Name: "AZ-104-General-Azure_App_Service_Deep_Dive_Engine_vs.m4a",
+          Type: "M4A",
+          Domain: "General",
+          Size_MB: "90",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Exam_Secrets__The_Three_AZ-104_Procedural_Gaps_That_Guara.m4a",
+          New_Name:
+            "AZ-104-General-Azure_Exam_Secrets_The_Three_AZ-104_Procedural_Gaps_That_Guara.m4a",
+          Type: "M4A",
+          Domain: "General",
+          Size_MB: "41",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure Virtual Machines Deep Dive.wav",
+          New_Name: "AZ-104-General-Azure_Virtual_Machines_Deep_Dive.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "51",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure architecture hierarchy for AZ-104.wav",
+          New_Name:
+            "AZ-104-General-Azure_architecture_hierarchy_for_AZ-104.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "62",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_s_Conceptual_Battlegrounds__Separating_Soft_Delete_from_W.m4a",
+          New_Name:
+            "AZ-104-General-Azure_s_Conceptual_Battlegrounds_Separating_Soft_Delete_from_W.m4a",
+          Type: "M4A",
+          Domain: "General",
+          Size_MB: "40",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Conquering_the_AZ-104.mp4",
+          New_Name: "AZ-104-General-Conquering_the_AZ-104.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "91",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Docker_to_Azure__Your_App_s_Journey_from_Local_Build_to_Cloud_Deployment_(Gotchas_&_Solutions).m4a",
+          New_Name:
+            "AZ-104-General-Docker_to_Azure_Your_App_s_Journey_from_Local_Build_to_Cloud_Deployment_Gotchas_Solutions.m4a",
+          Type: "M4A",
+          Domain: "General",
+          Size_MB: "37",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Hubspoke_Secure_Azure_Lab_Breakdown.mp4",
+          New_Name: "AZ-104-General-Hubspoke_Secure_Azure_Lab_Breakdown.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "47",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Mapping_the_AZ-104_Administrator_Exam.mp4",
+          New_Name: "AZ-104-General-Mapping_the_AZ-104_Administrator_Exam.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "81",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Mastering_Azure_Quiz_overview.mp4",
+          New_Name: "AZ-104-General-Mastering_Azure_Quiz_overview.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "84",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Securing_Azure_PaaS.mp4",
+          New_Name: "AZ-104-General-Securing_Azure_PaaS.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "48",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Service_vs.mp4",
+          New_Name: "AZ-104-General-Service_vs.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "33",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "VABRF__The_5-Step_Azure_Resilience_Blueprint_for_Ransomware_and.m4a",
+          New_Name:
+            "AZ-104-General-VABRF_The_5-Step_Azure_Resilience_Blueprint_for_Ransomware_and.m4a",
+          Type: "M4A",
+          Domain: "General",
+          Size_MB: "83",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Your_Guide_to_the_AZ-104_Exam.mp4",
+          New_Name: "AZ-104-General-Your_Guide_to_the_AZ-104_Exam.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "25",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Your_Map_to_the_AZ-104_Azure_Administrator_Exam.mp4",
+          New_Name:
+            "AZ-104-General-Your_Map_to_the_AZ-104_Azure_Administrator_Exam.mp4",
+          Type: "MP4",
+          Domain: "General",
+          Size_MB: "48",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104 : 900Azure  Azure Automation, ARM templates, PowerShell.wav",
+          New_Name:
+            "AZ-104-Governance-AZ-104_900Azure_Azure_Automation_ARM_templates_PowerShell.wav",
+          Type: "WAV",
+          Domain: "Governance",
+          Size_MB: "38",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  _ARM Template step-by-step breakdown .wav",
+          New_Name:
+            "AZ-104-Governance-AZ-104_ARM_Template_step-by-step_breakdown.wav",
+          Type: "WAV",
+          Domain: "Governance",
+          Size_MB: "98",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  _ ARM Templates.wav",
+          New_Name: "AZ-104-Governance-AZ-104_ARM_Templates.wav",
+          Type: "WAV",
+          Domain: "Governance",
+          Size_MB: "22",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  Governance and Compliance.wav",
+          New_Name: "AZ-104-Governance-AZ-104_Governance_and_Compliance.wav",
+          Type: "WAV",
+          Domain: "Governance",
+          Size_MB: "62",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 Resource Management.wav",
+          New_Name: "AZ-104-Governance-AZ-104_Resource_Management.wav",
+          Type: "WAV",
+          Domain: "Governance",
+          Size_MB: "60",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ_104_Governance_Security_Services_Taming_the_Cloud.mp4",
+          New_Name:
+            "AZ-104-Governance-AZ_104_Governance_Security_Services_Taming_the_Cloud.mp4",
+          Type: "MP4",
+          Domain: "Governance",
+          Size_MB: "40",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure__Automation_&_Governance.mp4",
+          New_Name: "AZ-104-Governance-Azure_Automation_Governance.mp4",
+          Type: "MP4",
+          Domain: "Governance",
+          Size_MB: "85",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Monitor_Operations_Overhaul__Using_Triage,_DINE_Policy,_a.m4a",
+          New_Name:
+            "AZ-104-Governance-Azure_Monitor_Operations_Overhaul_Using_Triage_DINE_Policy_a.m4a",
+          Type: "M4A",
+          Domain: "Governance",
+          Size_MB: "29",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 Access Keys,  key rotation, security.wav",
+          New_Name:
+            "AZ-104-Identity-AZ-104_Access_Keys_key_rotation_security.wav",
+          Type: "WAV",
+          Domain: "Identity",
+          Size_MB: "93",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  Azure RBAC.wav",
+          New_Name: "AZ-104-Identity-AZ-104_Azure_RBAC.wav",
+          Type: "WAV",
+          Domain: "Identity",
+          Size_MB: "79",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104_Deep_Dive__Unpacking_Azure_Access_Layers_and_Benchmarkin.m4a",
+          New_Name:
+            "AZ-104-Identity-AZ-104_Deep_Dive_Unpacking_Azure_Access_Layers_and_Benchmarkin.m4a",
+          Type: "M4A",
+          Domain: "Identity",
+          Size_MB: "88",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104_ Simulation + Explanations create username, resources, roles.wav",
+          New_Name:
+            "AZ-104-Identity-AZ-104_Simulation_Explanations_create_username_resources_roles.wav",
+          Type: "WAV",
+          Domain: "Identity",
+          Size_MB: "87",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104  Simulation + Optimised Explanations create username, resources, roles.wav",
+          New_Name:
+            "AZ-104-Identity-AZ-104_Simulation_Optimised_Explanations_create_username_resources_roles.wav",
+          Type: "WAV",
+          Domain: "Identity",
+          Size_MB: "71",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104  _practice exam questions based on Azure AD user creation, resource group creation, and RBAC role assignment.wav",
+          New_Name:
+            "AZ-104-Identity-AZ-104_practice_exam_questions_based_on_Azure_AD_user_creation_resource_group_creation_and_RBAC_role_assignment.wav",
+          Type: "WAV",
+          Domain: "Identity",
+          Size_MB: "32",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Access_&_Observability.mp4",
+          New_Name: "AZ-104-Identity-Access_Observability.mp4",
+          Type: "MP4",
+          Domain: "Identity",
+          Size_MB: "67",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Access_Control.mp4",
+          New_Name: "AZ-104-Identity-Azure_Access_Control.mp4",
+          Type: "MP4",
+          Domain: "Identity",
+          Size_MB: "23",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Access_Double_Lock__Mastering_PaaS_Security_with_Endpoint.m4a",
+          New_Name:
+            "AZ-104-Identity-Azure_Access_Double_Lock_Mastering_PaaS_Security_with_Endpoint.m4a",
+          Type: "M4A",
+          Domain: "Identity",
+          Size_MB: "76",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Access_Understanding Roles & Layers of Control (IAM vs RBAC vs NTFS).m4a",
+          New_Name:
+            "AZ-104-Identity-Azure_Access_Understanding_Roles_Layers_of_Control_IAM_vs_RBAC_vs_NTFS.m4a",
+          Type: "M4A",
+          Domain: "Identity",
+          Size_MB: "98",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Entra_ID_vs.m4a",
+          New_Name: "AZ-104-Identity-Entra_ID_vs.m4a",
+          Type: "M4A",
+          Domain: "Identity",
+          Size_MB: "32",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Entra_ID_vs (1).mp4",
+          New_Name: "AZ-104-Identity-Entra_ID_vs_1.mp4",
+          Type: "MP4",
+          Domain: "Identity",
+          Size_MB: "67",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "RBAC vs. Entra DS- The Five Pillars of Hybrid Azure Mastery, Explained with Essential Mnemonics.m4a",
+          New_Name:
+            "AZ-104-Identity-RBAC_vs_Entra_DS-_The_Five_Pillars_of_Hybrid_Azure_Mastery_Explained_with_Essential_Mnemonics.m4a",
+          Type: "M4A",
+          Domain: "Identity",
+          Size_MB: "66",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "The_Deep_Dive__Untangling_Azure_Administration_from_Identity_to_Cost_Management.m4a",
+          New_Name:
+            "AZ-104-Identity-The_Deep_Dive_Untangling_Azure_Administration_from_Identity_to_Cost_Management.m4a",
+          Type: "M4A",
+          Domain: "Identity",
+          Size_MB: "59",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "The_IaC_Understanding Roles & Layers of Control (IAM vs RBAC vs NTFS).mp4",
+          New_Name:
+            "AZ-104-Identity-The_IaC_Understanding_Roles_Layers_of_Control_IAM_vs_RBAC_vs_NTFS.mp4",
+          Type: "MP4",
+          Domain: "Identity",
+          Size_MB: "29",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 Monitor Logs Alerts Explained.wav",
+          New_Name: "AZ-104-Monitor-AZ-104_Monitor_Logs_Alerts_Explained.wav",
+          Type: "WAV",
+          Domain: "Monitor",
+          Size_MB: "84",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Monitor_Alerts.mp4",
+          New_Name: "AZ-104-Monitor-Azure_Monitor_Alerts.mp4",
+          Type: "MP4",
+          Domain: "Monitor",
+          Size_MB: "43",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Monitor_Alerts__Signal,_Rule,_Action_Explained_(The_Mecha.m4a",
+          New_Name:
+            "AZ-104-Monitor-Azure_Monitor_Alerts_Signal_Rule_Action_Explained_The_Mecha.m4a",
+          Type: "M4A",
+          Domain: "Monitor",
+          Size_MB: "46",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Monitor_Foundations.mp4",
+          New_Name: "AZ-104-Monitor-Azure_Monitor_Foundations.mp4",
+          Type: "MP4",
+          Domain: "Monitor",
+          Size_MB: "91",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 App Gateway services  Explained .wav",
+          New_Name:
+            "AZ-104-Networking-AZ-104_App_Gateway_services_Explained.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "70",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104 Azure DNS + App Gateway services  Explained .wav",
+          New_Name:
+            "AZ-104-Networking-AZ-104_Azure_DNS_App_Gateway_services_Explained.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "80",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104 Azure DNS + Load Balancing services  Explained .wav",
+          New_Name:
+            "AZ-104-Networking-AZ-104_Azure_DNS_Load_Balancing_services_Explained.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "38",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  Azure Virtual Network.wav",
+          New_Name: "AZ-104-Networking-AZ-104_Azure_Virtual_Network.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "68",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104   Azure Virtual Networks key insights  (VNets) .wav",
+          New_Name:
+            "AZ-104-Networking-AZ-104_Azure_Virtual_Networks_key_insights_VNets.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "69",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 DNS Explainedwav.wav",
+          New_Name: "AZ-104-Networking-AZ-104_DNS_Explainedwav.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "88",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 DNS basic Explained 1 .wav",
+          New_Name: "AZ-104-Networking-AZ-104_DNS_basic_Explained_1.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "49",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 Firewall vs NAT Gateway-.wav",
+          New_Name: "AZ-104-Networking-AZ-104_Firewall_vs_NAT_Gateway-.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "25",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 Load ballancing Explained .wav",
+          New_Name: "AZ-104-Networking-AZ-104_Load_ballancing_Explained.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "26",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 Load ballancing exam style .wav",
+          New_Name: "AZ-104-Networking-AZ-104_Load_ballancing_exam_style.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "73",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 NSG Explainedwav.wav",
+          New_Name: "AZ-104-Networking-AZ-104_NSG_Explainedwav.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "39",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  NetworkSecurityGroup 2 NSG.wav",
+          New_Name: "AZ-104-Networking-AZ-104_NetworkSecurityGroup_2_NSG.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "40",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  NetworkSecurityGroup NSG.wav",
+          New_Name: "AZ-104-Networking-AZ-104_NetworkSecurityGroup_NSG.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "65",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104 Network Issues with PowerShell & Linux Tools.wav",
+          New_Name:
+            "AZ-104-Networking-AZ-104_Network_Issues_with_PowerShell_Linux_Tools.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "26",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104_Networking_Blueprint.mp4",
+          New_Name: "AZ-104-Networking-AZ-104_Networking_Blueprint.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "22",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  Networking & Security Components.wav",
+          New_Name:
+            "AZ-104-Networking-AZ-104_Networking_Security_Components.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "29",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  Networks and Availability Zones.wav",
+          New_Name:
+            "AZ-104-Networking-AZ-104_Networks_and_Availability_Zones.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "89",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 VNets Contents whats inside .wav",
+          New_Name: "AZ-104-Networking-AZ-104_VNets_Contents_whats_inside.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "54",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 VPN ExpressRoute Explained.wav",
+          New_Name: "AZ-104-Networking-AZ-104_VPN_ExpressRoute_Explained.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "89",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 VPN Gateway Explained.wav",
+          New_Name: "AZ-104-Networking-AZ-104_VPN_Gateway_Explained.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "46",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 VPN Gateway Hybrid Networking Explained.wav",
+          New_Name:
+            "AZ-104-Networking-AZ-104_VPN_Gateway_Hybrid_Networking_Explained.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "42",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 Vnet peering lab Breakdown.wav",
+          New_Name: "AZ-104-Networking-AZ-104_Vnet_peering_lab_Breakdown.wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "80",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "App_Gateway__Your_AZ-104_Network_Guide.mp4",
+          New_Name:
+            "AZ-104-Networking-App_Gateway_Your_AZ-104_Network_Guide.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "62",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Application_Gateway_Networking_Explained__Your_Smart_Regional_Web_Co.m4a",
+          New_Name:
+            "AZ-104-Networking-Azure_Application_Gateway_Networking_Explained_Your_Smart_Regional_Web_Co.m4a",
+          Type: "M4A",
+          Domain: "Networking",
+          Size_MB: "84",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_DNS_Demystified__Conquering_Zone_Apex,_Dangling_Records,_.m4a",
+          New_Name:
+            "AZ-104-Networking-Azure_DNS_Demystified_Conquering_Zone_Apex_Dangling_Records.m4a",
+          Type: "M4A",
+          Domain: "Networking",
+          Size_MB: "79",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Firewall__Central_Netwok_Brain.mp4",
+          New_Name: "AZ-104-Networking-Azure_Firewall_Central_Netwok_Brain.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "22",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Fundamentals_&_AZ-104_Deep_Dive__Identity,_Governance,_Networking,_and_the_Power_of_Azure_Fire.m4a",
+          New_Name:
+            "AZ-104-Networking-Azure_Fundamentals_AZ-104_Deep_Dive_Identity_Governance_Networking_and_the_Power_of_Azure_Fire.m4a",
+          Type: "M4A",
+          Domain: "Networking",
+          Size_MB: "23",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Gateway_Load_Balancer.mp4",
+          New_Name: "AZ-104-Networking-Azure_Gateway_Load_Balancer.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "83",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Gateway_Load_Balancer__The_Transparent_Bouncer_for_Your_C.m4a",
+          New_Name:
+            "AZ-104-Networking-Azure_Gateway_Load_Balancer_The_Transparent_Bouncer_for_Your_C.m4a",
+          Type: "M4A",
+          Domain: "Networking",
+          Size_MB: "59",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Load_Balancing.mp4",
+          New_Name: "AZ-104-Networking-Azure_Load_Balancing.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "45",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Networking_Blueprint (1).mp4",
+          New_Name: "AZ-104-Networking-Azure_Networking_Blueprint_1.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "92",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7,_NVA_Insertion,_a.m4a",
+          New_Name:
+            "AZ-104-Networking-Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7_NVA_Insertion_a.m4a",
+          Type: "M4A",
+          Domain: "Networking",
+          Size_MB: "28",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7,_NVA_Insertion,_a (1).m4a",
+          New_Name:
+            "AZ-104-Networking-Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7_NVA_Insertion_a_1.m4a",
+          Type: "M4A",
+          Domain: "Networking",
+          Size_MB: "41",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_VNet_Security.mp4",
+          New_Name: "AZ-104-Networking-Azure_VNet_Security.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "53",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_VNet_Topologies.mp4",
+          New_Name: "AZ-104-Networking-Azure_VNet_Topologies.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "55",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Choosing_Azure_Load_Balancers.mp4",
+          New_Name: "AZ-104-Networking-Choosing_Azure_Load_Balancers.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "39",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Choosing_Azurenetwork_Load_Balancers.mp4",
+          New_Name:
+            "AZ-104-Networking-Choosing_Azurenetwork_Load_Balancers.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "67",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Connecting_Network_Your_Custom_Domain.mp4",
+          New_Name:
+            "AZ-104-Networking-Connecting_Network_Your_Custom_Domain.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "38",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Cracking_the_Code__Azure_DNS.mp4",
+          New_Name: "AZ-104-Networking-Cracking_the_Code_Azure_DNS.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "26",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Mastering_Azure_Firewall_Rules.mp4",
+          New_Name: "AZ-104-Networking-Mastering_Azure_Firewall_Rules.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "26",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Mastering_Azure network _Firewall.mp4",
+          New_Name: "AZ-104-Networking-Mastering_Azure_network_Firewall.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "78",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Resilient_Web_Apps_in_Azure network.mp4",
+          New_Name: "AZ-104-Networking-Resilient_Web_Apps_in_Azure_network.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "76",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Troubleshoot_Load_Balancer_Network_Azure.mp4",
+          New_Name:
+            "AZ-104-Networking-Troubleshoot_Load_Balancer_Network_Azure.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "44",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "VNet_Peering__Missing_Route.mp4",
+          New_Name: "AZ-104-Networking-VNet_Peering_Missing_Route.mp4",
+          Type: "MP4",
+          Domain: "Networking",
+          Size_MB: "74",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  Azure Blob vs File Storage.wav",
+          New_Name: "AZ-104-Storage-AZ-104_Azure_Blob_vs_File_Storage.wav",
+          Type: "WAV",
+          Domain: "Storage",
+          Size_MB: "20",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  _Blob-storage.wav",
+          New_Name: "AZ-104-Storage-AZ-104_Blob-storage.wav",
+          Type: "WAV",
+          Domain: "Storage",
+          Size_MB: "73",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104_Exam_Fix__Mastering_Azure_Storage_Security_(RBAC_vs.m4a",
+          New_Name:
+            "AZ-104-Storage-AZ-104_Exam_Fix_Mastering_Azure_Storage_Security_RBAC_vs.m4a",
+          Type: "M4A",
+          Domain: "Storage",
+          Size_MB: "55",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  File share Config-.wav",
+          New_Name: "AZ-104-Storage-AZ-104_File_share_Config-.wav",
+          Type: "WAV",
+          Domain: "Storage",
+          Size_MB: "45",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  _Storage Account Encryption .wav",
+          New_Name: "AZ-104-Storage-AZ-104_Storage_Account_Encryption.wav",
+          Type: "WAV",
+          Domain: "Storage",
+          Size_MB: "81",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  _ Storage Explorer & AZCopy .wav",
+          New_Name: "AZ-104-Storage-AZ-104_Storage_Explorer_AZCopy.wav",
+          Type: "WAV",
+          Domain: "Storage",
+          Size_MB: "52",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104  _Storage Redundancy .wav",
+          New_Name: "AZ-104-Storage-AZ-104_Storage_Redundancy.wav",
+          Type: "WAV",
+          Domain: "Storage",
+          Size_MB: "60",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AZ-104  _Storage Redundancy. Cover LRS, ZRS, GRS, RA-GRS, and GZRS..wav",
+          New_Name:
+            "AZ-104-Storage-AZ-104_Storage_Redundancy_Cover_LRS_ZRS_GRS_RA-GRS_and_GZRS.wav",
+          Type: "WAV",
+          Domain: "Storage",
+          Size_MB: "81",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104 storage access.wav",
+          New_Name: "AZ-104-Storage-AZ-104_storage_access.wav",
+          Type: "WAV",
+          Domain: "Storage",
+          Size_MB: "55",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AZ-104storage account types,wav.wav",
+          New_Name: "AZ-104-Storage-AZ-104storage_account_types_wav.wav",
+          Type: "WAV",
+          Domain: "Storage",
+          Size_MB: "49",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "AzureStorage_Files_Deep_Dive__RBAC,_WORM,_and_Navigating_the_Port_445_.m4a",
+          New_Name:
+            "AZ-104-Storage-AzureStorage_Files_Deep_Dive_RBAC_WORM_and_Navigating_the_Port_445.m4a",
+          Type: "M4A",
+          Domain: "Storage",
+          Size_MB: "76",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "AzureStorage_Files_for_AZ-104.mp4",
+          New_Name: "AZ-104-Storage-AzureStorage_Files_for_AZ-104.mp4",
+          Type: "MP4",
+          Domain: "Storage",
+          Size_MB: "26",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_FilesStorage__The_Secure_Path.mp4",
+          New_Name: "AZ-104-Storage-Azure_FilesStorage_The_Secure_Path.mp4",
+          Type: "MP4",
+          Domain: "Storage",
+          Size_MB: "73",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Files_Security_Decoded__Network Access to Storage AccountsThe_Three_Gates_of_Identity,_Netw.m4a",
+          New_Name:
+            "AZ-104-Storage-Azure_Files_Security_Decoded_Network_Access_to_Storage_AccountsThe_Three_Gates_of_Identity_Netw.m4a",
+          Type: "M4A",
+          Domain: "Storage",
+          Size_MB: "36",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Files_Security_Deep_Dive__RBAC,_NTFS,_and_the_Dual_Lock_S.m4a",
+          New_Name:
+            "AZ-104-Storage-Azure_Files_Security_Deep_Dive_RBAC_NTFS_and_the_Dual_Lock_S.m4a",
+          Type: "M4A",
+          Domain: "Storage",
+          Size_MB: "48",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Files_Security_Mastery__Untangling_the_Complex_Knot_of_RBstorage.m4a",
+          New_Name:
+            "AZ-104-Storage-Azure_Files_Security_Mastery_Untangling_the_Complex_Knot_of_RBstorage.m4a",
+          Type: "M4A",
+          Domain: "Storage",
+          Size_MB: "85",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "Azure_Storage-permissions_QuizRevision_Files__Two_Keys.mp4",
+          New_Name:
+            "AZ-104-Storage-Azure_Storage-permissions_QuizRevision_Files_Two_Keys.mp4",
+          Type: "MP4",
+          Domain: "Storage",
+          Size_MB: "59",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Azure_Storage_&_Entra_ID.mp4",
+          New_Name: "AZ-104-Storage-Azure_Storage_Entra_ID.mp4",
+          Type: "MP4",
+          Domain: "Storage",
+          Size_MB: "41",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Bicep_vs._Terraform_vs_storage.m4a",
+          New_Name: "AZ-104-Storage-Bicep_vs_Terraform_vs_storage.m4a",
+          Type: "M4A",
+          Domain: "Storage",
+          Size_MB: "81",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Mastering_Azure_Backup_&_Site_Recovery.mp4",
+          New_Name: "AZ-104-Storage-Mastering_Azure_Backup_Site_Recovery.mp4",
+          Type: "MP4",
+          Domain: "Storage",
+          Size_MB: "64",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Network Access to Storage Accounts_Azure.mp4",
+          New_Name:
+            "AZ-104-Storage-Network_Access_to_Storage_Accounts_Azure.mp4",
+          Type: "MP4",
+          Domain: "Storage",
+          Size_MB: "68",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name: "Securing_Azure_Files storage.mp4",
+          New_Name: "AZ-104-Storage-Securing_Azure_Files_storage.mp4",
+          Type: "MP4",
+          Domain: "Storage",
+          Size_MB: "50",
+          Date_Modified: "2025-01-15",
+        },
+        {
+          Original_Name:
+            "The_Duality_of_Azure_Access__Conquering_AZ-104_Storage,_Governa.m4a",
+          New_Name:
+            "AZ-104-Storage-The_Duality_of_Azure_Access_Conquering_AZ-104_Storage_Governa.m4a",
+          Type: "M4A",
+          Domain: "Storage",
+          Size_MB: "27",
+          Date_Modified: "2025-01-15",
+        },
+      ];
+
+      // State management for enhanced features
+      let isFuzzy = localStorage.getItem("az104-fuzzy-search") === "true";
+      let favorites = JSON.parse(
+        localStorage.getItem("az104-favorites") || "[]"
+      );
+      let completed = JSON.parse(
+        localStorage.getItem("az104-completed") || "[]"
+      );
+
+      // Save state to localStorage
+      function saveState() {
+        localStorage.setItem("az104-favorites", JSON.stringify(favorites));
+        localStorage.setItem("az104-completed", JSON.stringify(completed));
+      }
+
+      // Fuzzy search with synonyms
+      function fuzzyMatch(term, text) {
+        if (!term) return true;
+        term = term.toLowerCase();
+        text = (text || "").toLowerCase();
+        if (text.includes(term)) return true;
+
+        // Synonym mapping
+        const synonyms = {
+          vm: ["virtual machine", "vms", "compute"],
+          vnet: ["virtual network", "network", "subnet"],
+          auth: ["identity", "rbac", "entra"],
+        };
+
+        for (const k in synonyms) {
+          if (term.includes(k) && synonyms[k].some((s) => text.includes(s)))
+            return true;
+        }
+
+        // Subsequence matching
+        let i = 0;
+        for (let j = 0; j < text.length && i < term.length; j++) {
+          if (text[j] === term[i]) i++;
+        }
+        return i === term.length;
+      }
+
+      // Render media cards
+      function renderCards(data = MEDIA_DATA) {
+        const grid = document.getElementById("mediaGrid");
+        if (!grid) return;
+
+        grid.innerHTML = "";
+        data.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "media-card";
+          if (favorites.includes(item.New_Name))
+            card.classList.add("favorited");
+          if (completed.includes(item.New_Name))
+            card.classList.add("completed");
+          card.dataset.filename = item.New_Name;
+          card.dataset.name = item.New_Name.toLowerCase();
+          card.dataset.domain = item.Domain;
+          card.dataset.type = item.Type;
+
+          // Card actions
+          const actions = document.createElement("div");
+          actions.className = "card-actions";
+
+          const favBtn = document.createElement("button");
+          favBtn.className =
+            "action-btn favorite-btn" +
+            (favorites.includes(item.New_Name) ? " active" : "");
+          favBtn.title = "Favorite";
+          favBtn.textContent = favorites.includes(item.New_Name) ? "⭐" : "☆";
+          favBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleFavorite(item.New_Name);
+          });
+
+          const doneBtn = document.createElement("button");
+          doneBtn.className =
+            "action-btn complete-btn" +
+            (completed.includes(item.New_Name) ? " active" : "");
+          doneBtn.title = "Mark completed";
+          doneBtn.textContent = completed.includes(item.New_Name) ? "✅" : "☐";
+          doneBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleCompleted(item.New_Name);
+          });
+
+          actions.appendChild(favBtn);
+          actions.appendChild(doneBtn);
+
+          // Card content
+          const typeSpan = document.createElement("span");
+          typeSpan.className =
+            "media-type " + (item.Type === "MP4" ? "video" : "audio");
+          typeSpan.textContent =
+            (item.Type === "MP4" ? "Video" : "Audio") + " • " + item.Type;
+
+          const domainSpan = document.createElement("span");
+          domainSpan.className = "domain-tag domain-" + item.Domain;
+          domainSpan.textContent = item.Domain;
+
+          const title = document.createElement("div");
+          title.className = "media-title";
+          title.textContent = item.New_Name;
+
+          const info = document.createElement("div");
+          info.className = "media-info";
+          info.innerHTML = `📦 Size: ${item.Size_MB} MB<br>📅 Modified: ${item.Date_Modified}`;
+
+          const playBtn = document.createElement("button");
+          playBtn.className = "play-button";
+          playBtn.textContent =
+            item.Type === "MP4" ? "▶️ Play Video" : "🎵 Play Audio";
+          playBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            window.open("./" + item.New_Name, "_blank");
+          });
+
+          card.appendChild(actions);
+          card.appendChild(typeSpan);
+          card.appendChild(domainSpan);
+          card.appendChild(title);
+          card.appendChild(info);
+          card.appendChild(playBtn);
+
+          if (completed.includes(item.New_Name)) {
+            const indicator = document.createElement("div");
+            indicator.className = "progress-indicator";
+            indicator.textContent = "✅";
+            card.appendChild(indicator);
+          }
+
+          grid.appendChild(card);
+        });
+      }
+
+      // Toggle favorite
+      function toggleFavorite(name) {
+        const i = favorites.indexOf(name);
+        if (i > -1) favorites.splice(i, 1);
+        else favorites.push(name);
+        saveState();
+        applyFilters();
+      }
+
+      // Toggle completed
+      function toggleCompleted(name) {
+        const i = completed.indexOf(name);
+        if (i > -1) completed.splice(i, 1);
+        else completed.push(name);
+        saveState();
+        applyFilters();
+      }
+
+      // Apply current filters
+      function applyFilters() {
+        const term = (document.getElementById("searchBox").value || "")
+          .trim()
+          .toLowerCase();
+        const active =
+          document.querySelector(".filter-btn.active").dataset.filter;
+
+        const filtered = MEDIA_DATA.filter((item) => {
+          // Filter by button
+          if (active === "favorites" && !favorites.includes(item.New_Name))
+            return false;
+          if (active === "completed" && !completed.includes(item.New_Name))
+            return false;
+          if (active === "audio" && item.Type === "MP4") return false;
+          if (active === "video" && item.Type !== "MP4") return false;
+          if (
+            [
+              "Compute",
+              "Storage",
+              "Networking",
+              "Identity",
+              "Governance",
+              "Monitor",
+              "General",
+            ].includes(active) &&
+            item.Domain !== active
+          )
+            return false;
+
+          // Search
+          if (!term) return true;
+          if (isFuzzy) {
+            return (
+              fuzzyMatch(term, item.New_Name) ||
+              fuzzyMatch(term, item.Domain) ||
+              fuzzyMatch(term, item.Original_Name)
+            );
+          }
+          return (
+            item.New_Name.toLowerCase().includes(term) ||
+            (item.Domain || "").toLowerCase().includes(term) ||
+            (item.Original_Name || "").toLowerCase().includes(term)
+          );
+        });
+
+        renderCards(filtered);
+        updateStats(filtered.length);
+      }
+
+      // Update stats bar
+      function updateStats(visibleCount = null) {
+        const total = MEDIA_DATA.length;
+        const audioCount = MEDIA_DATA.filter((m) => m.Type !== "MP4").length;
+        const videoCount = MEDIA_DATA.filter((m) => m.Type === "MP4").length;
+        const s = document.getElementById("statsBar");
+        const fav = favorites.length;
+        const done = completed.length;
+
+        if (typeof visibleCount === "number") {
+          s.innerHTML = `📊 Showing: ${visibleCount} of ${total} | 🎵 ${audioCount} | 🎬 ${videoCount} | ⭐ ${fav} | ✅ ${done}`;
+        } else {
+          s.innerHTML = `📊 Total: ${total} files | 🎵 Audio: ${audioCount} | 🎬 Video: ${videoCount} | ⭐ ${fav} | ✅ ${done}`;
+        }
+      }
+
+      // Export functions
+      function exportData(format) {
+        const enriched = MEDIA_DATA.map((i) => ({
+          ...i,
+          favorited: favorites.includes(i.New_Name),
+          completed: completed.includes(i.New_Name),
+        }));
+
+        let content, filename;
+        if (format === "csv") {
+          const header =
+            "Original_Name,New_Name,Type,Domain,Size_MB,Date_Modified,Favorited,Completed\n";
+          const rows = enriched.map(
+            (i) =>
+              `"${i.Original_Name.replace(/"/g, '""')}","${i.New_Name.replace(
+                /"/g,
+                '""'
+              )}","${i.Type}","${i.Domain}","${i.Size_MB}","${
+                i.Date_Modified
+              }","${i.favorited}","${i.completed}"`
+          );
+          content = header + rows.join("\n");
+          filename = `az104-media-${new Date().toISOString().slice(0, 10)}.csv`;
+        } else {
+          content = JSON.stringify(enriched, null, 2);
+          filename = `az104-media-${new Date()
+            .toISOString()
+            .slice(0, 10)}.json`;
+        }
+
+        const blob = new Blob([content], {
+          type: format === "csv" ? "text/csv" : "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportFavorites() {
+        const favItems = MEDIA_DATA.filter((i) =>
+          favorites.includes(i.New_Name)
+        );
+        const content = JSON.stringify(favItems, null, 2);
+        const blob = new Blob([content], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `az104-favorites-${new Date()
+          .toISOString()
+          .slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportCompleted() {
+        const completedItems = MEDIA_DATA.filter((i) =>
+          completed.includes(i.New_Name)
+        );
+        const content = JSON.stringify(completedItems, null, 2);
+        const blob = new Blob([content], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `az104-completed-${new Date()
+          .toISOString()
+          .slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function clearAllData() {
+        if (
+          confirm("Clear all favorites and progress? This cannot be undone.")
+        ) {
+          favorites = [];
+          completed = [];
+          localStorage.removeItem("az104-favorites");
+          localStorage.removeItem("az104-completed");
+          localStorage.removeItem("az104-fuzzy-search");
+          isFuzzy = false;
+          updateFuzzyButton();
+          applyFilters();
+        }
+      }
+
+      function updateFuzzyButton() {
+        const btn = document.getElementById("toggleFuzzySearch");
+        btn.textContent = `🎯 Fuzzy Search: ${isFuzzy ? "ON" : "OFF"}`;
+        btn.classList.toggle("active", isFuzzy);
+      }
+
+      function debounce(fn, wait) {
+        let timeout;
+        return function (...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => fn.apply(this, args), wait);
+        };
+      }
+
+      // Deep link handling
+      function handleDeepLink() {
+        const params = new URLSearchParams(window.location.search);
+        const media = params.get("media");
+        if (media) {
+          setTimeout(() => {
+            const element = Array.from(
+              document.querySelectorAll("[data-filename]")
+            ).find(
+              (x) =>
+                x.dataset.filename === media ||
+                decodeURIComponent(media) === x.dataset.filename
+            );
+            if (element) {
+              element.scrollIntoView({ behavior: "smooth", block: "center" });
+              element.style.animation = "highlight 2s ease-in-out";
+            }
+          }, 600);
+        }
+      }
+
+      // Initialize everything
+      document.addEventListener("DOMContentLoaded", function () {
+        // Setup event listeners
+        const searchBox = document.getElementById("searchBox");
+        if (searchBox)
+          searchBox.addEventListener("input", debounce(applyFilters, 150));
+
+        const fuzzyToggle = document.getElementById("toggleFuzzySearch");
+        if (fuzzyToggle) {
+          fuzzyToggle.addEventListener("click", () => {
+            isFuzzy = !isFuzzy;
+            localStorage.setItem("az104-fuzzy-search", isFuzzy);
+            updateFuzzyButton();
+            applyFilters();
+          });
+          updateFuzzyButton();
+        }
+
+        const clearBtn = document.getElementById("clearSearch");
+        if (clearBtn) {
+          clearBtn.addEventListener("click", () => {
+            const searchBox = document.getElementById("searchBox");
+            if (searchBox) searchBox.value = "";
+            document
+              .querySelectorAll(".filter-btn")
+              .forEach((b) => b.classList.remove("active"));
+            const allBtn = document.querySelector(
+              '.filter-btn[data-filter="all"]'
+            );
+            if (allBtn) allBtn.classList.add("active");
+            applyFilters();
+          });
+        }
+
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            document
+              .querySelectorAll(".filter-btn")
+              .forEach((b) => b.classList.remove("active"));
+            e.currentTarget.classList.add("active");
+            applyFilters();
+          });
+        });
+
+        // Initial render
+        renderCards();
+        updateStats();
+        handleDeepLink();
+      });
+    </script>
+  </body>
+</html>

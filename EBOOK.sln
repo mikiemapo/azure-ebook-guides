@@ -1,0 +1,29 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "e_book_repo_for_gthb", "e_book_repo_for_gthb", "{58F8A5EB-F754-5C6A-3311-AA92EE7ABCAD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyFirstAzureWebApp", "e_book_repo_for_gthb\MyFirstAzureWebApp\MyFirstAzureWebApp.csproj", "{4D176425-E174-2026-F6B2-F5E131A30614}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D176425-E174-2026-F6B2-F5E131A30614}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4D176425-E174-2026-F6B2-F5E131A30614}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4D176425-E174-2026-F6B2-F5E131A30614}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4D176425-E174-2026-F6B2-F5E131A30614}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{4D176425-E174-2026-F6B2-F5E131A30614} = {58F8A5EB-F754-5C6A-3311-AA92EE7ABCAD}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DC810064-4E00-4976-AF26-9A23FF6F7161}
+	EndGlobalSection
+EndGlobal

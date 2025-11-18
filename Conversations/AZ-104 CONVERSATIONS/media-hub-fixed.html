@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AZ-104 Media Library</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 20px;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 30px;
+        text-align: center;
+      }
+
+      .header h1 {
+        font-size: 2.5em;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .header p {
+        font-size: 1.1em;
+        opacity: 0.95;
+      }
+
+      .nav-links {
+        padding: 20px 30px;
+        background: #f8f9fa;
+        border-bottom: 2px solid #e9ecef;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      .nav-links a {
+        padding: 10px 20px;
+        background: white;
+        color: #667eea;
+        text-decoration: none;
+        border-radius: 8px;
+        border: 2px solid #667eea;
+        font-weight: 600;
+        transition: all 0.3s;
+      }
+
+      .nav-links a:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+      }
+
+      .controls {
+        padding: 20px 30px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        align-items: center;
+        border-bottom: 1px solid #dee2e6;
+      }
+
+      .search-box {
+        flex: 1;
+        min-width: 250px;
+        padding: 12px 20px;
+        border: 2px solid #dee2e6;
+        border-radius: 8px;
+        font-size: 1em;
+        transition: border-color 0.3s;
+      }
+
+      .search-box:focus {
+        outline: none;
+        border-color: #667eea;
+      }
+
+      .search-controls {
+        display: flex;
+        gap: 8px;
+      }
+
+      .search-toggle {
+        padding: 8px 15px;
+        border: 2px solid #dee2e6;
+        background: white;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.85em;
+        font-weight: 500;
+      }
+
+      .search-toggle:hover {
+        border-color: #667eea;
+        color: #667eea;
+      }
+
+      .search-toggle.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+      }
+
+      .filter-buttons {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .filter-btn {
+        padding: 10px 18px;
+        border: 2px solid #dee2e6;
+        background: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: 500;
+      }
+
+      .filter-btn:hover {
+        border-color: #667eea;
+        color: #667eea;
+      }
+
+      .filter-btn.active {
+        background: #667eea;
+        color: white;
+        border-color: #667eea;
+      }
+
+      .stats {
+        padding: 15px 30px;
+        background: #e7f3ff;
+        color: #004085;
+        font-weight: 600;
+        text-align: center;
+      }
+
+      .export-controls {
+        padding: 15px 30px;
+        background: #e9ecef;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .export-btn {
+        padding: 8px 16px;
+        background: #667eea;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 500;
+        transition: all 0.3s;
+      }
+
+      .export-btn:hover {
+        background: #5a6fd8;
+        transform: translateY(-1px);
+      }
+
+      .media-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 20px;
+        padding: 30px;
+      }
+
+      .media-card {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 10px;
+        padding: 20px;
+        transition: all 0.3s;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .media-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        border-color: #667eea;
+      }
+
+      .media-card.hidden {
+        display: none;
+      }
+
+      .media-card.favorited {
+        border-color: #ffc107;
+        background: linear-gradient(145deg, #fff8e1 0%, #ffffff 100%);
+      }
+
+      .media-card.completed {
+        border-color: #28a745;
+        background: linear-gradient(145deg, #f8fff9 0%, #ffffff 100%);
+      }
+
+      .card-actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        gap: 5px;
+      }
+
+      .action-btn {
+        width: 30px;
+        height: 30px;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 12px;
+        transition: transform 0.2s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .action-btn:hover {
+        transform: scale(1.1);
+      }
+
+      .favorite-btn {
+        background: #fff3cd;
+        color: #856404;
+      }
+
+      .favorite-btn.active {
+        background: #ffc107;
+        color: white;
+      }
+
+      .complete-btn {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+
+      .complete-btn.active {
+        background: #28a745;
+        color: white;
+      }
+
+      .progress-indicator {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        font-size: 18px;
+      }
+
+      .media-type {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 0.75em;
+        font-weight: 700;
+        margin-bottom: 10px;
+        text-transform: uppercase;
+      }
+
+      .media-type.audio {
+        background: #d1ecf1;
+        color: #0c5460;
+      }
+
+      .media-type.video {
+        background: #f8d7da;
+        color: #721c24;
+      }
+
+      .domain-tag {
+        display: inline-block;
+        padding: 4px 10px;
+        border-radius: 15px;
+        font-size: 0.7em;
+        font-weight: 600;
+        margin: 5px 5px 5px 0;
+      }
+
+      .domain-Compute {
+        background: #cfe2ff;
+        color: #084298;
+      }
+      .domain-Storage {
+        background: #f8d7da;
+        color: #721c24;
+      }
+      .domain-Networking {
+        background: #d1e7dd;
+        color: #0f5132;
+      }
+      .domain-Identity {
+        background: #fff3cd;
+        color: #664d03;
+      }
+      .domain-Governance {
+        background: #e7e7ff;
+        color: #4a148c;
+      }
+      .domain-Monitor {
+        background: #ffe4e1;
+        color: #8b0000;
+      }
+      .domain-General {
+        background: #e9ecef;
+        color: #495057;
+      }
+
+      .media-title {
+        font-size: 1em;
+        font-weight: 600;
+        color: #212529;
+        margin: 10px 0;
+        line-height: 1.4;
+      }
+
+      .media-info {
+        font-size: 0.85em;
+        color: #6c757d;
+        margin-top: 8px;
+      }
+
+      .play-button {
+        margin-top: 15px;
+        padding: 10px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        width: 100%;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .play-button:hover {
+        transform: scale(1.05);
+      }
+
+      .footer {
+        padding: 20px;
+        text-align: center;
+        background: #f8f9fa;
+        color: #6c757d;
+        font-size: 0.9em;
+      }
+
+      @media (max-width: 768px) {
+        .header h1 {
+          font-size: 1.8em;
+        }
+
+        .media-grid {
+          grid-template-columns: 1fr;
+          padding: 15px;
+        }
+
+        .controls {
+          flex-direction: column;
+        }
+
+        .search-box {
+          width: 100%;
+        }
+      }
+
+      @keyframes highlight {
+        0% {
+          background: #fff;
+        }
+        50% {
+          background: linear-gradient(145deg, #ffffcc 0%, #ffeb3b 100%);
+          transform: scale(1.02);
+        }
+        100% {
+          background: #fff;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🎓 AZ-104 Media Library</h1>
+        <p>Complete collection of study audio files and video explainers</p>
+      </div>
+
+      <div class="nav-links">
+        <a href="../../docs/index.html">📚 Back to Study Hub</a>
+        <a href="../../docs/media_catalog.csv" download
+          >📥 Download CSV Catalog</a
+        >
+      </div>
+
+      <div class="controls">
+        <input
+          type="text"
+          class="search-box"
+          id="searchBox"
+          placeholder="🔍 Advanced search: try 'vm', 'virtual machine', or 'networking'..."
+        />
+        <div class="search-controls">
+          <button
+            id="toggleFuzzySearch"
+            class="search-toggle"
+            title="Enable fuzzy matching"
+          >
+            🎯 Fuzzy Search: OFF
+          </button>
+          <button
+            id="clearSearch"
+            class="search-toggle"
+            title="Clear all filters"
+          >
+            ❌ Clear
+          </button>
+        </div>
+        <div class="filter-buttons">
+          <button class="filter-btn active" data-filter="all">All</button>
+          <button class="filter-btn" data-filter="audio">Audio</button>
+          <button class="filter-btn" data-filter="video">Video</button>
+          <button class="filter-btn" data-filter="favorites">
+            ⭐ Favorites
+          </button>
+          <button class="filter-btn" data-filter="completed">
+            ✅ Completed
+          </button>
+          <button class="filter-btn" data-filter="Compute">Compute</button>
+          <button class="filter-btn" data-filter="Storage">Storage</button>
+          <button class="filter-btn" data-filter="Networking">
+            Networking
+          </button>
+          <button class="filter-btn" data-filter="Identity">Identity</button>
+        </div>
+      </div>
+
+      <div class="stats" id="statsBar">Loading media files...</div>
+
+      <div class="export-controls">
+        <button class="export-btn" onclick="exportData('csv')">
+          📥 Export CSV
+        </button>
+        <button class="export-btn" onclick="exportData('json')">
+          📦 Export JSON
+        </button>
+        <button class="export-btn" onclick="exportFavorites()">
+          ⭐ Export Favorites
+        </button>
+        <button class="export-btn" onclick="exportCompleted()">
+          ✅ Export Completed
+        </button>
+        <button class="export-btn" onclick="clearAllData()">
+          🗑️ Clear All Data
+        </button>
+      </div>
+
+      <div class="media-grid" id="mediaGrid">
+        <!-- Media cards will be inserted here by JavaScript -->
+      </div>
+
+      <div class="footer">
+        <p>💜 AZ-104 Administrator Study Resources | 165 Total Media Files</p>
+        <p>Audio files: WAV, M4A | Video explainers: MP4</p>
+      </div>
+    </div>
+
+    <script>
+      // Embedded media data - all 165 files
+      const MEDIA_DATA = [
+        {
+          Original_Name: " Linux File Permissions & Azure Compute.wav",
+          New_Name: "AZ-104-Compute-Linux_File_Permissions_&_Azure_Compute.wav",
+          Type: "WAV",
+          Domain: "Compute",
+          Size_MB: "44.71",
+          Date_Modified: "2025-03-30",
+        },
+        {
+          Original_Name: "ACI_Cost_vs.m4a",
+          New_Name: "AZ-104-Compute-ACI_Cost_vs.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "20.06",
+          Date_Modified: "2025-10-26",
+        },
+        {
+          Original_Name:
+            "ADE_Cross-Region_VM_Migration__The_Mandatory_D-G-W-C_Azure_CLI_.m4a",
+          New_Name:
+            "AZ-104-Compute-ADE_Cross-Region_VM_Migration__The_Mandatory_D-G-W-C_Azure_CLI_.m4a",
+          Type: "M4A",
+          Domain: "Compute",
+          Size_MB: "19.64",
+          Date_Modified: "2025-11-01",
+        },
+        {
+          Original_Name:
+            "AZ-104   Azure Virtual Networks key insights  (VNets) .wav",
+          New_Name:
+            "AZ-104-Networking-Azure_Virtual_Networks_key_insights_(VNets).wav",
+          Type: "WAV",
+          Domain: "Networking",
+          Size_MB: "65.60",
+          Date_Modified: "2025-06-24",
+        },
+        {
+          Original_Name:
+            "AZ-104   flip my 4Geeks full-stack skills into Azure .wav",
+          New_Name: "AZ-104-flip_my_4Geeks_full-stack_skills_into_Azure.wav",
+          Type: "WAV",
+          Domain: "General",
+          Size_MB: "35.97",
+          Date_Modified: "2025-06-11",
+        },
+      ];
+
+      // State management for enhanced features
+      let isFuzzy = localStorage.getItem("az104-fuzzy-search") === "true";
+      let favorites = JSON.parse(
+        localStorage.getItem("az104-favorites") || "[]"
+      );
+      let completed = JSON.parse(
+        localStorage.getItem("az104-completed") || "[]"
+      );
+
+      // Save state to localStorage
+      function saveState() {
+        localStorage.setItem("az104-favorites", JSON.stringify(favorites));
+        localStorage.setItem("az104-completed", JSON.stringify(completed));
+      }
+
+      // Fuzzy search with synonyms
+      function fuzzyMatch(term, text) {
+        if (!term) return true;
+        term = term.toLowerCase();
+        text = (text || "").toLowerCase();
+        if (text.includes(term)) return true;
+
+        // Synonym mapping
+        const synonyms = {
+          vm: ["virtual machine", "vms", "compute"],
+          vnet: ["virtual network", "network", "subnet"],
+          auth: ["identity", "rbac", "entra"],
+        };
+
+        for (const k in synonyms) {
+          if (term.includes(k) && synonyms[k].some((s) => text.includes(s)))
+            return true;
+        }
+
+        // Subsequence matching
+        let i = 0;
+        for (let j = 0; j < text.length && i < term.length; j++) {
+          if (text[j] === term[i]) i++;
+        }
+        return i === term.length;
+      }
+
+      // Render media cards
+      function renderCards(data = MEDIA_DATA) {
+        const grid = document.getElementById("mediaGrid");
+        if (!grid) return;
+
+        grid.innerHTML = "";
+        data.forEach((item) => {
+          const card = document.createElement("div");
+          card.className = "media-card";
+          if (favorites.includes(item.New_Name))
+            card.classList.add("favorited");
+          if (completed.includes(item.New_Name))
+            card.classList.add("completed");
+          card.dataset.filename = item.New_Name;
+          card.dataset.name = item.New_Name.toLowerCase();
+          card.dataset.domain = item.Domain;
+          card.dataset.type = item.Type;
+
+          // Card actions
+          const actions = document.createElement("div");
+          actions.className = "card-actions";
+
+          const favBtn = document.createElement("button");
+          favBtn.className =
+            "action-btn favorite-btn" +
+            (favorites.includes(item.New_Name) ? " active" : "");
+          favBtn.title = "Favorite";
+          favBtn.textContent = favorites.includes(item.New_Name) ? "⭐" : "☆";
+          favBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleFavorite(item.New_Name);
+          });
+
+          const doneBtn = document.createElement("button");
+          doneBtn.className =
+            "action-btn complete-btn" +
+            (completed.includes(item.New_Name) ? " active" : "");
+          doneBtn.title = "Mark completed";
+          doneBtn.textContent = completed.includes(item.New_Name) ? "✅" : "☐";
+          doneBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            toggleCompleted(item.New_Name);
+          });
+
+          actions.appendChild(favBtn);
+          actions.appendChild(doneBtn);
+
+          // Card content
+          const typeSpan = document.createElement("span");
+          typeSpan.className =
+            "media-type " + (item.Type === "MP4" ? "video" : "audio");
+          typeSpan.textContent =
+            (item.Type === "MP4" ? "Video" : "Audio") + " • " + item.Type;
+
+          const domainSpan = document.createElement("span");
+          domainSpan.className = "domain-tag domain-" + item.Domain;
+          domainSpan.textContent = item.Domain;
+
+          const title = document.createElement("div");
+          title.className = "media-title";
+          title.textContent = item.New_Name;
+
+          const info = document.createElement("div");
+          info.className = "media-info";
+          info.innerHTML = `📦 Size: ${item.Size_MB} MB<br>📅 Modified: ${item.Date_Modified}`;
+
+          const playBtn = document.createElement("button");
+          playBtn.className = "play-button";
+          playBtn.textContent =
+            item.Type === "MP4" ? "▶️ Play Video" : "🎵 Play Audio";
+          playBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            window.open("./" + item.New_Name, "_blank");
+          });
+
+          card.appendChild(actions);
+          card.appendChild(typeSpan);
+          card.appendChild(domainSpan);
+          card.appendChild(title);
+          card.appendChild(info);
+          card.appendChild(playBtn);
+
+          if (completed.includes(item.New_Name)) {
+            const indicator = document.createElement("div");
+            indicator.className = "progress-indicator";
+            indicator.textContent = "✅";
+            card.appendChild(indicator);
+          }
+
+          grid.appendChild(card);
+        });
+      }
+
+      // Toggle favorite
+      function toggleFavorite(name) {
+        const i = favorites.indexOf(name);
+        if (i > -1) favorites.splice(i, 1);
+        else favorites.push(name);
+        saveState();
+        applyFilters();
+      }
+
+      // Toggle completed
+      function toggleCompleted(name) {
+        const i = completed.indexOf(name);
+        if (i > -1) completed.splice(i, 1);
+        else completed.push(name);
+        saveState();
+        applyFilters();
+      }
+
+      // Apply current filters
+      function applyFilters() {
+        const term = (document.getElementById("searchBox").value || "")
+          .trim()
+          .toLowerCase();
+        const active =
+          document.querySelector(".filter-btn.active").dataset.filter;
+
+        const filtered = MEDIA_DATA.filter((item) => {
+          // Filter by button
+          if (active === "favorites" && !favorites.includes(item.New_Name))
+            return false;
+          if (active === "completed" && !completed.includes(item.New_Name))
+            return false;
+          if (active === "audio" && item.Type === "MP4") return false;
+          if (active === "video" && item.Type !== "MP4") return false;
+          if (
+            [
+              "Compute",
+              "Storage",
+              "Networking",
+              "Identity",
+              "Governance",
+              "Monitor",
+              "General",
+            ].includes(active) &&
+            item.Domain !== active
+          )
+            return false;
+
+          // Search
+          if (!term) return true;
+          if (isFuzzy) {
+            return (
+              fuzzyMatch(term, item.New_Name) ||
+              fuzzyMatch(term, item.Domain) ||
+              fuzzyMatch(term, item.Original_Name)
+            );
+          }
+          return (
+            item.New_Name.toLowerCase().includes(term) ||
+            (item.Domain || "").toLowerCase().includes(term) ||
+            (item.Original_Name || "").toLowerCase().includes(term)
+          );
+        });
+
+        renderCards(filtered);
+        updateStats(filtered.length);
+      }
+
+      // Update stats bar
+      function updateStats(visibleCount = null) {
+        const total = MEDIA_DATA.length;
+        const audioCount = MEDIA_DATA.filter((m) => m.Type !== "MP4").length;
+        const videoCount = MEDIA_DATA.filter((m) => m.Type === "MP4").length;
+        const s = document.getElementById("statsBar");
+        const fav = favorites.length;
+        const done = completed.length;
+
+        if (typeof visibleCount === "number") {
+          s.innerHTML = `📊 Showing: ${visibleCount} of ${total} | 🎵 ${audioCount} | 🎬 ${videoCount} | ⭐ ${fav} | ✅ ${done}`;
+        } else {
+          s.innerHTML = `📊 Total: ${total} files | 🎵 Audio: ${audioCount} | 🎬 Video: ${videoCount} | ⭐ ${fav} | ✅ ${done}`;
+        }
+      }
+
+      // Export functions
+      function exportData(format) {
+        const enriched = MEDIA_DATA.map((i) => ({
+          ...i,
+          favorited: favorites.includes(i.New_Name),
+          completed: completed.includes(i.New_Name),
+        }));
+
+        let content, filename;
+        if (format === "csv") {
+          const header =
+            "Original_Name,New_Name,Type,Domain,Size_MB,Date_Modified,Favorited,Completed\n";
+          const rows = enriched.map(
+            (i) =>
+              `"${i.Original_Name.replace(/"/g, '""')}","${i.New_Name.replace(
+                /"/g,
+                '""'
+              )}","${i.Type}","${i.Domain}","${i.Size_MB}","${
+                i.Date_Modified
+              }","${i.favorited}","${i.completed}"`
+          );
+          content = header + rows.join("\n");
+          filename = `az104-media-${new Date().toISOString().slice(0, 10)}.csv`;
+        } else {
+          content = JSON.stringify(enriched, null, 2);
+          filename = `az104-media-${new Date()
+            .toISOString()
+            .slice(0, 10)}.json`;
+        }
+
+        const blob = new Blob([content], {
+          type: format === "csv" ? "text/csv" : "application/json",
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportFavorites() {
+        const favItems = MEDIA_DATA.filter((i) =>
+          favorites.includes(i.New_Name)
+        );
+        const content = JSON.stringify(favItems, null, 2);
+        const blob = new Blob([content], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `az104-favorites-${new Date()
+          .toISOString()
+          .slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportCompleted() {
+        const completedItems = MEDIA_DATA.filter((i) =>
+          completed.includes(i.New_Name)
+        );
+        const content = JSON.stringify(completedItems, null, 2);
+        const blob = new Blob([content], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `az104-completed-${new Date()
+          .toISOString()
+          .slice(0, 10)}.json`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      function clearAllData() {
+        if (
+          confirm("Clear all favorites and progress? This cannot be undone.")
+        ) {
+          favorites = [];
+          completed = [];
+          localStorage.removeItem("az104-favorites");
+          localStorage.removeItem("az104-completed");
+          localStorage.removeItem("az104-fuzzy-search");
+          isFuzzy = false;
+          updateFuzzyButton();
+          applyFilters();
+        }
+      }
+
+      function updateFuzzyButton() {
+        const btn = document.getElementById("toggleFuzzySearch");
+        btn.textContent = `🎯 Fuzzy Search: ${isFuzzy ? "ON" : "OFF"}`;
+        btn.classList.toggle("active", isFuzzy);
+      }
+
+      function debounce(fn, wait) {
+        let timeout;
+        return function (...args) {
+          clearTimeout(timeout);
+          timeout = setTimeout(() => fn.apply(this, args), wait);
+        };
+      }
+
+      // Deep link handling
+      function handleDeepLink() {
+        const params = new URLSearchParams(window.location.search);
+        const media = params.get("media");
+        if (media) {
+          setTimeout(() => {
+            const element = Array.from(
+              document.querySelectorAll("[data-filename]")
+            ).find(
+              (x) =>
+                x.dataset.filename === media ||
+                decodeURIComponent(media) === x.dataset.filename
+            );
+            if (element) {
+              element.scrollIntoView({ behavior: "smooth", block: "center" });
+              element.style.animation = "highlight 2s ease-in-out";
+            }
+          }, 600);
+        }
+      }
+
+      // Initialize everything
+      document.addEventListener("DOMContentLoaded", function () {
+        // Setup event listeners
+        const searchBox = document.getElementById("searchBox");
+        if (searchBox)
+          searchBox.addEventListener("input", debounce(applyFilters, 150));
+
+        const fuzzyToggle = document.getElementById("toggleFuzzySearch");
+        if (fuzzyToggle) {
+          fuzzyToggle.addEventListener("click", () => {
+            isFuzzy = !isFuzzy;
+            localStorage.setItem("az104-fuzzy-search", isFuzzy);
+            updateFuzzyButton();
+            applyFilters();
+          });
+          updateFuzzyButton();
+        }
+
+        const clearBtn = document.getElementById("clearSearch");
+        if (clearBtn) {
+          clearBtn.addEventListener("click", () => {
+            const searchBox = document.getElementById("searchBox");
+            if (searchBox) searchBox.value = "";
+            document
+              .querySelectorAll(".filter-btn")
+              .forEach((b) => b.classList.remove("active"));
+            const allBtn = document.querySelector(
+              '.filter-btn[data-filter="all"]'
+            );
+            if (allBtn) allBtn.classList.add("active");
+            applyFilters();
+          });
+        }
+
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.addEventListener("click", (e) => {
+            document
+              .querySelectorAll(".filter-btn")
+              .forEach((b) => b.classList.remove("active"));
+            e.currentTarget.classList.add("active");
+            applyFilters();
+          });
+        });
+
+        // Initial render
+        renderCards();
+        updateStats();
+        handleDeepLink();
+      });
+    </script>
+  </body>
+</html>

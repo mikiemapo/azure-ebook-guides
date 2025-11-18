@@ -1,0 +1,165 @@
+./Choosing_Azurenetwork_Load_Balancers.mp4
+./Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7,_NVA_Insertion,_a (1).m4a
+./Mastering_Azure network _Firewall.mp4
+./Mastering_Azure_Compute.mp4
+./AZ-104  Lab- Deploy Static HTML App with `az webapp up`.wav
+./AZ-104__From_Clicks_to_Concepts.mp4
+./Azure_Containers_for_AZ-104.mp4
+./AZ-104  _ ARM Templates.wav
+./Azure_Files_Security_Mastery__Untangling_the_Complex_Knot_of_RBstorage.m4a
+./Azure_DNS_Demystified__Conquering_Zone_Apex,_Dangling_Records,_.m4a
+./Azure_Load_Balancing.mp4
+./Azure_Files_Security_Decoded__Network Access to Storage AccountsThe_Three_Gates_of_Identity,_Netw.m4a
+./AZ-104 Vnet peering lab Breakdown.wav
+./AZ-104 Firewall vs NAT Gateway-.wav
+./AZ-104  Azure Blob vs File Storage.wav
+./AZ-104  Azure Trusted Launchwav.wav
+./Azure_FilesStorage__The_Secure_Path.mp4
+./AZ-104 storage access.wav
+./Access_&_Observability.mp4
+./Azure_Exam_Secrets__The_Three_AZ-104_Procedural_Gaps_That_Guara.m4a
+./App_Gateway__Your_AZ-104_Network_Guide.mp4
+./Azure_App_Service_Deep_Dive__Engine_vs.m4a
+./AZ-104 Permissions & Azure Compute.wav
+./Azure_Monitor_Operations_Overhaul__Using_Triage,_DINE_Policy,_a.m4a
+./AZ-104 NSG Explainedwav.wav
+./Azure_VNet_Security.mp4
+./AZ-104_Exam_Fix__Mastering_Azure_Storage_Security_(RBAC_vs.m4a
+./AZ-104storage account types,wav.wav
+./AZ-104 Lab Review- VM CLI Management & Networkingwav.wav
+./AZ-104 Network Issues with PowerShell & Linux Tools.wav
+./Azure_Monitor_Alerts__Signal,_Rule,_Action_Explained_(The_Mecha.m4a
+./Securing_Azure_PaaS.mp4
+./AZ-104  Networks and Availability Zones.wav
+./AZ-104 App Service intro .wav
+./Azure architecture hierarchy for AZ-104.wav
+./AZ-104 Monitor Logs Alerts Explained.wav
+./AZ-104 App Gateway services  Explained .wav
+./Azure_Monitor_Alerts.mp4
+./AZ-104  _Object Replication Setup .wav
+./AZ-104  _ Import:Export Jobs 2.wav
+./Azure_Application_Gateway_Networking_Explained__Your_Smart_Regional_Web_Co.m4a
+./ADE_Cross-Region_VM_Migration__The_Mandatory_D-G-W-C_Azure_CLI_.m4a
+./Azure_Admin_s_Journey__From_Zero_to_VM_Hero.mp4
+./AZ-104  File share Config-.wav
+./AZ-104 Trusted Launch features .wav
+./Your_Map_to_the_AZ-104_Azure_Administrator_Exam.mp4
+./Securing_Azure_Files storage.mp4
+./Azure_Files_Security_Deep_Dive__RBAC,_NTFS,_and_the_Dual_Lock_S.m4a
+./Azure_AZ-104_Deep_Dive__Master_Compute_Deployment,_Security,_and_Cost_Optimization (1).m4a
+./Entra_ID_vs (1).mp4
+./Azure_Fundamentals_&_AZ-104_Deep_Dive__Identity,_Governance,_Networking,_and_the_Power_of_Azure_Fire.m4a
+./AZ-104 VPN Gateway Hybrid Networking Explained.wav
+./AZ-104 Load ballancing Explained .wav
+./AZ-104__From_Fail_to_Master.mp4
+./Resilient_Web_Apps_in_Azure network.mp4
+./AZ-104  NetworkSecurityGroup 2 NSG.wav
+./AZ-104__From_Fail_to_Win.mp4
+./Azure_Networking_Blueprint (1).mp4
+./Building_Highly_Available_Web_Apps_on_Azure__The_3-VM_Deep_Dive.m4a
+./Your_Guide_to_the_AZ-104_Exam.mp4
+./The_Deep_Dive__Untangling_Azure_Administration_from_Identity_to_Cost_Management.m4a
+./Azure_Compute_Certification_Traps__Unlocking_AZ-104_Constraints.m4a
+./AZ-104  Simulation + Optimised Explanations create username, resources, roles.wav
+./Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7,_NVA_Insertion,_a.m4a
+./Azure_Monitor_Foundations.mp4
+./Migrating_Encrypted_Azure_VMs.mp4
+./Hubspoke_Secure_Azure_Lab_Breakdown.mp4
+./Azure_VM_Compute Deep Dive Mastery__Stop_Wasting_Money_and_Master_Compute,_Storag.m4a
+./AZ-104  Governance and Compliance.wav
+./AZ-104  _Blob-storage.wav
+./AZ-104  _practice exam questions based on Azure AD user creation, resource group creation, and RBAC role assignment.wav
+./Azure_Gateway_Load_Balancer__The_Transparent_Bouncer_for_Your_C.m4a
+./AZ-104  _Storage Redundancy. Cover LRS, ZRS, GRS, RA-GRS, and GZRS..wav
+./Azure_Storage-permissions_QuizRevision_Files__Two_Keys.mp4
+./Azure_Compute_&_Disk_Mgmt.mp4
+./Entra_ID_vs.m4a
+./AzureStorage_Files_for_AZ-104.mp4
+./AZ-104  _ARM Template step-by-step breakdown .wav
+./AzureStorage_Files_Deep_Dive__RBAC,_WORM,_and_Navigating_the_Port_445_.m4a
+./AZ-104  basics key pillars 2_0.wav
+./Azure_Storage_&_Entra_ID.mp4
+./The_Duality_of_Azure_Access__Conquering_AZ-104_Storage,_Governa.m4a
+./AZ-104 Lab Review- Windows VM, Web Server & Image Capture.wav
+./AZ-104__Top_Compute_Traps.mp4
+./AZ-104  basics key pillars_0.wav
+./ACI_Cost_vs.m4a
+./AZ-104 PowerShell basics,  .wav
+./Azure_Access_Understanding Roles & Layers of Control (IAM vs RBAC vs NTFS).m4a
+./AZ-104 : 900 Azure Lynux IAM VMs and containers.wav
+./Service_vs.mp4
+./Docker_to_Azure__Your_App_s_Journey_from_Local_Build_to_Cloud_Deployment_(Gotchas_&_Solutions).m4a
+./AZ-104 Load ballancing exam style .wav
+./Azure Virtual Machines Deep Dive.wav
+./AZ-104 walk through Trusted Launch features .wav
+./AZ-104  Azure Virtual Network.wav
+./Azure_Admin_s_Journey__From_Zero_to_VM_Hero (1).mp4
+./VMSS_vs.mp4
+./RBAC vs. Entra DS- The Five Pillars of Hybrid Azure Mastery, Explained with Essential Mnemonics.m4a
+./Troubleshoot_Load_Balancer_Network_Azure.mp4
+./AZ-104_Networking_Blueprint.mp4
+./AZ-104 : 900Azure  Azure Automation, ARM templates, PowerShell.wav
+./Choosing_Azure_Load_Balancers.mp4
+./AZ-104   Azure Virtual Networks key insights  (VNets) .wav
+./AZ-104  az104_linux_vm_add_disk_ade_guide.wav
+./Azure_s_Conceptual_Battlegrounds__Separating_Soft_Delete_from_W.m4a
+./VABRF__The_5-Step_Azure_Resilience_Blueprint_for_Ransomware_and.m4a
+./Mastering_Azure_Backup_&_Site_Recovery.mp4
+./AZ-104  _ Storage Explorer & AZCopy .wav
+./Mastering_Azure_VM_Scale_Sets__Scalable,_Resilient_Compute_for_Dynamic_Workloads_&_AZ-104_Exam_Succe.m4a
+./AZ-104  _Storage Redundancy .wav
+./AZ-104 ACI K8S Deepdive container management.wav
+./Lab Review- Windows VM, Web Server & Image Capture.wav
+./AZ-104  _ Shared Responsibilit.wav
+./ Linux File Permissions & Azure Compute.wav
+./Cracking_the_Code__Azure_DNS.mp4
+./AZ-104 Linux basic commands, .wav
+./Azure__Automation_&_Governance.mp4
+./AZ-104  NetworkSecurityGroup NSG.wav
+./Azure_Compute_Decision_Guide_IaaS_vs_PaaS_vs_Containers_and_the.m4a
+./Sticky_Sessions_Kill_Your_Scale_Why_AzureNetwork_Load_Balancer_Session.m4a
+./AZ-104   flip my 4Geeks full-stack skills into Azure .wav
+./Mastering_Azure_Firewall_Rules.mp4
+./AZ-104__App_Service_Engine_Mastery.mp4
+./AZ-104_ Simulation + Explanations create username, resources, roles.wav
+./AZ-104_Deep_Dive__Unpacking_Azure_Access_Layers_and_Benchmarkin.m4a
+./AZ-104 Access Keys,  key rotation, security.wav
+./AZ-104 DNS basic Explained 1 .wav
+./AZ-104rusted Launch for Azure VMs,.wav
+./Mastering_Azure_Quiz_overview.mp4
+./Connecting_Network_Your_Custom_Domain.mp4
+./AZ-104 Azure DNS + Load Balancing services  Explained .wav
+./AZ-104  containers to app services deep dive .wav
+./AZ-104 Azure DNS + App Gateway services  Explained .wav
+./AZ-104 VPN Gateway Explained.wav
+./AZ-104  Azure RBAC.wav
+./Azure_Access_Control.mp4
+./Mapping_the_AZ-104_Administrator_Exam.mp4
+./AZ-104 DNS Explainedwav.wav
+./Mastering_Compute_Azure_VM_Internals-Compute.mp4
+./AZ-104  basics key pillars 3_0.wav
+./Network Access to Storage Accounts_Azure.mp4
+./AZ-104_Admin_Roadmap.mp4
+./Azure_Compute_Mastery__Bastion_Security,_B-Series_Costs,_and_th.m4a
+./AZ-104  Networking & Security Components.wav
+./VNet_Peering__Missing_Route.mp4
+./AZ-104  App Service Flash card essentials.wav
+./Bicep_vs._Terraform_vs_storage.m4a
+./AZ-104  architecture from root to subscription.wav
+./AZ-104 VPN ExpressRoute Explained.wav
+./AZ-104  containers to app services .wav
+./Conquering_the_AZ-104.mp4
+./Azure_Access_Double_Lock__Mastering_PaaS_Security_with_Endpoint.m4a
+./AZ-104  _Storage Account Encryption .wav
+./The_IaC_Understanding Roles & Layers of Control (IAM vs RBAC vs NTFS).mp4
+./AZ_104_Governance_Security_Services_Taming_the_Cloud.mp4
+./AZ-104 VNets Contents whats inside .wav
+./Azure_VNet_Topologies.mp4
+./Azure_Administration_Deep_Dive__Master_Identity,_Compute,_Networking,_and_Cost_Optimization.m4a
+./AZ-104  all Azure Plans layers Essentials .wav
+./AZ-104 Azure App Service topicsmultiple-choice questions .wav
+./AZ-104 azure_app_service.wav
+./Azure_Firewall__Central_Netwok_Brain.mp4
+./AZ-104 Resource Management.wav
+./Azure_Gateway_Load_Balancer.mp4
+./Compute_Core_Reinforcement.mp4

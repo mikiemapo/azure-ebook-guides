@@ -1,0 +1,30 @@
+{
+  "items": [
+    {
+      "id": "az104-storage-1",
+      "source": "AZ104/Storage/flashcard1",
+      "question": "Which redundancy option provides the highest durability for Azure Storage?",
+      "answer": "Geo-Redundant Storage (GRS) or Read-Access GRS (RA-GRS)",
+      "times_seen": 2,
+      "correct_total": 1,
+      "streak": 1,
+      "last_seen": null,
+      "next_review": null,
+      "box": "learning",
+      "tags": ["AZ-104","Storage"]
+    },
+    {
+      "id": "az104-network-1",
+      "source": "AZ104/Networking/flashcard1",
+      "question": "What is the primary difference between Azure Load Balancer and Application Gateway?",
+      "answer": "Load Balancer operates at Layer 4 (TCP/UDP); Application Gateway operates at Layer 7 (HTTP/HTTPS) and supports routing based on URL.",
+      "times_seen": 0,
+      "correct_total": 0,
+      "streak": 0,
+      "last_seen": null,
+      "next_review": null,
+      "box": "new",
+      "tags": ["AZ-104","Networking"]
+    }
+  ]
+}
