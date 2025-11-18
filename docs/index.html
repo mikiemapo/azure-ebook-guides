@@ -714,6 +714,42 @@
 
     <script>
       const studyTopics = [
+        // === Critical Study Priorities ===
+        {
+          id: "guide-disaster-recovery-comprehensive-critical",
+          title:
+            "🚨 CRITICAL: Storage RTO/RPO Replication Strategy (Major Weak Spot - 43%)",
+          filename: "azure_disaster_recovery_comprehensive_guide.html",
+          category: "Critical Study Priorities",
+          icon: "fas fa-exclamation-triangle",
+          type: "guide",
+          priority: "critical",
+          weakness:
+            "Essential for mapping business requirements to Azure storage tiers. Frequently tested on AZ-104.",
+        },
+        {
+          id: "guide-update-fault-domains-critical",
+          title: "🔄 ENHANCED: Compute Domain (24/59, 40.68%) - Fault Domains",
+          filename: "azure_update_fault_domains_guide.html",
+          category: "Critical Study Priorities",
+          icon: "fas fa-shield-alt",
+          type: "guide",
+          priority: "critical",
+          weakness:
+            "VMSS Orchestration, Network Watcher, Container Apps - Update/Fault Domain fundamentals",
+        },
+        {
+          id: "guide-app-service-containers-critical",
+          title:
+            "🆕 NEW: App Service & Containers (1/5, 20% - IMMEDIATE FOCUS)",
+          filename: "azure_app_service_guide.html",
+          category: "Critical Study Priorities",
+          icon: "fas fa-rocket",
+          type: "guide",
+          priority: "critical",
+          weakness:
+            "Container Security Pipeline, Auto-Swap Deployment, VNet + SQL Security, Traffic Manager Scaling",
+        },
         // === Personalized Study Tools ===
         {
           id: "guide-personalized-review",
@@ -1098,14 +1134,6 @@
         },
         // === Azure Compute & Containers ===
         {
-          id: "guide-update-fault-domains",
-          title: "⚡ Update Domains & Fault Domains",
-          filename: "azure_update_fault_domains_guide.html",
-          category: "Azure Compute & Containers",
-          icon: "fas fa-shield-alt",
-          type: "guide",
-        },
-        {
           id: "guide-aks-intro",
           title: "AKS Introduction Guide",
           filename: "Azure Kuberenets Serv aks_intro_guide.html",
@@ -1170,14 +1198,6 @@
           type: "guide",
         },
         // === Azure Monitoring & Management ===
-        {
-          id: "guide-disaster-recovery-comprehensive",
-          title: "🔄 Azure Disaster Recovery & Business Continuity",
-          filename: "azure_disaster_recovery_comprehensive_guide.html",
-          category: "Azure Monitoring & Management",
-          icon: "fas fa-sync-alt",
-          type: "guide",
-        },
         {
           id: "guide-storage-replication-rto-rpo",
           title: "🚨 CRITICAL: RTO/RPO Storage Replication Strategy",
@@ -1311,6 +1331,7 @@
 
         // Define the desired order of categories
         const categoryOrder = [
+          "Critical Study Priorities", // URGENT WEAK SPOTS FIRST
           "Personalized Study Tools", // NEW CATEGORY ADDED HERE
           "Lab Reviews & Practical",
           "Interactive Sorters",
@@ -1339,7 +1360,7 @@
             // Predefine descriptions per category
             const categoryDescriptions = {
               "Critical Study Priorities":
-                "🚨 URGENT: Low-scoring domains requiring immediate attention. Focus here first for maximum impact!",
+                "🚨 URGENT: Your lowest-scoring domains requiring immediate attention. Storage (43%), Compute (40.68%), App Service (20%). Focus here first for maximum exam impact!",
               "Personalized Study Tools":
                 "Focus on weak spots first; review high-priority exam objectives quickly.",
               "Lab Reviews & Practical":
@@ -1462,6 +1483,8 @@
       function getCategoryIcon(categoryName) {
         const lowerCategoryName = categoryName.toLowerCase();
         switch (lowerCategoryName) {
+          case "critical study priorities":
+            return "fas fa-exclamation-triangle";
           case "personalized study tools":
             return "fas fa-bullseye";
           case "lab reviews & practical":
