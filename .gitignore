@@ -1,13 +1,57 @@
-# Keep large local study media out of Git
-# Ignore the Conversations folder (note: trailing space in folder name)
-Conversations[ ]/
+# Large binary files and personal documents
+*.pdf
+*.apkg
+*.csv
+*.rdp
+*.zip
+*.jpg
+*.png
+*.sln
 
-# Extra safety: ignore common media types globally
+# Personal/Private content
+Quiz results/
+Conversations/
+Conversations */
+AZ-104-Study-Deck/
+e_book_repo_for_gthb/
+TERRAFORM 2/
+Create a container registry*/
+Deploying a container*/
+DNS Zn Json*/
+json whizlab*/
+json zin whizlab*/
+main whizlabs*/
+dns zone records*/
+quiz_mastery_app/
+
+# Temporary files and commands
+command.sh.txt
+commands.sh
+audio_list.txt
+azuredeploy.json
+azuredeploy.json.
+main.tf
+template.zip
+vmTest*.rdp
+*.code-workspace
+
+# Media files
 *.wav
 *.m4a
 *.mp3
 *.mp4
 *.mov
 
-# macOS metadata
+# Python virtual environment
+.venv/
+__pycache__/
+*.pyc
+
+# System files
 .DS_Store
+.vscode/
+*.swp
+*.tmp
+
+# Only keep essential study guide files in docs/
+# Everything else should be ignored
