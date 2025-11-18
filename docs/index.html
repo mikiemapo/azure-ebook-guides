@@ -715,16 +715,7 @@
     <script>
       const studyTopics = [
         // === Critical Study Priorities ===
-        {
-          id: "guide-storage-replication-rto-rpo",
-          title: "🚨 CRITICAL: RTO/RPO Storage Replication Strategy",
-          filename: "azure_storage_replication_rto_rpo_guide.html",
-          category: "Critical Study Priorities",
-          icon: "fas fa-exclamation-triangle",
-          type: "guide",
-          priority: "critical",
-          weakness: "Storage domain (43% accuracy) - Major weak spot",
-        },
+        // Note: RTO/RPO moved to Azure Monitoring & Management section
         // === Personalized Study Tools ===
         {
           id: "guide-personalized-review",
@@ -1174,11 +1165,29 @@
         },
         // === Azure Monitoring & Management ===
         {
+          id: "guide-disaster-recovery-comprehensive",
+          title: "🔄 Azure Disaster Recovery & Business Continuity",
+          filename: "azure_disaster_recovery_comprehensive_guide.html",
+          category: "Azure Monitoring & Management",
+          icon: "fas fa-sync-alt",
+          type: "guide",
+        },
+        {
+          id: "guide-storage-replication-rto-rpo",
+          title: "🚨 CRITICAL: RTO/RPO Storage Replication Strategy",
+          filename: "azure_storage_replication_rto_rpo_guide.html",
+          category: "Azure Monitoring & Management",
+          icon: "fas fa-exclamation-triangle",
+          type: "guide",
+          priority: "critical",
+          weakness: "Storage domain (43% accuracy) - Major weak spot",
+        },
+        {
           id: "guide-lb-troubleshooting",
           title: "Lab Review: Azure Load Balancer Troubleshooting",
           filename: "azure_load_balancer_troubleshooting_guide.html",
-          category: "Azure Monitoring & Management", // Placing under Azure Networking
-          icon: "fas fa-exclamation-triangle", // Icon for troubleshooting
+          category: "Azure Monitoring & Management",
+          icon: "fas fa-exclamation-triangle",
           type: "guide",
         },
         {
@@ -1343,7 +1352,7 @@
               "Azure Compute & Containers":
                 "VMs, VMSS, App Services, Containers (ACI & AKS), high availability, Trusted Launch, IaaS vs PaaS differences.",
               "Azure Monitoring & Management":
-                "Azure Monitor, VM Insights, Network Watcher, log analytics, alerts, action groups, cost management.",
+                "Azure Monitor, VM Insights, Network Watcher, log analytics, alerts, action groups, cost management, disaster recovery (RTO/RPO), business continuity planning.",
               Quizzes:
                 "Assessment quizzes covering all AZ-104 topics to reinforce learning and readiness.",
             };
