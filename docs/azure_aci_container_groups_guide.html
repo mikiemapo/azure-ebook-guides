@@ -639,12 +639,29 @@
                             <ul style="margin: 0; padding-left: 20px; font-size: 0.9em;">
                                 <li><strong>❌ Manual container addition:</strong> Not scalable for traffic surges, requires manual intervention</li>
                                 <li><strong>❌ AKS migration:</strong> Requires application redesign (violates requirement)</li>
-                                <li><strong>❌ Azure Load Balancer:</strong> Not compatible with basic ACI (works within VNet only, ACI is outside VNet by default)</li>
+                                <li style="background: #ffebee; padding: 8px; margin: 6px 0; border-radius: 4px;">
+                                  <strong>❌ Azure Load Balancer:</strong> Cannot work with ACI because:
+                                  <ul style="margin: 4px 0; padding-left: 20px;">
+                                    <li><strong>Regional Scope:</strong> Load Balancer operates within single region only</li>
+                                    <li><strong>VNet Requirement:</strong> Requires backend resources in VNet, but ACI is serverless and external to traditional VNet boundaries</li>
+                                    <li><strong>No Global Distribution:</strong> Cannot route traffic across regions like Traffic Manager</li>
+                                  </ul>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div style="background: #e1f5fe; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid #0288d1;">
+                            <h5 style="color: #01579b; margin: 0 0 10px 0;"><i class="fas fa-route"></i> Traffic Manager Routing Methods</h5>
+                            <ul style="margin: 0; padding-left: 20px; font-size: 0.9em;">
+                                <li><strong>Performance:</strong> Routes users to nearest/fastest endpoint (best for ACI global distribution)</li>
+                                <li><strong>Weighted:</strong> Distribute traffic by percentage across endpoints (useful for A/B testing)</li>
+                                <li><strong>Priority:</strong> Failover routing to backup endpoints</li>
+                                <li><strong>Geographic:</strong> Route based on user's geographic location</li>
                             </ul>
                         </div>
 
                         <div style="background: #E3F2FD; padding: 12px; border-radius: 6px; border-left: 4px solid #2196F3; margin: 15px 0;">
-                            <strong style="color: #0D47A1;">💡 Key Exam Point:</strong> Traffic Manager is the only solution that handles ACI scaling without application redesign while providing global distribution and fault tolerance.
+                            <strong style="color: #0D47A1;">💡 Key Exam Point:</strong> Traffic Manager is the only solution that handles ACI scaling without application redesign while providing global distribution and fault tolerance. Load Balancer can't work because it's VNet-bound and regional.
                         </div>
                     </div>
                 </div>
