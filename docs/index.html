@@ -458,42 +458,6 @@
 
     <script>
       const studyTopics = [
-        // === Critical Study Priorities ===
-        {
-          id: "guide-disaster-recovery-comprehensive-critical",
-          title:
-            "🚨 CRITICAL: Storage RTO/RPO Replication Strategy (Major Weak Spot - 43%)",
-          filename: "azure_disaster_recovery_comprehensive_guide.html",
-          category: "Critical Study Priorities",
-          icon: "fas fa-exclamation-triangle",
-          type: "guide",
-          priority: "critical",
-          weakness:
-            "Essential for mapping business requirements to Azure storage tiers. Frequently tested on AZ-104.",
-        },
-        {
-          id: "guide-update-fault-domains-critical",
-          title: "🔄 ENHANCED: Compute Domain (24/59, 40.68%) - Fault Domains",
-          filename: "azure_update_fault_domains_guide.html",
-          category: "Critical Study Priorities",
-          icon: "fas fa-shield-alt",
-          type: "guide",
-          priority: "critical",
-          weakness:
-            "VMSS Orchestration, Network Watcher, Container Apps - Update/Fault Domain fundamentals",
-        },
-        {
-          id: "guide-app-service-containers-critical",
-          title:
-            "🆕 NEW: App Service & Containers (1/5, 20% - IMMEDIATE FOCUS)",
-          filename: "azure_app_service_guide.html",
-          category: "Critical Study Priorities",
-          icon: "fas fa-rocket",
-          type: "guide",
-          priority: "critical",
-          weakness:
-            "Container Security Pipeline, Auto-Swap Deployment, VNet + SQL Security, Traffic Manager Scaling",
-        },
         // === Personalized Study Tools ===
         {
           id: "guide-personalized-review",
@@ -1075,7 +1039,6 @@
 
         // Define the desired order of categories
         const categoryOrder = [
-          "Critical Study Priorities", // URGENT WEAK SPOTS FIRST
           "Personalized Study Tools", // NEW CATEGORY ADDED HERE
           "Lab Reviews & Practical",
           "Interactive Sorters",
@@ -1103,8 +1066,6 @@
             // Find the first non-empty description in this category
             // Predefine descriptions per category
             const categoryDescriptions = {
-              "Critical Study Priorities":
-                "🚨 URGENT: Your lowest-scoring domains requiring immediate attention. Storage (43%), Compute (40.68%), App Service (20%). Focus here first for maximum exam impact!",
               "Personalized Study Tools":
                 "Focus on weak spots first; review high-priority exam objectives quickly.",
               "Lab Reviews & Practical":
