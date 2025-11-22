@@ -1170,7 +1170,10 @@
               </li>
             </ul>
 
-            <h3 style="color: var(--info-color); margin-top: 30px">
+            <h3
+              id="deployment-slots"
+              style="color: var(--info-color); margin-top: 30px"
+            >
               <i class="fas fa-exchange-alt"></i>Deployment Slots
             </h3>
             <p class="description">
@@ -1265,8 +1268,17 @@
                 warm-up.
                 <div style="margin-top: 8px">
                   <ul style="margin: 6px 0; padding-left: 20px">
-                    <li style="background: #ffebee; padding: 4px 8px; border-radius: 3px; margin-bottom: 6px;">
-                      <strong>⚠️ PREREQUISITE:</strong> Must create a staging slot (or custom named slot) BEFORE enabling Auto-Swap. Requires Standard tier or higher.
+                    <li
+                      style="
+                        background: #ffebee;
+                        padding: 4px 8px;
+                        border-radius: 3px;
+                        margin-bottom: 6px;
+                      "
+                    >
+                      <strong>⚠️ PREREQUISITE:</strong> Must create a staging
+                      slot (or custom named slot) BEFORE enabling Auto-Swap.
+                      Requires Standard tier or higher.
                     </li>
                     <li>
                       <strong>Enable Auto-Swap:</strong> Configure during slot
@@ -1277,7 +1289,9 @@
                       transition without manual intervention
                     </li>
                     <li>
-                      <strong>Fail-Safe Mechanism:</strong> Automatically prevents swap or rolls back if health checks fail before/after swap - production stays stable
+                      <strong>Fail-Safe Mechanism:</strong> Automatically
+                      prevents swap or rolls back if health checks fail
+                      before/after swap - production stays stable
                     </li>
                     <li>
                       <strong>CI/CD Integration:</strong> Perfect for automated
@@ -1458,38 +1472,69 @@
                   </li>
                 </ul>
               </li>
-              
+
               <!-- NEW: Wildcard SSL Certificate Details -->
-              <li style="margin-top: 15px; background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%); padding: 12px; border-radius: 8px; border-left: 4px solid #0288d1;">
+              <li
+                style="
+                  margin-top: 15px;
+                  background: linear-gradient(135deg, #e1f5fe 0%, #b3e5fc 100%);
+                  padding: 12px;
+                  border-radius: 8px;
+                  border-left: 4px solid #0288d1;
+                "
+              >
                 <i class="fa-li fas fa-certificate" style="color: #01579b"></i>
                 <strong>🎯 Wildcard SSL Certificates (Quiz Focus):</strong>
-                <div style="margin-top: 8px;">
-                  <ul style="margin: 6px 0; padding-left: 20px;">
+                <div style="margin-top: 8px">
+                  <ul style="margin: 6px 0; padding-left: 20px">
                     <li>
-                      <strong>Pattern Coverage:</strong> *.example.com covers first-level subdomains like api.example.com, www.example.com, app.example.com
+                      <strong>Pattern Coverage:</strong> *.example.com covers
+                      first-level subdomains like api.example.com,
+                      www.example.com, app.example.com
                     </li>
-                    <li style="background: #fff3e0; padding: 6px; border-radius: 4px; margin: 6px 0;">
-                      <strong>⚠️ Limitation:</strong> Does NOT cover nested subdomains (v1.api.example.com) or apex domain (example.com)
+                    <li
+                      style="
+                        background: #fff3e0;
+                        padding: 6px;
+                        border-radius: 4px;
+                        margin: 6px 0;
+                      "
+                    >
+                      <strong>⚠️ Limitation:</strong> Does NOT cover nested
+                      subdomains (v1.api.example.com) or apex domain
+                      (example.com)
                     </li>
                     <li>
                       <strong>SSL Binding Types:</strong>
-                      <ul style="margin: 4px 0; padding-left: 20px;">
-                        <li><strong>SNI SSL (Recommended):</strong> Multiple SSL certs on same IP - modern browsers, cost-effective</li>
-                        <li><strong>IP-based SSL:</strong> Dedicated IP per certificate - legacy support, more expensive</li>
+                      <ul style="margin: 4px 0; padding-left: 20px">
+                        <li>
+                          <strong>SNI SSL (Recommended):</strong> Multiple SSL
+                          certs on same IP - modern browsers, cost-effective
+                        </li>
+                        <li>
+                          <strong>IP-based SSL:</strong> Dedicated IP per
+                          certificate - legacy support, more expensive
+                        </li>
                       </ul>
                     </li>
                     <li>
-                      <strong>Use Cases:</strong> Multi-subdomain applications, microservices architecture, multi-tenant apps
+                      <strong>Use Cases:</strong> Multi-subdomain applications,
+                      microservices architecture, multi-tenant apps
                     </li>
                     <li>
-                      <strong>Nested Subdomain Solution:</strong> Need separate cert like *.api.example.com, or use SAN certificate with specific domains listed
+                      <strong>Nested Subdomain Solution:</strong> Need separate
+                      cert like *.api.example.com, or use SAN certificate with
+                      specific domains listed
                     </li>
                   </ul>
                 </div>
               </li>
             </ul>
 
-            <h3 style="color: var(--inbound-color); margin-top: 30px">
+            <h3
+              id="vnet-integration"
+              style="color: var(--inbound-color); margin-top: 30px"
+            >
               <i class="fas fa-route"></i>Network Traffic Control
             </h3>
             <p class="description">
@@ -1689,8 +1734,21 @@
                         border-left: 3px solid #4caf50;
                       "
                     >
-                      <strong>🎯 Memory Aid - VSFDT:</strong> <span style="color: #2e7d32; font-weight: bold;">V</span>ery <span style="color: #2e7d32; font-weight: bold;">S</span>ecure <span style="color: #2e7d32; font-weight: bold;">F</span>irewall <span style="color: #2e7d32; font-weight: bold;">D</span>isables <span style="color: #2e7d32; font-weight: bold;">T</span>hreats<br>
-                      <span style="font-size: 0.9em; font-style: italic;">VNet Integration → Service Endpoint → Firewall → Disable Public → Test</span>
+                      <strong>🎯 Memory Aid - VSFDT:</strong>
+                      <span style="color: #2e7d32; font-weight: bold">V</span
+                      >ery
+                      <span style="color: #2e7d32; font-weight: bold">S</span
+                      >ecure
+                      <span style="color: #2e7d32; font-weight: bold">F</span
+                      >irewall
+                      <span style="color: #2e7d32; font-weight: bold">D</span
+                      >isables
+                      <span style="color: #2e7d32; font-weight: bold">T</span
+                      >hreats<br />
+                      <span style="font-size: 0.9em; font-style: italic"
+                        >VNet Integration → Service Endpoint → Firewall →
+                        Disable Public → Test</span
+                      >
                     </div>
                   </div>
                 </div>
