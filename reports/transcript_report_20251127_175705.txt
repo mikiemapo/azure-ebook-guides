@@ -1,0 +1,191 @@
+================================================================================
+AZ-104 TRANSCRIPT TO DECK TRACKING REPORT
+Generated: 2025-11-27 17:57:05
+================================================================================
+
+📊 SUMMARY
+Total AZ-104 Transcripts: 177
+Total Deck Cards: 520
+Total Batches: 27
+Potential Duplicates: 37
+Deep Dive CSVs Found: 8
+
+📚 CURRENT DECK STRUCTURE (520 Cards)
+--------------------------------------------------------------------------------
+🏆 Golden Rules Segments: 112 cards
+   - Golden Rule Part 1 & 2: 56 cards
+   - Golden Rule Enriched Part 1 & 2 FULL: 41 cards
+   - Tutorial Dojo VM Restore: 15 cards
+
+🔬 Deep Dive Segments: 150 cards
+   - Deep Dive Segments::App Service Deep Dive: 17 cards
+   - Deep Dive Segments::Deep Storage Mastery: 36 cards
+   - Deep Dive Segments::Hybrid Azure Mastery: 24 cards
+   - Deep Dive Segments::Resilience & Disaster Recovery: 19 cards
+   - Deep Dive Segments::Storage Identity Resilience: 22 cards
+   - Deep Dive Segments::VABRF Operational Resilience: 20 cards
+   - Deep Dive Segments::VMSS Deep Dive: 12 cards
+
+📚 Study Guide Segments: 258 cards
+   - Study Guide Segments::App Service & Container Operations: 29 cards
+   - Study Guide Segments::App Service Deployment: 5 cards
+   - Study Guide Segments::App Service Security: 4 cards
+   - Study Guide Segments::Container Scaling: 4 cards
+   - Study Guide Segments::Container Security: 5 cards
+   - Study Guide Segments::Critical Priorities: 5 cards
+   - Study Guide Segments::Enhanced Compute: 37 cards
+   - Study Guide Segments::RTO/RPO Storage: 3 cards
+   - Study Guide Segments::SSL Certificates: 3 cards
+   - Study Guide Segments::Storage Endpoints & Encryption: 20 cards
+   - Study Guide Segments::Storage Identity & Security Traps: 31 cards
+   - Study Guide Segments::Storage Performance & Lifecycle: 20 cards
+   - Study Guide Segments::Storage Replication & DR: 52 cards
+   - Study Guide Segments::Storage Security & Authentication: 20 cards
+   - Study Guide Segments::VM Availability & Fault Tolerance: 20 cards
+
+
+🎯 TRANSCRIPTS BY CATEGORY
+--------------------------------------------------------------------------------
+
+App Service: 13 transcripts
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  App Service Flash card essentials.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  containers to app services .wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  containers to app services deep dive .wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104 App Service intro .wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104 Azure App Service topicsmultiple-choice questions .wav
+  ... and 8 more
+
+Backup/DR: 2 transcripts
+  - Conversations /AZ-104 CONVERSATIONS/Mastering_Azure_Backup_&_Site_Recovery.mp4
+  - Conversations /AZ-104 CONVERSATIONS/VABRF__The_5-Step_Azure_Resilience_Blueprint_for_Ransomware_and.m4a
+
+Compute: 34 transcripts
+  - Conversations /AZ-104 CONVERSATIONS/ Linux File Permissions & Azure Compute.wav
+  - Conversations /AZ-104 CONVERSATIONS/ACI_Cost_vs.m4a
+  - Conversations /AZ-104 CONVERSATIONS/ADE_Cross-Region_VM_Migration__The_Mandatory_D-G-W-C_Azure_CLI_.m4a
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  az104_linux_vm_add_disk_ade_guide.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  containers to app services .wav
+  ... and 29 more
+
+Governance: 6 transcripts
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  Governance and Compliance.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ_104_Governance_Security_Services_Taming_the_Cloud.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Fundamentals_&_AZ-104_Deep_Dive__Identity,_Governance,_Networking,_and_the_Power_of_Azure_Fire.m4a
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Operations_Overhaul__Using_Triage,_DINE_Policy,_a.m4a
+  - Conversations /AZ-104 CONVERSATIONS/Azure__Automation_&_Governance.mp4
+  ... and 1 more
+
+Identity: 23 transcripts
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure RBAC.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  _practice exam questions based on Azure AD user creation, resource group creation, and RBAC role assignment.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104 : 900 Azure Lynux IAM VMs and containers.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104 Access Keys,  key rotation, security.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104 storage access.wav
+  ... and 18 more
+
+Monitoring: 6 transcripts
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104 Monitor Logs Alerts Explained.wav
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Alerts.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Alerts__Signal,_Rule,_Action_Explained_(The_Mecha.m4a
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Foundations.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Operations_Overhaul__Using_Triage,_DINE_Policy,_a.m4a
+  ... and 1 more
+
+Networking: 46 transcripts
+  - Azure_Networking_Blueprint.mp4
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104   Azure Virtual Networks key insights  (VNets) .wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure Virtual Network.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  NetworkSecurityGroup 2 NSG.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  NetworkSecurityGroup NSG.wav
+  ... and 41 more
+
+Other: 47 transcripts
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104   flip my 4Geeks full-stack skills into Azure .wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure Trusted Launchwav.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  File share Config-.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  Lab- Deploy Static HTML App with `az webapp up`.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  Simulation + Optimised Explanations create username, resources, roles.wav
+  ... and 42 more
+
+Storage: 33 transcripts
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure Blob vs File Storage.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure RBAC.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  _ Storage Explorer & AZCopy .wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  _Blob-storage.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  _Storage Account Encryption .wav
+  ... and 28 more
+
+
+⚠️  POTENTIAL DUPLICATES TO REVIEW
+--------------------------------------------------------------------------------
+
+Conversations /AZ-104 CONVERSATIONS/AZ:
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104__From_Clicks_to_Concepts.mp4
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104__From_Fail_to_Master.mp4
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104__From_Fail_to_Win.mp4
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104__Top_Compute_Traps.mp4
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104_Networking_Blueprint.mp4
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104__App_Service_Engine_Mastery.mp4
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104_Deep_Dive__Unpacking_Azure_Access_Layers_and_Benchmarkin.m4a
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104_Admin_Roadmap.mp4
+  - Conversations /AZ-104 CONVERSATIONS/AZ_104_Governance_Security_Services_Taming_the_Cloud.mp4
+
+Conversations /AZ-104 CONVERSATIONS/AZ-104:
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  az104_linux_vm_add_disk_ade_guide.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104 azure_app_service.wav
+
+Conversations /AZ-104 CONVERSATIONS/AZ-104  basics key pillars:
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  basics key pillars 2_0.wav
+  - Conversations /AZ-104 CONVERSATIONS/AZ-104  basics key pillars 3_0.wav
+
+Conversations /AZ-104 CONVERSATIONS/Azure:
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Files_Security_Mastery__Untangling_the_Complex_Knot_of_RBstorage.m4a
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Load_Balancing.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_FilesStorage__The_Secure_Path.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_App_Service_Deep_Dive__Engine_vs.m4a
+  - Conversations /AZ-104 CONVERSATIONS/Azure_VNet_Security.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Alerts.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Application_Gateway_Networking_Explained__Your_Smart_Regional_Web_Co.m4a
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Admin_s_Journey__From_Zero_to_VM_Hero.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Foundations.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Gateway_Load_Balancer__The_Transparent_Bouncer_for_Your_C.m4a
+  - Conversations /AZ-104 CONVERSATIONS/Azure_s_Conceptual_Battlegrounds__Separating_Soft_Delete_from_W.m4a
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Compute_Decision_Guide_IaaS_vs_PaaS_vs_Containers_and_the.m4a
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Access_Control.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Access_Double_Lock__Mastering_PaaS_Security_with_Endpoint.m4a
+  - Conversations /AZ-104 CONVERSATIONS/Azure_VNet_Topologies.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Firewall__Central_Netwok_Brain.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Azure_Gateway_Load_Balancer.mp4
+
+Conversations /AZ-104 CONVERSATIONS/Choosing:
+  - Conversations /AZ-104 CONVERSATIONS/Choosing_Azurenetwork_Load_Balancers.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Choosing_Azure_Load_Balancers.mp4
+
+Conversations /AZ-104 CONVERSATIONS/Mastering:
+  - Conversations /AZ-104 CONVERSATIONS/Mastering_Azure_Compute.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Mastering_Azure_Firewall_Rules.mp4
+  - Conversations /AZ-104 CONVERSATIONS/Mastering_Azure_Quiz_overview.mp4
+
+Conversations /AZ-900/AZ-900 Azure Fundamentals Course Study Guide:
+  - Conversations /AZ-900/AZ-900 Azure Fundamentals Course Study Guide v2.wav
+  - Conversations /AZ-900/AZ-900 Azure Fundamentals Course Study Guide v2.0.wav
+
+
+📁 DEEP DIVE CSV FILES
+--------------------------------------------------------------------------------
+AZ104_App_Service_DeepDive.csv: 17 cards
+AZ104_Golden_Rule_Enriched_Part1_FULL.csv: 14 cards
+AZ104_Golden_Rule_Enriched_Part2_FULL.csv: 27 cards
+AZ104_Hybrid_Azure_Mastery_DeepDive.csv: 24 cards
+AZ104_Resilience_DR_DeepDive.csv: 19 cards
+AZ104_Storage_Identity_Resilience_Untangled_DeepDive.csv: 22 cards
+AZ104_VABRF_Operational_Resilience_DeepDive.csv: 20 cards
+AZ104_VMSS_DeepDive.csv: 12 cards
+
+
+💡 RECOMMENDATIONS
+--------------------------------------------------------------------------------
+1. Review potential duplicates above for redundancy
+2. Identify which uncategorized transcripts need processing
+3. Verify all deep dive CSVs are merged into master
+4. Next: Generate new decks from unprocessed transcripts

@@ -1,0 +1,55 @@
+================================================================================
+DUPLICATION RISK ASSESSMENT
+================================================================================
+
+📊 RISK SUMMARY
+--------------------------------------------------------------------------------
+Total Transcripts: 159
+High Risk (>80% overlap): 1 transcripts
+Medium Risk (40-80% overlap): 40 transcripts
+Low Risk (<40% overlap): 118 transcripts
+
+🔴 HIGH RISK TRANSCRIPTS (Likely already covered)
+--------------------------------------------------------------------------------
+•  Linux File Permissions & Azure Compute
+  Overlap: 100% (4/4 keywords match)
+  ACTION: Consider skipping or reviewing
+
+
+✅ MEDIUM & LOW RISK TRANSCRIPTS (Safe to convert)
+--------------------------------------------------------------------------------
+Medium Risk: 40 (different angles, supplementary)
+Low Risk: 118 (new topics, no overlap)
+
+
+📚 CURRENT MASTER DECK STRUCTURE
+--------------------------------------------------------------------------------
+Total Batches: 27
+Total Questions: 520
+
+Deep Dive Segments: 150 questions
+Golden Rules Segments: 112 questions
+Study Guide Segments: 258 questions
+
+
+📈 PROJECTION AFTER CONVERSION
+--------------------------------------------------------------------------------
+Current Master: 520 questions
+High Risk (skip): 1 transcripts × 2 = 2 questions saved
+Medium + Low Risk (convert): 158 transcripts × 2 = 316 questions
+CONSERVATIVE ESTIMATE: 520 + 316 = 836 questions
+OPTIMISTIC ESTIMATE: 520 + 318 = 838 questions
+
+
+💡 RECOMMENDATION
+--------------------------------------------------------------------------------
+⚠️  1 transcripts show high overlap. Consider:
+   1. Skip high-risk items to avoid duplicates
+   2. OR convert all and manually review duplicates after merge
+   3. Proceed with medium/low risk items (158 safe transcripts)
+
+🎯 FINAL VERDICT
+--------------------------------------------------------------------------------
+Safe to convert: 158/159 transcripts
+Expected safe expansion: 316 new questions
+Final deck estimate: 836 cards (conservative)

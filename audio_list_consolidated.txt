@@ -1,0 +1,159 @@
+./Conversations /AZ-104 CONVERSATIONS/ Linux File Permissions & Azure Compute.wav
+./Conversations /AZ-104 CONVERSATIONS/ACI_Cost_vs.m4a
+./Conversations /AZ-104 CONVERSATIONS/ADE_Cross-Region_VM_Migration__The_Mandatory_D-G-W-C_Azure_CLI_.m4a
+./Conversations /AZ-104 CONVERSATIONS/AZ-104   Azure Virtual Networks key insights  (VNets) .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104   flip my 4Geeks full-stack skills into Azure .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  App Service Flash card essentials.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure Blob vs File Storage.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure RBAC.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure Trusted Launchwav.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure Virtual Network.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  File share Config-.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  Governance and Compliance.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  Lab- Deploy Static HTML App with `az webapp up`.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  NetworkSecurityGroup 2 NSG.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  Networking & Security Components.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  Networks and Availability Zones.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  Simulation + Optimised Explanations create username, resources, roles.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  _ ARM Templates.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  _ Import:Export Jobs 2.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  _ Shared Responsibilit.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  _ Storage Explorer & AZCopy .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  _ARM Template step-by-step breakdown .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  _Blob-storage.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  _Object Replication Setup .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  _Storage Account Encryption .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  _Storage Redundancy .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  _Storage Redundancy. Cover LRS, ZRS, GRS, RA-GRS, and GZRS..wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  _practice exam questions based on Azure AD user creation, resource group creation, and RBAC role assignment.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  all Azure Plans layers Essentials .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  architecture from root to subscription.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  az104_linux_vm_add_disk_ade_guide.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  basics key pillars 2_0.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  containers to app services .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104  containers to app services deep dive .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 : 900 Azure Lynux IAM VMs and containers.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 : 900Azure  Azure Automation, ARM templates, PowerShell.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 ACI K8S Deepdive container management.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Access Keys,  key rotation, security.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 App Gateway services  Explained .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 App Service intro .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Azure App Service topicsmultiple-choice questions .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Azure DNS + App Gateway services  Explained .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Azure DNS + Load Balancing services  Explained .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 DNS Explainedwav.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 DNS basic Explained 1 .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Firewall vs NAT Gateway-.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Lab Review- VM CLI Management & Networkingwav.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Lab Review- Windows VM, Web Server & Image Capture.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Linux basic commands, .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Load ballancing Explained .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Load ballancing exam style .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Monitor Logs Alerts Explained.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 NSG Explainedwav.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Network Issues with PowerShell & Linux Tools.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Permissions & Azure Compute.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 PowerShell basics,  .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Resource Management.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Trusted Launch features .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 VNets Contents whats inside .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 VPN ExpressRoute Explained.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 VPN Gateway Explained.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 VPN Gateway Hybrid Networking Explained.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 Vnet peering lab Breakdown.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 azure_app_service.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 storage access.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104 walk through Trusted Launch features .wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104_ Simulation + Explanations create username, resources, roles.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104_Admin_Roadmap.mp4
+./Conversations /AZ-104 CONVERSATIONS/AZ-104_Deep_Dive__Unpacking_Azure_Access_Layers_and_Benchmarkin.m4a
+./Conversations /AZ-104 CONVERSATIONS/AZ-104_Exam_Fix__Mastering_Azure_Storage_Security_(RBAC_vs.m4a
+./Conversations /AZ-104 CONVERSATIONS/AZ-104_Networking_Blueprint.mp4
+./Conversations /AZ-104 CONVERSATIONS/AZ-104__App_Service_Engine_Mastery.mp4
+./Conversations /AZ-104 CONVERSATIONS/AZ-104__From_Clicks_to_Concepts.mp4
+./Conversations /AZ-104 CONVERSATIONS/AZ-104__From_Fail_to_Master.mp4
+./Conversations /AZ-104 CONVERSATIONS/AZ-104__From_Fail_to_Win.mp4
+./Conversations /AZ-104 CONVERSATIONS/AZ-104__Top_Compute_Traps.mp4
+./Conversations /AZ-104 CONVERSATIONS/AZ-104rusted Launch for Azure VMs,.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ-104storage account types,wav.wav
+./Conversations /AZ-104 CONVERSATIONS/AZ_104_Governance_Security_Services_Taming_the_Cloud.mp4
+./Conversations /AZ-104 CONVERSATIONS/Access_&_Observability.mp4
+./Conversations /AZ-104 CONVERSATIONS/App_Gateway__Your_AZ-104_Network_Guide.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure Virtual Machines Deep Dive.wav
+./Conversations /AZ-104 CONVERSATIONS/Azure architecture hierarchy for AZ-104.wav
+./Conversations /AZ-104 CONVERSATIONS/AzureStorage_Files_Deep_Dive__RBAC,_WORM,_and_Navigating_the_Port_445_.m4a
+./Conversations /AZ-104 CONVERSATIONS/AzureStorage_Files_for_AZ-104.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_AZ-104_Deep_Dive__Master_Compute_Deployment,_Security,_and_Cost_Optimization (1).m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Access_Control.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_Access_Double_Lock__Mastering_PaaS_Security_with_Endpoint.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Access_Understanding Roles & Layers of Control (IAM vs RBAC vs NTFS).m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Admin_s_Journey__From_Zero_to_VM_Hero (1).mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_Administration_Deep_Dive__Master_Identity,_Compute,_Networking,_and_Cost_Optimization.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_App_Service_Deep_Dive__Engine_vs.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Application_Gateway_Networking_Explained__Your_Smart_Regional_Web_Co.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Compute_&_Disk_Mgmt.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_Compute_Certification_Traps__Unlocking_AZ-104_Constraints.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Compute_Decision_Guide_IaaS_vs_PaaS_vs_Containers_and_the.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Compute_Mastery__Bastion_Security,_B-Series_Costs,_and_th.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Containers_for_AZ-104.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_DNS_Demystified__Conquering_Zone_Apex,_Dangling_Records,_.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Exam_Secrets__The_Three_AZ-104_Procedural_Gaps_That_Guara.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_FilesStorage__The_Secure_Path.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_Files_Security_Decoded__Network Access to Storage AccountsThe_Three_Gates_of_Identity,_Netw.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Files_Security_Deep_Dive__RBAC,_NTFS,_and_the_Dual_Lock_S.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Files_Security_Mastery__Untangling_the_Complex_Knot_of_RBstorage.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Firewall__Central_Netwok_Brain.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_Fundamentals_&_AZ-104_Deep_Dive__Identity,_Governance,_Networking,_and_the_Power_of_Azure_Fire.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Gateway_Load_Balancer.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_Gateway_Load_Balancer__The_Transparent_Bouncer_for_Your_C.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Load_Balancing.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Alerts.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Alerts__Signal,_Rule,_Action_Explained_(The_Mecha.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Foundations.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Operations_Overhaul__Using_Triage,_DINE_Policy,_a.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Networking_Blueprint (1).mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7,_NVA_Insertion,_a (1).m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_Storage-permissions_QuizRevision_Files__Two_Keys.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_Storage_&_Entra_ID.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_VM_Compute Deep Dive Mastery__Stop_Wasting_Money_and_Master_Compute,_Storag.m4a
+./Conversations /AZ-104 CONVERSATIONS/Azure_VNet_Security.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_VNet_Topologies.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure__Automation_&_Governance.mp4
+./Conversations /AZ-104 CONVERSATIONS/Azure_s_Conceptual_Battlegrounds__Separating_Soft_Delete_from_W.m4a
+./Conversations /AZ-104 CONVERSATIONS/Bicep_vs._Terraform_vs_storage.m4a
+./Conversations /AZ-104 CONVERSATIONS/Building_Highly_Available_Web_Apps_on_Azure__The_3-VM_Deep_Dive.m4a
+./Conversations /AZ-104 CONVERSATIONS/Choosing_Azure_Load_Balancers.mp4
+./Conversations /AZ-104 CONVERSATIONS/Choosing_Azurenetwork_Load_Balancers.mp4
+./Conversations /AZ-104 CONVERSATIONS/Compute_Core_Reinforcement.mp4
+./Conversations /AZ-104 CONVERSATIONS/Connecting_Network_Your_Custom_Domain.mp4
+./Conversations /AZ-104 CONVERSATIONS/Conquering_the_AZ-104.mp4
+./Conversations /AZ-104 CONVERSATIONS/Cracking_the_Code__Azure_DNS.mp4
+./Conversations /AZ-104 CONVERSATIONS/Docker_to_Azure__Your_App_s_Journey_from_Local_Build_to_Cloud_Deployment_(Gotchas_&_Solutions).m4a
+./Conversations /AZ-104 CONVERSATIONS/Entra_ID_vs (1).mp4
+./Conversations /AZ-104 CONVERSATIONS/Hubspoke_Secure_Azure_Lab_Breakdown.mp4
+./Conversations /AZ-104 CONVERSATIONS/Lab Review- Windows VM, Web Server & Image Capture.wav
+./Conversations /AZ-104 CONVERSATIONS/Mapping_the_AZ-104_Administrator_Exam.mp4
+./Conversations /AZ-104 CONVERSATIONS/Mastering_Azure network _Firewall.mp4
+./Conversations /AZ-104 CONVERSATIONS/Mastering_Azure_Backup_&_Site_Recovery.mp4
+./Conversations /AZ-104 CONVERSATIONS/Mastering_Azure_Compute.mp4
+./Conversations /AZ-104 CONVERSATIONS/Mastering_Azure_Firewall_Rules.mp4
+./Conversations /AZ-104 CONVERSATIONS/Mastering_Azure_Quiz_overview.mp4
+./Conversations /AZ-104 CONVERSATIONS/Mastering_Azure_VM_Scale_Sets__Scalable,_Resilient_Compute_for_Dynamic_Workloads_&_AZ-104_Exam_Succe.m4a
+./Conversations /AZ-104 CONVERSATIONS/Mastering_Compute_Azure_VM_Internals-Compute.mp4
+./Conversations /AZ-104 CONVERSATIONS/Migrating_Encrypted_Azure_VMs.mp4
+./Conversations /AZ-104 CONVERSATIONS/Network Access to Storage Accounts_Azure.mp4
+./Conversations /AZ-104 CONVERSATIONS/RBAC vs. Entra DS- The Five Pillars of Hybrid Azure Mastery, Explained with Essential Mnemonics.m4a
+./Conversations /AZ-104 CONVERSATIONS/Resilient_Web_Apps_in_Azure network.mp4
+./Conversations /AZ-104 CONVERSATIONS/Securing_Azure_Files storage.mp4
+./Conversations /AZ-104 CONVERSATIONS/Securing_Azure_PaaS.mp4
+./Conversations /AZ-104 CONVERSATIONS/Service_vs.mp4
+./Conversations /AZ-104 CONVERSATIONS/Sticky_Sessions_Kill_Your_Scale_Why_AzureNetwork_Load_Balancer_Session.m4a
+./Conversations /AZ-104 CONVERSATIONS/The_Deep_Dive__Untangling_Azure_Administration_from_Identity_to_Cost_Management.m4a
+./Conversations /AZ-104 CONVERSATIONS/The_Duality_of_Azure_Access__Conquering_AZ-104_Storage,_Governa.m4a
+./Conversations /AZ-104 CONVERSATIONS/The_IaC_Understanding Roles & Layers of Control (IAM vs RBAC vs NTFS).mp4
+./Conversations /AZ-104 CONVERSATIONS/Troubleshoot_Load_Balancer_Network_Azure.mp4
+./Conversations /AZ-104 CONVERSATIONS/VABRF__The_5-Step_Azure_Resilience_Blueprint_for_Ransomware_and.m4a
+./Conversations /AZ-104 CONVERSATIONS/VMSS_vs.mp4
+./Conversations /AZ-104 CONVERSATIONS/VNet_Peering__Missing_Route.mp4
+./Conversations /AZ-104 CONVERSATIONS/Your_Guide_to_the_AZ-104_Exam.mp4
+./Conversations /AZ-104 CONVERSATIONS/Your_Map_to_the_AZ-104_Azure_Administrator_Exam.mp4

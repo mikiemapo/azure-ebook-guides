@@ -1,0 +1,181 @@
+================================================================================
+TRANSCRIPT COVERAGE ANALYSIS REPORT
+Generated: 2025-11-27 18:02:41
+================================================================================
+
+📊 SUMMARY
+--------------------------------------------------------------------------------
+Total Transcripts: 165
+Already Covered: 0 (0.0%)
+Ambiguous: 0 (0.0%)
+NEW (Not Covered): 165 (100.0%)
+
+✅ ALREADY COVERED BY EXISTING BATCHES
+--------------------------------------------------------------------------------
+Count: 0 transcripts
+
+
+
+🆕 NEW TRANSCRIPTS (NOT COVERED - HIGH PRIORITY)
+--------------------------------------------------------------------------------
+Count: 165 transcripts
+These represent completely new content that should be converted to deck questions.
+
+
+App Service (11 transcripts):
+  • Conversations /AZ-104 CONVERSATIONS/ACI_Cost_vs.m4a
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  App Service Flash card essentia
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  Lab- Deploy Static HTML App wit
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  containers to app services .wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  containers to app services deep
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 : 900 Azure Lynux IAM VMs and co
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 ACI K8S Deepdive container manag
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 App Service intro .wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Azure App Service topicsmultiple
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Compute_Decision_Guide_IaaS_vs_Pa
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Containers_for_AZ-104.mp4
+
+Backup/DR (2 transcripts):
+  • Conversations /AZ-104 CONVERSATIONS/Mastering_Azure_Backup_&_Site_Recovery.
+  • Conversations /AZ-104 CONVERSATIONS/VABRF__The_5-Step_Azure_Resilience_Blue
+
+Compute (16 transcripts):
+  • Conversations /AZ-104 CONVERSATIONS/ADE_Cross-Region_VM_Migration__The_Mand
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  az104_linux_vm_add_disk_ade_gui
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Lab Review- Windows VM, Web Serv
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Linux basic commands, .wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104rusted Launch for Azure VMs,.wav
+  • Conversations /AZ-104 CONVERSATIONS/Azure Virtual Machines Deep Dive.wav
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Admin_s_Journey__From_Zero_to_VM_
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Admin_s_Journey__From_Zero_to_VM_
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Compute_&_Disk_Mgmt.mp4
+  • Conversations /AZ-104 CONVERSATIONS/Azure_VM_Compute Deep Dive Mastery__Sto
+  • Conversations /AZ-104 CONVERSATIONS/Building_Highly_Available_Web_Apps_on_A
+  • Conversations /AZ-104 CONVERSATIONS/Lab Review- Windows VM, Web Server & Im
+  • Conversations /AZ-104 CONVERSATIONS/Mastering_Azure_VM_Scale_Sets__Scalable
+  • Conversations /AZ-104 CONVERSATIONS/Mastering_Compute_Azure_VM_Internals-Co
+  • Conversations /AZ-104 CONVERSATIONS/Migrating_Encrypted_Azure_VMs.mp4
+  • Conversations /AZ-104 CONVERSATIONS/VMSS_vs.mp4
+
+Governance (4 transcripts):
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  Governance and Compliance.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Resource Management.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ_104_Governance_Security_Services_Tam
+  • Conversations /AZ-104 CONVERSATIONS/Azure__Automation_&_Governance.mp4
+
+Identity (14 transcripts):
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure RBAC.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  _practice exam questions based 
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Load ballancing Explained .wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Load ballancing exam style .wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104_Admin_Roadmap.mp4
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Access_Understanding Roles & Laye
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Exam_Secrets__The_Three_AZ-104_Pr
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Load_Balancing.mp4
+  • Conversations /AZ-104 CONVERSATIONS/Choosing_Azure_Load_Balancers.mp4
+  • Conversations /AZ-104 CONVERSATIONS/Mapping_the_AZ-104_Administrator_Exam.m
+  • Conversations /AZ-104 CONVERSATIONS/RBAC vs. Entra DS- The Five Pillars of 
+  • Conversations /AZ-104 CONVERSATIONS/The_Deep_Dive__Untangling_Azure_Adminis
+  • Conversations /AZ-104 CONVERSATIONS/The_IaC_Understanding Roles & Layers of
+  • Conversations /AZ-104 CONVERSATIONS/Your_Map_to_the_AZ-104_Azure_Administra
+
+Monitoring (5 transcripts):
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Monitor Logs Alerts Explained.wa
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Alerts.mp4
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Alerts__Signal,_Rule,_Act
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Foundations.mp4
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Monitor_Operations_Overhaul__Usin
+
+Networking (43 transcripts):
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104   Azure Virtual Networks key ins
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure Virtual Network.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  NetworkSecurityGroup 2 NSG.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  NetworkSecurityGroup NSG.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  Networking & Security Component
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  Networks and Availability Zones
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 App Gateway services  Explained 
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Azure DNS + App Gateway services
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Azure DNS + Load Balancing servi
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 DNS Explainedwav.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 DNS basic Explained 1 .wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Firewall vs NAT Gateway-.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Lab Review- VM CLI Management & 
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 NSG Explainedwav.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Network Issues with PowerShell &
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 VNets Contents whats inside .wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 VPN ExpressRoute Explained.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 VPN Gateway Explained.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 VPN Gateway Hybrid Networking Ex
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Vnet peering lab Breakdown.wav
+  ... and 23 more
+
+Other (47 transcripts):
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104   flip my 4Geeks full-stack skil
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure Trusted Launchwav.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  Simulation + Optimised Explanat
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  _ ARM Templates.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  _ Import:Export Jobs 2.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  _ Shared Responsibilit.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  _ARM Template step-by-step brea
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  _Object Replication Setup .wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  all Azure Plans layers Essentia
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  architecture from root to subsc
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  basics key pillars 2_0.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  basics key pillars 3_0.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  basics key pillars_0.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 : 900Azure  Azure Automation, AR
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Access Keys,  key rotation, secu
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Permissions & Azure Compute.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 PowerShell basics,  .wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 Trusted Launch features .wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 azure_app_service.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 walk through Trusted Launch feat
+  ... and 27 more
+
+Storage (23 transcripts):
+  • Conversations /AZ-104 CONVERSATIONS/ Linux File Permissions & Azure Compute
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  Azure Blob vs File Storage.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  File share Config-.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  _ Storage Explorer & AZCopy .wa
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  _Blob-storage.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  _Storage Account Encryption .wa
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  _Storage Redundancy .wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104  _Storage Redundancy. Cover LRS,
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104 storage access.wav
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104_Exam_Fix__Mastering_Azure_Storag
+  • Conversations /AZ-104 CONVERSATIONS/AZ-104storage account types,wav.wav
+  • Conversations /AZ-104 CONVERSATIONS/AzureStorage_Files_Deep_Dive__RBAC,_WOR
+  • Conversations /AZ-104 CONVERSATIONS/AzureStorage_Files_for_AZ-104.mp4
+  • Conversations /AZ-104 CONVERSATIONS/Azure_FilesStorage__The_Secure_Path.mp4
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Files_Security_Decoded__Network A
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Files_Security_Deep_Dive__RBAC,_N
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Files_Security_Mastery__Untanglin
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Storage-permissions_QuizRevision_
+  • Conversations /AZ-104 CONVERSATIONS/Azure_Storage_&_Entra_ID.mp4
+  • Conversations /AZ-104 CONVERSATIONS/Bicep_vs._Terraform_vs_storage.m4a
+  ... and 3 more
+
+
+❓ AMBIGUOUS (POSSIBLE MATCH - REVIEW)
+--------------------------------------------------------------------------------
+Count: 0 transcripts
+These might be already covered but with low confidence (30-50% match).
+Consider manual review to confirm if they need new deck generation.
+
+
+
+💡 RECOMMENDATIONS
+--------------------------------------------------------------------------------
+1. IMMEDIATE: Convert 165 new transcripts to deck questions
+   Priority by category:
+     • Other: 47 transcripts
+     • Networking: 43 transcripts
+     • Storage: 23 transcripts
+     • Compute: 16 transcripts
+     • Identity: 14 transcripts
+
+2. REVIEW: Verify 0 ambiguous transcripts
+   Ensure they're not already covered before conversion
+
+3. CONSOLIDATE: Remove duplicate transcripts (37 found previously)
+   This will reduce actual count and improve quality

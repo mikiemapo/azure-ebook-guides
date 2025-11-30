@@ -1,0 +1,29 @@
+================================================================================
+TRANSCRIPT-TO-Q&A CONVERSION REPORT
+Generated: 2025-11-27 18:30:36
+================================================================================
+
+📊 SUMMARY
+--------------------------------------------------------------------------------
+Transcripts Processed: 159
+Questions Generated: 318
+Avg Questions per Transcript: 2.0
+
+📈 BY CATEGORY
+--------------------------------------------------------------------------------
+App Service: 16 questions
+Backup/DR: 2 questions
+Compute: 36 questions
+Governance: 10 questions
+Identity: 36 questions
+Monitoring: 10 questions
+Networking: 82 questions
+Other: 80 questions
+Storage: 46 questions
+
+📋 NEXT STEPS
+--------------------------------------------------------------------------------
+1. Review converted_transcripts.csv for quality
+2. Merge into master CSV: AZ-104-Master-Questions.csv
+3. Run create_master_deck.py to regenerate Anki deck
+4. Test in Anki before full deployment

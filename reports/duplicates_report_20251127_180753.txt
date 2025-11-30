@@ -1,0 +1,384 @@
+================================================================================
+DUPLICATE TRANSCRIPT CONSOLIDATION REPORT
+Generated: 2025-11-27 18:07:53
+================================================================================
+
+📊 SUMMARY
+--------------------------------------------------------------------------------
+Total Transcripts: 165
+Duplicate Groups: 5
+Duplicate Instances: 6
+Unique Transcripts After Consolidation: 159
+
+🔴 DUPLICATE GROUPS (CONSOLIDATION REQUIRED)
+--------------------------------------------------------------------------------
+
+1. Other - 3 instances
+   Normalized: ./conversations /az conversations/az basics key pillars 
+   Instances:
+      [1] AZ-104  basics key pillars 2_0.wav
+      [2] AZ-104  basics key pillars_0.wav
+      [3] AZ-104  basics key pillars 3_0.wav
+   → KEEP: AZ-104  basics key pillars 2_0.wav
+   → DELETE: 2 others
+
+2. Networking - 2 instances
+   Normalized: ./conversations /az conversations/az networksecuritygroup nsg
+   Instances:
+      [1] AZ-104  NetworkSecurityGroup 2 NSG.wav
+      [2] AZ-104  NetworkSecurityGroup NSG.wav
+   → KEEP: AZ-104  NetworkSecurityGroup 2 NSG.wav
+   → DELETE: 1 others
+
+3. Compute - 2 instances
+   Normalized: ./conversations /az conversations/azure admin s journey from zero to vm hero
+   Instances:
+      [1] Azure_Admin_s_Journey__From_Zero_to_VM_Hero.mp4
+      [2] Azure_Admin_s_Journey__From_Zero_to_VM_Hero (1).mp4
+   → KEEP: Azure_Admin_s_Journey__From_Zero_to_VM_Hero (1).mp4
+   → DELETE: 1 others
+
+4. Networking - 2 instances
+   Normalized: ./conversations /az conversations/azure networking deep dive layer vs layer , nva insertion, a
+   Instances:
+      [1] Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7,_NVA_Insertion,_a (1).m4a
+      [2] Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7,_NVA_Insertion,_a.m4a
+   → KEEP: Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7,_NVA_Insertion,_a (1).m4a
+   → DELETE: 1 others
+
+5. Other - 2 instances
+   Normalized: ./conversations /az conversations/entra id vs
+   Instances:
+      [1] Entra_ID_vs (1).mp4
+      [2] Entra_ID_vs.m4a
+   → KEEP: Entra_ID_vs (1).mp4
+   → DELETE: 1 others
+
+
+💾 CONSOLIDATED LIST (RECOMMENDED)
+--------------------------------------------------------------------------------
+Keep 159 unique transcripts:
+
+• [Storage     ]  Linux File Permissions & Azure Compute.wav
+• [App Service ] ACI_Cost_vs.m4a
+• [Compute     ] ADE_Cross-Region_VM_Migration__The_Mandatory_D-G-W-C_Azure_CLI_.m4a
+• [Networking  ] AZ-104   Azure Virtual Networks key insights  (VNets) .wav
+• [Other       ] AZ-104   flip my 4Geeks full-stack skills into Azure .wav
+• [App Service ] AZ-104  App Service Flash card essentials.wav
+• [Storage     ] AZ-104  Azure Blob vs File Storage.wav
+• [Identity    ] AZ-104  Azure RBAC.wav
+• [Other       ] AZ-104  Azure Trusted Launchwav.wav
+• [Networking  ] AZ-104  Azure Virtual Network.wav
+• [Storage     ] AZ-104  File share Config-.wav
+• [Governance  ] AZ-104  Governance and Compliance.wav
+• [App Service ] AZ-104  Lab- Deploy Static HTML App with `az webapp up`.wav
+• [Networking  ] AZ-104  NetworkSecurityGroup 2 NSG.wav
+• [Networking  ] AZ-104  Networking & Security Components.wav
+• [Networking  ] AZ-104  Networks and Availability Zones.wav
+• [Other       ] AZ-104  Simulation + Optimised Explanations create username, resources, roles.wav
+• [Other       ] AZ-104  _ ARM Templates.wav
+• [Other       ] AZ-104  _ Import:Export Jobs 2.wav
+• [Other       ] AZ-104  _ Shared Responsibilit.wav
+• [Storage     ] AZ-104  _ Storage Explorer & AZCopy .wav
+• [Other       ] AZ-104  _ARM Template step-by-step breakdown .wav
+• [Storage     ] AZ-104  _Blob-storage.wav
+• [Other       ] AZ-104  _Object Replication Setup .wav
+• [Storage     ] AZ-104  _Storage Account Encryption .wav
+• [Storage     ] AZ-104  _Storage Redundancy .wav
+• [Storage     ] AZ-104  _Storage Redundancy. Cover LRS, ZRS, GRS, RA-GRS, and GZRS..wav
+• [Identity    ] AZ-104  _practice exam questions based on Azure AD user creation, resource group creation, and RBAC role assignment.wav
+• [Other       ] AZ-104  all Azure Plans layers Essentials .wav
+• [Other       ] AZ-104  architecture from root to subscription.wav
+• [Compute     ] AZ-104  az104_linux_vm_add_disk_ade_guide.wav
+• [Other       ] AZ-104  basics key pillars 2_0.wav
+• [App Service ] AZ-104  containers to app services .wav
+• [App Service ] AZ-104  containers to app services deep dive .wav
+• [Compute     ] AZ-104 : 900 Azure Lynux IAM VMs and containers.wav
+• [Other       ] AZ-104 : 900Azure  Azure Automation, ARM templates, PowerShell.wav
+• [App Service ] AZ-104 ACI K8S Deepdive container management.wav
+• [Other       ] AZ-104 Access Keys,  key rotation, security.wav
+• [Networking  ] AZ-104 App Gateway services  Explained .wav
+• [App Service ] AZ-104 App Service intro .wav
+• [App Service ] AZ-104 Azure App Service topicsmultiple-choice questions .wav
+• [Networking  ] AZ-104 Azure DNS + App Gateway services  Explained .wav
+• [Networking  ] AZ-104 Azure DNS + Load Balancing services  Explained .wav
+• [Networking  ] AZ-104 DNS Explainedwav.wav
+• [Networking  ] AZ-104 DNS basic Explained 1 .wav
+• [Networking  ] AZ-104 Firewall vs NAT Gateway-.wav
+• [Networking  ] AZ-104 Lab Review- VM CLI Management & Networkingwav.wav
+• [Compute     ] AZ-104 Lab Review- Windows VM, Web Server & Image Capture.wav
+• [Compute     ] AZ-104 Linux basic commands, .wav
+• [Identity    ] AZ-104 Load ballancing Explained .wav
+• [Identity    ] AZ-104 Load ballancing exam style .wav
+• [Monitoring  ] AZ-104 Monitor Logs Alerts Explained.wav
+• [Networking  ] AZ-104 NSG Explainedwav.wav
+• [Networking  ] AZ-104 Network Issues with PowerShell & Linux Tools.wav
+• [Other       ] AZ-104 Permissions & Azure Compute.wav
+• [Other       ] AZ-104 PowerShell basics,  .wav
+• [Other       ] AZ-104 Resource Management.wav
+• [Other       ] AZ-104 Trusted Launch features .wav
+• [Networking  ] AZ-104 VNets Contents whats inside .wav
+• [Networking  ] AZ-104 VPN ExpressRoute Explained.wav
+• [Networking  ] AZ-104 VPN Gateway Explained.wav
+• [Networking  ] AZ-104 VPN Gateway Hybrid Networking Explained.wav
+• [Networking  ] AZ-104 Vnet peering lab Breakdown.wav
+• [Other       ] AZ-104 azure_app_service.wav
+• [Storage     ] AZ-104 storage access.wav
+• [Other       ] AZ-104 walk through Trusted Launch features .wav
+• [Other       ] AZ-104_ Simulation + Explanations create username, resources, roles.wav
+• [Identity    ] AZ-104_Admin_Roadmap.mp4
+• [Other       ] AZ-104_Deep_Dive__Unpacking_Azure_Access_Layers_and_Benchmarkin.m4a
+• [Storage     ] AZ-104_Exam_Fix__Mastering_Azure_Storage_Security_(RBAC_vs.m4a
+• [Networking  ] AZ-104_Networking_Blueprint.mp4
+• [Other       ] AZ-104__App_Service_Engine_Mastery.mp4
+• [Other       ] AZ-104__From_Clicks_to_Concepts.mp4
+• [Other       ] AZ-104__From_Fail_to_Master.mp4
+• [Other       ] AZ-104__From_Fail_to_Win.mp4
+• [Other       ] AZ-104__Top_Compute_Traps.mp4
+• [Compute     ] AZ-104rusted Launch for Azure VMs,.wav
+• [Storage     ] AZ-104storage account types,wav.wav
+• [Governance  ] AZ_104_Governance_Security_Services_Taming_the_Cloud.mp4
+• [Other       ] Access_&_Observability.mp4
+• [Networking  ] App_Gateway__Your_AZ-104_Network_Guide.mp4
+• [Compute     ] Azure Virtual Machines Deep Dive.wav
+• [Other       ] Azure architecture hierarchy for AZ-104.wav
+• [Storage     ] AzureStorage_Files_Deep_Dive__RBAC,_WORM,_and_Navigating_the_Port_445_.m4a
+• [Storage     ] AzureStorage_Files_for_AZ-104.mp4
+• [Other       ] Azure_AZ-104_Deep_Dive__Master_Compute_Deployment,_Security,_and_Cost_Optimization (1).m4a
+• [Other       ] Azure_Access_Control.mp4
+• [Other       ] Azure_Access_Double_Lock__Mastering_PaaS_Security_with_Endpoint.m4a
+• [Identity    ] Azure_Access_Understanding Roles & Layers of Control (IAM vs RBAC vs NTFS).m4a
+• [Compute     ] Azure_Admin_s_Journey__From_Zero_to_VM_Hero (1).mp4
+• [Networking  ] Azure_Administration_Deep_Dive__Master_Identity,_Compute,_Networking,_and_Cost_Optimization.m4a
+• [Other       ] Azure_App_Service_Deep_Dive__Engine_vs.m4a
+• [Networking  ] Azure_Application_Gateway_Networking_Explained__Your_Smart_Regional_Web_Co.m4a
+• [Compute     ] Azure_Compute_&_Disk_Mgmt.mp4
+• [Other       ] Azure_Compute_Certification_Traps__Unlocking_AZ-104_Constraints.m4a
+• [App Service ] Azure_Compute_Decision_Guide_IaaS_vs_PaaS_vs_Containers_and_the.m4a
+• [Other       ] Azure_Compute_Mastery__Bastion_Security,_B-Series_Costs,_and_th.m4a
+• [App Service ] Azure_Containers_for_AZ-104.mp4
+• [Networking  ] Azure_DNS_Demystified__Conquering_Zone_Apex,_Dangling_Records,_.m4a
+• [Other       ] Azure_Exam_Secrets__The_Three_AZ-104_Procedural_Gaps_That_Guara.m4a
+• [Storage     ] Azure_FilesStorage__The_Secure_Path.mp4
+• [Networking  ] Azure_Files_Security_Decoded__Network Access to Storage AccountsThe_Three_Gates_of_Identity,_Netw.m4a
+• [Storage     ] Azure_Files_Security_Deep_Dive__RBAC,_NTFS,_and_the_Dual_Lock_S.m4a
+• [Storage     ] Azure_Files_Security_Mastery__Untangling_the_Complex_Knot_of_RBstorage.m4a
+• [Networking  ] Azure_Firewall__Central_Netwok_Brain.mp4
+• [Networking  ] Azure_Fundamentals_&_AZ-104_Deep_Dive__Identity,_Governance,_Networking,_and_the_Power_of_Azure_Fire.m4a
+• [Networking  ] Azure_Gateway_Load_Balancer.mp4
+• [Networking  ] Azure_Gateway_Load_Balancer__The_Transparent_Bouncer_for_Your_C.m4a
+• [Identity    ] Azure_Load_Balancing.mp4
+• [Monitoring  ] Azure_Monitor_Alerts.mp4
+• [Monitoring  ] Azure_Monitor_Alerts__Signal,_Rule,_Action_Explained_(The_Mecha.m4a
+• [Monitoring  ] Azure_Monitor_Foundations.mp4
+• [Monitoring  ] Azure_Monitor_Operations_Overhaul__Using_Triage,_DINE_Policy,_a.m4a
+• [Networking  ] Azure_Networking_Blueprint (1).mp4
+• [Networking  ] Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7,_NVA_Insertion,_a (1).m4a
+• [Storage     ] Azure_Storage-permissions_QuizRevision_Files__Two_Keys.mp4
+• [Storage     ] Azure_Storage_&_Entra_ID.mp4
+• [Compute     ] Azure_VM_Compute Deep Dive Mastery__Stop_Wasting_Money_and_Master_Compute,_Storag.m4a
+• [Networking  ] Azure_VNet_Security.mp4
+• [Networking  ] Azure_VNet_Topologies.mp4
+• [Governance  ] Azure__Automation_&_Governance.mp4
+• [Other       ] Azure_s_Conceptual_Battlegrounds__Separating_Soft_Delete_from_W.m4a
+• [Storage     ] Bicep_vs._Terraform_vs_storage.m4a
+• [Compute     ] Building_Highly_Available_Web_Apps_on_Azure__The_3-VM_Deep_Dive.m4a
+• [Identity    ] Choosing_Azure_Load_Balancers.mp4
+• [Networking  ] Choosing_Azurenetwork_Load_Balancers.mp4
+• [Other       ] Compute_Core_Reinforcement.mp4
+• [Networking  ] Connecting_Network_Your_Custom_Domain.mp4
+• [Other       ] Conquering_the_AZ-104.mp4
+• [Networking  ] Cracking_the_Code__Azure_DNS.mp4
+• [Other       ] Docker_to_Azure__Your_App_s_Journey_from_Local_Build_to_Cloud_Deployment_(Gotchas_&_Solutions).m4a
+• [Other       ] Entra_ID_vs (1).mp4
+• [Other       ] Hubspoke_Secure_Azure_Lab_Breakdown.mp4
+• [Compute     ] Lab Review- Windows VM, Web Server & Image Capture.wav
+• [Identity    ] Mapping_the_AZ-104_Administrator_Exam.mp4
+• [Networking  ] Mastering_Azure network _Firewall.mp4
+• [Backup/DR   ] Mastering_Azure_Backup_&_Site_Recovery.mp4
+• [Other       ] Mastering_Azure_Compute.mp4
+• [Networking  ] Mastering_Azure_Firewall_Rules.mp4
+• [Other       ] Mastering_Azure_Quiz_overview.mp4
+• [Compute     ] Mastering_Azure_VM_Scale_Sets__Scalable,_Resilient_Compute_for_Dynamic_Workloads_&_AZ-104_Exam_Succe.m4a
+• [Compute     ] Mastering_Compute_Azure_VM_Internals-Compute.mp4
+• [Compute     ] Migrating_Encrypted_Azure_VMs.mp4
+• [Networking  ] Network Access to Storage Accounts_Azure.mp4
+• [Identity    ] RBAC vs. Entra DS- The Five Pillars of Hybrid Azure Mastery, Explained with Essential Mnemonics.m4a
+• [Networking  ] Resilient_Web_Apps_in_Azure network.mp4
+• [Storage     ] Securing_Azure_Files storage.mp4
+• [Other       ] Securing_Azure_PaaS.mp4
+• [Other       ] Service_vs.mp4
+• [Networking  ] Sticky_Sessions_Kill_Your_Scale_Why_AzureNetwork_Load_Balancer_Session.m4a
+• [Identity    ] The_Deep_Dive__Untangling_Azure_Administration_from_Identity_to_Cost_Management.m4a
+• [Storage     ] The_Duality_of_Azure_Access__Conquering_AZ-104_Storage,_Governa.m4a
+• [Identity    ] The_IaC_Understanding Roles & Layers of Control (IAM vs RBAC vs NTFS).mp4
+• [Networking  ] Troubleshoot_Load_Balancer_Network_Azure.mp4
+• [Governance  ] VABRF__The_5-Step_Azure_Resilience_Blueprint_for_Ransomware_and.m4a
+• [Compute     ] VMSS_vs.mp4
+• [Networking  ] VNet_Peering__Missing_Route.mp4
+• [Other       ] Your_Guide_to_the_AZ-104_Exam.mp4
+• [Identity    ] Your_Map_to_the_AZ-104_Azure_Administrator_Exam.mp4
+
+
+📋 CSV FORMAT (For merging into master)
+--------------------------------------------------------------------------------
+Batch,Question,Answer
+"Transcript Conversion::Storage","Source:  Linux File Permissions & Azure Compute","Transcript file to be processed into deck questions"
+"Transcript Conversion::App Service","Source: ACI_Cost_vs","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: ADE_Cross-Region_VM_Migration__The_Mandatory_D-G-W-C_Azure_CLI_","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104   Azure Virtual Networks key insights  (VNets) ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104   flip my 4Geeks full-stack skills into Azure ","Transcript file to be processed into deck questions"
+"Transcript Conversion::App Service","Source: AZ-104  App Service Flash card essentials","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AZ-104  Azure Blob vs File Storage","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: AZ-104  Azure RBAC","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104  Azure Trusted Launchwav","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104  Azure Virtual Network","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AZ-104  File share Config-","Transcript file to be processed into deck questions"
+"Transcript Conversion::Governance","Source: AZ-104  Governance and Compliance","Transcript file to be processed into deck questions"
+"Transcript Conversion::App Service","Source: AZ-104  Lab- Deploy Static HTML App with `az webapp up`","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104  NetworkSecurityGroup 2 NSG","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104  Networking & Security Components","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104  Networks and Availability Zones","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104  Simulation + Optimised Explanations create username, resources, roles","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104  _ ARM Templates","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104  _ Import:Export Jobs 2","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104  _ Shared Responsibilit","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AZ-104  _ Storage Explorer & AZCopy ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104  _ARM Template step-by-step breakdown ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AZ-104  _Blob-storage","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104  _Object Replication Setup ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AZ-104  _Storage Account Encryption ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AZ-104  _Storage Redundancy ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AZ-104  _Storage Redundancy. Cover LRS, ZRS, GRS, RA-GRS, and GZRS.","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: AZ-104  _practice exam questions based on Azure AD user creation, resource group creation, and RBAC role assignment","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104  all Azure Plans layers Essentials ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104  architecture from root to subscription","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: AZ-104  az104_linux_vm_add_disk_ade_guide","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104  basics key pillars 2_0","Transcript file to be processed into deck questions"
+"Transcript Conversion::App Service","Source: AZ-104  containers to app services ","Transcript file to be processed into deck questions"
+"Transcript Conversion::App Service","Source: AZ-104  containers to app services deep dive ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: AZ-104 : 900 Azure Lynux IAM VMs and containers","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104 : 900Azure  Azure Automation, ARM templates, PowerShell","Transcript file to be processed into deck questions"
+"Transcript Conversion::App Service","Source: AZ-104 ACI K8S Deepdive container management","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104 Access Keys,  key rotation, security","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 App Gateway services  Explained ","Transcript file to be processed into deck questions"
+"Transcript Conversion::App Service","Source: AZ-104 App Service intro ","Transcript file to be processed into deck questions"
+"Transcript Conversion::App Service","Source: AZ-104 Azure App Service topicsmultiple-choice questions ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 Azure DNS + App Gateway services  Explained ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 Azure DNS + Load Balancing services  Explained ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 DNS Explainedwav","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 DNS basic Explained 1 ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 Firewall vs NAT Gateway-","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 Lab Review- VM CLI Management & Networkingwav","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: AZ-104 Lab Review- Windows VM, Web Server & Image Capture","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: AZ-104 Linux basic commands, ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: AZ-104 Load ballancing Explained ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: AZ-104 Load ballancing exam style ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Monitoring","Source: AZ-104 Monitor Logs Alerts Explained","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 NSG Explainedwav","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 Network Issues with PowerShell & Linux Tools","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104 Permissions & Azure Compute","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104 PowerShell basics,  ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104 Resource Management","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104 Trusted Launch features ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 VNets Contents whats inside ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 VPN ExpressRoute Explained","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 VPN Gateway Explained","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 VPN Gateway Hybrid Networking Explained","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104 Vnet peering lab Breakdown","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104 azure_app_service","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AZ-104 storage access","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104 walk through Trusted Launch features ","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104_ Simulation + Explanations create username, resources, roles","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: AZ-104_Admin_Roadmap","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104_Deep_Dive__Unpacking_Azure_Access_Layers_and_Benchmarkin","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AZ-104_Exam_Fix__Mastering_Azure_Storage_Security_(RBAC_vs","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: AZ-104_Networking_Blueprint","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104__App_Service_Engine_Mastery","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104__From_Clicks_to_Concepts","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104__From_Fail_to_Master","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104__From_Fail_to_Win","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: AZ-104__Top_Compute_Traps","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: AZ-104rusted Launch for Azure VMs,","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AZ-104storage account types,wav","Transcript file to be processed into deck questions"
+"Transcript Conversion::Governance","Source: AZ_104_Governance_Security_Services_Taming_the_Cloud","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Access_&_Observability","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: App_Gateway__Your_AZ-104_Network_Guide","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: Azure Virtual Machines Deep Dive","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Azure architecture hierarchy for AZ-104","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AzureStorage_Files_Deep_Dive__RBAC,_WORM,_and_Navigating_the_Port_445_","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: AzureStorage_Files_for_AZ-104","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Azure_AZ-104_Deep_Dive__Master_Compute_Deployment,_Security,_and_Cost_Optimization (1)","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Azure_Access_Control","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Azure_Access_Double_Lock__Mastering_PaaS_Security_with_Endpoint","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: Azure_Access_Understanding Roles & Layers of Control (IAM vs RBAC vs NTFS)","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: Azure_Admin_s_Journey__From_Zero_to_VM_Hero (1)","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_Administration_Deep_Dive__Master_Identity,_Compute,_Networking,_and_Cost_Optimization","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Azure_App_Service_Deep_Dive__Engine_vs","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_Application_Gateway_Networking_Explained__Your_Smart_Regional_Web_Co","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: Azure_Compute_&_Disk_Mgmt","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Azure_Compute_Certification_Traps__Unlocking_AZ-104_Constraints","Transcript file to be processed into deck questions"
+"Transcript Conversion::App Service","Source: Azure_Compute_Decision_Guide_IaaS_vs_PaaS_vs_Containers_and_the","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Azure_Compute_Mastery__Bastion_Security,_B-Series_Costs,_and_th","Transcript file to be processed into deck questions"
+"Transcript Conversion::App Service","Source: Azure_Containers_for_AZ-104","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_DNS_Demystified__Conquering_Zone_Apex,_Dangling_Records,_","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Azure_Exam_Secrets__The_Three_AZ-104_Procedural_Gaps_That_Guara","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: Azure_FilesStorage__The_Secure_Path","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_Files_Security_Decoded__Network Access to Storage AccountsThe_Three_Gates_of_Identity,_Netw","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: Azure_Files_Security_Deep_Dive__RBAC,_NTFS,_and_the_Dual_Lock_S","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: Azure_Files_Security_Mastery__Untangling_the_Complex_Knot_of_RBstorage","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_Firewall__Central_Netwok_Brain","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_Fundamentals_&_AZ-104_Deep_Dive__Identity,_Governance,_Networking,_and_the_Power_of_Azure_Fire","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_Gateway_Load_Balancer","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_Gateway_Load_Balancer__The_Transparent_Bouncer_for_Your_C","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: Azure_Load_Balancing","Transcript file to be processed into deck questions"
+"Transcript Conversion::Monitoring","Source: Azure_Monitor_Alerts","Transcript file to be processed into deck questions"
+"Transcript Conversion::Monitoring","Source: Azure_Monitor_Alerts__Signal,_Rule,_Action_Explained_(The_Mecha","Transcript file to be processed into deck questions"
+"Transcript Conversion::Monitoring","Source: Azure_Monitor_Foundations","Transcript file to be processed into deck questions"
+"Transcript Conversion::Monitoring","Source: Azure_Monitor_Operations_Overhaul__Using_Triage,_DINE_Policy,_a","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_Networking_Blueprint (1)","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_Networking_Deep_Dive_Layer_4_vs_Layer_7,_NVA_Insertion,_a (1)","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: Azure_Storage-permissions_QuizRevision_Files__Two_Keys","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: Azure_Storage_&_Entra_ID","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: Azure_VM_Compute Deep Dive Mastery__Stop_Wasting_Money_and_Master_Compute,_Storag","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_VNet_Security","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Azure_VNet_Topologies","Transcript file to be processed into deck questions"
+"Transcript Conversion::Governance","Source: Azure__Automation_&_Governance","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Azure_s_Conceptual_Battlegrounds__Separating_Soft_Delete_from_W","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: Bicep_vs._Terraform_vs_storage","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: Building_Highly_Available_Web_Apps_on_Azure__The_3-VM_Deep_Dive","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: Choosing_Azure_Load_Balancers","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Choosing_Azurenetwork_Load_Balancers","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Compute_Core_Reinforcement","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Connecting_Network_Your_Custom_Domain","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Conquering_the_AZ-104","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Cracking_the_Code__Azure_DNS","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Docker_to_Azure__Your_App_s_Journey_from_Local_Build_to_Cloud_Deployment_(Gotchas_&_Solutions)","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Entra_ID_vs (1)","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Hubspoke_Secure_Azure_Lab_Breakdown","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: Lab Review- Windows VM, Web Server & Image Capture","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: Mapping_the_AZ-104_Administrator_Exam","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Mastering_Azure network _Firewall","Transcript file to be processed into deck questions"
+"Transcript Conversion::Backup/DR","Source: Mastering_Azure_Backup_&_Site_Recovery","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Mastering_Azure_Compute","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Mastering_Azure_Firewall_Rules","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Mastering_Azure_Quiz_overview","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: Mastering_Azure_VM_Scale_Sets__Scalable,_Resilient_Compute_for_Dynamic_Workloads_&_AZ-104_Exam_Succe","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: Mastering_Compute_Azure_VM_Internals-Compute","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: Migrating_Encrypted_Azure_VMs","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Network Access to Storage Accounts_Azure","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: RBAC vs. Entra DS- The Five Pillars of Hybrid Azure Mastery, Explained with Essential Mnemonics","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Resilient_Web_Apps_in_Azure network","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: Securing_Azure_Files storage","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Securing_Azure_PaaS","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Service_vs","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Sticky_Sessions_Kill_Your_Scale_Why_AzureNetwork_Load_Balancer_Session","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: The_Deep_Dive__Untangling_Azure_Administration_from_Identity_to_Cost_Management","Transcript file to be processed into deck questions"
+"Transcript Conversion::Storage","Source: The_Duality_of_Azure_Access__Conquering_AZ-104_Storage,_Governa","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: The_IaC_Understanding Roles & Layers of Control (IAM vs RBAC vs NTFS)","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: Troubleshoot_Load_Balancer_Network_Azure","Transcript file to be processed into deck questions"
+"Transcript Conversion::Governance","Source: VABRF__The_5-Step_Azure_Resilience_Blueprint_for_Ransomware_and","Transcript file to be processed into deck questions"
+"Transcript Conversion::Compute","Source: VMSS_vs","Transcript file to be processed into deck questions"
+"Transcript Conversion::Networking","Source: VNet_Peering__Missing_Route","Transcript file to be processed into deck questions"
+"Transcript Conversion::Other","Source: Your_Guide_to_the_AZ-104_Exam","Transcript file to be processed into deck questions"
+"Transcript Conversion::Identity","Source: Your_Map_to_the_AZ-104_Azure_Administrator_Exam","Transcript file to be processed into deck questions"
