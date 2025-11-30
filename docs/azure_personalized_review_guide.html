@@ -580,11 +580,9 @@
 
     <!-- merged quiz scores moved to consolidated script -->
     <div class="main-container">
-      <!-- UPDATE CONFIRMATION BANNER -->
-      <div id="update-banner" style="background:#d4edda;border:1px solid #c3e6cb;color:#155724;padding:12px;margin-bottom:20px;border-radius:5px;text-align:center;">
-        <div style="font-size:16px;margin-bottom:5px;">✅ <strong>Compute Scores Updated Successfully</strong></div>
-        <div>Accumulative scores: 24/59 total (40.68%) - Added latest quiz: +10/21</div>
-        <div style="font-size:12px;margin-top:5px;color:#0f4c22;">🕒 Page loaded: <span id="load-time"></span> | Auto-refresh disabled</div>
+      <!-- Page Status Banner -->
+      <div style="background:#e8f4f8;border:1px solid #b3d9e6;color:#004d66;padding:8px;margin-bottom:15px;border-radius:5px;text-align:center;font-size:13px;">
+        🕒 Page loaded: <span id="load-time"></span> | Auto-refresh disabled
       </div>
       
       <script>
@@ -596,37 +594,66 @@
         <i class="fas fa-bullseye"></i>Personalized Review: Weak Spot Focus
       </h1>
 
-      <!-- Strategic Study Plan Based on Latest Quiz Performance -->
-      <div class="strategic-study-plan" style="background:#f8f9fa;border-left:4px solid #28a745;padding:20px;margin:20px 0;border-radius:6px;">
-        <h2 style="color:#28a745;margin:0 0 15px 0;">
-          <i class="fas fa-trophy"></i> Compute Domain Progress Update
-        </h2>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
-          <div style="background:#fff;padding:15px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-            <h4 style="color:#2c3e50;margin:0 0 10px 0;">Accumulative Quiz Results</h4>
-            <p style="margin:0;"><strong>Total Score:</strong> <span id="compute-live-score">24/59 (40.68%)</span></p>
-            <p style="margin:5px 0 0 0;color:#28a745;"><i class="fas fa-arrow-up"></i> <strong>Latest Quiz:</strong> +10 correct out of 21 questions</p>
-            <p style="margin:5px 0 0 0;font-size:12px;color:#666;"><em>Cumulative progress from all quizzes</em></p>
+      <!-- Dual Focus: Current Priorities -->
+      <div style="background:var(--next-step-bg);border:2px solid var(--next-step-border);border-radius:8px;padding:20px;margin-bottom:25px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        <h3 style="color:var(--next-step-title-color);margin:0 0 15px 0;display:flex;align-items:center;gap:10px;">
+          <i class="fas fa-crosshairs"></i> Active Study Focus (2 Domains)
+        </h3>
+        
+        <!-- Two-column layout for dual focus -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
+          
+          <!-- PRIMARY FOCUS: Identities & Governance -->
+          <div style="background:#fff;border:2px solid #ff9800;padding:15px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+            <div style="background:#ff9800;color:#fff;padding:4px 8px;border-radius:4px;display:inline-block;font-size:11px;font-weight:bold;margin-bottom:10px;">
+              🎯 PRIMARY FOCUS
+            </div>
+            <h4 style="color:#d83b01;margin:0 0 10px 0;font-size:16px;">
+              <i class="fas fa-user-shield"></i> Identities & Governance
+            </h4>
+            <div style="background:#fff3cd;padding:8px;border-radius:4px;margin-bottom:10px;">
+              <div style="font-size:13px;color:#856404;"><strong>Latest Performance:</strong> 10/17 (58.82%)</div>
+              <div style="font-size:12px;color:#856404;">Tutorials Dojo - Nov 14, 2025</div>
+            </div>
+            <div style="font-size:13px;margin-bottom:8px;">
+              <strong>Cumulative:</strong> <span id="identities-live-score">35/61 (57.38%)</span>
+            </div>
+            <div style="font-size:13px;color:#28a745;">
+              <strong>Target:</strong> 75%+ on next quiz
+            </div>
           </div>
-          <div style="background:#fff;padding:15px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-            <h4 style="color:#2c3e50;margin:0 0 10px 0;">Priority Focus Areas</h4>
-            <ul style="margin:5px 0 0 20px;padding:0;">
-              <li>Container Apps ingress configuration</li>
-              <li>VMSS orchestration modes</li>
-              <li>Availability Sets fault domains</li>
-              <li>Network Watcher Agent deployment</li>
-            </ul>
+          
+          <!-- SECONDARY FOCUS: Compute -->
+          <div style="background:#fff;border:2px solid #90caf9;padding:15px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
+            <div style="background:#2196f3;color:#fff;padding:4px 8px;border-radius:4px;display:inline-block;font-size:11px;font-weight:bold;margin-bottom:10px;">
+              📌 SECONDARY FOCUS
+            </div>
+            <h4 style="color:#1565c0;margin:0 0 10px 0;font-size:16px;">
+              <i class="fas fa-server"></i> Compute & VMs
+            </h4>
+            <div style="background:#e3f2fd;padding:8px;border-radius:4px;margin-bottom:10px;">
+              <div style="font-size:13px;color:#0d47a1;"><strong>Latest Performance:</strong> 10/21 (47.62%)</div>
+              <div style="font-size:12px;color:#0d47a1;">Recent quiz update</div>
+            </div>
+            <div style="font-size:13px;margin-bottom:8px;">
+              <strong>Cumulative:</strong> <span id="compute-live-score">24/59 (40.68%)</span>
+            </div>
+            <div style="font-size:13px;color:#f57c00;">
+              <strong>Status:</strong> Ongoing improvement
+            </div>
           </div>
         </div>
-        <div style="background:#fff;padding:15px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-          <h4 style="color:#2c3e50;margin:0 0 10px 0;">
-            <i class="fas fa-route"></i> Recommended Study Path
+        
+        <!-- Action Plan for Primary Focus -->
+        <div style="background:#fff;padding:15px;border-radius:6px;border-left:4px solid #ff9800;">
+          <h4 style="color:#2c3e50;margin:0 0 12px 0;font-size:15px;">
+            <i class="fas fa-tasks"></i> Next Steps: Identities & Governance
           </h4>
-          <ol style="margin:5px 0 0 20px;padding:0;">
-            <li><strong>Review new flashcards</strong> for Container Apps, VMSS, and Network Watcher concepts</li>
-            <li><strong>Practice labs</strong> focusing on VM Scale Sets and Azure Container Apps</li>
-            <li><strong>Drill deep</strong> on availability and fault tolerance configurations</li>
-            <li><strong>Take another practice quiz</strong> when comfort level improves</li>
+          <ol style="margin:0;padding-left:20px;line-height:1.8;font-size:14px;">
+            <li><strong>Priority #1:</strong> Review <span style="background:#fff3cd;padding:2px 6px;border-radius:3px;">Azure Policy inheritance rules</span> (resources retain region, inherit target RG policies)</li>
+            <li><strong>Drill practice:</strong> Azure Policy scopes, RBAC assignments, Group licensing</li>
+            <li><strong>Deep dive:</strong> B2B invites, SSPR configuration, RBAC vs Entra Domain Services</li>
+            <li><strong>Retake quiz:</strong> Identities & Governance section targeting 75%+</li>
           </ol>
         </div>
       </div>
