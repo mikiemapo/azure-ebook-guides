@@ -11,6 +11,7 @@
 - **File:** `AZ104_CLI_Labs_Reinforcement.apkg`
 - **Location:** `/Users/mike1macbook/Documents/MY STUFF DOCS AND ALL/EBOOK/Anki-Decks/`
 - **Total Cards:** 28
+- **Card cap:** Keep new additions to **20 cards per batch/import** per user limit.
 - **Format:** MCQ + True/False with 2-sentence explainers
 - **Styling:** #4CAF50 green highlighting (matches AZ-104 Master Deck format)
 

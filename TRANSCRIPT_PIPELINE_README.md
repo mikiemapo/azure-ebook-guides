@@ -6,6 +6,8 @@ You now have a complete system to convert your 165 AZ-104 transcripts (after ded
 
 **Questioning Method (all decks):** Uses the standardized MCQ/True-False style in `Anki-Decks/README.md` under "Questioning Method (Documented System)". Default to MCQ; use True/False only for binary, always/never rules.
 
+**Deep Dive text source & placement:** Transcript text files live in `/Users/mike1macbook/Library/Mobile Documents/3L68KQB4HG~com~readdle~CommonDocuments/Documents/azure-ebook-guides/Conversations not hub/Text files` and the generated cards are placed under the **Deep Dive** segment in the AZ-104 master deck hierarchy.
+
 **Status:**
 
 - ✅ Duplicates identified and consolidated (6 removed → 159 unique)

@@ -38,6 +38,7 @@
 - **ALWAYS** import from `Anki-Decks/AZ-104-Master-Study-Deck.apkg`
 - **NEVER** copy .apkg files manually (script does it automatically)
 - If you see duplicate folders, DELETE them
+- **Card cap reminder:** Limit new additions to **20 cards per batch/import** to avoid Anki limits and keep reviews manageable.
 
 ---
 
