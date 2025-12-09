@@ -10,6 +10,8 @@
 
 This repository contains **86 interactive HTML study guides** for the Microsoft Azure Administrator (AZ-104) certification exam. All guides are deployed via GitHub Pages and synced to iCloud (Readdle Documents) for offline mobile access.
 
+**Questioning Method (for all decks):** We use the standardized MCQ/True-False style documented in `Anki-Decks/README.md` (see "Questioning Method (Documented System)"). Default to MCQ; use True/False only for binary, always/never rules.
+
 ### Key Features
 
 - ✅ **Interactive collapsible cards** with toggle animations

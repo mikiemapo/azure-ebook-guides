@@ -9,6 +9,7 @@
 ## 🎯 Session Summary
 
 You asked to:
+
 1. ✅ Push latest updates to GitHub repo
 2. ✅ Back up Anki decks to repository
 3. ✅ Ensure consistent backups are happening
@@ -22,6 +23,7 @@ You asked to:
 ## 📊 What Was Backed Up
 
 ### **Anki Flashcard Decks** (13 files)
+
 ```
 ✅ AZ-104-Master-Study-Deck.apkg
 ✅ AZ104_AppService_TD.apkg
@@ -43,6 +45,7 @@ You asked to:
 **Total Cards:** 69+ flashcards across all decks
 
 ### **Deck Generation Tools** (8 Python scripts)
+
 ```
 ✅ tools/create_cli_labs_deck.py (28 cards: CLI labs reinforcement)
 ✅ tools/create_rbac_cheatsheet_deck.py (12 cards: RBAC)
@@ -59,6 +62,7 @@ You asked to:
 **Purpose:** Regenerate decks or modify card content
 
 ### **Study Calendar & Schedules**
+
 ```
 ✅ reports/study_plan_calendar.ics (iCal format for importing to Calendar)
 ✅ reports/study_plan_calendar.csv (Excel/Sheets compatible)
@@ -69,6 +73,7 @@ You asked to:
 **Size:** ~50 KB
 
 ### **Documentation**
+
 ```
 ✅ CHEATSHEET_DECKS_SUMMARY.md (6 Tutorial Dojo cheat sheet decks)
 ✅ CLI_LABS_DECK_README.md (CLI reinforcement deck guide)
@@ -77,6 +82,7 @@ You asked to:
 ```
 
 ### **Reference Data & CSV Files**
+
 ```
 ✅ AZ-104-Critical-Priorities-Study-Deck.csv
 ✅ AZ104_Comprehensive_Anki_Deck.csv
@@ -89,17 +95,20 @@ You asked to:
 ## 🚫 What Was EXCLUDED (As Requested)
 
 **Personal files NOT backed up:**
+
 - ❌ `Conversations/` folder
 - ❌ `Quiz results /` personal study materials
 - ❌ `AZ-104-Study-Deck/` (old/duplicate folder)
 - ❌ `e_book_repo_for_gthb/`, `TERRAFORM 2/`, lab folders, etc.
 
 **Large media NOT backed up:**
+
 - ❌ `.mp3`, `.m4a`, `.wav` (audio files)
 - ❌ `.mp4`, `.mov` (video files)
 - ❌ `.pdf` (external documents)
 
 **System/temp files NOT backed up:**
+
 - ❌ `.rdp` (RDP files)
 - ❌ `.sln` (Visual Studio)
 - ❌ `command.sh.txt`, temporary scripts
@@ -108,20 +117,21 @@ You asked to:
 
 ## 📈 Backup Statistics
 
-| Category | Files | Size |
-|----------|-------|------|
-| Anki Decks | 13 | 600 KB |
-| Python Scripts | 8 | 50 KB |
-| Study Calendars | 3 | 50 KB |
-| Documentation | 4 | 30 KB |
-| Reference CSVs | 8 | 100 KB |
-| **TOTAL** | **36** | **~830 KB** |
+| Category        | Files  | Size        |
+| --------------- | ------ | ----------- |
+| Anki Decks      | 13     | 600 KB      |
+| Python Scripts  | 8      | 50 KB       |
+| Study Calendars | 3      | 50 KB       |
+| Documentation   | 4      | 30 KB       |
+| Reference CSVs  | 8      | 100 KB      |
+| **TOTAL**       | **36** | **~830 KB** |
 
 ---
 
 ## 🔄 GitHub Push History
 
 **Commit 1 - Main Backup (dda0af8)**
+
 ```
 feat: Add Anki decks, CLI labs reinforcement, and deck generation tools
 - 43 files changed
@@ -132,12 +142,14 @@ feat: Add Anki decks, CLI labs reinforcement, and deck generation tools
 ```
 
 **Commit 2 - Backup Summary (c684d7a)**
+
 ```
 docs: Add comprehensive backup session summary
 - BACKUP_SESSION_SUMMARY.md created with full manifest
 ```
 
 **Commit 3 - Submodule Setup (e3098ad)**
+
 ```
 chore: Add AZ-104 Critical Priorities Study Deck as git submodule
 - Properly tracked nested repository
@@ -150,6 +162,7 @@ chore: Add AZ-104 Critical Priorities Study Deck as git submodule
 ## 🔐 .gitignore Configuration
 
 **Now allows:**
+
 ```gitignore
 !Anki-Decks/
 !Anki-Decks/**/*.apkg
@@ -157,6 +170,7 @@ chore: Add AZ-104 Critical Priorities Study Deck as git submodule
 ```
 
 **Still excludes:**
+
 - `*.mp3`, `*.mp4` (large media)
 - `Conversations/` (personal)
 - `*.pdf` (external docs)
@@ -168,6 +182,7 @@ chore: Add AZ-104 Critical Priorities Study Deck as git submodule
 ## 🚀 How to Continue Regular Backups
 
 ### **When you create a NEW Anki deck:**
+
 ```bash
 cd /Users/mike1macbook/Documents/MY\ STUFF\ DOCS\ AND\ ALL/EBOOK
 git add Anki-Decks/YourNewDeck.apkg
@@ -176,6 +191,7 @@ git push origin main
 ```
 
 ### **When you modify a Python script:**
+
 ```bash
 git add tools/create_*.py
 git commit -m "refactor: Update deck generation scripts"
@@ -183,6 +199,7 @@ git push origin main
 ```
 
 ### **When you update study calendar:**
+
 ```bash
 git add reports/study_plan_calendar.*
 git commit -m "docs: Update study calendar"
@@ -190,6 +207,7 @@ git push origin main
 ```
 
 ### **Quick backup check:**
+
 ```bash
 git status  # See what's changed
 git log --oneline -5  # See recent commits
@@ -200,11 +218,13 @@ git log --oneline -5  # See recent commits
 ## ☁️ Automatic Syncing
 
 **iCloud Readdle Auto-Sync:** ✅ Enabled
+
 - Syncs `docs/` and `Conversations/` folders
 - 91 files synchronized
 - Runs automatically with each git push
 
 **GitHub Remote:** ✅ Connected
+
 - All commits pushed to `origin/main`
 - Branch tracking confirmed: `[origin/main]`
 - Ready for collaborative development
@@ -214,11 +234,12 @@ git log --oneline -5  # See recent commits
 ## ✅ Verification Checklist
 
 ### Completed Tasks
+
 - ✅ Updated `.gitignore` to allow Anki decks and scripts
 - ✅ Committed 16 Anki flashcard decks to GitHub
 - ✅ Backed up 8 Python deck generation scripts
 - ✅ Preserved study calendars and checklists
-- ✅ Excluded personal files (no Conversations/*, etc.)
+- ✅ Excluded personal files (no Conversations/\*, etc.)
 - ✅ Excluded large media (no MP3/MP4 files)
 - ✅ Created comprehensive documentation
 - ✅ Set up AZ-104 Critical Priorities as submodule
@@ -227,6 +248,7 @@ git log --oneline -5  # See recent commits
 - ✅ Branch tracking verified
 
 ### Status Indicators
+
 - **Current Branch:** `main` ✅
 - **Remote Status:** `[origin/main]` ✅
 - **Working Tree:** Clean (no uncommitted changes) ✅
@@ -297,6 +319,7 @@ azure-ebook-guides/
 ## 📞 Support
 
 If you need to:
+
 - **Restore a file:** Clone from GitHub
 - **Update a deck:** Regenerate using Python script, replace `.apkg`, commit & push
 - **Add new backup:** Follow "How to Continue" section above

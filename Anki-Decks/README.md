@@ -53,6 +53,8 @@
 
 ## 🎴 DECK FORMAT SPECIFICATION
 
+> **Standard Questioning Method:** All new decks follow the documented MCQ/True-False system below. Use MCQ by default; use True/False only for binary, always/never rules. See: `Questioning Method (Documented System)` section.
+
 ### Card Template Structure (Based on Deep Dive Segments)
 
 All decks use the **AZ-104 Master Questions Model** with the following format:
@@ -195,6 +197,16 @@ resource-specific scopes using administrative units.
 - **Tags:** No spaces; use hyphens (e.g., "Entra-ID", not "Entra ID")
 - **Choices:** Clear, distinct options with one clearly correct answer
 - **Question Clarity:** No ambiguity; all wording must reference Microsoft Learn standards
+
+### 🧭 **Questioning Method (Documented System)**
+
+- **Default pattern:** MCQ with 4 choices (A–D) following the same visual style (gray choices, green highlight on correct answer).
+- **Use True/False when binary:** Pick True/False only when the concept is strictly binary (e.g., "Requires public IP?", "Supported?", "Quota blocks?", "Yes/No pre-req?").
+- **Where to insert True/False:** Security requirements, hard prerequisites, licensing/entitlement gates, and invariant platform rules (things that are always/never allowed).
+- **Explainers stay concise:** Still 2 sentences max; explain the rule and the why (cause/effect or prerequisite/result).
+- **Avoid trick questions:** No double negatives; keep one clearly correct answer or one clearly correct True/False choice.
+- **CLI verb-noun reinforcement:** Prefer verbs + nouns in questions ("Which command creates...", "What does --template-file do?") to build muscle memory for Azure CLI.
+- **Evidence-based wording:** Anchor phrasing to Microsoft Learn terminology; avoid lab-only slang; call out Azure defaults (deny-by-default, private by default, required subnet sizes, quota limits).
 
 ---
 

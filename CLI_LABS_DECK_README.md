@@ -4,6 +4,8 @@
 
 **Comprehensive CLI reinforcement deck** covering completed Azure labs with focus on CLI syntax, verb-noun patterns, and conceptual understanding.
 
+**Questioning Method:** Follows the standard MCQ/True-False system in `Anki-Decks/README.md` (see "Questioning Method (Documented System)"). Default to MCQ; use True/False only for binary, always/never rules.
+
 ## 📦 Deck Details
 
 - **File:** `AZ104_CLI_Labs_Reinforcement.apkg`

@@ -12,9 +12,11 @@
 ## 📦 What Was Backed Up
 
 ### 1. **Anki Decks** (16 files, ~600 KB)
+
 Location: `Anki-Decks/` folder
 
 **Tutorial Dojo Cheat Sheet Decks (6):**
+
 - ✅ `AZ104_RBAC_CheatSheet_TD.apkg` (12 cards)
 - ✅ `AZ104_Global_Infrastructure_TD.apkg` (10 cards)
 - ✅ `AZ104_Policy_TD.apkg` (10 cards)
@@ -23,6 +25,7 @@ Location: `Anki-Decks/` folder
 - ✅ `AZ104_EntraID_vs_RBAC_TD.apkg` (11 cards)
 
 **Entra ID Deep-Dive Decks (7):**
+
 - ✅ `AZ-104-Master-Study-Deck.apkg` (primary study deck)
 - ✅ `AZ104_Entra_ID_Tutorials_Dojo.apkg`
 - ✅ `AZ104_Entra_Advanced_Topics.apkg`
@@ -32,9 +35,11 @@ Location: `Anki-Decks/` folder
 - ✅ `AZ104_CLI_Labs_Reinforcement.apkg` (28 cards for CLI practice)
 
 **Documentation:**
+
 - ✅ `Anki-Decks/README.md` - Format specification and styling guidelines
 
 ### 2. **Deck Generation Scripts** (8 Python files, ~50 KB)
+
 Location: `tools/` folder
 
 - ✅ `tools/create_cli_labs_deck.py` - CLI reinforcement (28 MCQ/True-False cards)
@@ -48,18 +53,22 @@ Location: `tools/` folder
 - ✅ `create_ingress_deck.py` - Container Apps ingress deep-dive
 
 ### 3. **Study Materials & CSV Data** (~100 KB)
+
 Location: Repository root + `Quiz results/` folder
 
 **Documentation:**
+
 - ✅ `CHEATSHEET_DECKS_SUMMARY.md` - Summary of 6 Tutorial Dojo decks
 - ✅ `CLI_LABS_DECK_README.md` - CLI labs reinforcement guide
 - ✅ `DECK_STRUCTURE_VERIFIED.txt` - Verification checklist
 
 **CSV Reference Files:**
+
 - ✅ `AZ-104-Critical-Priorities-Study-Deck.csv` - Master question list
 - ✅ `AZ104_Comprehensive_Anki_Deck.csv` - Comprehensive deck data
 
 **Extracted Cheat Sheets (text versions):**
+
 - ✅ `Quiz results/Tutorial dojo flash cards for golden rules/Azure RBAC Cheat Sheet.txt`
 - ✅ `Quiz results/Tutorial dojo flash cards for golden rules/Azure Global Infrastructure Cheat Sheet.txt`
 - ✅ `Quiz results/Tutorial dojo flash cards for golden rules/Azure Policy Cheat Sheet.txt`
@@ -68,11 +77,13 @@ Location: Repository root + `Quiz results/` folder
 - ✅ `Quiz results/Tutorial dojo flash cards for golden rules/Microsoft Entra ID vs Role-Based Access Control (RBAC) - Tutorials Dojo.txt`
 
 **Lab References:**
+
 - ✅ `Quiz results/LMS _ LAB LISTS Whizlabs.txt` - Whizlabs lab inventory
 - ✅ `Quiz results/LMS | Whizlabs Main batch.txt` - Lab batch reference
 - ✅ `Quiz results/Section-Based - Manage Azure Identities and Governance (AZ-104) - Tutorials Dojo.*` (3 files)
 
 ### 4. **Study Calendar & Checklists** (~50 KB)
+
 Location: `reports/` folder
 
 - ✅ `reports/study_plan_calendar.ics` - iCal study schedule
@@ -84,6 +95,7 @@ Location: `reports/` folder
 ## 🚫 What Was EXCLUDED (Per Your Specification)
 
 **NOT backed up (Personal files):**
+
 - ❌ `Conversations/` folder (personal study notes)
 - ❌ `AZ-104-Study-Deck/` folder (old/duplicate)
 - ❌ `e_book_repo_for_gthb/` (personal content)
@@ -91,12 +103,14 @@ Location: `reports/` folder
 - ❌ `quiz_mastery_app/` (personal utility)
 
 **NOT backed up (Large media):**
+
 - ❌ `.mp3`, `.m4a`, `.wav` audio files
 - ❌ `.mp4`, `.mov` video files
 - ❌ `.pdf` files (external docs)
 - ❌ `.jpg`, `.png` images
 
 **NOT backed up (Personal/temp files):**
+
 - ❌ `.rdp` (RDP connection files)
 - ❌ `command.sh.txt`, `commands.sh` (personal scripts)
 - ❌ `audio_list.txt`, `audio_list_consolidated.txt` (personal tracking)
@@ -107,16 +121,16 @@ Location: `reports/` folder
 
 ## 📊 Backup Statistics
 
-| Category | Count | Size |
-|----------|-------|------|
-| Anki Decks (.apkg) | 16 | ~600 KB |
-| Python Scripts | 9 | ~50 KB |
-| Documentation (.md) | 3 | ~30 KB |
-| CSV/Data Files | 5 | ~50 KB |
-| Cheat Sheet Texts | 6 | ~150 KB |
-| Lab Lists/References | 3 | ~50 KB |
-| Calendar/Checklists | 3 | ~20 KB |
-| **TOTAL** | **43 files** | **~950 KB** |
+| Category             | Count        | Size        |
+| -------------------- | ------------ | ----------- |
+| Anki Decks (.apkg)   | 16           | ~600 KB     |
+| Python Scripts       | 9            | ~50 KB      |
+| Documentation (.md)  | 3            | ~30 KB      |
+| CSV/Data Files       | 5            | ~50 KB      |
+| Cheat Sheet Texts    | 6            | ~150 KB     |
+| Lab Lists/References | 3            | ~50 KB      |
+| Calendar/Checklists  | 3            | ~20 KB      |
+| **TOTAL**            | **43 files** | **~950 KB** |
 
 ---
 
@@ -163,6 +177,7 @@ Create a container registry*/
 **Message:** "feat: Add Anki decks, CLI labs reinforcement, and deck generation tools"
 
 **Remote Status:**
+
 ```
 main dda0af8 [origin/main] feat: Add Anki decks, CLI labs reinforcement...
 HEAD -> main, origin/main, origin/HEAD
@@ -183,11 +198,13 @@ HEAD -> main, origin/main, origin/HEAD
 ## 🔐 Future Backup Strategy
 
 ### Automatic Backups
+
 1. **GitHub:** All code, scripts, and `.apkg` files synced via git
 2. **iCloud Readdle:** Auto-sync of `docs/` folder for document backup
 3. **Daily:** Check git status before shutdown
 
 ### Manual Backups (As Needed)
+
 ```bash
 # Full backup snapshot
 cd /Users/mike1macbook/Documents/MY\ STUFF\ DOCS\ AND\ ALL/EBOOK
@@ -198,6 +215,7 @@ git push origin main
 ```
 
 ### Anki Deck Backups
+
 - **Primary:** GitHub `Anki-Decks/` folder
 - **Secondary:** Anki's built-in export (File → Export)
 - **Tertiary:** iCloud Readdle sync
@@ -207,17 +225,20 @@ git push origin main
 ## 📝 What to Do Next
 
 ### If you create a new Anki deck:
+
 1. Generate `.apkg` file using deck generation script
 2. Save to `Anki-Decks/` folder
-3. Run: `git add Anki-Decks/*.apkg && git commit -m "feat: Add new deck"` 
+3. Run: `git add Anki-Decks/*.apkg && git commit -m "feat: Add new deck"`
 4. Run: `git push origin main`
 
 ### If you create a new deck script:
+
 1. Save to `tools/` folder (or repo root if standalone)
 2. Add to git: `git add tools/create_*.py`
 3. Commit and push
 
 ### If you modify documentation:
+
 1. Edit `.md` files in repo
 2. Commit and push immediately
 3. Files auto-sync to Readdle
