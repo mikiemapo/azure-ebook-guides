@@ -53,6 +53,11 @@ deck = genanki.Deck(
     'AZ-104 Study Guide::CLI Labs Reinforcement'
 )
 
+deck_secondary = genanki.Deck(
+    2091607893,
+    'AZ-104 Study Guide::CLI Labs Reinforcement::CLI Labs Secondary'
+)
+
 def create_cli_deck():
     # (Question, ChoiceA, ChoiceB, ChoiceC, ChoiceD, Correct, Explanation, Tags)
     questions = [
@@ -141,10 +146,10 @@ def create_cli_deck():
          "CLI,Bicep,IaC,Parameters"),
         
         ("What is the structure of a Bicep resource block?",
-         "resource <symbolic-name> = { properties }",
-         "resource <symbolic-name> '<type>@<api-version>' = { properties }",
-         "resource <type> { name: <symbolic-name>, properties }",
-         "resource { type: <type>, name: <symbolic-name> }",
+         "resource &lt;symbolic-name&gt; = { properties }",
+         "resource &lt;symbolic-name&gt; '&lt;type&gt;@&lt;api-version&gt;' = { properties }",
+         "resource &lt;type&gt; { name: &lt;symbolic-name&gt;, properties }",
+         "resource { type: &lt;type&gt;, name: &lt;symbolic-name&gt; }",
          "B",
          "Correct: B - Format is: resource symbolicName 'resourceType@apiVersion' = { name: 'actualName', properties }. Symbolic name is for referencing in template; actual name is deployed to Azure.",
          "CLI,Bicep,IaC,Syntax"),
@@ -204,7 +209,7 @@ def create_cli_deck():
          "Correct: B - Cluster autoscaler adds/removes nodes based on pending pods that can't be scheduled. Node-level scaling, not pod-level (that's Horizontal Pod Autoscaler).",
          "CLI,AKS,Kubernetes,Autoscaling"),
         
-        ("What is the purpose of the command: az aks get-credentials --resource-group <rg> --name <cluster-name>?",
+        ("What is the purpose of the command: az aks get-credentials --resource-group &lt;rg&gt; --name &lt;cluster-name&gt;?",
          "Creates a new service principal for the cluster",
          "Downloads the kubeconfig file to your local machine so kubectl can authenticate with the AKS cluster",
          "Retrieves the cluster admin password",
@@ -244,7 +249,7 @@ def create_cli_deck():
         ("In Azure CLI, what is the standard command structure pattern?",
          "az <verb> <noun> <parameters>",
          "az <noun> <verb> <parameters>",
-         "az <resource-type> <action> <flags>",
+         "az &lt;resource-type&gt; &lt;action&gt; &lt;flags&gt;",
          "az <action> <resource> <options>",
          "B",
          "Correct: B - Azure CLI follows the pattern: az <noun> <verb>. Example: az vm create (vm is noun, create is verb). This differs from imperative kubectl style.",
@@ -340,9 +345,233 @@ def create_cli_deck():
         )
         deck.add_note(note)
 
+
+def create_cli_secondary_deck():
+    """Create the secondary CLI deck (20 cards max)."""
+    secondary_questions = [
+        # FOUNDATION: RG & CONTEXT
+        ("Create the RG baseline for a lab in eastus?",
+         "az group create --name <rg> --location eastus",
+         "az resource-group new --rg <rg> --region eastus",
+         "az group new --location eastus --rg <rg>",
+         "az group up --name <rg> eastus",
+         "A",
+         "az group create is the canonical pattern; keep location explicit to avoid default-region drift.",
+         "CLI,Resource-Groups,Foundation"),
+
+        # VM / BASTION / SSH
+        ("Need a lab VM fast with SSH keys generated if missing?",
+         "az vm create --name <vm> --resource-group <rg> --image UbuntuLTS --generate-ssh-keys",
+         "az vm new --image UbuntuLTS --ssh auto",
+         "az compute vm create --ssh-gen --image UbuntuLTS",
+         "az vm create --ssh auto --image UbuntuLTS",
+         "A",
+         "--generate-ssh-keys only creates keys if absent and wires them to the VM—ideal for repeatable labs.",
+         "CLI,VM,SSH"),
+
+        ("Open HTTP quickly on a lab VM without hand-editing NSG rules?",
+         "az vm open-port --port 80 --resource-group <rg> --name <vm>",
+         "az network nsg rule add --port 80",
+         "az vm expose --http",
+         "az network rule create --http",
+         "A",
+         "az vm open-port patches the attached NSG for you—great for throwaway labs, not for production IaC.",
+         "CLI,VM,NSG"),
+
+        ("Bastion prerequisite that always trips people up?",
+         "Dedicated subnet named AzureBastionSubnet sized /26 or larger",
+         "Any /28 subnet with public IP",
+         "GatewaySubnet with public IP",
+         "NSG allowing 443 inbound",
+         "A",
+         "Azure Bastion demands AzureBastionSubnet /26+; without it, az network bastion create fails.",
+         "Networking,Bastion,Concept"),
+
+        # NETWORKING / NSG / VNET
+        ("Which NSG is evaluated first for inbound traffic to a VM?",
+         "NIC NSG then subnet NSG",
+         "Subnet NSG then NIC NSG",
+         "Route table then NSG",
+         "DDoS plan then NSG",
+         "B",
+         "Subnet NSG evaluates first; NIC NSG can still block. Use az network nic show-effective-nsg to see the result.",
+         "Networking,NSG,Diagnostics"),
+
+        ("Check effective NSG outcome from CLI without guessing?",
+         "az network nsg list-effective --nic <nic>",
+         "az network nic show-effective-nsg --name <nic> --resource-group <rg>",
+         "az network watcher show-nsg-flow-log",
+         "az network nic show --include-nsg",
+         "B",
+         "show-effective-nsg merges subnet + NIC rules so you see the final allow/deny state.",
+         "CLI,Networking,NSG"),
+
+        # STORAGE
+        ("Lock a storage account to private access only via CLI?",
+         "az storage account update --name <sa> --resource-group <rg> --public-network-access Disabled",
+         "az storage account set --disable-public true",
+         "az storage network-rule add --deny-internet",
+         "az storage account firewall off",
+         "A",
+         "--public-network-access Disabled forces private endpoints/trusted networks; align with exam security fundamentals.",
+         "CLI,Storage,Security"),
+
+        ("Grant a VM's managed identity read access to blobs (data plane) the CPRS way?",
+         "az role assignment create --assignee <identity> --role Reader --scope &lt;sa-resource-id&gt;",
+         "az role assignment create --assignee <identity> --role Storage Blob Data Reader --scope &lt;sa-resource-id&gt;",
+         "az ad sp create --role BlobReader",
+         "az storage account keys list | use key",
+         "B",
+         "Use data-plane role Storage Blob Data Reader at the storage scope; control-plane Reader is insufficient.",
+         "CLI,Storage,RBAC"),
+
+        # LOAD BALANCER
+        ("Need zone-redundant inbound for a VM set—Basic or Standard LB?",
+         "Basic LB with public IP",
+         "Standard LB with zonal frontend",
+         "Standard LB with zone-redundant frontend",
+         "App Gateway",
+         "C",
+         "Zone redundancy needs Standard LB + zone-redundant frontend; Basic is single AZ and exam-favored trap.",
+         "Load-Balancer,HA,Concept"),
+
+        # ACR / CONTAINERS / BICEP
+        ("Deploy ACR via Bicep from CLI matching the lab pattern?",
+         "az deployment group create --resource-group <rg> --template-file main.bicep --parameters acrName=<acr> location=eastus",
+         "az acr create --file main.bicep",
+         "az bicep deploy --rg <rg> --acr main.bicep",
+         "az group deployment create --bicep acrName=<acr>",
+         "A",
+         "Use az deployment group create; the template handles sku/adminUserEnabled. Mirrors the documented snippet.",
+         "CLI,ACR,Bicep"),
+
+        ("After disabling ACR admin user, how do you auth for docker push?",
+         "Use admin creds from portal",
+         "az acr login --name <acr> (uses Azure AD)",
+         "docker login <acr>.azurecr.io with shared key",
+         "Enable anonymous pull",
+         "B",
+         "With admin disabled, az acr login uses Azure AD token; no shared secrets needed.",
+         "CLI,ACR,Auth"),
+
+        ("Build/push without local docker engine in labs?",
+         "az acr push --image app:1.0 --source .",
+         "az acr build --registry <acr> --image app:1.0 .",
+         "az docker build --acr <acr>",
+         "az acr ci --image app:1.0 --local",
+         "B",
+         "az acr build runs the build in Azure and pushes automatically—perfect for student machines.",
+         "CLI,ACR,Build"),
+
+        # AKS
+        ("Quota warning: autoscaler stops at 5 nodes; what’s happening?",
+         "AKS Basic tier limit",
+         "Region core quota exhausted for that VM size",
+         "Kubelet bug",
+         "Subnet IP exhaustion",
+         "B",
+         "Core quota caps scale-out. CLI hint: change size/region or request quota before retrying az aks nodepool scale.",
+         "AKS,Quota,Troubleshooting"),
+
+        ("RBAC block: az aks get-credentials returns AuthorizationFailed—fastest exam-safe takeaway?",
+         "Cluster is stopped",
+         "listClusterUserCredential/action denied to your account",
+         "kubectl not installed",
+         "Wrong region",
+         "B",
+         "Labs often restrict listClusterUserCredential; know the error so you pivot to portal deployment path.",
+         "AKS,RBAC,Diagnostics"),
+
+        # APP SERVICE / IDENTITY / FUNCTIONS
+        ("Deploy a containerized Web App tied to ACR?",
+         "az webapp create --resource-group <rg> --plan <plan> --name <app> --deployment-container-image-name <acr>.azurecr.io/app:1.0",
+         "az appservice plan create --acr <acr> --app <app>",
+         "az webapp up --acr <acr>",
+         "az webapp create --acr --image app:1.0",
+         "A",
+         "Use deployment-container-image-name; pair with a Linux plan sized for containers.",
+         "CLI,AppService,Containers"),
+
+        ("Assign a system-assigned managed identity to an App Service?",
+         "az webapp identity assign --name <app> --resource-group <rg>",
+         "az webapp set-identity on",
+         "az identity create --resource-group <rg> --name <app>",
+         "Enable MSI in portal only",
+         "A",
+         "az webapp identity assign flips on system MSI so you can grant RBAC (e.g., Key Vault access).",
+         "CLI,Identity,AppService"),
+
+        ("Secure a Function app’s secrets with Key Vault the exam-proof way?",
+         "Store secrets in app settings",
+         "Use Key Vault references after granting MSI access",
+         "Embed secrets in code",
+         "Use public configuration file",
+         "B",
+         "Enable MSI then Key Vault references; aligns with Security Fundamentals + Serverless labs.",
+         "Functions,KeyVault,Security"),
+
+        # MONITOR / LOGS / DEVOPS
+        ("Send platform logs to Log Analytics via CLI?",
+         "az monitor diagnostic-settings create --resource <id> --logs '[{\\\"category\\\":\\\"AllLogs\\\"}]' --workspace <la>",
+         "az monitor logs enable --workspace <la>",
+         "az loganalytics connect --resource <id>",
+         "az monitor metrics-push --workspace <la>",
+         "A",
+         "Diagnostic settings pipe resource logs/metrics to Log Analytics—core for Azure Monitor questions.",
+         "CLI,Monitor,Diagnostics"),
+
+        ("CLI pattern to grant RBAC at a scoped resource (e.g., Reader on a RG)?",
+         "az ad user add-role --role Reader --resource-group <rg>",
+         "az role assignment create --assignee <objId> --role Reader --scope $(az group show -n <rg> --query id -o tsv)",
+         "az rbac set --role Reader --rg <rg>",
+         "az group role add Reader <rg>",
+         "B",
+         "az role assignment create with explicit scope is the exam-ready pattern; Reader at RG is common.",
+         "CLI,RBAC,Security"),
+
+        ("CI/CD quick check: which Azure CLI command sets up a DevOps pipeline?",
+         "az pipelines create",
+         "az devops pipeline create --name <name> --repository <repo> --yaml-path <path>",
+         "az ado pipeline new",
+         "az pipelines up",
+         "B",
+         "az devops pipeline create (with org/project context) is the right verb-noun; others are distractors.",
+         "CLI,DevOps,CI-CD"),
+
+    ]
+
+    for q_text, choice_a, choice_b, choice_c, choice_d, correct, explanation, tags in secondary_questions:
+        if choice_c == "" and choice_d == "":
+            question_front = f'{q_text}\n\n<div class="choice">A) {choice_a}</div>\n<div class="choice">B) {choice_b}</div>'
+        else:
+            question_front = f'{q_text}\n\n<div class="choice">A) {choice_a}</div>\n<div class="choice">B) {choice_b}</div>\n<div class="choice">C) {choice_c}</div>\n<div class="choice">D) {choice_d}</div>'
+
+        if choice_c == "" and choice_d == "":
+            question_back = f'{q_text}\n\n'
+            question_back += f'<div class="choice{"" if correct != "A" else " correct"}">A) {choice_a}</div>\n'
+            question_back += f'<div class="choice{"" if correct != "B" else " correct"}">B) {choice_b}</div>'
+        else:
+            question_back = f'{q_text}\n\n'
+            question_back += f'<div class="choice{"" if correct != "A" else " correct"}">A) {choice_a}</div>\n'
+            question_back += f'<div class="choice{"" if correct != "B" else " correct"}">B) {choice_b}</div>\n'
+            question_back += f'<div class="choice{"" if correct != "C" else " correct"}">C) {choice_c}</div>\n'
+            question_back += f'<div class="choice{"" if correct != "D" else " correct"}">D) {choice_d}</div>'
+
+        note = genanki.Note(
+            model=cli_model,
+            fields=[question_front, question_back, explanation, tags]
+        )
+        deck_secondary.add_note(note)
+
 if __name__ == '__main__':
     create_cli_deck()
     output_path = '/Users/mike1macbook/Documents/MY STUFF DOCS AND ALL/EBOOK/Anki-Decks/AZ104_CLI_Labs_Reinforcement.apkg'
     genanki.Package(deck).write_to_file(output_path)
     print(f'✅ CLI Labs Reinforcement Deck created: {output_path}')
     print(f'📊 Total cards: {len(deck.notes)}')
+
+    create_cli_secondary_deck()
+    output_path_secondary = '/Users/mike1macbook/Documents/MY STUFF DOCS AND ALL/EBOOK/Anki-Decks/AZ104_CLI_Labs_Reinforcement_Secondary.apkg'
+    genanki.Package(deck_secondary).write_to_file(output_path_secondary)
+    print(f'✅ CLI Labs Secondary Deck created: {output_path_secondary}')
+    print(f'📊 Total cards: {len(deck_secondary.notes)}')
