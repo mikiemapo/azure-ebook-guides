@@ -4,6 +4,8 @@
 
 You now have a complete system to convert your 165 AZ-104 transcripts (after deduplication: 159 unique) into Anki study questions and merge them into your deck.
 
+**Questioning Method (all decks):** Uses the standardized MCQ/True-False style in `Anki-Decks/README.md` under "Questioning Method (Documented System)". Default to MCQ; use True/False only for binary, always/never rules.
+
 **Status:**
 
 - ✅ Duplicates identified and consolidated (6 removed → 159 unique)
