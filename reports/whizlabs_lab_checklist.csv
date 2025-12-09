@@ -1,0 +1,9 @@
+Section,Category,Lab Title,CLI Focus (Y/N),Est. Duration (min),Primary CLI Commands,Notes
+Manage Azure Identities and Governance,RBAC,Create users/groups and assign roles via CLI,Y,45,"az ad user, az ad group, az role assignment","Use test RG: rg-az104-cli"
+Deploy and Manage Compute Resources,VM,Create Linux VM + SSH + tags,Y,60,"az group, az vm create, az tag","Size: Standard_B2s"
+Configure and Manage Virtual Networks,VNet,Create VNet/Subnets + NSG rules,Y,60,"az network vnet, az network nsg, az network nsg rule","Name: vnet-az104-cli"
+Manage Storage,Storage Accounts,Create SA + blob container + AzCopy,Y,45,"az storage account, az storage container, azcopy","Use --auth-mode login"
+Manage Azure App Services,Web Apps,Create webapp + slot + swap (CLI-first),Y,60,"az webapp, az webapp deployment slot","Some slot UI if needed"
+Implement Load Balancing,Load Balancer,Create LB with backend pool + probe,Y,75,"az network lb, az network lb address-pool, az network lb probe","Basic LB path"
+Monitor and Maintain Azure Resources,Monitoring,Create alert + action group via CLI,Y,45,"az monitor metrics alert, az monitor action-group","Workspace: law-az104"
+Implement Backup and Disaster Recovery,Backup,Create RSV + protect VM (CLI-heavy),Y,60,"az backup vault, az backup protection","ASR partial portal"

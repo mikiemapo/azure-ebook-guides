@@ -1,0 +1,141 @@
+Last updated on July 19, 2024Microsoft Entra ID vs Role-Based Access Control (RBAC)
+Microsoft Entra ID Azure RBAC
+DescriptionAn identity and access
+management service
+that helps you access
+internal and external
+resources.An authorization system
+that manages user’s access
+to Azure resources
+including what they can do
+with those resources and
+what areas they can access.
+FocusGrants permissions to
+manage access to
+Microsoft Entra
+resources.Grants permissions to
+manage access to Azure
+resources.
+Scope Tenant levelSpecify at multiple levels
+(management group,
+subscription, resource
+group, and resource)
+Roles   Important Microsoft
+Entra built-in roles:
+1.  Global
+Administrator –
+manage access to   Fundamental Azure RBAC
+built-in roles:
+1. Owner – full access to
+all Azure resources.Search... 
+🚀 Extended! 25% OFF All
+Practice Exams & Video
+Courses, $2.99 eBooks,
+Savings on PlayCloud and
+CodeQuest!
+Learn AWS with our PlayCloud
+Hands-On Labs
+🧑‍💻 50% OFF – CodeQuest
+Coding Labs
+Home Courses and eBooks Intro to Cloud Computing AWS Cheat Sheets O the r C he at S he e ts
+Exam Study Guides Blog Career Hub TD Portal LoginEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1336 4412/5/25, 5:23 PM Microsoft Entra ID vs Role-Based Access Control (RBAC) - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id-vs-role-based-access-control-rbac/ 1/6
+all the
+administrative
+features in
+Microsoft Entra ID.
+2.  User Administrator
+– create and
+manage different
+types of users and
+groups in Azure.
+3. Billing
+Administrator – it
+can manage
+subscriptions,
+support tickets,
+make purchases,
+and monitor service
+health.
+   Supports custom roles.
+   You can assign multiple
+roles on a user.2. Contributor – create
+and manage all types
+of resources in Azure.
+3. Reader – a user with
+this role can only view
+Azure resources
+4. User Access
+Administrator – it has
+permissions to
+manage user access
+to all types of
+resources.
+   Supports custom roles in
+P1 and P2 licenses.
+   You can assign multiple
+roles on a user.
+Role
+informationYou can access the role
+information in the Azure
+Portal, Microsoft Entra
+admin center, Microsoft
+365 admin center,
+Microsoft Graph, and
+Microsoft Graph
+PowerShell.You can access the role
+information in the Azure
+Portal, CLI, PowerShell,
+Resource Manager
+templates, and REST API.
+PricingMicrosoft Entra has
+three editions: Free, P1,
+and  P2. For the P1 and
+P2 licenses, you are
+charged on a monthly
+basis.Azure RBAC is free and
+included in your Azure
+subscription.
+$2.99 AWS and Azure Exam
+Study Guide eBooks
+New AWS Generative AI
+Developer Professional
+Course AIP-C01
+Learn GCP By Doing! Try Our
+GCP PlayCloud
+Learn Azure with our Azure
+PlayCloudEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1336 4412/5/25, 5:23 PM Microsoft Entra ID vs Role-Based Access Control (RBAC) - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id-vs-role-based-access-control-rbac/ 2/6
+Refer ences:
+https://docs.microsoft.com/en-us/azure/role-based-access-control/rbac-and-
+directory-admin-roles
+https://learn.microsoft.com/en-us/entra/fundamentals/whatis
+Written b y: Jon Bonso
+Jon Bonso is the co-founder of Tutorials Dojo, an EdTech
+startup and an AWS Digital Training Partner that provides high-
+quality educational materials in the cloud computing space. He
+graduated from Mapúa Institute of Technology in 2007 with a
+bachelor's degree in Information Technology. Jon holds 10 AWS
+Certifications and is also an active AWS Community Builder
+since 2020.
+Did y ou fin d our con tent helpful?
+Subscr ibe to our Newsl etter
+FREE AI and AWS Digital
+Courses
+FREE AWS, Azure, GCP Practice
+Test Samplers
+Subscribe to our YouTube
+ChannelAWS, Azure, and GCP Certifications are consistently among the top-
+paying IT certifications in the world, considering that most companies
+have now shifted to the cloud. Earn over $150,000 per year with an AWS,
+Azure, or GCP certification!
+Follow us on LinkedIn, YouTube, Facebook, or join our Slack study
+group. More importantly, answer as many practice exams as you can to
+help increase your chances of passing your certification exams on your
+first try!
+View Our AWS, Azure, and GCP Exam Reviewers
+Check out our FREE coursesEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1336 4412/5/25, 5:23 PM Microsoft Entra ID vs Role-Based Access Control (RBAC) - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id-vs-role-based-access-control-rbac/ 3/6

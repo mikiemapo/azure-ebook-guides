@@ -1,0 +1,39 @@
+Date,Time Block (min),Section,Category,Lab Title,CLI Focus,Status,Notes
+2025-12-03,45,Manage Azure Identities and Governance,RBAC,Create users/groups and assign roles via CLI,CLI-Heavy,Planned,Use test RG rg-az104-cli
+2025-12-04,60,Deploy and Manage Compute Resources,VM,Create Linux VM + SSH + tags,CLI-Heavy,Planned,Image UbuntuLTS size B2s
+2025-12-05,60,Configure and Manage Virtual Networks,VNet,Create VNet/Subnets + NSG rules,CLI-Heavy,Planned,Name vnet-az104-cli
+2025-12-06,45,Manage Storage,Storage Accounts,Create SA + blob container + AzCopy,CLI-Heavy,Planned,Use --auth-mode login
+2025-12-07,60,Manage Azure App Services,Web Apps,Create webapp + slot + swap,CLI-Heavy,Planned,CLI-first; slot UI if needed
+2025-12-08,75,Implement Load Balancing,Load Balancer,Create LB backend pool + probe,CLI-Heavy,Planned,Basic LB path
+2025-12-09,45,Monitor and Maintain Azure Resources,Monitoring,Create alert + action group via CLI,CLI-Heavy,Planned,Workspace law-az104
+2025-12-10,60,Implement Backup and Disaster Recovery,Backup,Create RSV + protect VM,CLI-Heavy,Planned,ASR partial portal
+
+# Week 2
+2025-12-11,60,Manage Storage,Azure Files + Sync,Create File share + upload batch (CLI),CLI-Heavy,Planned,Prep for File Sync lab
+2025-12-12,75,Manage Storage,Azure Files + Sync,Create Storage Sync Service + Sync Group,CLI-Heavy,Planned,`az storagesync create` + sync-group
+2025-12-13,75,Manage Storage,Azure Files + Sync,Create Cloud Endpoint for File Sync,CLI-Heavy,Planned,`az storagesync cloud-endpoint create`
+2025-12-14,60,Manage Storage,Azure Files + Sync,SMB/NFS setup (premium/NFS),CLI-Heavy,Planned,NFS requires Premium_LRS + supported region
+
+# Week 3
+2025-12-15,60,Deploy and Manage Compute Resources,VMSS,Create VMSS (Uniform) + probe,CLI-Heavy,Planned,`az vmss create` + autoscale basics
+2025-12-16,60,Deploy and Manage Compute Resources,VMSS,Scale-in/out and instance updates,CLI-Heavy,Planned,`az vmss scale` + upgrade-policy
+2025-12-17,60,Configure and Manage Virtual Networks,Private Endpoints,Create PE for Storage + DNS,CLI-Heavy,Planned,`az network private-endpoint`
+2025-12-18,60,Configure and Manage Virtual Networks,Service Endpoints,Enable SE for Storage,CLI-Heavy,Planned,Contrast with PE; routing checks
+
+# Week 4
+2025-12-19,60,Manage Azure App Services,Web Apps,Enable VNet Integration + diagnostics,CLI-Heavy,Planned,`az webapp vnet-integration`
+2025-12-20,60,Manage Azure App Services,Web Apps,Deployment Slots + Auto-swap,CLI-Heavy,Planned,`az webapp deployment slot`
+2025-12-21,60,Monitor and Maintain Azure Resources,Log Analytics,Workspace + Data Collection,CLI-Heavy,Planned,`az monitor log-analytics`
+2025-12-22,60,Monitor and Maintain Azure Resources,Alerts,KQL log alerts + action groups,CLI-Heavy,Planned,`az monitor scheduled-query`
+
+# Week 5
+2025-12-23,60,Implement Load Balancing,App Gateway,Create AppGW (basic WAF),CLI-Heavy,Planned,Note: some config via portal
+2025-12-24,60,Implement Load Balancing,Front Door,Create AFD Standard/Premium,CLI-Heavy,Planned,`az network front-door` (preview note)
+2025-12-25,45,Implement Backup and Disaster Recovery,Backup,VM backup policy + restore,CLI-Heavy,Planned,`az backup protection` + restore
+2025-12-26,60,Implement Backup and Disaster Recovery,Site Recovery,ASR replication (partial CLI),CLI-Heavy,Planned,Portal needed for server details
+
+# Week 6 (buffer/review)
+2025-12-27,45,Review & Reinforce,CLI Drills,Identity/Compute/Network quick reps,CLI-Heavy,Planned,Command fluency sprints
+2025-12-28,60,Review & Reinforce,Deep Dive,Resilience & DR scenarios,CLI-Heavy,Planned,Conflict troubleshooting
+2025-12-29,60,Review & Reinforce,Mock Ops,End-to-end RG build + teardown,CLI-Heavy,Planned,`az group delete` cleanup
+2025-12-30,45,Review & Reinforce,Exam Readiness,Flag weak topics + notes,CLI-Heavy,Planned,Focus per performance

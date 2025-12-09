@@ -1,0 +1,326 @@
+Last updated on November 17, 2025Azure App Service
+
+
+
+
+
+
+
+Bookmar ks
+App Services Types
+Deployment
+Monitoring
+Security
+VNet Integration
+Hybrid Connections
+Pricing
+Validate Your KnowledgeAzur e App Ser vice Ch eat
+Sheet
+A fully managed platform (PaaS) for building,
+deploying, and scaling your web apps.
+Different types of App Services: Web Apps, Web
+Apps for Containers, and API Apps
+Automatically patches and maintains the OS and
+language frameworks.
+App Service can scale up or out manually or
+automatically.
+App Service supports the following languages:
+.NET(.NET 10 Preview available)
+.NET Core
+Java
+Ruby
+Node.js (Node.js 22, 24 LTS now available)
+PHP
+Python (Python 3.14 now available)
+Ubuntu-powered runtimes (leaner, faster)
+Search... 
+🚀 Extended! 25% OFF
+All Practice Exams &
+Video Courses, $2.99
+eBooks, Savings on
+PlayCloud and
+CodeQuest!
+Learn AWS with our
+PlayCloud Hands-On
+Labs
+🧑‍💻 50% OFF –
+CodeQuest Coding
+Labs
+Home Courses and eBooks Intro to Cloud Computing AWS Cheat Sheets O the r C he at S he e ts
+Exam Study Guides Blog Career Hub TD Portal LoginEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1340 2312/5/25, 5:19 PM Azure App Service Cheat Sheet
+https://tutorialsdojo.com/azure-app-service/ 1/12
+An App Service plan is a collection of compute
+resources needed for a web app to run.
+Each App Service plan consists of a region,
+number & size of virtual machines and pricing
+tier.
+App Service plan pricing tier: 
+Shared Compute – Free and Shared are
+the two base tiers. These tiers allocate CPU
+quotas to every app running on the shared
+resources, but the resources cannot scale-
+out.
+Dedicated Compute – It is composed of
+Basic, Standard, Premium, and
+PremiumV2 tiers. As the tier gets higher,
+you will have more VMs to scale-out.
+Isolated – A dedicated virtual machine that
+provides maximum scale-out capabilities.
+App Ser vices T ypes
+Web Apps
+Website and online applications hosted on
+Azure’s managed platform.
+Build and deploy mission-critical web
+applications that scale with your business.
+It supports auto-scaling and load balancing
+for resilience and high availability.
+Web Apps for Containers
+Deploy and run containerized applications in
+Azure.
+$2.99 AWS and Azure
+Exam Study Guide
+eBooks
+New AWS Generative
+AI Developer
+Professional Course
+AIP-C01
+Learn GCP By Doing!
+Try Our GCP
+PlayCloud
+Learn Azure with our
+Azure PlayCloud
+Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1340 2312/5/25, 5:19 PM Azure App Service Cheat Sheet
+https://tutorialsdojo.com/azure-app-service/ 2/12
+All dependencies are shipped inside the
+container.
+API Apps
+Expose and connect your backend data.
+Connect other applications
+programmatically.
+Sidecar Extensions
+Run additional containers alongside your
+main application container.
+Common use cases: Redis caching,
+monitoring agents, AI inference helpers.
+Supports containers for Redis, Datadoq,
+Small Language Models (SLMs).
+Replacement for Docker Compose feature
+(retiring March 31, 2027).
+Available through GitHub Actions and Azure
+Pipelines.
+WebJobs on Linux
+Now generally available for both Windows
+and Linux.
+Run background tasks alongside web
+applications.
+AI/ML Features
+Run Small Language Models (SLMs) as
+sidecar extensions.
+BitNet support – run large language models
+on CPU only.
+Microsoft Agent Framework for long-running
+AI agents.
+LangChain application deployment support.
+Deployment
+Deployment components in App Service:
+Deployment Source – it is where the
+application code is stored.
+Build Pipeline – reads your code and takes
+the application in a running state
+Deployment Mechanism – enables you to
+put your application in the /wwwrootFREE AI and AWS
+Digital Courses
+FREE AWS, Azure, GCP
+Practice Test
+Samplers
+Subscribe to our
+YouTube Channel
+Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1340 2312/5/25, 5:19 PM Azure App Service Cheat Sheet
+https://tutorialsdojo.com/azure-app-service/ 3/12
+directory. It also supports Kudu endpoints,
+FTP, and WebDeploy.
+Deployment Center lets you choose the location
+of your code, as well as build and deploy to the
+cloud. It also has built-in continuous delivery for
+containers.
+When creating an App Service plan, there are
+runtime stacks that will only run on Windows or
+Linux but not on both operating systems. For
+example, ASP.NET (Windows), Ruby (Linux), and
+Java (Windows & LDeploymentinux).
+Swap app content and configuration elements
+with deployment slots.
+The deployment slots allow you to create a
+staging slot for your application.
+When you perform the swap operation, the
+following settings are swapped: General
+settings, App settings, Connection strings,
+Handler mappings, Public certificates, and
+WebJobs content.
+App Service supports the continuous deployment
+of code and containers.
+You can use local cache and deployment slots to
+prevent downtime.
+App Service diagnostics willhelp you in
+troubleshooting your application.
+App Service supports the continuous deployment
+of code and containers.
+Performance improvements include Node.js
+deployment up to 8x faster and enhanced build
+performance behind proxies.
+You can use local cache and deployment slots to
+prevent downtime.
+Monitoring
+Diagnostics logging helps you access the
+information logged by Azure.
+Application logging 
+The generated log messages by your
+application. Each message has theEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1340 2312/5/25, 5:19 PM Azure App Service Cheat Sheet
+https://tutorialsdojo.com/azure-app-service/ 4/12
+following level and categories:
+Disabled: None
+Error: Error, Critical
+Warning: Warning, Error, Critical
+Information: Info, Warning, Error,
+Critical
+Verbose: Trace, Debug, Info,
+Warning, Error, Critical
+You can also specify the disk quota
+(MB) and retention period (days) for
+the application logs.
+The logs can be found on the App
+Service file system or Azure Storage
+blobs.
+Web server logging
+This log message contains an HTTP
+method, resource URI, client IP, client
+port, user agent, and response code.
+You can set the retention period (days)
+for the web server logs.
+The logs are stored in Azure Storage
+blobs or App Service file system.
+Detailed Error Messages
+A copy of the .htm error page. The
+page contains the information on why
+the server returns an error code (HTTP
+code 400 or greater).
+The logs are stored in the App Service
+file system.
+Failed request tracing
+Detailed information on failed
+requests. The information you can find
+here helps you improve the site
+performance and isolate a specific
+HTTP error.
+For each failed request, one folder is
+generated which contains the XML log
+file and XSL stylesheet.
+The logs can be found on the App
+Service file system.Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1340 2312/5/25, 5:19 PM Azure App Service Cheat Sheet
+https://tutorialsdojo.com/azure-app-service/ 5/12
+Deployment logging
+This log is created when you publish
+content to your app.
+You can also use this log to determine
+why the deployment failed. For
+example, if you use a custom
+deployment script and it fails, you can
+determine why the script is failing
+through deployment logs.
+Like Detailed Error Messages and
+Failed request tracing, the logs are also
+stored in the App Service file system
+only.
+Secur ity
+App Service protocols: HTTPS, TLS 1.1/1.2 and
+FTPS
+The default domain name is using HTTPs. You can
+also secure your custom domain using an SSL/TLS
+certificate.
+Service endpoints allow you to restrict access
+from a virtual network.
+The first IP restriction rule has an explicit Deny all
+rule with a priority of 2147483647.
+Service-to-service authentication:
+Service Identity – you can use the identity of
+the app to access the remote resource.
+On-behalf-of (OBO) – allows you to access a
+remote service using a delegated sign-in.
+Enterprise Application Platform (EAP):
+BYOL (Bring Your Own License) support for
+JBoss EAP.
+Improved routine maintenance notifications.
+Networking Troubleshooter in preview.
+VNet In tegration
+It allows your app to access resources in your
+virtual network.
+Regional VNet Integration Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1340 2312/5/25, 5:19 PM Azure App Service Cheat Sheet
+https://tutorialsdojo.com/azure-app-service/ 6/12
+You need to have a dedicated subnet
+to the services that you integrate with.
+Block outbound traffic using network
+security groups.
+Route table allows you to send
+outbound traffic.
+Gateway-required VNet Integration 
+Allows access to resources in the
+target virtual network.
+Sync network allows you to sync
+certificates and network information.
+You can also add routes for outbound
+traffic.
+Hybr id Conn ections
+Uses host:port combination.
+It provides network access to your application
+using a TCP endpoint.
+Supports access to multi-networks from a single
+app.
+Host your hybrid connection endpoint using a
+relay agent or Hybrid Connection Manager
+(HCM).
+You can run multiple HCMs on a separate
+machine to achieve high availability.
+Azur e App Ser vice Pr icing
+You are charged on a per-second basis in the App
+Service plan.
+You are charged for the applications while they
+are in a stopped state.
+You are charged for data egress when using VNet
+Integration.
+You are charged for each listener in a Hybrid
+Connection
+Valida te Your Kn owledge
+Question 1Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1340 2312/5/25, 5:19 PM Azure App Service Cheat Sheet
+https://tutorialsdojo.com/azure-app-service/ 7/12
+Question Type: Single choice
+You created a web app named tdwebapp-prod  using
+Azure App Service.
+Several users are complaining that they received HTTP
+500 errors whenever they try to connect to tdwebapp-
+prod.
+You must grant the developers real-time access to the
+application in order to view the HTTP method, resource
+URI, client IP, client port, user agent, and response code
+of the requests.
+What should you do?
+1. Enable the Web Server Logging feature.
+2. Create a security playbook.
+3. Enable the Application Logging feature.
+4. Create resource health alerts.
+For more Azure practice exam questions with detailed
+explanations, check out the Tutorials Dojo Portal:
+Azur e App Ser vice Ch eat
+Sheet Resour ces:
+https://azure.microsoft.com/en-us/services/app-service/
+https://docs.microsoft.com/en-us/azure/app-
+service/overview
+Written b y: Jon BonsoShow me the answer!Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1340 2312/5/25, 5:19 PM Azure App Service Cheat Sheet
+https://tutorialsdojo.com/azure-app-service/ 8/12

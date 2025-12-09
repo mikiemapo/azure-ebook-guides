@@ -1,0 +1,99 @@
+Last updated on July 3, 2023Azure Policy
+Azur e Policy Ch eat Sh eet
+Ensure resources are compliant with a set of rules.
+Manage your policies in a centralized location where you can track their
+compliance status and verify the non-compliant resources.
+Select between built-in policies and custom policies.
+Implement proper guardrails and assess compliance across the
+organization
+Policy vs. RBAC
+A policy maintains compliance with the resource state, while RBAC
+focuses on controlling user actions at different scopes.
+Even if the user has access to perform an action, if the result is a
+non-compliant resource, the policy will still block the create or
+update option.
+JSON format is used to create a policy.
+You can manage the evaluation and outcome with resource provider,
+and the results are reported to Azure Policy.
+Policy order of evaluation: Disabled, Append/Modify, Deny and Audit
+Azure Policy effects:
+Append – add additional fields to the requested resource.
+Audit – a warning event for a non-compliant resource.
+AuditIfNotExists – audit the resources when the condition is met.Search... 
+🚀 Extended! 25% OFF All
+Practice Exams & Video
+Courses, $2.99 eBooks,
+Savings on PlayCloud and
+CodeQuest!
+Learn AWS with our PlayCloud
+Hands-On Labs
+🧑‍💻 50% OFF – CodeQuest
+Coding Labs
+Home Courses and eBooks Intro to Cloud Computing AWS Cheat Sheets O the r C he at S he e ts
+Exam Study Guides Blog Career Hub TD Portal LoginEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1325 2712/5/25, 5:34 PM Azure Policy Cheat Sheet
+https://tutorialsdojo.com/azure-policy/ 1/6
+Deny – prevents the request before being sent to the Resource
+Provider.
+DeployIfNotExists – if the condition is met, it allows you to execute
+a template deployment.
+Disabled – allows you to disable a single assignment, rather than
+disabling all assignments under that policy.
+Modify – manage tags of resources.
+Determine the assigned resources with policy assignments.
+Azure Policy vs Azure Role-Based Access Control (RBAC):
+https://tutorialsdojo.com/azure-policy-vs-azure-role-based-access-control-
+rbac/
+Valida te Your Kn owledge
+Question 1
+Question Type: Single choice
+Your company created a new Azure policy. You need to interpret the
+permissions that are allowed or denied by the policy shown below:
+What is the effect of this policy?
+1. A user is restricted from creating any Azure Virtual Networks in TD
+Subscription .
+2. A user is allowed to create Azure Virtual Networks in TD-RG only.
+3. A user is restricted from creating Azure Virtual Networks in TD-RG.
+$2.99 AWS and Azure Exam
+Study Guide eBooks
+New AWS Generative AI
+Developer Professional
+Course AIP-C01
+Learn GCP By Doing! Try Our
+GCP PlayCloud
+Learn Azure with our Azure
+PlayCloud
+Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1325 2712/5/25, 5:34 PM Azure Policy Cheat Sheet
+https://tutorialsdojo.com/azure-policy/ 2/6
+4. A user is allowed to create Azure Virtual Networks in any resource group
+within TD Subscription .
+For more Azure practice exam questions with detailed explanations, check
+out the Tutorials Dojo Portal:
+Azur e Policy Ch eat Refer ences:
+https://azure.microsoft.com/en-us/services/azure-policy/
+https://docs.microsoft.com/en-us/azure/governance/policy/overview
+Written b y: Jon Bonso
+Jon Bonso is the co-founder of Tutorials Dojo, an EdTech
+startup and an AWS Digital Training Partner that provides high-
+quality educational materials in the cloud computing space. He
+graduated from Mapúa Institute of Technology in 2007 with a
+bachelor's degree in Information Technology. Jon holds 10 AWS
+Certifications and is also an active AWS Community Builder
+since 2020.Show me the answer!
+FREE AI and AWS Digital
+Courses
+FREE AWS, Azure, GCP Practice
+Test Samplers
+Subscribe to our YouTube
+Channel
+AWS, Azure, and GCP Certifications are consistently among the top-
+paying IT certifications in the world, considering that most companies
+have now shifted to the cloud. Earn over $150,000 per year with an AWS,
+Azure, or GCP certification!
+Follow us on LinkedIn, YouTube, Facebook, or join our Slack study
+group. More importantly, answer as many practice exams as you can to
+help increase your chances of passing your certification exams on your
+first try!Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1325 2712/5/25, 5:34 PM Azure Policy Cheat Sheet
+https://tutorialsdojo.com/azure-policy/ 3/6

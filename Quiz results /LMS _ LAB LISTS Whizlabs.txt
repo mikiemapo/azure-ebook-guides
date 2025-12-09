@@ -1,0 +1,393 @@
+Microsoft Azure Exam AZ-104 Certification
+Download Cheat Sheet Quick Exam Reference - Hand-Picked for youHome/Dashboard/My Courses/Microsoft Azure Exam AZ-104 Certification
+JPractice Test
+22 Quizzes Available.Video Course
+108 Video Available
+9+ Total HoursGLabs
+164 Labs Available
+My Bookmarked Labs Expand
+GCreating Azure resource locks
+] 45m Attempts Start
+GWorking with resource tags
+] 30m Attempts Start
+GCreating Azure Policies
+] 30m Attempts Start
+GWorking with Alerts
+] 1h 0m Attempts Start1. Manage Azure subscriptions and governance ]2h 45m 4 Labs
+GCreate a Storage Account2. Configure, Manage and Access Storage Accounts ]9h 30m 11 Labs11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 1/19
+] 30m Attempts Start
+GNetwork Access to Storage Accounts
+] 1h 0m Attempts Start
+GCreate a Storage Account using Terraform
+] 1h 0m Attempts Start
+GMigrate data to cloud with AzCopy
+] 45m Attempts Start
+GUnderstanding Azure Blob Storage Tiers
+] 30m Attempts Start
+GRoute storage events to web endpoint with PowerShell
+] 45m Attempts Start
+GConnect your Azure Storage Explorer to a storage account
+] 1h 0m Attempts Start
+GMonitor and Troubleshoot Azure Storage with Log Analytics
+] 1h 0m Attempts Start
+GAnalyze and Troubleshoot Storage Issues Using Azure Metrics
+] 45m Attempts Start
+GE-Commerce Analytics Platform
+] 1h 30m Attempts Start
+GCreate Queue storage and messaging using Python11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 2/19
+] 45m Attempts Start
+GWorking with Blob Storage
+] 30m Attempts Start
+GWorking with Azure File Shares
+] 45m Attempts Start
+GCreate an SMB Azure file share and connect it to a Windows VM using the Azure portal
+] 1h 0m Attempts Start3. Configure Azure Files and Azure Blob Storage ]2h 15m 3 Labs
+GCreate a Windows VM using an ARM template
+] 30m Attempts Start
+GCreate an internal load balancer to load balance VMs by using an ARM template
+] 45m Attempts Start
+GPublish Azure Static Web Apps using an ARM Template
+] 1h 0m Attempts Start
+GCreate a Batch account by using ARM template
+] 30m Attempts Start
+GCreating an Azure DNS zone and record using an ARM template
+] 30m Attempts Start
+GCreate a Windows virtual machine using a Bicep file4. Automate deployment of resources by using templates]4h 45m 8 Labs11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 3/19
+] 30m Attempts Start
+GCreating an Azure DNS zone and record using Bicep
+] 30m Attempts Start
+GImplement DNS name resolution in Azure
+] 30m Attempts Start
+GCreate a VM with CLI
+] 30m Attempts Start
+GAdding Data Disks to the VM Using CLI
+] 30m Attempts Start
+GCreating a linux VM
+] 30m Attempts Start
+GDeploying Software with VM Extensions
+] 45m Attempts Start
+GDeploy an NVA and Set Up Virtual Machines
+] 45m Attempts Start
+GResizing of Virtual Machine
+] 1h 0m Attempts Start
+GCreating Availability Set
+] 1h 0m Attempts Start5. Create and configure VMs ]8h 30m 11 Labsb
+11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 4/19
+GInstalling and Configuring an SSH Server on Linux
+] 1h 0m Attempts Start
+GVirtual Machine Scale Sets - Custom Script Extensions
+] 1h 0m Attempts Start
+GCreate and manage a Virtual Machine Scale Set Using Azure CLI
+] 45m Attempts Start
+GCreate SQL Server on Azure VM with PowerShell
+] 45m Attempts Start
+GDeploy your first container app using the Azure portal
+] 30m Attempts Start
+GCreate a container registry by using a Bicep file
+] 30m Attempts Start
+GConfidential Container Deployment Using Azure Portal
+] 45m Attempts Start
+GDeploying a container instance using ARM template
+] 30m Attempts Start
+GContainerizing Web Apps on Azure App Service
+] 1h 30m Attempts Start
+GDeploy container app using Azure CLI6. Create and configure containers ]4h 30m 6 Labs11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 5/19
+] 45m Attempts Start
+GCreate an Azure Web App Using CLI
+] 30m Attempts Start
+GIntegrate Azure Content Delivery Network with an Azure App Service Web App
+] 1h 0m Attempts Start
+GAzure Web App Development with RESTful APIs Using Node.js and SQL Database
+] 1h 30m Attempts Start7. Create and configure an Azure App Service ]3h 3 Labs
+GImplementing Virtual Network Peering
+] 1h 30m Attempts Start
+GConfigure virtual network peering connections by using Azure CLI commands
+] 1h 30m Attempts Start
+GCreate an Azure Virtual Network with Terraform
+] 30m Attempts Start
+GUnderstand Network Security Group rules
+] 1h 0m Attempts Start
+GSetting Up Global VNet Peering in Azure with Terraform
+] 1h 0m Attempts Start
+GAdding a network interface8. Configure virtual networks ]6h 45m 7 Labs11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 6/19
+] 30m Attempts Start
+GEnd-to-End Azure VNet Architecture with Public and Private access VMs
+] 45m Attempts Start
+GCreating an Application Gateway
+] 1h 0m Attempts Start
+GCreating a Basic Load Balancer
+] 1h 0m Attempts Start
+GCreate an internal load balancer to load balance VMs
+] 1h 30m Attempts Start
+GCreate a gateway Load balancer using Azure Portal
+] 1h 0m Attempts Start
+GTroubleshoot routing, traffic control and load balancing in Microsoft Azure
+] 2h 0m Attempts Start9. Configure load balancing ]6h 30m 5 Labs
+GDeploy a Highly Available Web Application with Docker and Nginx Load Balancer on Azure
+Linux VMs
+] 1h 0m Attempts Start10. Monitor virtual networking ]1h 1 Labs
+GAlert on events within your Azure infrastructure using Activity Log Alerts11. Monitor resources by using Azure Monitor ]45m 1 Labs11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 7/19
+] 45m Attempts Start
+GCreate a SQL database
+] 1h 0m Attempts Start
+GImplement Azure Functions
+] 1h 0m Attempts Start
+GInstall NGINX Webserver using Custom Script Extensions
+] 45m Attempts Start
+GInstalling NGINX on Linux using Cloud Init
+] 45m Attempts Start
+GUnderstanding Azure Database Services
+] 1h 30m Attempts Start
+GWorking with Custom Images
+] 45m Attempts Start
+GWorking with Application Insights
+] 30m Attempts Start
+GCreating Azure Firewall
+] 1h 30m Attempts Start
+GCreate a Linux VM using Terraform
+] 45m Attempts Start12. Miscellaneous Labs ]60h 50 Labs11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 8/19
+GAzure Blob Storage Photo Uploader
+] 2h 0m Attempts Start
+GManage Windows Virtual Machines with Azure Bastion
+] 45m Attempts Start
+GSubscribe to Azure Kubernetes Service (AKS) events with Azure Event Grid
+] 30m Attempts Start
+GCreate a C# function in Azure from the command line
+] 1h 0m Attempts Start
+GConnect Azure Functions to Azure Storage using command line tools
+] 2h 0m Attempts Start
+GCreate a C# function in Azure using Visual Studio Code
+] 1h 30m Attempts Start
+GBuild a Consumption Logic App Workflow in Azure Portal
+] 2h 0m Attempts Start
+GUse Azure Event Grid to route Blob storage events to web endpoint
+] 1h 0m Attempts Start
+GRoute custom events to an Azure function by using Event Grid in Visual Studio
+] 1h 30m Attempts Start
+GConfiguring a Private DNS Zone Using the Azure Portal
+] 1h 30m Attempts Start11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 9/19
+GUse Azure CLI to route custom events to a web endpoint
+] 45m Attempts Start
+GSecure Azure Functions with Private Site Access
+] 2h 0m Attempts Start
+GRoute storage events to web endpoint with Azure CLI
+] 45m Attempts Start
+GControl Azure Functions Outbound IP using NAT Gateway
+] 1h 30m Attempts Start
+GSend events from private container registry to Event Grid
+] 45m Attempts Start
+GMigrate Event Hubs Data from Azure Storage to Synapse Analytics with Event Grid and
+Functions
+] 2h 0m Attempts Start
+GCreate an application gateway with path-based routing rules using the Azure portal
+] 1h 30m Attempts Start
+GConfiguring TLS Termination with Azure Application Gateway
+] 1h 30m Attempts Start
+GCreate and configure an application gateway to host multiple web sites using the Azure
+portal
+] 1h 30m Attempts Start
+GConfigure Application Gateway with a frontend public IPv6 address using the Azure
+portal11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 10/19
+] 1h 30m Attempts Start
+GCreate an application gateway with HTTP to HTTPS redirection using the Azure CLI
+] 1h 30m Attempts Start
+GCreate an application gateway that improves web application access using PowerShell
+] 1h 30m Attempts Start
+GConfigure Application Gateway with a frontend public IPv6 address using Azure
+PowerShell
+] 1h 30m Attempts Start
+GCreate a PowerShell function in Azure from the Visual Studio Code
+] 1h 0m Attempts Start
+GRoute custom events to web endpoint with PowerShell and Event Grid
+] 45m Attempts Start
+GCreate an Azure Front Door using Azure PowerShell
+] 1h 0m Attempts Start
+GCreate an application gateway with path-based redirection using the Azure CLI
+] 1h 30m Attempts Start
+GCreate an application gateway with path-based redirection using the Azure PowerShell
+] 1h 30m Attempts Start
+GCreate a Python function in Azure from the command line
+] 1h 0m Attempts Start11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 11/19
+GCreate a function in Azure with Python using Visual Studio Code
+] 1h 0m Attempts Start
+GCreate a JavaScript function in Azure from the command line
+] 1h 0m Attempts Start
+GCreate an Azure Windows VM with Alerts using Terraform
+] 45m Attempts Start
+GCreate an application gateway with HTTP to HTTPS redirection using Azure PowerShell
+] 1h 30m Attempts Start
+GCreate an application gateway that hosts multiple web sites using the Azure CLI
+] 1h 30m Attempts Start
+GCreate an application gateway that hosts multiple web sites using Azure PowerShell
+] 1h 30m Attempts Start
+GCreate a function in Azure with TypeScript using Visual Studio Code
+] 1h 0m Attempts Start
+GCreate a TypeScript function in Azure from the command line
+] 1h 0m Attempts Start
+GUsing Azure Virtual Machine as a Web Server to Deploy NGINX
+] 1h 0m Attempts Start
+GDeploy a LAMP Server on Azure Using Ubuntu
+] 30m Attempts Start11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 12/19
+GCreate a Java function in Azure using VS Code
+] 1h 0m Attempts Start
+GFetching and Managing Data in Azure Cosmos DB with NoSQL API
+] 1h 0m Attempts Start
+GAzure Challenge - Deploying Software with VM Extensions
+] 1h 0m Attempts Start
+GDeploying a Flask Application with Docker on Azure Ubuntu VM
+] 1h 0m Attempts Start
+GVNet Peering Challenge
+] 1h 30m Attempts Start
+GBasic Load Balancer Challenge
+] 1h 0m Attempts Start
+GCreating Azure Front Door for Your Web App
+] 1h 0m Attempts Upgrade
+GNetwork Access to Storage Accounts Challenge
+] 1h 0m Attempts Start
+GChallenge Lab - Installing Internet Information Service
+] 1h 0m Attempts Start
+GCreate a private link to an Azure Container App with Azure Front Door13. Challenge Labs ]37h 30m 48 Labs11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 13/19
+] 1h 0m Attempts Start
+GCreate a VNet and Subnets in Azure Using Terraform
+] 30m Attempts Start
+GAzure Firewall Challenge
+] 2h 0m Attempts Start
+GAzure Application Gateway Challenge
+] 1h 30m Attempts Start
+GAlert on events within your Azure infrastructure using Activity Log Alerts challenge
+] 1h 0m Attempts Start
+GAzure VM Creation using CLI Challenge
+] 30m Attempts Start
+GAzure Web App Creation using CLI Challenge
+] 30m Attempts Start
+GChallenge Lab - Creating a Linux VM
+] 30m Attempts Start
+GChallenge Lab - Implement Azure Functions
+] 1h 0m Attempts Start
+GChallenge Lab - Create a SQL database
+] 30m Attempts Start
+GChallenge lab- Storage account creation11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 14/19
+] 45m Attempts Start
+GChallenge lab- Creating Azure Resource Lock
+] 45m Attempts Start
+GChallenge Lab - Understanding Azure Kubernetes Service
+] 45m Attempts Start
+GChallenge Lab - Creating Availability Set
+] 1h 0m Attempts Start
+GChallenge Lab - Understand Network Security Group rules
+] 30m Attempts Start
+GChallenge Lab - Installing NGINX on Linux using Cloud Init
+] 30m Attempts Start
+GChallenge Lab - Install NGINX Webserver using Custom Script Extensions
+] 30m Attempts Start
+GChallenge Lab - Adding Data Disks to the VM Using CLI
+] 30m Attempts Start
+GChallenge Lab - Understanding Azure Database Services
+] 30m Attempts Start
+GChallenge Lab - Working with Blob Storage
+] 30m Attempts Start
+GChallenge Lab - Working with Azure File Shares11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 15/19
+] 30m Attempts Start
+GChallenge Lab - Understanding Azure Blob Storage Tiers
+] 30m Attempts Start
+GChallenge lab- Resizing a Virtual machine
+] 30m Attempts Start
+GChallenge Lab - Working with Alerts
+] 30m Attempts Start
+GChallenge Lab - Working with resource tags
+] 30m Attempts Start
+GChallenge Lab - Adding a network interface
+] 30m Attempts Start
+GChallenge Lab - Working with Application Insights
+] 30m Attempts Start
+GChallenge lab - Implement Azure Kubernetes Service
+] 1h 30m Attempts Start
+GChallenge lab - Create a gateway Load balancer using Azure Portal
+] 1h 0m Attempts Start
+GChallenge Lab - Create an internal load balancer to load balance VMs by using an ARM
+template
+] 45m Attempts Start11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 16/19
+GChallenge Lab - Publish Azure Static Web Apps using an ARM Template
+] 1h 0m Attempts Start
+GChallenge Lab - Create and deploy Azure Function resources from an ARM Template
+] 45m Attempts Start
+GChallenge Lab - Adding Data Disk via Console
+] 30m Attempts Start
+GChallenge lab - Working with Custom Images
+] 45m Attempts Start
+GChallenge lab- Create a Windows VM using an ARM template
+] 30m Attempts Start
+GChallenge Lab - Virtual Machine Scale Sets: Custom Script Extensions
+] 1h 0m Attempts Start
+GChallenge Lab - Implement DNS name resolution in Azure
+] 30m Attempts Start
+GChallenge Lab - Manage Windows Virtual Machines with Azure Bastion
+] 45m Attempts Start
+GChallenge Lab - Containerizing Web Apps on Azure App Service
+] 45m Attempts Start
+GChallenge Lab - Create an SMB Azure file share and connect it to a Windows VM using
+the Azure portal
+] 1h 0m Attempts Start11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 17/19
+Categories Popular Courses Compan yGChallenge Lab - Resizing of Virtual Machine
+] 30m Attempts Start
+GBuilding and Hosting a Portfolio using Azure App Service
+] 1h 30m Attempts Start
+GAzure APIM Integration with App Service
+] 1h 30m Attempts Start
+GIntegrate Azure Services for Web Solutions
+] 2h 0m Attempts Start
+GMonitor, Diagnose, and Fix IoT Solutions
+] 2h 0m Attempts Start
+GCreating a Secure Site-to-Site VPN Connection Between Two Azure Virtual Networks
+] 3h 0m Attempts Free
+GAzure VM Auto-Shutdown and Startup Using Azure Functions
+] 2h 0m Attempts Start14. Lab Projects ]12h 6 Labs
+Hands-on Labs Sandbox Subscription For Business
+Library
+Cloud Computing Certificatio… AWS Certified Solutions Archit… About Us11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 18/19
+Legal Suppo rt
+Need help? Please or +91 6364678444
+©2025, Whizlabs Software Pvt. Ltd. All rights reserved. c dAmazon Web Services (AWS)
+Microsoft Azure
+Google Cloud
+DevOps
+Cyber Security
+Microsoft Power Platform
+Microsoft 365 Certifications
+Java CertificationsAWS Certified Cloud Practitio…
+Microsoft Azure Exam AZ-204 …
+Microsoft Azure Exam AZ-900 …
+Google Cloud Certified Assoc…
+Microsoft Power Platform Fun…
+HashiCorp Certified Terrafor…
+Snowflake SnowPro Core Cert…
+Docker Certified AssociateBlog
+Reviews
+Careers
+Team Accou nt
+Privacy Policy
+Terms of Use
+EULA
+Refund Policy
+Programs GuaranteeContact Us
+FAQs
+11/22/25, 5:01 PM LMS | Whizlabs
+https://www.whizlabs.com/learn/course/microsoft-azure-certiﬁcation-az-104/298 19/19

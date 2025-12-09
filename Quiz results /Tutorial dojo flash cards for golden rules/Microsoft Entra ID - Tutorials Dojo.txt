@@ -1,0 +1,359 @@
+Last updated on February 20, 2024Microsoft Entra ID
+
+
+
+Bookmar ks
+Features
+Concepts
+Monitoring
+Microsoft Entra
+Directory SecurityMicr osoft En tra ID Ch eat
+Sheet
+An identity and access management service that
+helps you access internal and external resources.
+Microsoft Entra licenses: Free, Premium P1,
+Premium P2 and Pay as you go
+Free – user and group management in
+your on-premises directory
+Premium P1 – allows access to both
+on-premises and cloud resources.
+Premium P2 – provides an additional
+feature called Microsoft Entra Identity
+Protection.
+Pay as you go – offers a feature called
+Azure AD B2C.
+Features
+You can use Microsoft Entra Authentication for
+a self-service password reset, MFA, custom
+banned password list, and smart lockout.
+Allows you to manage external identities using
+Azure AD B2B.Search... 
+🚀 Extended! 25% OFF
+All Practice Exams &
+Video Courses, $2.99
+eBooks, Savings on
+PlayCloud and
+CodeQuest!
+Learn AWS with our
+PlayCloud Hands-On
+Labs
+🧑‍💻 50% OFF –
+CodeQuest Coding
+Labs
+Home Courses and eBooks Intro to Cloud Computing AWS Cheat Sheets O the r C he at S he e ts
+Exam Study Guides Blog Career Hub TD Portal LoginEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1332 1212/5/25, 5:27 PM Microsoft Entra ID - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id/ 1/11
+Azure AD B2C is a business-to-customer identity
+as a service that allows you to control how your
+users sign up, sign in, and manage their profiles
+when using your applications.
+Azure AD B2C provides you control on how your
+users sign up, sign in, and manage their profiles
+when using your applications.
+You can manage access in your cloud apps with
+conditional access.
+With Microsoft Entra admin center, it allows you
+to manage and configure device identities.
+If you need to manage domain services such as
+domain join, group policy, and authentication, you
+can use  Microsoft Entra Domain Services.
+Identity Governance ensures that only
+authorized people have the right access to specific
+resources.
+Supports hybrid identity to access resources in
+the cloud or on-premises.
+It has a feature called Microsoft Entra Permissions
+Management, which is a Cloud Infrastructure
+entitlement management (CIEM) capability. The
+Microsoft Entra Permissions Management allows
+you to have comprehensive visibility and control
+over the permissions for any identity or any
+resource in your cloud service provider, which can
+be Azure, AWS, GCP, and others.
+Offers an identifier called Microsoft Entra
+Workload ID which is a workload identity that you
+assign to a software workload such as your web
+application, API service, script, or container. Its
+primary purpose is to authenticate and access
+other services and resources in your Azure
+workload.
+Use Microsoft Entra Connect to accomplish your
+hybrid identity goals:
+$2.99 AWS and Azure
+Exam Study Guide
+eBooks
+New AWS Generative
+AI Developer
+Professional Course
+AIP-C01
+Learn GCP By Doing!
+Try Our GCP
+PlayCloud
+Learn Azure with our
+Azure PlayCloud
+Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1332 1212/5/25, 5:27 PM Microsoft Entra ID - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id/ 2/11
+A sign-in method that uses password
+hash synchronization.
+Pass-through authentication allows
+users to use the same password on-
+premises and in the cloud.
+Enable federation integration to sign in
+to Microsoft Entra-based services
+without having to enter their
+passwords again.
+Synchronization between your on-
+premises environment and Microsoft
+Entra.
+Health Monitoring with Microsoft Entra
+Connect Health.
+Con cepts
+Users
+You can create a new user in your
+organization or a guest user.
+By enabling Multi-Factor
+Authentication, you provide additional
+security by requiring the user, a
+second form of authentication. The
+additional forms that can be used with
+Microsoft Entra MFA are:
+Microsoft Authenticator app
+OATH hardware token
+SMS
+Voice call
+You can also perform the following
+bulk operations: 
+Bulk create
+Bulk invite 
+Bulk delete 
+Bulk restore
+Download users
+Self-service password reset enables
+users to manage their passwords from
+any device, at any time, and from any
+location.FREE AI and AWS
+Digital Courses
+FREE AWS, Azure, GCP
+Practice Test
+Samplers
+Subscribe to our
+YouTube Channel
+Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1332 1212/5/25, 5:27 PM Microsoft Entra ID - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id/ 3/11
+In the device settings, you can change
+the maximum number of devices per
+user.
+You can assign licenses to multiple
+users or groups to allow them to use
+the licensed Microsoft Entra services.
+Licenses are applied per tenant, and
+you can’t transfer them to other
+tenants.
+Groups
+A collection of users, devices, groups,
+and service principals.
+You can easily manage access to your
+resources by creating a Microsoft
+Entra group.
+A user can belong to multiple groups.
+Groups do not have security
+credentials.
+Group Types:
+Security – it contains users,
+devices, groups, and service
+principals as its members. The
+users and service principals are
+the owners of this group.
+Microsoft 365 – it contains users
+as its members. Both the users
+and service principals can be
+owners of this group.
+Membership type:
+Assigned – manually add users to
+be members of the group.
+Dynamic user – automatically
+adds and removes members
+using the dynamic membership
+rules.
+Dynamic device – automatically
+adds and removes members
+using the dynamic group rules.
+With external identities, you can allow users
+outside your organization to sign in using anEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1332 1212/5/25, 5:27 PM Microsoft Entra ID - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id/ 4/11
+external identity provider like Facebook and
+Google.
+Administrative roles can be used to grant access
+to Microsoft Entra and other Microsoft services.
+There are two types of role definitions:
+Built-in roles – it has a fixed set of
+permissions.
+Custom roles – you can select
+permissions from a preset list. To
+create a custom role, you need to have
+a Microsoft Entra Premium P1 or P2
+plan.
+A Microsoft Entra resource that can be a container
+for other Microsoft Entra resources is called an
+administrative unit. It can only contain users
+and groups.
+Devices
+Microsoft Entra registered devices
+The devices registered are
+personally owned devices (bring
+your own device or mobile
+device). These devices are signed
+in with a personal Microsoft
+account.
+The supported operating
+systems are Windows 10,
+macOS, iOS, and Android.
+A Mobile Device Management
+(MDM) helps you enforce
+configurations like storage must
+be encrypted, password
+complexity, and up-to-date
+security software.
+Key capabilities:
+Single sign-on (SSO) to
+cloud resources.
+Conditional access when
+enrolled in Microsoft
+Intune or via App
+protection policy.Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1332 1212/5/25, 5:27 PM Microsoft Entra ID - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id/ 5/11
+Enables phone sign-in with
+the Microsoft
+Authenticator app.
+Microsoft Entra joined devices
+The devices and accounts are
+owned by an organization. It only
+exists in the cloud.
+The supported operating
+systems are Windows 10 devices
+(except Windows 10 Home) and
+Windows Server 2019 Virtual
+Machines running in Azure.
+Microsoft Entra join is primarily
+used for organizations that do
+not have an on-premises
+Windows Server AD
+infrastructure.
+Key capabilities:
+Microsoft Entra hybrid joined devices
+The devices and Microsoft Entra
+Domain Services account are
+owned by an organization. It
+exists both in the cloud and on-
+premises resources.
+The supported operating
+systems are Windows 7, 8.1, 10,
+Windows Server 2008/R2,
+2012/R2, 2016, and 2019.
+You can implement hybrid joined
+devices if you have an existing
+on-premises AD footprint and
+you want to benefit from the
+capabilities provided by
+Microsoft Entra.
+Key capabilities:
+SSO to both cloud and on-
+premises resources.
+Conditional access through
+Domain joins or throughEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1332 1212/5/25, 5:27 PM Microsoft Entra ID - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id/ 6/11
+Microsoft Intune if co-
+managed.
+Self-service password reset
+and Windows Hello PIN
+reset on the lock screen.
+Enterprise State Roaming
+across Devices.
+If you register your application to use Microsoft
+Entra, the users in your organization can do the
+following:
+Get an identity for their application
+that is recognized by Microsoft Entra.
+Get secrets/keys that the application
+will use for authentication.
+Create a custom name and logo for
+your application.
+Apply Microsoft Entra authorization
+(RBAC and oAuth)
+Declare the necessary permissions for
+the application.
+With an application proxy, you can provide SSO
+and remote access for web apps hosted on-
+premises.
+Monit oring
+Monitor the security and usage patterns of your
+environment with Microsoft Entra reports and
+monitoring.
+With Microsoft Entra Connect Health, you can
+view alerts, monitor performance, and check
+usage analytics of your on-premises Active
+Directory and Microsoft Entra.
+Micr osoft En tra Dir ectory
+Secur ity
+Detect potential vulnerabilities and resolve
+suspicious actions with identity protection.Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1332 1212/5/25, 5:27 PM Microsoft Entra ID - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id/ 7/11
+Microsoft Entra PIM helps you control the access
+within your organization.
+You can use security defaults to enable MFA in
+your organization.
+Enabling security defaults protects you from
+common identity-related attacks.
+You use block legacy authentication if a user is
+using a legacy application.
+Identity secure score helps you verify your
+configurations if it’s aligned with Microsoft’s best
+practices for security.
+You can lockout intruders that try to guess your
+users’ passwords or use brute-force methods in
+Microsoft Entra using smart lockout.
+Manage, control, and monitor access to significant
+resources in your organization with Privileged
+Identity Management (PIM).
+Written b y: Ma tt Hidalg o
+Matt is a Solutions Architect for a
+managed services provider that
+specializes in AWS and Azure. After
+graduating from college with a degree in
+Geology, he decided to switch careers
+and self-taught himself with AWS and
+Azure. Matt specializes in the migration
+and deployment of workloads to AWS and
+Azure with 3 years of experience.
+AWS, Azure, and GCP Certifications are consistently
+among the top-paying IT certifications in the world,
+considering that most companies have now shifted
+to the cloud. Earn over $150,000 per year with an
+AWS, Azure, or GCP certification!Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1332 1212/5/25, 5:27 PM Microsoft Entra ID - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id/ 8/11
+Our Comm unityDid y ou fin d our con tent helpful?
+First Name Last Name (Optional)Subscr ibe to our Newsl etter
+Sign up to our newsletter and take your
+career to the next level with our cloud
+computing resources.
+Email Address:
+reCAPTCHAI'm not a robot
+Privacy - Terms
+SubscribeFollow us on LinkedIn, YouTube, Facebook, or join
+our Slack study group. More importantly, answer
+as many practice exams as you can to help
+increase your chances of passing your certification
+exams on your first try!
+View Our AWS, Azure, and GCP Exam
+Reviewers
+Check out our FREE coursesEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1332 1212/5/25, 5:27 PM Microsoft Entra ID - Tutorials Dojo
+https://tutorialsdojo.com/microsoft-entra-id/ 9/11

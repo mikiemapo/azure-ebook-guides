@@ -1,0 +1,92 @@
+Last updated on December 12, 2024Azure Global Infrastructure
+Azur e Global Infr astructur e Ch eat Sh eet
+Regions
+Each region has more than one data center, which is a physical location.
+A group of data centers deployed in a latency-defined perimeter and
+connected through a dedicated regional low latency network.
+Criteria in choosing a Region:
+Location – a region closest to your users minimizes the latency
+Features – some features are not available in all regions
+Price – the price of services vary from region to region
+Each Region is paired within the same geographic area
+If the primary region has an outage, you can failover to the secondary
+region
+You can use paired regions for replication
+Search... 
+🚀 Extended! 25% OFF All
+Practice Exams & Video
+Courses, $2.99 eBooks,
+Savings on PlayCloud and
+CodeQuest!
+Learn AWS with our PlayCloud
+Hands-On Labs
+🧑‍💻 50% OFF – CodeQuest
+Coding Labs
+Home Courses and eBooks Intro to Cloud Computing AWS Cheat Sheets O the r C he at S he e ts
+Exam Study Guides Blog Career Hub TD Portal LoginEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1334 2612/5/25, 5:25 PM Azure Global Infrastructure Cheat Sheet
+https://tutorialsdojo.com/azure-global-infrastructure/ 1/8
+Regions that are unique when it comes to compliance:
+Azure Government Cloud – only US federal, state, local, and tribal
+governments and their partners have access to this dedicated
+instance
+China Region – data center is physically located within China and
+has no connection outside of China, including other Azure regions
+Availability Z ones
+Each availability zone is a physical location within a region
+A zone is composed of one or more data centers with independent
+power, cooling, and networking facilities.
+Azure services that support Availability Zones fall into two categories:
+Zonal services – a resource is pinned to a specific zone
+Zone-redundant services – replicates automatically across zones
+The data moving in and out of Azure data centers, as well as data
+moving between Azure data centers, is called bandwidth.
+Data transfer to Azure is always free.
+Data transfer between Availability Zones is not free.
+Data transfer within the same Availability Zone is free.
+Data transfer between Azure regions and to other continents is
+not free.
+$2.99 AWS and Azure Exam
+Study Guide eBooks
+New AWS Generative AI
+Developer Professional
+Course AIP-C01
+Learn GCP By Doing! Try Our
+GCP PlayCloud
+Learn Azure with our Azure
+PlayCloud
+Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1334 2612/5/25, 5:25 PM Azure Global Infrastructure Cheat Sheet
+https://tutorialsdojo.com/azure-global-infrastructure/ 2/8
+Azur e Sit e Reco very
+Azure’s disaster recovery as a service (DRaaS)
+You can minimize recovery issues by sequencing the order of multi-tier
+applications that run on several virtual machines.
+Keep applications available from on-premises to Azure or Azure to
+another Azure region during outages with automatic recovery.
+How Do es Micr osoft Azur e Work?
+FREE AI and AWS Digital
+Courses
+FREE AWS, Azure, GCP Practice
+Test Samplers
+Subscribe to our YouTube
+Channel
+Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1334 2612/5/25, 5:25 PM Azure Global Infrastructure Cheat Sheet
+https://tutorialsdojo.com/azure-global-infrastructure/ 3/8
+Valida te Your Kn owledge
+Question 1
+Question Type: Hotspot
+For each of the following items, choose Yes if the statement is true or choose
+No if the statement is false. Take note that each correct item is worth one
+point.
+For more Azure practice exam questions with detailed explanations, check
+out the Tutorials Dojo Portal:
+Azur e Global Infr astructur e Ch eat Sh eet
+Resour ces:
+https://docs.microsoft.com/en-us/learn/modules/explore-azure-
+infrastructure/
+https://docs.microsoft.com/en-us/azure/availability-zones/az-overview
+Show me the answer!Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1334 2612/5/25, 5:25 PM Azure Global Infrastructure Cheat Sheet
+https://tutorialsdojo.com/azure-global-infrastructure/ 4/8

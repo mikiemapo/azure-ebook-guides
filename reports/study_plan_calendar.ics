@@ -1,0 +1,582 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//azure-ebook-guides//AZ-104 Study Plan//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+
+BEGIN:VTIMEZONE
+TZID:America/New_York
+X-LIC-LOCATION:America/New_York
+BEGIN:DAYLIGHT
+TZOFFSETFROM:-0500
+TZOFFSETTO:-0400
+TZNAME:EDT
+DTSTART:19700308T020000
+RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU
+END:DAYLIGHT
+BEGIN:STANDARD
+TZOFFSETFROM:-0400
+TZOFFSETTO:-0500
+TZNAME:EST
+DTSTART:19701101T020000
+RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU
+END:STANDARD
+END:VTIMEZONE
+
+BEGIN:VEVENT
+UID:az104-2025w1d1@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251202T090000
+DTEND;TZID=America/New_York:20251202T110000
+SUMMARY:Week 1 Day 1 — Azure Files + Sync (CLI)
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w1d2@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251203T090000
+DTEND;TZID=America/New_York:20251203T110000
+SUMMARY:Week 1 Day 2 — Azure Files + Sync (PowerShell)
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w1d3@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251204T090000
+DTEND;TZID=America/New_York:20251204T110000
+SUMMARY:Week 1 Day 3 — VMSS + Autoscale (CLI)
+LOCATION:Whizlabs — Compute
+DESCRIPTION:Whizlabs Section: Compute — VM Scale Sets\nFocus: VMSS deploy + autoscale rules\nObjectives: Deploy VMSS; configure autoscale; add health probes; test rolling upgrade; validate scale in/out events.\nCLI: az vmss create; az monitor autoscale create; az vmss update; az network lb probe create.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w1d4@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251205T090000
+DESCRIPTION:Section: S02 Compute — VM Scale Sets\nLab: VMSS Deploy + Autoscale Rules\nDuration: 120m\nBrief: Deploy VMSS; configure autoscale; add health probes; test rolling upgrade; validate scale in/out.\nCommands: az vmss create; az monitor autoscale create; az vmss update; az network lb probe create
+SUMMARY:Week 1 Day 4 — Networking: Private/Service Endpoints
+LOCATION:Whizlabs — Networking
+DESCRIPTION:Whizlabs Section: Networking — Private Access\nFocus: Private Endpoint + Service Endpoints\nObjectives: Create Private Endpoint to Storage; deny public; configure Service Endpoints; validate DNS + connectivity.\nCLI: az network private-endpoint create; az network vnet subnet update; az network private-dns link vnet create.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w1d5@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251206T090000
+DESCRIPTION:Section: S03 Networking — Private Access\nLab: Private Endpoint + Service Endpoints\nDuration: 120m\nBrief: Create Private Endpoint to Storage; deny public; configure Service Endpoints; validate DNS and connectivity.\nCommands: az network private-endpoint create; az network vnet subnet update; az network private-dns link vnet create
+SUMMARY:Week 1 Day 5 — Review + Quiz (Storage/Compute/Net)
+LOCATION:Whizlabs — Mixed
+DESCRIPTION:Focus: Targeted quizzes for Storage/Compute/Networking\nObjectives: Rapid review; run section quizzes; capture gaps; set goals for next week.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w2d1@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251208T090000
+DESCRIPTION:Section: Mixed (S01/S02/S03)\nLab: Targeted Review + Quizzes\nDuration: 120m\nBrief: Rapid review; run section quizzes; capture gaps; set goals for next week.\nCommands: N/A
+SUMMARY:Week 2 Day 1 — App Service: VNet Integration (CLI)
+LOCATION:Whizlabs — App Services
+DESCRIPTION:Whizlabs Section: App Service\nFocus: VNet Integration + private egress\nObjectives: Integrate web app with VNet; validate egress paths; configure custom DNS for private resources.\nCLI: az webapp create; az webapp vnet-integration add; az network vnet subnet update.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w2d2@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+SUMMARY:Week 2 Day 1 — App Service: VNet Integration (CLI)
+DESCRIPTION:Section: S04 App Service\nLab: VNet Integration + Private Egress\nDuration: 120m\nBrief: Integrate web app with VNet; validate egress paths; configure custom DNS for private resources.\nCommands: az webapp create; az webapp vnet-integration add; az network vnet subnet update
+LOCATION:Whizlabs — App Services
+DESCRIPTION:Whizlabs Section: App Service — Deployment Slots\nFocus: Blue/Green via Slots\nObjectives: Create staging slot; config overrides; swap; validate app health + sticky settings.\nCLI: az webapp deployment slot create; az webapp deployment slot swap; az webapp config appsettings set.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w2d3@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251210T090000
+DTEND;TZID=America/New_York:20251210T110000
+SUMMARY:Week 2 Day 3 — Monitoring: Alerts + LA
+LOCATION:Whizlabs — Monitoring
+DESCRIPTION:Whizlabs Section: Monitor — Alerts\nFocus: Metrics + Log Alerts\nObjectives: Create Action Group; metric alert; log alert; test notifications.\nCLI: az monitor action-group create; az monitor metrics alert create; az monitor scheduled-query create.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w2d4@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251211T090000
+DTEND;TZID=America/New_York:20251211T110000
+SUMMARY:Week 2 Day 4 — Load Balancing: L4 + Health Probes
+LOCATION:Whizlabs — Networking
+DESCRIPTION:Whizlabs Section: Load Balancer\nFocus: Standard LB configuration\nObjectives: Deploy LB; backend pool; health probes; rules; test traffic distribution.\nCLI: az network lb create; az network lb probe create; az network lb rule create; az network nic ip-config update.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w2d5@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251212T090000
+DTEND;TZID=America/New_York:20251212T110000
+SUMMARY:Week 2 Day 5 — Review + Quiz (App/Monitor/LB)
+LOCATION:Whizlabs — Mixed
+DESCRIPTION:Focus: App Service, Monitor, Load Balancer\nObjectives: Rapid review; run quizzes; identify weak spots; plan remediation.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w3d1@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251215T090000
+DTEND;TZID=America/New_York:20251215T110000
+SUMMARY:Week 3 Day 1 — App Gateway WAF
+LOCATION:Whizlabs — Networking
+DESCRIPTION:Whizlabs Section: Application Gateway\nFocus: WAF policies + backend config\nObjectives: Provision AppGW; attach WAF; backend settings; health checks; test.
+CLI: az network application-gateway create; az network application-gateway waf-config set; az network application-gateway address-pool create.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w3d2@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251216T090000
+DTEND;TZID=America/New_York:20251216T110000
+SUMMARY:Week 3 Day 2 — Front Door + CDN
+LOCATION:Whizlabs — Networking
+DESCRIPTION:Whizlabs Section: Front Door\nFocus: FD Standard/Premium routing\nObjectives: Create FD; origin groups; routes; health probes; caching; rule sets.\nCLI: az network front-door create; az afd origin create; az afd route create; az afd rule set create.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w3d3@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251217T090000
+DTEND;TZID=America/New_York:20251217T110000
+SUMMARY:Week 3 Day 3 — Backup (RSV) + Policies
+LOCATION:Whizlabs — Backup
+DESCRIPTION:Whizlabs Section: Azure Backup\nFocus: Recovery Services Vault + VM protection\nObjectives: Create vault; define backup policy; protect VM; perform restore test; verify retention.\nCLI: az backup vault create; az backup policy create; az backup protection enable-for-vm; az backup restore.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w3d4@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251218T090000
+DTEND;TZID=America/New_York:20251218T110000
+SUMMARY:Week 3 Day 4 — ASR: Replicate + Failover
+LOCATION:Whizlabs — DR
+DESCRIPTION:Whizlabs Section: Azure Site Recovery\nFocus: VM replication + failover\nObjectives: Create ASR fabric/container; enable replication; test failover; reverse replication; cleanup.\nCLI: az recoveryservices asr fabric create; az recoveryservices asr protection-container create; az recoveryservices asr replication-protected-item.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w3d5@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251219T090000
+DTEND;TZID=America/New_York:20251219T110000
+SUMMARY:Week 3 Day 5 — Review + Quiz (Edge/DR)
+LOCATION:Whizlabs — Mixed
+DESCRIPTION:Focus: AppGW/Front Door/Backup/ASR\nObjectives: Section reviews; run quizzes; finalize notes.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w4d1@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251222T090000
+DTEND;TZID=America/New_York:20251222T110000
+SUMMARY:Week 4 Day 1 — Governance: Policy/Blueprints
+LOCATION:Whizlabs — Governance
+DESCRIPTION:Whizlabs Section: Policy/Blueprints\nFocus: Assignments + remediation\nObjectives: Create policy definition; assign at RG/sub; exemptions; remediation tasks; blueprint artifacts.\nCLI: az policy definition create; az policy assignment create; az policy remediation create.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w4d2@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251223T090000
+DTEND;TZID=America/New_York:20251223T110000
+SUMMARY:Week 4 Day 2 — RBAC + PIM
+LOCATION:Whizlabs — Governance
+DESCRIPTION:Whizlabs Section: RBAC/PIM\nFocus: Role assignments + privileged access\nObjectives: Role assignments; custom roles; PIM activation; audit; access reviews.\nCLI: az role assignment create; az role definition create; PIM via Portal.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w4d3@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251224T090000
+DTEND;TZID=America/New_York:20251224T110000
+SUMMARY:Week 4 Day 3 — Cost Management
+LOCATION:Whizlabs — Cost Management
+DESCRIPTION:Whizlabs Section: Cost Management\nFocus: Budgets + optimization\nObjectives: Create budget; alerts; reservation sizing; Advisor recommendations; export costs.\nCLI: az consumption budget create; az costmanagement export.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w4d4@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251225T090000
+DTEND;TZID=America/New_York:20251225T110000
+SUMMARY:Week 4 Day 4 — Security: Defender + Sentinel
+LOCATION:Whizlabs — Security
+DESCRIPTION:Whizlabs Section: Security (Defender/Sentinel)\nFocus: Enable plans + SIEM integration\nObjectives: Enable Defender plans; onboard to Sentinel; analytics rules; data connectors; test incidents.\nCLI: az security pricing create; Sentinel via Portal/ARM.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w4d5@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251226T090000
+DTEND;TZID=America/New_York:20251226T110000
+SUMMARY:Week 4 Day 5 — Review + Quiz (Gov/Sec)
+LOCATION:Whizlabs — Mixed
+DESCRIPTION:Focus: Governance + Security\nObjectives: Section reviews; targeted quizzes; finalize notes.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w5d1@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251229T090000
+DTEND;TZID=America/New_York:20251229T110000
+SUMMARY:Week 5 Day 1 — Data: SQL + Backup
+LOCATION:Whizlabs — Data
+DESCRIPTION:Whizlabs Section: Azure SQL\nFocus: Backup/Restore + Failover Groups\nObjectives: Deploy Azure SQL; configure backups; restore; failover groups; test failover.\nCLI: az sql server create; az sql db create; az sql failover-group create.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w5d2@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251230T090000
+DTEND;TZID=America/New_York:20251230T110000
+SUMMARY:Week 5 Day 2 — Data: Storage Performance
+LOCATION:Whizlabs — Storage
+DESCRIPTION:Whizlabs Section: Storage Performance\nFocus: Tiering + lifecycle + encryption\nObjectives: Configure tiering; lifecycle policies; encryption options; access control; measure performance.
+CLI: az storage account update; az storage account encryption-scope.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2025w5d3@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20251231T090000
+DTEND;TZID=America/New_York:20251231T110000
+SUMMARY:Week 5 Day 3 — Kubernetes: AKS Basics
+LOCATION:Whizlabs — Containers
+DESCRIPTION:Whizlabs Section: AKS Basics\nFocus: Cluster operations\nObjectives: Create cluster; node pools; scale; update; upgrade; validate with kubectl.\nCLI: az aks create; az aks nodepool add; az aks upgrade.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w1d1@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260101T090000
+DTEND;TZID=America/New_York:20260101T110000
+SUMMARY:Week 6 Day 1 — Kubernetes: Networking
+LOCATION:Whizlabs — Containers
+DESCRIPTION:Whizlabs Section: AKS Networking\nFocus: CNI + NSGs + Ingress\nObjectives: Configure CNI; NSGs; Ingress; Azure Monitor for containers; validate traffic and logs.\nCLI: az aks update; az network nsg rule create; kubectl apply ingress.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w1d2@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260102T090000
+DTEND;TZID=America/New_York:20260102T110000
+SUMMARY:Week 6 Day 2 — Final Review
+LOCATION:Whizlabs — Mixed
+DESCRIPTION:Focus: Full objective sweep\nObjectives: Practice exams; focus weak areas; consolidate notes; last questions.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w1d3@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260103T090000
+DTEND;TZID=America/New_York:20260103T110000
+SUMMARY:Week 6 Day 3 — Exam Readiness
+LOCATION:Whizlabs — Mixed
+DESCRIPTION:Focus: Exam strategy\nObjectives: Timing; common traps; key services; last-minute notes; rest + prep.
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w2d1@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260105T090000
+DTEND;TZID=America/New_York:20260105T110000
+SUMMARY:Week 7 Day 1 — Identity: Azure AD + RBAC
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w2d2@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260106T090000
+DTEND;TZID=America/New_York:20260106T110000
+SUMMARY:Week 7 Day 2 — Networking: DNS Zones + Private DNS
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w2d3@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260107T090000
+DTEND;TZID=America/New_York:20260107T110000
+SUMMARY:Week 7 Day 3 — Storage: Lifecycle + Blob Tiering
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w2d4@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260108T090000
+DTEND;TZID=America/New_York:20260108T110000
+SUMMARY:Week 7 Day 4 — Compute: Images + VM Capture
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w2d5@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260109T090000
+DTEND;TZID=America/New_York:20260109T110000
+SUMMARY:Week 7 Day 5 — Review + Quiz (Identity/Net/Storage/Compute)
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w3d1@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260112T090000
+DTEND;TZID=America/New_York:20260112T110000
+SUMMARY:Week 8 Day 1 — Monitoring: VM Insights + Logs
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w3d2@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260113T090000
+DTEND;TZID=America/New_York:20260113T110000
+SUMMARY:Week 8 Day 2 — Security: Key Vault + Secrets
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w3d3@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260114T090000
+DTEND;TZID=America/New_York:20260114T110000
+SUMMARY:Week 8 Day 3 — App Service: Managed Identity
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w3d4@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260115T090000
+DTEND;TZID=America/New_York:20260115T110000
+SUMMARY:Week 8 Day 4 — Networking: NSGs + ASGs
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w3d5@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260116T090000
+DTEND;TZID=America/New_York:20260116T110000
+SUMMARY:Week 8 Day 5 — Review + Quiz (Monitor/Sec/App/Net)
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w4d1@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260119T090000
+DTEND;TZID=America/New_York:20260119T110000
+SUMMARY:Week 9 Day 1 — DR: Backup + Restore Drill
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w4d2@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260120T090000
+DTEND;TZID=America/New_York:20260120T110000
+SUMMARY:Week 9 Day 2 — DR: ASR Failover + Failback
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:az104-2026w4d3@azure-ebook-guides
+DTSTAMP:20251202T140000Z
+DTSTART;TZID=America/New_York:20260121T090000
+DTEND;TZID=America/New_York:20260121T110000
+SUMMARY:Week 9 Day 3 — Final Review + Exam Readiness
+BEGIN:VALARM
+TRIGGER:-PT15M
+ACTION:DISPLAY
+DESCRIPTION:AZ-104 study block starts in 15 minutes
+END:VALARM
+END:VEVENT
+
+END:VCALENDAR

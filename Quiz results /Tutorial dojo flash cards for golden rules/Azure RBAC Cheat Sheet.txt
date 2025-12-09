@@ -1,0 +1,239 @@
+Last updated on January 23, 2025Azure Role-Based Access Control (RBAC)
+
+
+
+Bookmarks
+Concepts
+Roles
+Best Practices
+Validate Your KnowledgeAzur e Ro le-Based A ccess
+Control Ch eat Sh eet
+A role-based access control service to manage
+user’s access to Azure resources including what
+they can do with those resources and what areas
+they can access.
+It is an authorization system based on Azure
+Resource Manager, which provides fine-grained
+access management of Azure resources.
+Con cepts
+A role assignment is composed of security
+principal, role definition, and scope.
+Security Principal – an object representing
+a user, group, service principal, and
+managed identity that requests access to
+Azure resources.
+Role Definition – a list of permissions that
+can be performed, such as read, write and
+delete.
+Scope – set of resources to which access
+applies.Search... 
+🚀 Extended! 25% OFF
+All Practice Exams &
+Video Courses, $2.99
+eBooks, Savings on
+PlayCloud and
+CodeQuest!
+Learn AWS with our
+PlayCloud Hands-On
+Labs
+🧑‍💻 50% OFF –
+CodeQuest Coding
+Labs
+Home Courses and eBooks Intro to Cloud Computing AWS Cheat Sheets O the r C he at S he e ts
+Exam Study Guides Blog Career Hub TD Portal LoginEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1337 3312/5/25, 5:22 PM Azure RBAC Cheat Sheet
+https://tutorialsdojo.com/azure-role-based-access-control-rbac/ 1/9
+Attaching a role definition to a user, group, service
+principal, and managed identity to grant access to
+a particular scope is called role assignment.
+You can attach multiple role assignments since
+RBAC is an additive model.
+Azure RBAC supports both allow and deny
+assignments.
+Roles
+Classic subscription administrator roles have full
+access to an Azure subscription.
+Account Administrator
+You can only have 1 Account
+Administrator per Azure account.
+This role is the billing owner of the
+Azure subscription.
+It can manage subscriptions and
+billings in the account.
+Create and cancel subscriptions.
+Service Administrator
+For this role, you can only have 1
+Service Administrator per Azure
+subscription.
+For new subscriptions, the Account
+Administrator is also the Service
+Administrator. This role has full access
+to the Azure portal.
+It can assign users with a Co-
+Administrator role.
+Co-Administrator
+You can only create 200 Co-
+Administrator per Azure subscription.
+This role has the same privileges as
+the Service Administrator, but it can’t
+change the association of
+subscriptions to Azure directories.
+$2.99 AWS and Azure
+Exam Study Guide
+eBooks
+New AWS Generative
+AI Developer
+Professional Course
+AIP-C01
+Learn GCP By Doing!
+Try Our GCP
+PlayCloud
+Learn Azure with our
+Azure PlayCloud
+Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1337 3312/5/25, 5:22 PM Azure RBAC Cheat Sheet
+https://tutorialsdojo.com/azure-role-based-access-control-rbac/ 2/9
+A user with this role can only assign a
+Co-Administrator role to other users.
+Azure Roles – Azure RBAC has over 70 built-in
+roles. The following are the four fundamental
+Azure roles:
+Owner 
+Full access to all Azure resources.
+Delegate access to other users.
+Contributor
+Create and manage all types of
+resources in Azure.
+The role can create a new tenant in
+Microsoft Entra ID.
+It cannot grant access to other users.
+Reader
+A user with this role can only view
+Azure resources.
+User Access Administrator
+It has permissions to manage user
+access to all types of resources.
+Microsoft Entra Roles – Provide access to manage
+Microsoft Entra resources in a directory such as
+create users, assign administrative roles to others,
+manage licenses, reset passwords, and manage
+domains.
+Global Administrator
+This role can manage access to all the
+administrative features in Microsoft
+Entra ID.
+It can assign administrator roles to the
+users in your organization.
+Reset the password of users and
+administrators in the account.
+User Administrator
+Create and manage different types of
+users and groups in Azure.
+Manage support tickets and monitor
+service health.
+This role can only change the
+passwords of users andFREE AI and AWS
+Digital Courses
+FREE AWS, Azure, GCP
+Practice Test
+Samplers
+Subscribe to our
+YouTube Channel
+Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1337 3312/5/25, 5:22 PM Azure RBAC Cheat Sheet
+https://tutorialsdojo.com/azure-role-based-access-control-rbac/ 3/9
+administrators.
+Billing Administrator
+Make purchases in Azure.
+The role can also monitor service
+health.
+Manage subscriptions and support
+tickets.
+Azure RolesMicrosoft Entra Roles
+Manage access to
+Azure resources.Manage access to
+Microsoft Entra
+resources.
+It supports custom
+roles.It supports custom roles.
+The scope can be
+specified at multiple
+levels (management
+group, subscription,
+resource group,
+resource).The scope is only at the
+tenant level.
+Role information can
+be accessed through
+Azure Portal, CLI,
+PowerShell, Resource
+Manager templates,
+and REST APIs.Role information can be
+accessed through
+Microsoft Entra admin
+center, Microsoft 365
+Admin Center, Microsoft
+Graph, and Microsoft
+Graph PowerShell.
+Best Pr actices
+Use Azure RBAC to segregate duties within your
+team and only grant the access your users need.Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1337 3312/5/25, 5:22 PM Azure RBAC Cheat Sheet
+https://tutorialsdojo.com/azure-role-based-access-control-rbac/ 4/9
+Limit the number of subscription owners (max of
+3) to reduce the potential for breach by a
+compromised owner.
+You can use Microsoft Entra PIM to protect
+privileged accounts from malicious cyber-attacks.
+Valida te Your Kn owledge
+Question 1
+Question Type: Single choice
+Your company has an Azure subscription named
+ManilaSubscription  that contains multiple virtual
+machines.
+The subscription has a user named
+ManilaUser01  which has the following roles:
+Backup Reader
+Storage Blob Data Contributor
+DevTest Labs User
+You need to ensure that ManilaUser01  can assign a
+Reader role to all the users in the subscription.
+What role should you assign?
+1. Assign the User Access Administrator role.
+2. Assign the Security Reader role.
+3. Assign the Virtual Machine Contributor role.
+4. Assign the Security Admin role.
+For more Azure practice exam questions with detailed
+explanations, check out the Tutorials Dojo Portal:
+Show me the answer!Ends indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1337 3312/5/25, 5:22 PM Azure RBAC Cheat Sheet
+https://tutorialsdojo.com/azure-role-based-access-control-rbac/ 5/9
+Azur e RBA C Refer ence:
+https://docs.microsoft.com/en-us/azure/role-based-
+access-control/overview
+Written b y: Jon Bonso
+Jon Bonso is the co-founder of Tutorials
+Dojo, an EdTech startup and an AWS
+Digital Training Partner that provides
+high-quality educational materials in the
+cloud computing space. He graduated
+from Mapúa Institute of Technology in
+2007 with a bachelor's degree in
+Information Technology. Jon holds 10
+AWS Certifications and is also an active
+AWS Community Builder since 2020.
+AWS, Azure, and GCP Certifications are consistently
+among the top-paying IT certifications in the world,
+considering that most companies have now shifted
+to the cloud. Earn over $150,000 per year with an
+AWS, Azure, or GCP certification!
+Follow us on LinkedIn, YouTube, Facebook, or join
+our Slack study group. More importantly, answer
+as many practice exams as you can to help
+increase your chances of passing your certification
+exams on your first try!
+View Our AWS, Azure, and GCP Exam
+Reviewers
+Check out our FREE coursesEnds indays hrs mins secsENROLL NOW
+🚀 Extended! 25% OFF All Practice Exams & Video Courses, $2.99 eBooks, Savings on PlayCloud and CodeQuest!06 1337 3312/5/25, 5:22 PM Azure RBAC Cheat Sheet
+https://tutorialsdojo.com/azure-role-based-access-control-rbac/ 6/9

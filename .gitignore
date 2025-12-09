@@ -1,14 +1,12 @@
 # Large binary files and personal documents
 *.pdf
-*.apkg
-*.csv
 *.rdp
 *.zip
 *.jpg
 *.png
 *.sln
 
-# Personal/Private content
+# Personal/Private content (study/scratch folders)
 Quiz results/
 Conversations/
 Conversations */
@@ -23,6 +21,15 @@ json zin whizlab*/
 main whizlabs*/
 dns zone records*/
 quiz_mastery_app/
+
+# Backup but selectively track:
+# CSV files in AZ-104-Critical-Priorities-Study-Deck/ are tracked
+# APKG files in Anki-Decks/ are tracked
+!Anki-Decks/
+!Anki-Decks/**/*.apkg
+!AZ-104-Critical-Priorities-Study-Deck/
+!AZ-104-Critical-Priorities-Study-Deck/**/*.csv
+!AZ-104-Critical-Priorities-Study-Deck/**/*.py
 
 # Temporary files and commands
 command.sh.txt

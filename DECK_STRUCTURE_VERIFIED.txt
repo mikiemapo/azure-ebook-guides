@@ -1,0 +1,81 @@
+╔═════════════════════════════════════════════════════════════════════════════════╗
+║                   AZ-104 STUDY DECK HIERARCHY - VERIFIED                        ║
+╚═════════════════════════════════════════════════════════════════════════════════╝
+
+📂 AZ-104 Study Guide (Main Deck)
+├── 📚 Study Guide Segments (265+ cards)
+│   ├── Storage & Replication (24 cards)
+│   ├── Virtual Machines (45 cards)
+│   ├── Networking & VNets (38 cards)
+│   ├── App Service & Containers (32 cards)
+│   ├── Monitoring & Backup (28 cards)
+│   └── [Other segments...]
+│
+├── 🌟 Golden Rules Segments (52 cards)
+│   ├── Golden Rules Part 1
+│   └── Golden Rules Part 2
+│
+├── 🔥 Deep Dive Segments (89 cards)
+│   ├── Container Apps Ingress
+│   ├── VMSS Deep Dive
+│   ├── App Service Deep Dive
+│   └── [Other deep dives...]
+│
+└── 📊 Performance Review (49 cards)
+    ├── Performance Review Segments
+    │   ├── ✅ Identities Nov 29 (existing - DO NOT TOUCH)
+    │   │   └── 49 cards from Nov 29 Identities quiz
+    │   │
+    │   └── 🆕 Entra ID Tutorials Dojo (NEW - being added)
+    │       └── 18 cards from Tutorials Dojo quiz weak spots
+    │
+    └── [Other Performance Review branches as needed]
+
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+CARD FORMAT SPECIFICS:
+
+┌─ Performance Review Model (Template) ─────────────────────────────────────────┐
+│                                                                                │
+│ FRONT (qfmt):  {{Question}}                                                    │
+│   └─ Shows: Just the question text (NO choices visible yet)                   │
+│   └─ Color: Black text on white                                               │
+│   └─ Correct answer: NOT highlighted (hidden)                                 │
+│                                                                                │
+│ BACK (afmt):  {{QuestionWithAnswer}}<hr>{{Answer}}                             │
+│   ├─ Shows: Full question + all 4 choices with styling                        │
+│   │   └─ Correct choice: GREEN background (#d4edda), GREEN border (#28a745)   │
+│   │   └─ Wrong choices: Gray background (#f9f9f9), Gray border (#cccccc)      │
+│   │                                                                             │
+│   └─ Shows: Explanation text below horizontal line                             │
+│       └─ Format: Plain text (NOT HTML formatted - just raw explanation)       │
+│                                                                                │
+│ CSS Classes:                                                                   │
+│   .choice { normal styling - gray background, gray border }                   │
+│   .choice.correct { GREEN background, GREEN border, bold text }               │
+│                                                                                │
+└────────────────────────────────────────────────────────────────────────────────┘
+
+
+═══════════════════════════════════════════════════════════════════════════════════
+
+CRITICAL POINTS FOR ENTRA ID DECK:
+
+✅ DO:
+  • Use SAME model ID (1607392321) as existing Performance Review deck
+  • Use SAME CSS as existing Performance Review deck
+  • Place under: AZ-104 Study Guide::Performance Review::Performance Review Segments
+  • Keep explanations SHORT (2-3 sentences max, not long formatted HTML)
+  • Tags must NOT contain spaces (use hyphens: "Entra-ID", not "Entra ID")
+  • Front shows: {{Question}} only
+  • Back shows: {{QuestionWithAnswer}} + {{Answer}}
+
+❌ DON'T:
+  • Don't highlight correct answer on the FRONT
+  • Don't create new model or CSS
+  • Don't merge with Nov 29 deck (keep separate branches)
+  • Don't use long HTML-formatted explanations
+  • Don't use spaces in tags
+
+═══════════════════════════════════════════════════════════════════════════════════

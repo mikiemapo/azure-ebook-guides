@@ -1,0 +1,2030 @@
+number,category,question,options,answer,explanation,raw
+1,AZ-104 – Manage A zure,"1. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance Note: This it em is par t of a series of ques tions with the e xact same scenario but with a diff erent pr oposed answer. Each one in the series has a Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025unique solution that ma y, or ma y not, comply with the r equir ement s specified in the scenario. You cr eated a new A zure subscription. The subscription has a r esour ce group named TD-RG. The r esour ces in TD-RG is cr eated using ARM templat es. You need t o get the e xact dat e and time when the r esour ces in TD-RG was deployed. Solution: In the r esour ce gr oup settings, selec t Proper ties. Does the solution meet the goal? Yes No Incor rect A resource gr oup is a container that holds r elated resources f or an Azure solution. The r esour ce group can include all the resources f or the solution, or only those r esour ces that y ou w ant t o manage as a gr oup. You decide how you w ant t o allocat e resources t o resource gr oups based on what mak es the mos t sense f or your or ganization. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Generally, add r esour ces that share the same lif ecycle to the same r esour ce gr oup so y ou can easily deploy, updat e, and delet e them as a gr oup. The pr oper ties in the r esour ce group contain the name, location, location ID, resource ID, subscription, and subscription ID. This setting does not contain the date and time when the r esour ces were deployed. To verify the dat e and time the resources w ere deployed, y ou can selec t the r esour ce gr oup and click the deployment settings. Y ou will see a summary of the deployment: the deployment name, s tatus, las t modified, duration, and r elated events. If y ou selec t a par ticular t emplat e, you can check the input s, output s, and the t emplat e used dur ing deployment. Hence, the cor rect ans wer is: No. References: https://docs.micr osoft. com/en- us/azur e/azur e-resource- manager /templat es/templat e- tutorial-cr eate-first-templat e Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025https://docs.micr osoft. com/en- us/azur e/azur e-resource- manager /management/manage- resource-gr oups-por tal Check out this A zure Global Infrastruc ture Cheat Sheet: https://tut orialsdojo.com/azur e- global-infras tructure/",,,,"1. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Note: This it em is par t of a series of
+ques tions with the e xact same
+scenario but with a diff erent pr oposed
+answer. Each one in the series has a
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025unique solution that ma y, or ma y not,
+comply with the r equir ement s
+specified in the scenario.
+You cr eated a new A zure subscription.
+The subscription has a r esour ce
+group named TD-RG. The r esour ces
+in TD-RG is cr eated using ARM
+templat es.
+You need t o get the e xact dat e and
+time when the r esour ces in TD-RG
+was deployed.
+Solution: In the r esour ce gr oup
+settings, selec t Proper ties.
+Does the solution meet the goal?
+Yes
+No
+Incor rect
+A resource gr oup is a container
+that holds r elated resources f or an
+Azure solution. The r esour ce
+group can include all the
+resources f or the solution, or only
+those r esour ces that y ou w ant t o
+manage as a gr oup. You decide
+how you w ant t o allocat e
+resources t o resource gr oups
+based on what mak es the mos t
+sense f or your or ganization.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Generally, add r esour ces that
+share the same lif ecycle to the
+same r esour ce gr oup so y ou can
+easily deploy, updat e, and delet e
+them as a gr oup.
+The pr oper ties in the r esour ce
+group contain the name, location,
+location ID, resource ID,
+subscription, and subscription ID.
+This setting does not contain the
+date and time when the r esour ces
+were deployed.
+To verify the dat e and time the
+resources w ere deployed, y ou can
+selec t the r esour ce gr oup and
+click the deployment settings. Y ou
+will see a summary of the
+deployment: the deployment
+name, s tatus, las t modified,
+duration, and r elated events. If y ou
+selec t a par ticular t emplat e, you
+can check the input s, output s, and
+the t emplat e used dur ing
+deployment.
+Hence, the cor rect ans wer is: No.
+ 
+References:
+https://docs.micr osoft. com/en-
+us/azur e/azur e-resource-
+manager /templat es/templat e-
+tutorial-cr eate-first-templat e
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025https://docs.micr osoft. com/en-
+us/azur e/azur e-resource-
+manager /management/manage-
+resource-gr oups-por tal
+ 
+Check out this A zure Global
+Infrastruc ture Cheat Sheet:
+https://tut orialsdojo.com/azur e-
+global-infras tructure/"
+2,AZ-104 – Manage A zure,"2. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance Your compan y has se veral client comput ers at the office headquar ters. Two years ago, you migrat ed the on- premises dir ectory t o Microsoft Entra ID. To meet the compliance r equir ement, personal and cor porat e devices mus t be registered and joined t o the Microsoft Entra domain. You receiv ed a r epor t that a user cannot r egister her per sonal de vice t o Microsoft Entra. Upon checking, the user w as able t o register her other devices in the pas t. You also v erified that all other user s were able t o join their de vices t o Microsoft Entra las t month. You need t o mak e sur e that the user can acces s and join her new de vice t o Microsoft Entra. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025What mus t be done t o satisfy the above requir ement? Add a cus tom domain name. Move the user t o a new group. Modify the maximum number of de vices per user in the de vice settings. Assign a new r ole to the user. Incor rect Micr osof t Entr a ID is Microsoft ʼs cloud-based identity and acces s management service, which helps your emplo yees sign in and acces s resources in e xternal and int ernal resources. The de vice settings in Microsoft Entra allo ws you to cus tomiz e the maximum number of de vices per user. It can be 5, 10, 20, or unlimit ed. If the user s reached the Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025limit, the y will not be allo wed to add new de vices until one or mor e devices ha ve been r emoved. Hence, the cor rect ans wer is: Modify the maximum number of devices per user in the de vice settings. The option that sa ys: Move the user t o a ne w gr oup is incor rect because e ven if y ou mo ve the user to a diff erent gr oup, the user w onʼt be able t o acces s Microsoft Entra. You need t o modify the maximum number of de vices in the de vice settings. The option that sa ys: Add a custom domain name is incor rect because cr eating a new cus tom domain is not needed in the scenar io. The user w onʼt s till acces s Microsoft Entra. The option that sa ys: Assign a new role t o the user is incor rect because a new r ole w onʼt r esolv e the pr oblem of the user. Remember that the user w as able to register and join her other devices t o Microsoft Entra in the past. Ther efore, the r ole associat ed with her doesnʼt ha ve any issues at all. Y ou mus t modify the maximum number of de vices in Microsoft Entra. References: Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025https://lear n.micr osoft. com/en- us/entra/identity /devices/manage- device-identities https://lear n.micr osoft. com/en- us/entra/fundamentals/whatis Check out this Micr osof t Entr a ID Cheat Sheet: https://tut orialsdojo.com/micr osoft - entra-id/",,,,"2. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Your compan y has se veral client
+comput ers at the office headquar ters.
+Two years ago, you migrat ed the on-
+premises dir ectory t o Microsoft Entra
+ID.
+To meet the compliance r equir ement,
+personal and cor porat e devices mus t
+be registered and joined t o the
+Microsoft Entra domain.
+You receiv ed a r epor t that a user
+cannot r egister her per sonal de vice t o
+Microsoft Entra. Upon checking, the
+user w as able t o register her other
+devices in the pas t. You also v erified
+that all other user s were able t o join
+their de vices t o Microsoft Entra las t
+month.
+You need t o mak e sur e that the user
+can acces s and join her new de vice t o
+Microsoft Entra.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025What mus t be done t o satisfy the
+above requir ement?
+Add a cus tom domain
+name.
+Move the user t o a new
+group.
+Modify the maximum
+number of de vices per
+user in the de vice settings.
+Assign a new r ole to the
+user.
+Incor rect
+Micr osof t Entr a ID is Microsoft ʼs
+cloud-based identity and acces s
+management service, which helps
+your emplo yees sign in and acces s
+resources in e xternal and int ernal
+resources.
+The de vice settings in Microsoft
+Entra allo ws you to cus tomiz e the
+maximum number of de vices per
+user. It can be 5, 10, 20, or
+unlimit ed. If the user s reached the
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025limit, the y will not be allo wed to
+add new de vices until one or mor e
+devices ha ve been r emoved.
+Hence, the cor rect ans wer is:
+Modify the maximum number of
+devices per user in the de vice
+settings.
+The option that sa ys: Move the
+user t o a ne w gr oup is incor rect
+because e ven if y ou mo ve the user
+to a diff erent gr oup, the user w onʼt
+be able t o acces s Microsoft Entra.
+You need t o modify the maximum
+number of de vices in the de vice
+settings.
+The option that sa ys: Add a
+custom domain name is incor rect
+because cr eating a new cus tom
+domain is not needed in the
+scenar io. The user w onʼt s till
+acces s Microsoft Entra.
+The option that sa ys: Assign a
+new role t o the user is incor rect
+because a new r ole w onʼt r esolv e
+the pr oblem of the user.
+Remember that the user w as able
+to register and join her other
+devices t o Microsoft Entra in the
+past. Ther efore, the r ole
+associat ed with her doesnʼt ha ve
+any issues at all. Y ou mus t modify
+the maximum number of de vices in
+Microsoft Entra.
+ 
+References:
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025https://lear n.micr osoft. com/en-
+us/entra/identity /devices/manage-
+device-identities
+https://lear n.micr osoft. com/en-
+us/entra/fundamentals/whatis
+ 
+Check out this Micr osof t Entr a ID
+Cheat Sheet:
+https://tut orialsdojo.com/micr osoft -
+entra-id/"
+3,AZ-104 – Manage A zure,"3. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance You ar e managing a Microsoft Entra tenant that has 500 user account s. You cr eated a new user account named AppAdmin. You mus t assign the r ole of Application A dminis trator to the AppAdmin user account. What should y ou do in the Microsoft Entra ID settings t o accomplish this requir ement? Selec t the user pr ofile and assign it t o an adminis trativ e unit. Selec t the user pr ofile and enable the My Staff featur e. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Selec t the user pr ofile and add the r ole as signment s. Selec t the user pr ofile and add the user t o the admin group. Correct Micr osof t Entr a ID is Microsoft ʼs cloud-based identity and acces s management service, which helps your emplo yees sign in and acces s resources in e xternal and int ernal resources. Ext ernal resources, such as Microsoft 365, the A zure portal, and thousands of other SaaS applications. Int ernal resources, such as apps on y our corporat e netw ork and intranet, along with an y cloud apps developed b y your o wn organization. Microsoft Entra has a set of built - in admin r oles f or granting acces s to manage configuration in Microsoft Entra f or all applications. These r oles ar e the r ecommended way to grant IT e xperts acces s to manage br oad application Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025configuration per missions without granting acces s to manage other parts of Microsoft Entra not related to application configuration. Her e are the tw o common built -in roles in Microsoft Entra ID: – Application A dminis trator: User s in this r ole can cr eate and manage all aspec ts of enterprise applications, application r egistrations, and application pr oxy settings. This r ole also grant s the ability t o consent t o delegat ed per missions, and application per missions excluding Microsoft Graph. User s assigned t o this r ole are not added as o wner s when cr eating new application r egistrations or enterprise applications. – Cloud Application Adminis trator: User s in this role ha ve the same permissions as the Application A dminis trator role, e xcluding the ability t o manage application pr oxy. User s assigned t o this r ole are not added as o wner s when cr eating new application r egistrations or enterprise applications. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025If you w ant t o grant a user permission t o manage Microsoft Entra r esour ces, y ou mus t assign them t o a role that pr ovides the permissions the y need. Based on the giv en scenar io, the new user account needs the r ole of Application A dminis trator. To grant a role to the new user account, you mus t selec t the user pr ofile and click on add as signment s in the as signed r oles option. A dd the Application A dminis trator role, and the user can no w create and manage all aspec ts of app registrations and ent erprise apps. Hence, the cor rect ans wer is: Selec t the user pr ofile and add the r ole as signment s. The option that sa ys: Selec t the user pr ofile and add the user t o the admin gr oup is incor rect because adding the user t o the admin gr oup doesnʼt mean that the Application A dminis tratorʼs role is aut omatically as signed t o the user account. The option that sa ys: Selec t the user pr ofile and as sign it t o an adminis trative unit is incor rect because this option only r estricts permissions in a r ole to any portion of y our or ganization that you define. T ake not e that the requir ement in the scenar io is t o assign an Application Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Adminis trator role to the new user account and not t o restrict its permissions in y our account. The option that sa ys: Selec t the user pr ofile and enable the My Staf f featur e is incor rect because the My Staff f eatur e simply enables y ou to delegat e to a figur e of author ity, such as a s tore manager or a t eam lead, the permissions t o ensur e that their staff member s are able t o acces s to their Microsoft Entra account s. References: https://lear n.micr osoft. com/en- us/entra/fundamentals/ho w- subscriptions-as sociat ed- directory https://www.micr osoft. com/en- us/secur ity/busines s/identity - acces s/micr osoft -entra-id Check out this Micr osof t Entr a ID Cheat Sheet: https://tut orialsdojo.com/micr osoft - entra-id/ Micr osof t Entr a ID v s Role-Based Acces s Contr ol: https://tut orialsdojo.com/micr osoft - entra-id- vs-role-based-acces s- contr ol-rbac/ Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 20254. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance Your compan y recently cr eated a new Azure subscription. Y ou check ed the subscription and it contains the following r esour ces. Name Region Policy TD- RG1North Central USPolicy1 TD- RG2West US Policy2 TD- RG3North EuropePolicy3 TD- RG4East US Policy 4 TD-RG3 contains a w eb app named TD-App3 which is locat ed in Nor th Europe. You plan t o mo ve TD-App3 to TD- RG1. What is the eff ect of mo ving the w eb app t o a diff erent r esour ce gr oup? The TD-App3 is mo ved to the Nor th Central US Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025region and the policy applied t o the r esour ce will be Policy 3. The TD-App3 remains in the Nor th Eur ope r egion and the policy applied t o the r esour ce will be P olicy 3. The TD-App3 remains in the Nor th Eur ope r egion and the policy applied t o the r esour ce will be P olicy 1. The TD-App3 is mo ved to the Nor th Central US region and the policy applied t o the r esour ce will be Policy 1. Incor rect Azure App Ser vice is an HTTP- based service f or hos ting w eb applications, REST APIs, and mobile back ends. Y ou can de velop in your f avorite language, be it .NET,.NET Cor e, Ja va, Rub y, Node.js, PHP, or P ython. Applications run and scale with ease on both Windo ws and Linux - based en vironment s. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025 In this scenar io, the TD-App3 is locat ed in the Nor th Eur ope region. T ake not e that y ou cannot change an App Service planʼ s region. Also, if you mo ve a resource to a new r esour ce gr oup or subscription, the location of the resource w ould not change. If y ou need t o run y our app in a diff erent region, one alt ernativ e is app cloning. Cloning mak es a cop y of your app in a new or e xisting App Service plan in an y region. Since y ou plan t o mo ve TD- App3 to TD-RG1, the policy that will be applied t o TD-App3 is the policy of TD-RG1 (Policy1). R emember that the assigned policy on the r esour ce group will also be applied t o the resources. Y ou can also as sign multiple policies in one r esour ce group. Hence, the cor rect ans wer is: The TD-App3 remains in the Nor th Europe r egion and the policy Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025applied t o the r esour ce will be Policy 1. The option that sa ys: The TD- App3 is mo ved to the Nor th Centr al US r egion and the policy applied t o the r esour ce will be Policy 1 is incor rect because TD- App3 would s till remain in the North Eur ope r egion e ven if y ou moved the r esour ce to a diff erent resource gr oup. The option that sa ys: The TD- App3 remains in the Nor th Europe r egion and the policy applied t o the r esour ce will be Policy 3 is incor rect because Policy 3 is only applied t o the TD-RG3 resources. Since y ou moved the r esour ces t o TD- RG1, the policy applied t o the TD-App3 is Policy1. The option that sa ys: The TD- App3 is mo ved to the Nor th Centr al US r egion and the policy applied t o the r esour ce will be Policy 3 is incor rect because if you mo ved a r esour ce to a different r esour ce gr oup, the location of the r esour ce w ould not change. References: https://docs.micr osoft. com/en- us/azur e/app-service/app- service-plan-manage Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025https://docs.micr osoft. com/en- us/azur e/azur e-resource- manager /management/mo ve- resource-gr oup-and-subscription Check out this A zure App Ser vice Cheat Sheet: https://tut orialsdojo.com/azur e- app-service/",,,,"3. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+You ar e managing a Microsoft Entra
+tenant that has 500 user account s.
+You cr eated a new user account
+named AppAdmin.
+You mus t assign the r ole of
+Application A dminis trator to the
+AppAdmin user account.
+What should y ou do in the Microsoft
+Entra ID settings t o accomplish this
+requir ement?
+Selec t the user pr ofile and
+assign it t o an
+adminis trativ e unit.
+Selec t the user pr ofile and
+enable the My Staff
+featur e.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Selec t the user pr ofile and
+add the r ole as signment s.
+Selec t the user pr ofile and
+add the user t o the admin
+group.
+Correct
+Micr osof t Entr a ID is Microsoft ʼs
+cloud-based identity and acces s
+management service, which helps
+your emplo yees sign in and acces s
+resources in e xternal and int ernal
+resources. Ext ernal resources,
+such as Microsoft 365, the A zure
+portal, and thousands of other
+SaaS applications. Int ernal
+resources, such as apps on y our
+corporat e netw ork and intranet,
+along with an y cloud apps
+developed b y your o wn
+organization.
+Microsoft Entra has a set of built -
+in admin r oles f or granting acces s
+to manage configuration in
+Microsoft Entra f or all applications.
+These r oles ar e the r ecommended
+way to grant IT e xperts acces s to
+manage br oad application
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025configuration per missions without
+granting acces s to manage other
+parts of Microsoft Entra not
+related to application
+configuration. Her e are the tw o
+common built -in roles in Microsoft
+Entra ID:
+– Application A dminis trator:
+User s in this r ole can cr eate
+and manage all aspec ts of
+enterprise applications,
+application r egistrations, and
+application pr oxy settings.
+This r ole also grant s the
+ability t o consent t o
+delegat ed per missions, and
+application per missions
+excluding Microsoft Graph.
+User s assigned t o this r ole
+are not added as o wner s
+when cr eating new
+application r egistrations or
+enterprise applications.
+– Cloud Application
+Adminis trator: User s in this
+role ha ve the same
+permissions as the
+Application A dminis trator
+role, e xcluding the ability t o
+manage application pr oxy.
+User s assigned t o this r ole
+are not added as o wner s
+when cr eating new
+application r egistrations or
+enterprise applications.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025If you w ant t o grant a user
+permission t o manage Microsoft
+Entra r esour ces, y ou mus t assign
+them t o a role that pr ovides the
+permissions the y need. Based on
+the giv en scenar io, the new user
+account needs the r ole of
+Application A dminis trator. To grant
+a role to the new user account,
+you mus t selec t the user pr ofile
+and click on add as signment s in
+the as signed r oles option. A dd the
+Application A dminis trator role, and
+the user can no w create and
+manage all aspec ts of app
+registrations and ent erprise apps.
+Hence, the cor rect ans wer is:
+Selec t the user pr ofile and add
+the r ole as signment s.
+The option that sa ys: Selec t the
+user pr ofile and add the user t o
+the admin gr oup is incor rect
+because adding the user t o the
+admin gr oup doesnʼt mean that
+the Application A dminis tratorʼs
+role is aut omatically as signed t o
+the user account.
+The option that sa ys: Selec t the
+user pr ofile and as sign it t o an
+adminis trative unit is incor rect
+because this option only r estricts
+permissions in a r ole to any
+portion of y our or ganization that
+you define. T ake not e that the
+requir ement in the scenar io is t o
+assign an Application
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Adminis trator role to the new user
+account and not t o restrict its
+permissions in y our account.
+The option that sa ys: Selec t the
+user pr ofile and enable the My
+Staf f featur e is incor rect because
+the My Staff f eatur e simply
+enables y ou to delegat e to a figur e
+of author ity, such as a s tore
+manager or a t eam lead, the
+permissions t o ensur e that their
+staff member s are able t o acces s
+to their Microsoft Entra account s.
+ 
+References:
+https://lear n.micr osoft. com/en-
+us/entra/fundamentals/ho w-
+subscriptions-as sociat ed-
+directory
+https://www.micr osoft. com/en-
+us/secur ity/busines s/identity -
+acces s/micr osoft -entra-id
+ 
+Check out this Micr osof t Entr a ID
+Cheat Sheet:
+https://tut orialsdojo.com/micr osoft -
+entra-id/
+ 
+Micr osof t Entr a ID v s Role-Based
+Acces s Contr ol:
+https://tut orialsdojo.com/micr osoft -
+entra-id- vs-role-based-acces s-
+contr ol-rbac/
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 20254. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Your compan y recently cr eated a new
+Azure subscription. Y ou check ed the
+subscription and it contains the
+following r esour ces.
+Name Region Policy
+TD-
+RG1North
+Central
+USPolicy1
+TD-
+RG2West US Policy2
+TD-
+RG3North
+EuropePolicy3
+TD-
+RG4East US Policy 4
+TD-RG3 contains a w eb app named
+TD-App3 which is locat ed in Nor th
+Europe.
+You plan t o mo ve TD-App3 to 
+TD-
+RG1.
+What is the eff ect of mo ving the w eb
+app t o a diff erent r esour ce gr oup?
+The TD-App3 is mo ved
+to the Nor th Central US
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025region and the policy
+applied t o the r esour ce will
+be Policy 3.
+The TD-App3 remains in
+the Nor th Eur ope r egion
+and the policy applied t o
+the r esour ce will be P olicy
+3.
+The TD-App3 remains in
+the Nor th Eur ope r egion
+and the policy applied t o
+the r esour ce will be P olicy
+1.
+The TD-App3 is mo ved
+to the Nor th Central US
+region and the policy
+applied t o the r esour ce will
+be Policy 1.
+Incor rect
+Azure App Ser vice is an HTTP-
+based service f or hos ting w eb
+applications, REST APIs, and
+mobile back ends. Y ou can de velop
+in your f avorite language, be it
+.NET,.NET Cor e, Ja va, Rub y,
+Node.js, PHP, or P ython.
+Applications run and scale with
+ease on both Windo ws and Linux -
+based en vironment s.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025
+In this scenar io, the TD-App3 is
+locat ed in the Nor th Eur ope
+region. T ake not e that y ou cannot
+change an App Service planʼ s
+region. Also, if you mo ve a
+resource to a new r esour ce gr oup
+or subscription, the location of the
+resource w ould not change. If y ou
+need t o run y our app in a diff erent
+region, one alt ernativ e is app
+cloning. Cloning mak es a cop y of
+your app in a new or e xisting App
+Service plan in an y region.
+Since y ou plan t o mo ve 
+TD-
+App3 to TD-RG1, the policy
+that will be applied t o TD-App3
+is the policy of TD-RG1
+(Policy1). R emember that the
+assigned policy on the r esour ce
+group will also be applied t o the
+resources. Y ou can also as sign
+multiple policies in one r esour ce
+group.
+Hence, the cor rect ans wer is: The
+TD-App3 remains in the Nor th
+Europe r egion and the policy
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025applied t o the r esour ce will be
+Policy 1.
+The option that sa ys: The 
+TD-
+App3 is mo ved to the Nor th
+Centr al US r egion and the policy
+applied t o the r esour ce will be
+Policy 1 is incor rect because 
+ TD-
+App3 would s till remain in the
+North Eur ope r egion e ven if y ou
+moved the r esour ce to a diff erent
+resource gr oup.
+The option that sa ys: The 
+TD-
+App3 remains in the Nor th
+Europe r egion and the policy
+applied t o the r esour ce will be
+Policy 3 is incor rect because
+Policy 3 is only applied t o the
+TD-RG3 resources. Since y ou
+moved the r esour ces t o 
+TD-
+RG1, the policy applied t o the
+TD-App3 is Policy1.
+The option that sa ys: The 
+TD-
+App3 is mo ved to the Nor th
+Centr al US r egion and the policy
+applied t o the r esour ce will be
+Policy 3 is incor rect because if
+you mo ved a r esour ce to a
+different r esour ce gr oup, the
+location of the r esour ce w ould not
+change.
+ 
+References:
+https://docs.micr osoft. com/en-
+us/azur e/app-service/app-
+service-plan-manage
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025https://docs.micr osoft. com/en-
+us/azur e/azur e-resource-
+manager /management/mo ve-
+resource-gr oup-and-subscription
+ 
+Check out this A zure App Ser vice
+Cheat Sheet:
+https://tut orialsdojo.com/azur e-
+app-service/"
+5,AZ-104 – Manage A zure,"5. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance Your compan y has se veral A zure subscriptions. The TD-Subscription-01 contains the f ollowing r esour ce groups: You deployed a w eb app named TD- WebApp2 in TD-RG2. The TD-Subscription-02 contains the f ollowing r esour ce groups. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025For each of the f ollowing it ems, choose Y es if the s tatement is true or choose No if the s tatement is f alse. Take not e that each cor rect item is worth one point. Ques tions Yes No You can mo ve TD-WebApp2 to TD-RG3 You can mo ve TD-WebApp2 to TD-RG5 You can mo ve TD-WebApp2 to TD-RG1 Correct 3 / 3 P oints Azure App Ser vice is an HTTP- based service f or hos ting w eb applications, REST APIs, and mobile back ends. Y ou can develop in y our f avorite language, be it.NET,.NET Cor e, Ja va, Rub y, Node.js, PHP, or P ython. Applications run and scale with ease on both Windo ws and Linux - based en vironment s. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025 Locking of r esour ces o verrides the permissions of the user s in y our organization. It is mainly used t o prevent une xpec ted changes such as modification and deletion of critical r esour ces. R emember that when y ou apply a lock at a par ent scope, all r esour ces within that scope inher it the same lock. You can set the lock le vel to CanNotDelete or ReadOnly. In the A zure Portal, the lock s are called Delete and Read-only respec tively. – CanNotDelete means author ized user s can s till read and modify a r esour ce, but the y canʼt delet e the resource. – ReadOnly means author ized user s can r ead a resource, but the y canʼt delet e or updat e the resource. A resource gr oup is jus t a container f or your r esour ces. Y ou decide which r esour ces belong t o different r esour ce gr oups. T ake note that if y ou mo ve a resource to Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025a diff erent r esour ce gr oup, the location of the r esour ce w ould not change. The f ollowing s tatement s are correct because y ou can mo ve the TD-WebApp2 to the e xisting resource gr oups: – You can mo ve TD- WebApp2 to TD-RG3. – You can mo ve TD- WebApp2 to TD-RG5. The s tatement that sa ys: You can move TD-WebApp2 to TD- RG1 is incor rect because the lock type of the r esour ce gr oup is set to read-only. This means that users can only r ead a r esour ce, but the y canʼt delet e or updat e the resource. If y ou try t o mo ve TD- WebApp2 to TD-RG1, youʼd receiv e an er ror mes sage “Mo ving resources f ailed”. In or der t o mo ve the w eb app, you mus t delet e the read-only lock type. References: https://docs.micr osoft. com/en- us/azur e/azur e-resource- manager /management/mo ve- resource-gr oup-and-subscription https://docs.micr osoft. com/en- us/azur e/azur e-resource- manager /management/lock - resources Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025 Check out this A zure App Ser vice Cheat Sheet: https://tut orialsdojo.com/azur e- app-service/",,,,"5. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Your compan y has se veral A zure
+subscriptions.
+The TD-Subscription-01
+contains the f ollowing r esour ce
+groups:
+You deployed a w eb app named 
+ TD-
+WebApp2 in TD-RG2.
+The TD-Subscription-02
+contains the f ollowing r esour ce
+groups.
+
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025For each of the f ollowing it ems,
+choose Y es if the s tatement is true or
+choose No if the s tatement is f alse.
+Take not e that each cor rect item is
+worth one point.
+Ques tions Yes No
+You can mo ve
+TD-WebApp2 to
+TD-RG3
+You can mo ve
+TD-WebApp2 to
+TD-RG5
+You can mo ve
+TD-WebApp2 to
+TD-RG1
+Correct 3 / 3 P oints
+Azure App Ser vice is an HTTP-
+based service f or hos ting w eb
+applications, REST APIs, and
+mobile back ends. Y ou can
+develop in y our f avorite language,
+be it.NET,.NET Cor e, Ja va, Rub y,
+Node.js, PHP, or P ython.
+Applications run and scale with
+ease on both Windo ws and Linux -
+based en vironment s.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025
+Locking of r esour ces o verrides the
+permissions of the user s in y our
+organization. It is mainly used t o
+prevent une xpec ted changes such
+as modification and deletion of
+critical r esour ces. R emember that
+when y ou apply a lock at a par ent
+scope, all r esour ces within that
+scope inher it the same lock.
+You can set the lock le vel to
+CanNotDelete or
+ReadOnly. In the A zure Portal,
+the lock s are called Delete
+and Read-only respec tively.
+– CanNotDelete means
+author ized user s can s till
+read and modify a r esour ce,
+but the y canʼt delet e the
+resource.
+– ReadOnly means
+author ized user s can r ead a
+resource, but the y canʼt
+delet e or updat e the
+resource.
+A resource gr oup is jus t a
+container f or your r esour ces. Y ou
+decide which r esour ces belong t o
+different r esour ce gr oups. T ake
+note that if y ou mo ve a resource to
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025a diff erent r esour ce gr oup, the
+location of the r esour ce w ould not
+change.
+The f ollowing s tatement s are
+correct because y ou can mo ve the
+TD-WebApp2 to the e xisting
+resource gr oups:
+– You can mo ve 
+TD-
+WebApp2 to TD-RG3.
+– You can mo ve 
+TD-
+WebApp2 to TD-RG5.
+The s tatement that sa ys: You can
+move TD-WebApp2 to 
+TD-
+RG1 is incor rect because the lock
+type of the r esour ce gr oup is set
+to read-only. This means that
+users can only r ead a r esour ce,
+but the y canʼt delet e or updat e the
+resource. If y ou try t o mo ve 
+TD-
+WebApp2 to TD-RG1, youʼd
+receiv e an er ror mes sage “Mo ving
+resources f ailed”. In or der t o mo ve
+the w eb app, you mus t delet e the
+read-only lock type.
+ 
+References:
+https://docs.micr osoft. com/en-
+us/azur e/azur e-resource-
+manager /management/mo ve-
+resource-gr oup-and-subscription
+https://docs.micr osoft. com/en-
+us/azur e/azur e-resource-
+manager /management/lock -
+resources
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025 
+Check out this A zure App Ser vice
+Cheat Sheet:
+https://tut orialsdojo.com/azur e-
+app-service/"
+6,AZ-104 – Manage A zure,"6. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance Note: This it em is par t of a ser ies of ques tions with the e xact same scenar io but with a diff erent pr oposed answer. Each one in the ser ies has a unique solution that ma y, or ma y not, comply with the r equir ement s specified in the scenar io. You ha ve an A zure Subscription and a Microsoft Entra gr oup named Developers. The A zure Subscription has a resource gr oup named Dev. You need t o assign a r ole in the Developer s group t o allo w the user s to create Azure Logic Apps in the resource gr oup. Solution: In the Dev resource group, assign a L ogic App Operat or role to the Developers group. Does the pr oposed solution meet the goal? Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Yes No Incor rect Azure role-based acces s contr ol (Azure RBA C) is a s ystem that provides fine-grained acces s management of A zure resources. Using A zure RBA C, you can segregate duties within y our t eam and grant only the needed acces s to allo w your user s to per form their jobs. The L ogic App Operat or role only lets you read, enable, and disable logic apps. Y ou canʼt edit, updat e, or cr eate logic apps. To satisfy the r equir ement in the scenar io, you ha ve to assign a Contr ibutor role to the Developers Microsoft Entra ID gr oup of the Dev resource group. Hence, the cor rect ans wer is: No. References: Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025https://docs.micr osoft. com/en- us/azur e/role-based-acces s- contr ol/rbac-and-dir ectory-admin- roles https://docs.micr osoft. com/en- us/azur e/role-based-acces s- contr ol/role-definitions Check out this A zure RBA C Cheat Sheet: https://tut orialsdojo.com/azur e- role-based-acces s-contr ol-rbac/ Micr osof t Entr a ID v s Role-Based Acces s Contr ol (RBA C): https://tut orialsdojo.com/micr osoft - entra-id- vs-role-based-acces s- contr ol-rbac/",,,,"6. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Note: This it em is par t of a ser ies of
+ques tions with the e xact same
+scenar io but with a diff erent pr oposed
+answer. Each one in the ser ies has a
+unique solution that ma y, or ma y not,
+comply with the r equir ement s
+specified in the scenar io.
+You ha ve an A zure Subscription and a
+Microsoft Entra gr oup named
+Developers.
+The A zure Subscription has a
+resource gr oup named Dev.
+You need t o assign a r ole in the
+Developer s group t o allo w the user s
+to create Azure Logic Apps in the
+resource gr oup.
+Solution: In the Dev resource
+group, assign a L ogic App Operat or
+role to the Developers group.
+Does the pr oposed solution meet the
+goal?
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Yes
+No
+Incor rect
+Azure role-based acces s contr ol
+(Azure RBA C) is a s ystem that
+provides fine-grained acces s
+management of A zure resources.
+Using A zure RBA C, you can
+segregate duties within y our t eam
+and grant only the needed acces s
+to allo w your user s to per form
+their jobs.
+The L ogic App Operat or role only
+lets you read, enable, and disable
+logic apps. Y ou canʼt edit, updat e,
+or cr eate logic apps.
+To satisfy the r equir ement in the
+scenar io, you ha ve to assign a
+Contr ibutor role to the
+Developers Microsoft Entra
+ID gr oup of the Dev resource
+group.
+Hence, the cor rect ans wer is: No.
+ 
+References:
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025https://docs.micr osoft. com/en-
+us/azur e/role-based-acces s-
+contr ol/rbac-and-dir ectory-admin-
+roles
+https://docs.micr osoft. com/en-
+us/azur e/role-based-acces s-
+contr ol/role-definitions
+ 
+Check out this A zure RBA C Cheat
+Sheet:
+https://tut orialsdojo.com/azur e-
+role-based-acces s-contr ol-rbac/
+Micr osof t Entr a ID v s Role-Based
+Acces s Contr ol (RBA C):
+https://tut orialsdojo.com/micr osoft -
+entra-id- vs-role-based-acces s-
+contr ol-rbac/"
+7,AZ-104 – Manage A zure,"7. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance Your compan y has an A zure subscription that is used b y several depar tment s. The r esour ces in the subscription ar e listed in the table below. Name Type tutorialsdojo VM01 Virtual Machine tutorialsdojoSt orage01 Storage Account Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025tutorialsdojoShar e01 File share tutorialsdojoRG01 Resource group tutorialsdojoBC01 Blob container Ther eʼs another A zure Adminis trator who cr eated se veral vir tual machines and s torage account s using an ARM templat e. You need t o find the templat e that w as used t o deploy the new r esour ces. From which blade can y ou view the newly cr eated ARM t emplat e? tutorialsdojoBC01 tutorialsdojoStorage01 tutorialsdojoRG01 tutorialsdojoShare01 Correct A resource gr oup is a container that holds r elated resources f or an Azure solution. The r esour ce group can include all the resources f or the solution, or only Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025those r esour ces that y ou w ant t o manage as a gr oup. You decide how you w ant t o allocat e resources t o resource gr oups based on what mak es the mos t sense f or your or ganization. Generally, you should add resources that shar e the same lifecycle to the same r esour ce group so y ou can easily deploy, updat e, and delet e them as a group. To view the ARM t emplat e that was used t o deploy the r esour ces, you can go t o the r esour ce gr oup deployment settings and selec t the view t emplat e. If y ou selec t a templat e, you can check the input s, output s, and the t emplat e used dur ing deployment. Remember that y ou canʼt change the configuration of a t emplat e after you deployed it. R emember that in the ARM t emplat e of the virtual machine, y ou can find the resources as sociat ed with that specific vir tual machine only. Hence, the cor rect ans wer is: tutorialsdojoRG01. The f ollowing options ar e incor rect because the ARM t emplat e that was used in the deployment can Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025only be f ound in the r esour ce group. – tutorialsdojoBC01 – tutorialsdojoShare01 – tutorialsdojoStorage01 References: https://docs.micr osoft. com/en- us/azur e/azur e-resource- manager /templat es/expor t- templat e-por tal https://docs.micr osoft. com/en- us/azur e/azur e-resource- manager /templat es/overview Check out this A zure Global Infrastruc ture Cheat Sheet: https://tut orialsdojo.com/azur e- global-infras tructure/ Azure Global Infr astruc ture:",,,,"7. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Your compan y has an A zure
+subscription that is used b y several
+depar tment s. The r esour ces in the
+subscription ar e listed in the table
+below.
+Name Type
+tutorialsdojo VM01 Virtual
+Machine
+tutorialsdojoSt orage01 Storage
+Account
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025tutorialsdojoShar e01 File
+share
+tutorialsdojoRG01 Resource
+group
+tutorialsdojoBC01 Blob
+container
+Ther eʼs another A zure Adminis trator
+who cr eated se veral vir tual machines
+and s torage account s using an ARM
+templat e. You need t o find the
+templat e that w as used t o deploy the
+new r esour ces.
+From which blade can y ou view the
+newly cr eated ARM t emplat e?
+tutorialsdojoBC01
+tutorialsdojoStorage01
+tutorialsdojoRG01
+tutorialsdojoShare01
+Correct
+A resource gr oup is a container
+that holds r elated resources f or an
+Azure solution. The r esour ce
+group can include all the
+resources f or the solution, or only
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025those r esour ces that y ou w ant t o
+manage as a gr oup. You decide
+how you w ant t o allocat e
+resources t o resource gr oups
+based on what mak es the mos t
+sense f or your or ganization.
+Generally, you should add
+resources that shar e the same
+lifecycle to the same r esour ce
+group so y ou can easily deploy,
+updat e, and delet e them as a
+group.
+To view the ARM t emplat e that
+was used t o deploy the r esour ces,
+you can go t o the r esour ce gr oup
+deployment settings and selec t
+the view t emplat e. If y ou selec t a
+templat e, you can check the
+input s, output s, and the t emplat e
+used dur ing deployment.
+Remember that y ou canʼt change
+the configuration of a t emplat e
+after you deployed it. R emember
+that in the ARM t emplat e of the
+virtual machine, y ou can find the
+resources as sociat ed with that
+specific vir tual machine only.
+Hence, the cor rect ans wer is:
+tutorialsdojoRG01.
+The f ollowing options ar e incor rect
+because the ARM t emplat e that
+was used in the deployment can
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025only be f ound in the r esour ce
+group.
+– tutorialsdojoBC01
+–
+tutorialsdojoShare01
+–
+tutorialsdojoStorage01
+ 
+References:
+https://docs.micr osoft. com/en-
+us/azur e/azur e-resource-
+manager /templat es/expor t-
+templat e-por tal
+https://docs.micr osoft. com/en-
+us/azur e/azur e-resource-
+manager /templat es/overview
+ 
+Check out this A zure Global
+Infrastruc ture Cheat Sheet:
+https://tut orialsdojo.com/azur e-
+global-infras tructure/
+ 
+Azure Global Infr astruc ture:"
+8,AZ-104 – Manage A zure,"8. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance You ar e managing an A zure subscription that contains a r esour ce group named TD-RG1 which has a virtual machine named TD-VM1. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025TD-VM1 has services that will deploy new r esour ces on TD-RG1. You need t o mak e sur e that the services running on TD-VM1 should be able t o manage the r esour ces in TD-RG1 using it s identity. Which of the f ollowing ac tions should you do fir st? Configur e the secur ity settings of TD-RG1. Configur e the acces s contr ol of TD-RG1. Configur e the managed identity of TD-VM1. Configur e the acces s contr ol of TD-VM1. Incor rect Micr osof t Entr a ID is a cloud- based identity and acces s management service that enables your emplo yees acces s external resources. Example r esour ces include Microsoft 365, the A zure portal, and thousands of other SaaS applications. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Microsoft Entra ID also helps them acces s internal resources lik e apps on your cor porat e intranet, and any cloud apps de veloped f or your own or ganization. Ther e are two types of managed identities: – System-as signed: some Azure services allo w you to enable a managed identity directly on a service instance. When y ou enable a system-as signed managed identity, an identity is created in Microsoft Entra ID that is tied t o the lif ecycle of that service ins tance. So when the r esour ce is delet ed, A zure aut omatically delet es the identity f or you. By design, only that A zure resource can use this identity t o reques t tokens from Microsoft Entra ID. – User -assigned: you ma y also cr eate a managed identity as a s tandalone Azure resource. Y ou can Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025create a user -assigned managed identity and as sign it to one or mor e ins tances of an Azure service. In the case of user -assigned managed identities, the identity is managed separat ely fr om the resources that use it. In this scenar io, you can use the system-as signed managed identity. Take not e that this identity is r estricted to only one resource. Y ou can grant permissions t o the managed identity b y using A zure RBA C. The managed identity is authenticat ed with Microsoft Entra ID, so y ou donʼt ha ve to store any credentials. Hence, the cor rect ans wer is: Configur e the managed identity of TD-VM1. The option that sa ys: Configur e the secur ity set tings of TD- RG1 is incor rect because it only provides secur ity recommendations and secur ity alerts for your r esour ce gr oup. As per the scenar io, you need t o ensur e that the services running on TD-VM1 are able t o manage the r esour ces in TD-RG1 using its identity. Ther efore, you need t o configure the managed identity settings of TD-VM1. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025The options that sa y: Configur e the acces s contr ol of TD-VM1 and Configur e the acces s contr ol of TD-RG1 are incor rect because these ar e only adding r ole assignment s to an A zure resource. A role as signment is a pr oces s of attaching a r ole definition t o a user, group, or service pr incipal t o provide acces s to a specific resource. R emember that acces s is grant ed by creating a r ole assignment, and acces s is r evoked by removing a r ole as signment. You ha ve to configure a managed identity ins tead. References: https://lear n.micr osoft. com/en- us/entra/identity /managed- identities-azur e-resources/qs- configure-por tal-windo ws-vm https://lear n.micr osoft. com/en- us/entra/identity /managed- identities-azur e- resources/o verview Check out this Micr osof t Entr a ID Cheat Sheet: https://tut orialsdojo.com/micr osoft - entra-id/",,,,"8. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+You ar e managing an A zure
+subscription that contains a r esour ce
+group named TD-RG1 which has a
+virtual machine named TD-VM1.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025TD-VM1 has services that will
+deploy new r esour ces on TD-RG1.
+You need t o mak e sur e that the
+services running on TD-VM1 should
+be able t o manage the r esour ces in
+TD-RG1 using it s identity.
+Which of the f ollowing ac tions should
+you do fir st?
+Configur e the secur ity
+settings of TD-RG1.
+Configur e the acces s
+contr ol of TD-RG1.
+Configur e the managed
+identity of TD-VM1.
+Configur e the acces s
+contr ol of TD-VM1.
+Incor rect
+Micr osof t Entr a ID is a cloud-
+based identity and acces s
+management service that enables
+your emplo yees acces s external
+resources. Example r esour ces
+include Microsoft 365, the A zure
+portal, and thousands of other
+SaaS applications.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Microsoft Entra ID also helps them
+acces s internal resources lik e apps
+on your cor porat e intranet, and
+any cloud apps de veloped f or your
+own or ganization.
+Ther e are two types of managed
+identities:
+– System-as signed: some
+Azure services allo w you to
+enable a managed identity
+directly on a service
+instance. When y ou enable a
+system-as signed managed
+identity, an identity is
+created in Microsoft Entra ID
+that is tied t o the lif ecycle of
+that service ins tance. So
+when the r esour ce is
+delet ed, A zure aut omatically
+delet es the identity f or you.
+By design, only that A zure
+resource can use this
+identity t o reques t tokens
+from Microsoft Entra ID.
+– User -assigned: you ma y
+also cr eate a managed
+identity as a s tandalone
+Azure resource. Y ou can
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025create a user -assigned
+managed identity and as sign
+it to one or mor e ins tances of
+an Azure service. In the case
+of user -assigned managed
+identities, the identity is
+managed separat ely fr om the
+resources that use it.
+In this scenar io, you can use the
+system-as signed managed
+identity. Take not e that this
+identity is r estricted to only one
+resource. Y ou can grant
+permissions t o the managed
+identity b y using A zure RBA C. The
+managed identity is authenticat ed
+with Microsoft Entra ID, so y ou
+donʼt ha ve to store any
+credentials.
+Hence, the cor rect ans wer is:
+Configur e the managed identity
+of TD-VM1.
+The option that sa ys: Configur e
+the secur ity set tings of 
+TD-
+RG1 is incor rect because it only
+provides secur ity
+recommendations and secur ity
+alerts for your r esour ce gr oup. As
+per the scenar io, you need t o
+ensur e that the services running
+on TD-VM1 are able t o manage
+the r esour ces in TD-RG1 using
+its identity. Ther efore, you need t o
+configure the managed identity
+settings of TD-VM1.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025The options that sa y: Configur e
+the acces s contr ol of TD-VM1
+and Configur e the acces s contr ol
+of TD-RG1 are incor rect
+because these ar e only adding r ole
+assignment s to an A zure resource.
+A role as signment is a pr oces s of
+attaching a r ole definition t o a
+user, group, or service pr incipal t o
+provide acces s to a specific
+resource. R emember that acces s
+is grant ed by creating a r ole
+assignment, and acces s is r evoked
+by removing a r ole as signment.
+You ha ve to configure a managed
+identity ins tead.
+ 
+References:
+https://lear n.micr osoft. com/en-
+us/entra/identity /managed-
+identities-azur e-resources/qs-
+configure-por tal-windo ws-vm
+https://lear n.micr osoft. com/en-
+us/entra/identity /managed-
+identities-azur e-
+resources/o verview
+ 
+Check out this Micr osof t Entr a ID
+Cheat Sheet:
+https://tut orialsdojo.com/micr osoft -
+entra-id/"
+9,AZ-104 – Manage A zure,"9. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Note: This it em is par t of a series of ques tions with the e xact same scenario but with a diff erent pr oposed answer. Each one in the series has a unique solution that ma y, or ma y not, comply with the r equir ement s specified in the scenario. You cr eated a new A zure subscription. The subscription has a r esour ce group named TD-RG. The r esour ces in TD-RG is cr eated using ARM templat es. You need t o get the e xact dat e and time when the r esour ces in TD-RG was deployed. Solution: In the r esour ce gr oup settings, selec t Deplo yment s. Does the solution meet the goal? Yes No Correct A resource gr oup is a container that holds r elated resources f or an Azure solution. The r esour ce group can include all the resources f or the solution, or only those r esour ces that y ou w ant t o manage as a gr oup. You decide Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025how you w ant t o allocat e resources t o resource gr oups based on what mak es the mos t sense f or your or ganization. Generally, add r esour ces that share the same lif ecycle to the same r esour ce gr oup so y ou can easily deploy, updat e, and delet e them as a gr oup. To verify the dat e and time the resources w ere deployed, y ou can selec t the r esour ce gr oup and click the deployment settings. Y ou will see a summary of the deployment: the deployment name, s tatus, las t modified, duration, and r elated events. If y ou selec t the t emplat e, you can check the input s, output s, and the templat e used dur ing deployment. Hence, the cor rect ans wer is: Yes. References: https://docs.micr osoft. com/en- us/azur e/azur e-resource- manager /templat es/templat e- tutorial-cr eate-first-templat e https://docs.micr osoft. com/en- us/azur e/azur e-resource- manager /management/manage- resource-gr oups-por tal Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025 Check out this A zure Global Infrastruc ture Cheat Sheet: https://tut orialsdojo.com/azur e- global-infras tructure/ Azure Global Infr astruc ture:",,,,"9. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Note: This it em is par t of a series of
+ques tions with the e xact same
+scenario but with a diff erent pr oposed
+answer. Each one in the series has a
+unique solution that ma y, or ma y not,
+comply with the r equir ement s
+specified in the scenario.
+You cr eated a new A zure subscription.
+The subscription has a r esour ce
+group named TD-RG. The r esour ces
+in TD-RG is cr eated using ARM
+templat es.
+You need t o get the e xact dat e and
+time when the r esour ces in TD-RG
+was deployed.
+Solution: In the r esour ce gr oup
+settings, selec t Deplo yment s.
+Does the solution meet the goal?
+Yes
+No
+Correct
+A resource gr oup is a container
+that holds r elated resources f or an
+Azure solution. The r esour ce
+group can include all the
+resources f or the solution, or only
+those r esour ces that y ou w ant t o
+manage as a gr oup. You decide
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025how you w ant t o allocat e
+resources t o resource gr oups
+based on what mak es the mos t
+sense f or your or ganization.
+Generally, add r esour ces that
+share the same lif ecycle to the
+same r esour ce gr oup so y ou can
+easily deploy, updat e, and delet e
+them as a gr oup.
+To verify the dat e and time the
+resources w ere deployed, y ou can
+selec t the r esour ce gr oup and
+click the deployment settings. Y ou
+will see a summary of the
+deployment: the deployment
+name, s tatus, las t modified,
+duration, and r elated events. If y ou
+selec t the t emplat e, you can check
+the input s, output s, and the
+templat e used dur ing deployment.
+Hence, the cor rect ans wer is: Yes.
+ 
+References:
+https://docs.micr osoft. com/en-
+us/azur e/azur e-resource-
+manager /templat es/templat e-
+tutorial-cr eate-first-templat e
+https://docs.micr osoft. com/en-
+us/azur e/azur e-resource-
+manager /management/manage-
+resource-gr oups-por tal
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025 
+Check out this A zure Global
+Infrastruc ture Cheat Sheet:
+https://tut orialsdojo.com/azur e-
+global-infras tructure/
+ 
+Azure Global Infr astruc ture:"
+10,AZ-104 – Manage A zure,"10. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance Note: This it em is par t of a ser ies of ques tions with the e xact same scenar io but with a diff erent pr oposed answer. Each one in the ser ies has a unique solution that ma y, or ma y not, comply with the r equir ement s specified in the scenar io. You ha ve an A zure Subscription and a Microsoft Entra gr oup named Developers. The A zure Subscription has a resource gr oup named Dev. You need t o assign a r ole in the Developers group t o allo w the users to create Azure Logic Apps in the r esour ce gr oup. Solution: In the Dev resource group, assign a User A cces s Adminis trator role to the Developers group. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Does the pr oposed solution meet the goal? Yes No Correct Azure role-based acces s contr ol (Azure RBA C) is a s ystem that provides fine-grained acces s management of A zure resources. Using A zure RBA C, you can segregate duties within y our t eam and grant jus t the r ight acces s to users that the y need t o per form their jobs. The as sociat ed per missions f or the User A cces s Adminis trator role are only r elated to the specific acces s of each user t o acces s different A zure resources. This role cannot cr eate or manage an y type of A zure resources. Since the r equir ement in the scenar io is t o allo w the user s to create Azure Logic Apps in the Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025resource gr oup, you ha ve to assign a Contr ibutor role to the user s of the Developers group. Hence, the cor rect ans wer is: No. References: https://docs.micr osoft. com/en- us/azur e/role-based-acces s- contr ol/rbac-and-dir ectory-admin- roles https://docs.micr osoft. com/en- us/azur e/role-based-acces s- contr ol/role-definitions Check out this A zure RBA C Cheat Sheet: https://tut orialsdojo.com/azur e- role-based-acces s-contr ol-rbac/ Micr osof t Entr a ID v s Role-Based Acces s Contr ol (RBA C) https://tut orialsdojo.com/micr osoft - entra-id- vs-role-based-acces s- contr ol-rbac/",,,,"10. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Note: This it em is par t of a ser ies of
+ques tions with the e xact same
+scenar io but with a diff erent pr oposed
+answer. Each one in the ser ies has a
+unique solution that ma y, or ma y not,
+comply with the r equir ement s
+specified in the scenar io.
+You ha ve an A zure Subscription and a
+Microsoft Entra gr oup named
+Developers.
+The A zure Subscription has a
+resource gr oup named Dev.
+You need t o assign a r ole in the
+Developers group t o allo w the
+users to create Azure Logic Apps in
+the r esour ce gr oup.
+Solution: In the Dev resource
+group, assign a User A cces s
+Adminis trator role to the
+Developers group.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Does the pr oposed solution meet the
+goal?
+Yes
+No
+Correct
+Azure role-based acces s contr ol
+(Azure RBA C) is a s ystem that
+provides fine-grained acces s
+management of A zure resources.
+Using A zure RBA C, you can
+segregate duties within y our t eam
+and grant jus t the r ight acces s to
+users that the y need t o per form
+their jobs.
+The as sociat ed per missions f or
+the User A cces s Adminis trator role
+are only r elated to the specific
+acces s of each user t o acces s
+different A zure resources. This
+role cannot cr eate or manage an y
+type of A zure resources.
+Since the r equir ement in the
+scenar io is t o allo w the user s to
+create Azure Logic Apps in the
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025resource gr oup, you ha ve to assign
+a Contr ibutor role to the user s of
+the Developers group.
+Hence, the cor rect ans wer is: No.
+ 
+References:
+https://docs.micr osoft. com/en-
+us/azur e/role-based-acces s-
+contr ol/rbac-and-dir ectory-admin-
+roles
+https://docs.micr osoft. com/en-
+us/azur e/role-based-acces s-
+contr ol/role-definitions
+ 
+Check out this A zure RBA C Cheat
+Sheet:
+https://tut orialsdojo.com/azur e-
+role-based-acces s-contr ol-rbac/
+ 
+Micr osof t Entr a ID v s Role-Based
+Acces s Contr ol (RBA C)
+https://tut orialsdojo.com/micr osoft -
+entra-id- vs-role-based-acces s-
+contr ol-rbac/"
+11,AZ-104 – Manage A zure,"11. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance Your compan y has an A zure subscription named ManilaSubscription that contains multiple vir tual machines. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025The subscription has a user named ManilaUser01 which has the following r oles: Backup R eader Storage Blob Data Contr ibutor DevTest Labs User You need t o ensur e that ManilaUser01 can as sign a Reader r ole to all the user s in the subscription. What r ole should y ou as sign? Assign the Secur ity Reader role. Assign the User A cces s Adminis trator role. Assign the Vir tual Machine Contr ibutor role. Assign the Secur ity Admin role. Correct Azure RBA C is an author ization system built on A zure Resource Manager that pr ovides fine- grained acces s management of Azure resources. A cces s management f or cloud r esour ces is a cr itical func tion f or an y Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025organization that is using the cloud. A zure role-based acces s contr ol (A zure RBA C) helps y ou manage who has acces s to Azure resources, what the y can do with those r esour ces, and what ar eas they have acces s to. The f our fundamental A zure roles are Owner, Contr ibutor, Reader, and User A cces s Adminis trator. To assign a R eader r ole to all the users in the A zure subscription, you mus t grant the user a User Acces s Adminis trator role. This role allo ws you to manage user acces s to the A zure resources. Hence, the cor rect ans wer is: Assign the User A cces s Adminis trator role. The option that sa ys: Assign the Secur ity R eader r ole is incor rect because this r ole only allo ws the user t o view per missions in the Secur ity Cent er. The option that sa ys: Assign the Virtual Machine Contr ibutor role is incor rect because this r ole jus t lets you manage vir tual machines. Take not e that this r ole doesnʼt allow you to acces s virtual Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025machines dir ectly nor as sign a Reader r ole to all the user s in the subscription. The option that sa ys: Assign the Secur ity A dmin r ole is incor rect. This r ole has the same permissions as the Secur ity Reader r ole. The only diff erence is that it can updat e the secur ity policy and dismis s aler ts and recommendations. References: https://docs.micr osoft. com/en- us/azur e/role-based-acces s- contr ol/rbac-and-dir ectory-admin- roles https://docs.micr osoft. com/en- us/azur e/role-based-acces s- contr ol/built -in-r oles#user - acces s-adminis trator Check out this A zure RBA C Cheat Sheet: https://tut orialsdojo.com/azur e- role-based-acces s-contr ol-rbac/ Micr osof t Entr a ID v s Role-Based Acces s Contr ol (RBA C): https://tut orialsdojo.com/micr osoft - entra-id- vs-role-based-acces s- contr ol-rbac/",,,,"11. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Your compan y has an A zure
+subscription named
+ManilaSubscription that
+contains multiple vir tual machines.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025The subscription has a user named
+ManilaUser01 which has the
+following r oles:
+Backup R eader
+Storage Blob Data Contr ibutor
+DevTest Labs User
+You need t o ensur e that
+ManilaUser01 can as sign a
+Reader r ole to all the user s in the
+subscription.
+What r ole should y ou as sign?
+Assign the Secur ity Reader
+role.
+Assign the User A cces s
+Adminis trator role.
+Assign the Vir tual Machine
+Contr ibutor role.
+Assign the Secur ity Admin
+role.
+Correct
+Azure RBA C is an author ization
+system built on A zure Resource
+Manager that pr ovides fine-
+grained acces s management of
+Azure resources. A cces s
+management f or cloud r esour ces
+is a cr itical func tion f or an y
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025organization that is using the
+cloud. A zure role-based acces s
+contr ol (A zure RBA C) helps y ou
+manage who has acces s to Azure
+resources, what the y can do with
+those r esour ces, and what ar eas
+they have acces s to.
+The f our fundamental A zure roles
+are Owner, Contr ibutor, Reader,
+and User A cces s Adminis trator. To
+assign a R eader r ole to all the
+users in the A zure subscription,
+you mus t grant the user a User
+Acces s Adminis trator role. This
+role allo ws you to manage user
+acces s to the A zure resources.
+Hence, the cor rect ans wer is:
+Assign the User A cces s
+Adminis trator role.
+The option that sa ys: Assign the
+Secur ity R eader r ole is incor rect
+because this r ole only allo ws the
+user t o view per missions in the
+Secur ity Cent er.
+The option that sa ys: Assign the
+Virtual Machine Contr ibutor role
+is incor rect because this r ole jus t
+lets you manage vir tual machines.
+Take not e that this r ole doesnʼt
+allow you to acces s virtual
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025machines dir ectly nor as sign a
+Reader r ole to all the user s in the
+subscription.
+The option that sa ys: Assign the
+Secur ity A dmin r ole is incor rect.
+This r ole has the same
+permissions as the Secur ity
+Reader r ole. The only diff erence is
+that it can updat e the secur ity
+policy and dismis s aler ts and
+recommendations.
+ 
+References:
+https://docs.micr osoft. com/en-
+us/azur e/role-based-acces s-
+contr ol/rbac-and-dir ectory-admin-
+roles
+https://docs.micr osoft. com/en-
+us/azur e/role-based-acces s-
+contr ol/built -in-r oles#user -
+acces s-adminis trator
+ 
+Check out this A zure RBA C Cheat
+Sheet:
+https://tut orialsdojo.com/azur e-
+role-based-acces s-contr ol-rbac/
+ 
+Micr osof t Entr a ID v s Role-Based
+Acces s Contr ol (RBA C):
+https://tut orialsdojo.com/micr osoft -
+entra-id- vs-role-based-acces s-
+contr ol-rbac/"
+12,AZ-104 – Manage A zure,"12. QUESTION Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Categor y: AZ-104 – Manage A zure Identities and Go vernance Your compan y created a new A zure policy. You need t o interpret the permissions that ar e allo wed or denied b y the policy sho wn belo w: What is the eff ect of this policy? A user is allo wed to create Azure Vir tual Netw orks in TD-RG only. A user is r estricted fr om creating an y Azure Vir tual Netw orks in TD Subscription. A user is allo wed to create Azure Vir tual Netw orks in any resource gr oup within TD Subscription. A user is r estricted fr om creating A zure Vir tual Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Netw orks in TD-RG. Incor rect Azure Policy helps t o enf orce organizational s tandar ds and t o assess compliance at -scale. Through it s compliance dashboar d, it pr ovides an aggr egated view t o evaluat e the overall s tate of the en vironment, with the ability t o drill do wn to the per-resource, per -policy granular ity. It also helps t o bring your r esour ces t o compliance through bulk r emediation f or existing r esour ces and aut omatic remediation f or new r esour ces. Policy e valuat es resources in Azure by compar ing the pr oper ties of resources t o the busines s rules. These busines s rules, descr ibed in JSON f ormat, ar e kno wn as policy definitions. T o simplify management, se veral busines s rules can be gr ouped t ogether t o form a policy initiativ e. In the giv en policy, the r esour ce group TD-RG is excluded in the effect of the policy. This means that y ou ar e allo wed to create Virtual Netw orks in TD-RG. A Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025policy e xclusion allo ws you to assign a policy at a high le vel and then e xclude scopes within it. For example, in an en vironment with applications and a central netw ork, you w ant t o have a policy f or all the application r esour ce gr oups but not the netw ork r esour ce group. Hence, the cor rect ans wer is: A user is allo wed to create Azure Virtual Netw orks in TD- RGonly. The option that sa ys: A user is restricted fr om cr eating an y Azure Vir tual Netw orks in TD-RG is incor rect. You ar e not pr evented from cr eating Vir tual Netw orks in the TD-RG r esour ce gr oup because it is e xcluded in the giv en policy. The option that sa ys: A user is restricted fr om cr eating an y Azure Vir tual Netw orks in TD Subscription is incor rect. Jus t like the option abo ve, you ar e allo wed to create Vir tual Netw orks in the excluded r esour ce gr oup. The option that sa ys: A user is allowed to create Azure Vir tual Netw orks in an y resource gr oup within TD Subscription is incor rect because y ou can only create Vir tual Netw orks in the TD- RG resource gr oup. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025 References: https://docs.micr osoft. com/en- us/azur e/governance/policy /tutorials/cr eate- and-manage https://docs.micr osoft. com/en- us/azur e/governance/policy /overview Check out this A zure Policy Cheat Sheet: https://tut orialsdojo.com/azur e- policy /",,,,"12. QUESTION
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Your compan y created a new A zure
+policy. You need t o interpret the
+permissions that ar e allo wed or
+denied b y the policy sho wn belo w:
+What is the eff ect of this policy?
+A user is allo wed to create
+Azure Vir tual Netw orks in
+TD-RG only.
+A user is r estricted fr om
+creating an y Azure Vir tual
+Netw orks in 
+TD
+Subscription.
+A user is allo wed to create
+Azure Vir tual Netw orks in
+any resource gr oup within
+TD Subscription.
+A user is r estricted fr om
+creating A zure Vir tual
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Netw orks in TD-RG.
+Incor rect
+Azure Policy helps t o enf orce
+organizational s tandar ds and t o
+assess compliance at -scale.
+Through it s compliance
+dashboar d, it pr ovides an
+aggr egated view t o evaluat e the
+overall s tate of the en vironment,
+with the ability t o drill do wn to the
+per-resource, per -policy
+granular ity. It also helps t o bring
+your r esour ces t o compliance
+through bulk r emediation f or
+existing r esour ces and aut omatic
+remediation f or new r esour ces.
+Policy e valuat es resources in
+Azure by compar ing the pr oper ties
+of resources t o the busines s rules.
+These busines s rules, descr ibed in
+JSON f ormat, ar e kno wn as policy
+definitions. T o simplify
+management, se veral busines s
+rules can be gr ouped t ogether t o
+form a policy initiativ e.
+In the giv en policy, the r esour ce
+group TD-RG is excluded in the
+effect of the policy. This means
+that y ou ar e allo wed to create
+Virtual Netw orks in TD-RG. A
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025policy e xclusion allo ws you to
+assign a policy at a high le vel and
+then e xclude scopes within it. For
+example, in an en vironment with
+applications and a central netw ork,
+you w ant t o have a policy f or all
+the application r esour ce gr oups
+but not the netw ork r esour ce
+group.
+Hence, the cor rect ans wer is: A
+user is allo wed to create Azure
+Virtual Netw orks in 
+TD-
+RGonly.
+The option that sa ys: A user is
+restricted fr om cr eating an y
+Azure Vir tual Netw orks in TD-RG
+is incor rect. You ar e not pr evented
+from cr eating Vir tual Netw orks in
+the TD-RG r esour ce gr oup
+because it is e xcluded in the giv en
+policy.
+The option that sa ys: A user is
+restricted fr om cr eating an y
+Azure Vir tual Netw orks in TD
+Subscription is incor rect. Jus t like
+the option abo ve, you ar e allo wed
+to create Vir tual Netw orks in the
+excluded r esour ce gr oup.
+The option that sa ys: A user is
+allowed to create Azure Vir tual
+Netw orks in an y resource gr oup
+within TD Subscription is
+incor rect because y ou can only
+create Vir tual Netw orks in the TD-
+RG resource gr oup.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025 
+References:
+https://docs.micr osoft. com/en-
+us/azur e/governance/policy /tutorials/cr eate-
+and-manage
+https://docs.micr osoft. com/en-
+us/azur e/governance/policy /overview
+ 
+Check out this A zure Policy
+Cheat Sheet:
+https://tut orialsdojo.com/azur e-
+policy /"
+13,AZ-104 – Manage A zure,"13. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance You ar e managing a Microsoft Entra ID tenant and a Microsoft 365 t enant. You need t o grant t emporary acces s to the Microsoft Shar ePoint document library t o several user s in the same Azure group. For compliance pur poses, the gr oup must aut omatically be delet ed aft er 180 da ys. Which ac tions could y ou per form? (Selec t TW O.) Set up an e xternal identity provider. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Set up an as signed member ship on Microsoft 365 gr oups. Set up a dynamic member ship on secur ity groups. Set up an as signed member ship on secur ity groups. Set up a dynamic member ship on Microsoft 365 gr oups.    Incor rect Micr osof t Entr a ID is a cloud- based identity and acces s management service that enables emplo yees t o acces s external resources such as Microsoft 365, the A zure por tal, and thousands of SaaS applications. It also pr ovides acces s to internal resources lik e intranet apps and cus tom cloud applications. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025You can choose betw een tw o member ship types when cr eating a new gr oup in Microsoft Entra ID. The assigned member ship type lets you manually add specific users to the gr oup, while the dynamic member ship type automatically adds or r emoves users based on rules that e valuat e user attr ibutes such as depar tment, job title, or location. To meet the compliance requir ement that the gr oup be automatically delet ed aft er 180 days, you mus t configure an expiration policy. Expiration policies ar e available only f or Microsoft 365 gr oups. When a Microsoft 365 gr oup e xpires, the group and all it s associat ed resources, including Shar ePoint librar ies, T eams, and Outlook mailbo xes, ar e delet ed. Both assigned Microsoft 365 gr oups and dynamic Microsoft 365 gr oups can be included in an e xpiration policy. Hence, the cor rect ans wers are: – Set up a dynamic member ship on Micr osof t 365 gr oups. – Set up an as signed member ship on Micr osof t 365 gr oups. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025The option that sa ys: Set up an assigned member ship on secur ity gr oups is incor rect. Although secur ity gr oups can contr ol acces s, the y are primarily used f or resource per missions and do not suppor t expiration policies nativ ely. The y cannot be used t o delet e groups aft er a specific period aut omatically. The option that sa ys: Set up a dynamic member ship on secur ity groups is incor rect because, lik e assigned secur ity gr oups, dynamic secur ity gr oups ar e typically designed f or acces s contr ol based on user or de vice attr ibutes. The y lack suppor t for lifecycle policies such as aut omatic gr oup expiration. The option that sa ys: Set up an external identity pr ovider is incor rect because e xternal identities only allo w user s out side your or ganization t o acces s your resources. This option w onʼt help you cr eate an e xpiration policy. References: https://docs.micr osoft. com/en- us/micr osoft - 365/solutions/micr osoft -365- groups-e xpiration-policy Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025https://lear n.micr osoft. com/en- us/entra/fundamentals/ho w-to- manage-gr oups https://lear n.micr osoft. com/en- us/entra/identity /user s/groups- create-rule Check out this Micr osof t Entr a ID Cheat Sheet: https://tut orialsdojo.com/micr osoft - entra-id/",,,,"13. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+You ar e managing a Microsoft Entra ID
+tenant and a Microsoft 365 t enant.
+You need t o grant t emporary acces s
+to the Microsoft Shar ePoint document
+library t o several user s in the same
+Azure group.
+For compliance pur poses, the gr oup
+must aut omatically be delet ed aft er
+180 da ys.
+Which ac tions could y ou per form?
+(Selec t TW O.)
+Set up an e xternal identity
+provider.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Set up an as signed
+member ship on Microsoft
+365 gr oups.
+Set up a dynamic
+member ship on secur ity
+groups.
+Set up an as signed
+member ship on secur ity
+groups.
+Set up a dynamic
+member ship on Microsoft
+365 gr oups. 
+ 
+Incor rect
+Micr osof t Entr a ID is a cloud-
+based identity and acces s
+management service that enables
+emplo yees t o acces s external
+resources such as Microsoft 365,
+the A zure por tal, and thousands of
+SaaS applications. It also pr ovides
+acces s to internal resources lik e
+intranet apps and cus tom cloud
+applications.
+
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025You can choose betw een tw o
+member ship types when cr eating
+a new gr oup in Microsoft Entra ID.
+The assigned member ship type
+lets you manually add specific
+users to the gr oup, while the
+dynamic member ship type
+automatically adds or r emoves
+users based on rules that e valuat e
+user attr ibutes such as
+depar tment, job title, or location.
+To meet the compliance
+requir ement that the gr oup be
+automatically delet ed aft er 180
+days, you mus t configure an
+expiration policy. Expiration
+policies ar e available only f or
+Microsoft 365 gr oups. When a
+Microsoft 365 gr oup e xpires, the
+group and all it s associat ed
+resources, including Shar ePoint
+librar ies, T eams, and Outlook
+mailbo xes, ar e delet ed. Both
+assigned Microsoft 365 gr oups
+and dynamic Microsoft 365 gr oups
+can be included in an e xpiration
+policy.
+Hence, the cor rect ans wers are:
+– Set up a dynamic
+member ship on Micr osof t
+365 gr oups.
+– Set up an as signed
+member ship on Micr osof t
+365 gr oups.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025The option that sa ys: Set up an
+assigned member ship on
+secur ity gr oups is incor rect.
+Although secur ity gr oups can
+contr ol acces s, the y are primarily
+used f or resource per missions and
+do not suppor t expiration policies
+nativ ely. The y cannot be used t o
+delet e groups aft er a specific
+period aut omatically.
+The option that sa ys: Set up a
+dynamic member ship on secur ity
+groups is incor rect because, lik e
+assigned secur ity gr oups, dynamic
+secur ity gr oups ar e typically
+designed f or acces s contr ol based
+on user or de vice attr ibutes. The y
+lack suppor t for lifecycle policies
+such as aut omatic gr oup
+expiration.
+The option that sa ys: Set up an
+external identity pr ovider is
+incor rect because e xternal
+identities only allo w user s out side
+your or ganization t o acces s your
+resources. This option w onʼt help
+you cr eate an e xpiration policy.
+ 
+References:
+https://docs.micr osoft. com/en-
+us/micr osoft -
+365/solutions/micr osoft -365-
+groups-e xpiration-policy
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025https://lear n.micr osoft. com/en-
+us/entra/fundamentals/ho w-to-
+manage-gr oups
+https://lear n.micr osoft. com/en-
+us/entra/identity /user s/groups-
+create-rule
+ 
+Check out this Micr osof t Entr a ID
+Cheat Sheet:
+https://tut orialsdojo.com/micr osoft -
+entra-id/"
+14,AZ-104 – Manage A zure,"14. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance Your compan y has a Microsoft Entra tenant named TD-Entra-ID that contains 3 User A dminis trators and 2 Global A dminis trators. You recently pur chased 5 Pr emium P1 licenses. You need t o mak e sur e that the user s in your t enant ha ve acces s to all the Premium P1 f eatur es. What should y ou do t o satisfy the above requir ement? Use the Bulk cr eate user operation in Microsoft Entra ID t o provision user s with Pr emium P1 f eatur es. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Configur e external collaboration settings t o grant acces s to selec ted users. Selec t the user in y our tenant and as sign a new role in the Directory role blade of each user. In the Licenses blade of Microsoft Entra ID, selec t the user in y our t enant and assign the license. Correct Micr osof t Entr a ID is a cloud- based identity and acces s management service that enables your emplo yees acces s external resources. Example r esour ces include Microsoft 365, the A zure portal, and thousands of other SaaS applications. Microsoft Entra ID also helps them acces s internal resources lik e apps on your cor porat e intranet, and any cloud apps de veloped f or your own or ganization. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Ther e are several license plans available f or the Microsoft Entra ID service, including: – Microsoft Entra ID Fr ee – Microsoft Entra ID P1 – Microsoft Entra ID P 2 To ensur e that the user s in y our tenant ha ve acces s to Premium P1 license f eatur es, y ou mus t manually add the license t o each user or add the license t o a gr oup. Remember that only the user s with active licenses can acces s and use the licensed Microsoft Entra ID services. Also, licenses ar e applied per t enant, and y ou canʼt transf er them t o other t enant s. Hence, the cor rect ans wer is: In the Licenses blade of Micr osof t Entr a ID, selec t the user in y our t enant and as sign the license. The option that sa ys: Selec t the user in y our t enant and as sign a new role in the Directory role blade of each user is incor rect because this appr oach only as signs a new r ole to your user. To assign the Pr emium P1 licenses t o your user s, you mus t go to the Licenses tab and click Assignment s. The option that sa ys: Use the Bulk create user oper ation in Micr osof t Entr a ID t o provision Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025user s with Pr emium P1 featur es is incor rect because bulk user cr eation only pr ovisions user account s. It does not as sign licenses or ac tivate Premium P1 featur es. Ev en if user s are created in bulk, each one mus t still be assigned a Pr emium P1 license explicitly t o acces s those f eatur es. The option that sa ys: Configur e external collabor ation set tings t o grant acces s to selec ted user s is incor rect because e xternal collaboration settings ar e pimar ily used t o contr ol ho w user s out side your or ganization can acces s your organizationʼ s resources, such as sharing files or in viting gues t users. It does not impac t the internal user sʼ acces s to Premium P1 featur es, which is managed through license as signment. References: https://lear n.micr osoft. com/en- us/entra/fundamentals/whatis https://lear n.micr osoft. com/en- us/entra/fundamentals/license- users-groups Check out this Micr osof t Entr a ID Cheat Sheet: https://tut orialsdojo.com/micr osoft - entra-id/ Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 202515. QUESTION Categor y: AZ-104 – Manage A zure Identities and Go vernance Your compan y has an A zure subscription named TD-Sub1 that contains the r esour ces sho wn in the table belo w. Name Type tutorialsdojo vnet Virtual netw ork tutorialsdojo vm Virtual machine tutorialsdojo vault Recovery Services vault tutorialsdojos torage Storage account You cr eated a new A zure subscription named TD-Sub2. You plan t o mo ve the r esour ces fr om TD-Sub1 to TD-Sub2. Which r esour ces in TD-Sub1 can you mo ve to the new subscription? Virtual machine and Vir tual netw ork Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025Virtual machine, Vir tual netw ork, R ecovery Services v ault, and Storage account Virtual machine, Vir tual netw ork, and St orage account Virtual machine, Vir tual netw ork, and R ecovery Services v ault Correct A resource gr oup is a container that holds r elated resources f or an Azure solution. The r esour ce group can include all the resources f or the solution, or only those r esour ces that y ou w ant t o manage as a gr oup. You decide how you w ant t o allocat e resources t o resource gr oups based on what mak es the mos t sense f or your or ganization. Generally, add r esour ces that share the same lif ecycle to the same r esour ce gr oup so y ou can easily deploy, updat e, and delet e them as a gr oup. Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025If you need t o mo ve your resources t o a new subscription or resource gr oup under the same subscription, y ou can use A zure portal, A zure PowerShell, A zure CLI, or the REST API. T ake not e that when y ou mo ve a resource to a new r esour ce gr oup or subscription, the location of the resource w onʼt change. Hence, the cor rect ans wer is: Virtual machine, Vir tual netw ork, Recovery Ser vices v ault, and Storage account. The f ollowing options ar e incor rect because y ou can mo ve all these resources t o a new subscription or resource gr oup. – Virtual machine, Vir tual netw ork, and St orage account – Virtual machine, Vir tual netw ork, and R ecovery Services v ault – Virtual machine and Vir tual netw ork References: https://docs.micr osoft. com/en- us/azur e/azur e-resource- manager /management/mo ve- resource-gr oup-and-subscription Back t o Cour se AZ-104 Microsoft Azure Administrator Pr actice Exams 📊 Your Progress Randomized Test 1 Topic Practice Exams – Timed Mode 1 Topic Practice Exams – Review Mode 1 Topic Practice Exams – Section-Based 1 Topic AZ-104 Microsoft Azure Administrator Pr Section-Based – Manage Azure Identities Section-Based – Implement and Manage Section-Based – Deploy and Manage Az Section-Based – Implement and Manage Section-Based – Monitor and Maintain A BONUS SECTION – FLASHCARDS1 Topic16% Complet e Last activity on No vember 15, 2025https://docs.micr osoft. com/en- us/azur e/azur e-resource- manager /management/o verview Check out this A zure Global Infrastruc ture Cheat Sheet: https://tut orialsdojo.com/azur e- global-infras tructure/ Azure Global Infr astruc ture:",,,,"14. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Your compan y has a Microsoft Entra
+tenant named TD-Entra-ID that
+contains 3 User A dminis trators and 2
+Global A dminis trators.
+You recently pur chased 5 Pr emium P1
+licenses.
+You need t o mak e sur e that the user s
+in your t enant ha ve acces s to all the
+Premium P1 f eatur es.
+What should y ou do t o satisfy the
+above requir ement?
+Use the Bulk cr eate user
+operation in Microsoft
+Entra ID t o provision user s
+with Pr emium P1 f eatur es.
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Configur e external
+collaboration settings t o
+grant acces s to selec ted
+users.
+Selec t the user in y our
+tenant and as sign a new
+role in the Directory
+role blade of each user.
+In the Licenses blade of
+Microsoft Entra ID, selec t
+the user in y our t enant and
+assign the license.
+Correct
+Micr osof t Entr a ID is a cloud-
+based identity and acces s
+management service that enables
+your emplo yees acces s external
+resources. Example r esour ces
+include Microsoft 365, the A zure
+portal, and thousands of other
+SaaS applications.
+Microsoft Entra ID also helps them
+acces s internal resources lik e apps
+on your cor porat e intranet, and
+any cloud apps de veloped f or your
+own or ganization.
+
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Ther e are several license plans
+available f or the Microsoft Entra ID
+service, including:
+– Microsoft Entra ID Fr ee
+– Microsoft Entra ID P1
+– Microsoft Entra ID P 2
+To ensur e that the user s in y our
+tenant ha ve acces s to Premium P1
+license f eatur es, y ou mus t
+manually add the license t o each
+user or add the license t o a gr oup.
+Remember that only the user s with
+active licenses can acces s and use
+the licensed Microsoft Entra ID
+services. Also, licenses ar e applied
+per t enant, and y ou canʼt transf er
+them t o other t enant s.
+Hence, the cor rect ans wer is: In
+the Licenses blade of
+Micr osof t Entr a ID, selec t the
+user in y our t enant and as sign
+the license.
+The option that sa ys: Selec t the
+user in y our t enant and as sign a
+new role in the Directory
+role blade of each user is
+incor rect because this appr oach
+only as signs a new r ole to your
+user. To assign the Pr emium P1
+licenses t o your user s, you mus t
+go to the Licenses tab and click
+Assignment s.
+The option that sa ys: Use the Bulk
+create user oper ation in
+Micr osof t Entr a ID t o provision
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025user s with Pr emium P1
+featur es is incor rect because bulk
+user cr eation only pr ovisions user
+account s. It does not as sign
+licenses or ac tivate Premium P1
+featur es. Ev en if user s are created
+in bulk, each one mus t still be
+assigned a Pr emium P1 license
+explicitly t o acces s those f eatur es.
+The option that sa ys: Configur e
+external collabor ation set tings t o
+grant acces s to selec ted user s is
+incor rect because e xternal
+collaboration settings ar e pimar ily
+used t o contr ol ho w user s out side
+your or ganization can acces s your
+organizationʼ s resources, such as
+sharing files or in viting gues t
+users. It does not impac t the
+internal user sʼ acces s to Premium
+P1 featur es, which is managed
+through license as signment.
+ 
+References:
+https://lear n.micr osoft. com/en-
+us/entra/fundamentals/whatis
+https://lear n.micr osoft. com/en-
+us/entra/fundamentals/license-
+users-groups
+ 
+Check out this Micr osof t Entr a ID
+Cheat Sheet:
+https://tut orialsdojo.com/micr osoft -
+entra-id/
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 202515. QUESTION
+Categor y: AZ-104 – Manage A zure
+Identities and Go vernance
+Your compan y has an A zure
+subscription named TD-Sub1 that
+contains the r esour ces sho wn in the
+table belo w.
+Name Type
+tutorialsdojo vnet Virtual
+netw ork
+tutorialsdojo vm Virtual
+machine
+tutorialsdojo vault Recovery
+Services
+vault
+tutorialsdojos torage Storage
+account
+You cr eated a new A zure subscription
+named TD-Sub2.
+You plan t o mo ve the r esour ces fr om
+TD-Sub1 to TD-Sub2.
+Which r esour ces in TD-Sub1 can
+you mo ve to the new subscription?
+Virtual machine and Vir tual
+netw ork
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025Virtual machine, Vir tual
+netw ork, R ecovery
+Services v ault, and
+Storage account
+Virtual machine, Vir tual
+netw ork, and St orage
+account
+Virtual machine, Vir tual
+netw ork, and R ecovery
+Services v ault
+Correct
+A resource gr oup is a container
+that holds r elated resources f or an
+Azure solution. The r esour ce
+group can include all the
+resources f or the solution, or only
+those r esour ces that y ou w ant t o
+manage as a gr oup. You decide
+how you w ant t o allocat e
+resources t o resource gr oups
+based on what mak es the mos t
+sense f or your or ganization.
+Generally, add r esour ces that
+share the same lif ecycle to the
+same r esour ce gr oup so y ou can
+easily deploy, updat e, and delet e
+them as a gr oup.
+
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025If you need t o mo ve your
+resources t o a new subscription or
+resource gr oup under the same
+subscription, y ou can use A zure
+portal, A zure PowerShell, A zure
+CLI, or the REST API. T ake not e
+that when y ou mo ve a resource to
+a new r esour ce gr oup or
+subscription, the location of the
+resource w onʼt change.
+Hence, the cor rect ans wer is:
+Virtual machine, Vir tual netw ork,
+Recovery Ser vices v ault, and
+Storage account.
+The f ollowing options ar e incor rect
+because y ou can mo ve all these
+resources t o a new subscription or
+resource gr oup.
+– Virtual machine, Vir tual
+netw ork, and St orage
+account
+– Virtual machine, Vir tual
+netw ork, and R ecovery
+Services v ault
+– Virtual machine and Vir tual
+netw ork
+ 
+References:
+https://docs.micr osoft. com/en-
+us/azur e/azur e-resource-
+manager /management/mo ve-
+resource-gr oup-and-subscription
+Back t o Cour se
+AZ-104 Microsoft Azure
+Administrator Pr actice
+Exams
+📊 Your Progress
+Randomized Test 1 Topic
+Practice Exams – Timed Mode 1 Topic
+Practice Exams – Review Mode 1 Topic
+Practice Exams – Section-Based 1 Topic
+AZ-104 Microsoft Azure Administrator Pr
+Section-Based – Manage Azure Identities
+Section-Based – Implement and Manage
+Section-Based – Deploy and Manage Az
+Section-Based – Implement and Manage
+Section-Based – Monitor and Maintain A
+BONUS SECTION – FLASHCARDS1 Topic16% Complet e
+Last activity on No vember 15, 2025https://docs.micr osoft. com/en-
+us/azur e/azur e-resource-
+manager /management/o verview
+ 
+Check out this A zure Global
+Infrastruc ture Cheat Sheet:
+https://tut orialsdojo.com/azur e-
+global-infras tructure/
+Azure Global Infr astruc ture:"
