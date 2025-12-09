@@ -2,6 +2,8 @@
 
 Source folder: `/Users/mike1macbook/Library/Mobile Documents/3L68KQB4HG~com~readdle~CommonDocuments/Documents/azure-ebook-guides/Conversations not hub/Text files`
 
+**Questioning Method (all new decks):** Use the standardized MCQ/True-False style documented in `../Anki-Decks/README.md` under "Questioning Method (Documented System)". Default to MCQ; use True/False only for binary, always/never rules.
+
 ## Already Processed (from `.processed_transcripts.log`)
 
 - Azure_App_Service_Golden_Rules_ROADMAP (Transcribed).txt

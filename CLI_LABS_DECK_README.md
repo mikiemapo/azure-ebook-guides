@@ -132,6 +132,84 @@ Ready to add cards for upcoming labs:
 - Azure DevOps CI/CD Pipelines
 - Key Vault and Defender for Cloud
 
+---
+
+## 🧪 Secondary CLI Reinforcement Batch (Testing)
+
+**Status:** In Development  
+**Purpose:** Test deck variants and reinforce advanced CLI patterns
+
+### Deck Details
+
+- **File:** `AZ104_CLI_Labs_Reinforcement_Secondary.apkg` (planned)
+- **Location:** `/Users/mike1macbook/Documents/MY STUFF DOCS AND ALL/EBOOK/Anki-Decks/`
+- **Planned Cards:** 25–30
+- **Format:** MCQ + True/False with 2-sentence explainers (matching primary batch)
+- **Styling:** #4CAF50 green highlighting (consistent with master deck)
+
+### Content Focus (Planned)
+
+### Lab 5: Advanced Networking Patterns (8 cards)
+
+- NSG rules and precedence
+- Service Endpoints vs Private Endpoints
+- UDRs (User-Defined Routes) behavior
+- Network Watcher diagnostics
+- VNet-to-VNet peering troubleshooting
+
+### Lab 6: Storage Account Security (7 cards)
+
+- Storage Account authentication methods
+- Shared Access Signatures (SAS) token types
+- Managed identity integration with storage
+- Encryption at rest and in transit
+- Network isolation strategies
+
+### Lab 7: IaC Patterns with Bicep (7 cards)
+
+- Bicep modules and composition
+- Parameter files and defaults
+- Output references between resources
+- Conditional deployments and loops
+- Best practices for reusable templates
+
+### Lab 8: Troubleshooting CLI Workflows (5 cards)
+
+- Using `az cli` diagnostic output flags
+- Common authentication errors and fixes
+- Debugging deployment failures
+- Rate limiting and retry strategies
+- Log analysis for CLI operations
+
+### Questioning Method
+
+Follows the same **MCQ/True-False** approach as the primary batch (see "Questioning Method (Documented System)" in `../Anki-Decks/README.md`).
+
+### Purpose of Secondary Batch
+
+- **Test variant deck structure** under hierarchical parent (AZ-104 Study Guide → CLI Labs Reinforcement → CLI Labs Secondary)
+- **Reinforce advanced patterns** not covered in primary batch
+- **Compare spaced repetition** effectiveness across multiple related decks
+- **Validate deck generation** script with larger secondary deck structure
+
+### Import Instructions (When Ready)
+
+1. Open Anki
+2. Click **File → Import**
+3. Select: `AZ104_CLI_Labs_Reinforcement_Secondary.apkg`
+4. Cards will appear in deck: **AZ-104 Study Guide::CLI Labs Reinforcement::CLI Labs Secondary**
+
+### Status Tracking
+
+- [ ] Generate 25–30 questions from planned labs
+- [ ] Append to CSV with batch category: `CLI Labs Reinforcement Secondary`
+- [ ] Generate .apkg file using `create_cli_labs_deck.py` (script may need modification)
+- [ ] Import and validate hierarchical deck structure
+- [ ] Compare learning outcomes with primary batch
+- [ ] Document findings in this section
+
+**Next Review:** December 16, 2025
+
 ## 🚀 Import Instructions
 
 1. Open Anki
