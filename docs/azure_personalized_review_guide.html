@@ -2213,36 +2213,71 @@
 
               // --- Retention history (trend scope) helpers ---
               const HISTORY_KEY = 'mergedQuizHistory';
-              const HISTORY_MAX_KEY = 'mergedQuizHistoryMax'; // optional override
+              const HISTORY_MAX_KEY = 'mergedQuizHistoryMax';
+              const HISTORY_VERSION = 2;
+
+              function normalizeHistorySnapshot(snap) {
+                if (snap.version === 2 && snap.merged) return snap;
+                if (snap.domainPercents) {
+                  const merged = {};
+                  Object.keys(snap.domainPercents).forEach(k => {
+                    merged[k] = { correct: 0, total: 0, percent: snap.domainPercents[k] };
+                  });
+                  return { version: 2, takenAt: snap.t, source: snap.source || 'migrated', merged };
+                }
+                return snap;
+              }
 
               function pushMergedQuizHistory(source){
                 try{
                   const raw = localStorage.getItem(HISTORY_KEY);
                   let arr = raw ? JSON.parse(raw) : [];
-                  const snap = {};
+                  arr = arr.map(normalizeHistorySnapshot);
+                  const merged = {};
+                  let totalCorrect = 0, totalQuestions = 0;
                   Object.keys(mergedQuizScores).forEach(k => {
-                    const d = mergedQuizScores[k] || { correct:0, total:0 };
-                    const p = (typeof d.adjustedPercent === 'number') ? d.adjustedPercent : (d.total ? Math.round((d.correct / d.total) * 100) : 0);
-                    snap[k] = p;
+                    const d = mergedQuizScores[k] || { correct: 0, total: 0 };
+                    const pct = d.total ? Math.round((d.correct / d.total) * 100) : 0;
+                    merged[k] = { correct: d.correct, total: d.total, percent: pct };
+                    totalCorrect += d.correct;
+                    totalQuestions += d.total;
                   });
-                  arr.push({ t: (new Date()).toISOString(), domainPercents: snap, source: source || 'manual' });
+                  const overallPct = totalQuestions ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+                  arr.push({
+                    version: HISTORY_VERSION,
+                    takenAt: (new Date()).toISOString(),
+                    source: source || 'manual',
+                    merged: merged,
+                    summary: { totalCorrect, totalQuestions, overallPercent: overallPct }
+                  });
                   const max = parseInt(localStorage.getItem(HISTORY_MAX_KEY)) || 30;
                   while(arr.length > max) arr.shift();
                   try{ localStorage.setItem(HISTORY_KEY, JSON.stringify(arr)); }catch(e){}
                 }catch(e){}
               }
 
+              function getPercentFromSnapshot(snap, domain) {
+                if (snap.merged && snap.merged[domain]) {
+                  const d = snap.merged[domain];
+                  return typeof d.percent === 'number' ? d.percent : (d.total ? Math.round((d.correct / d.total) * 100) : 0);
+                }
+                if (snap.domainPercents && typeof snap.domainPercents[domain] === 'number') {
+                  return snap.domainPercents[domain];
+                }
+                return null;
+              }
+
               function computeTrendMetrics(domain){
                 try{
                   const raw = localStorage.getItem(HISTORY_KEY);
                   if (!raw) return null;
-                  const arr = JSON.parse(raw).map(s => s.domainPercents && typeof s.domainPercents[domain] === 'number' ? s.domainPercents[domain] : null).filter(v => v != null);
+                  const history = JSON.parse(raw);
+                  const arr = history.map(s => getPercentFromSnapshot(s, domain)).filter(v => v != null);
                   if (!arr.length) return null;
                   const first = arr[0];
                   const last = arr[arr.length - 1];
                   const delta = last - first;
                   const slope = arr.length > 1 ? delta / (arr.length - 1) : 0;
-                  // moving average of last 3
                   const maWindow = 3;
                   const windowVals = arr.slice(-maWindow);
                   const ma = Math.round(windowVals.reduce((a,b)=>a+b,0) / windowVals.length);

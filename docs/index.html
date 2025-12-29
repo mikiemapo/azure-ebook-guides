@@ -1217,6 +1217,17 @@
       }
 
       // ===== RETENTION TRENDS =====
+      function getPercentFromSnapshot(snap, domainKey) {
+        if (snap.merged && snap.merged[domainKey]) {
+          const d = snap.merged[domainKey];
+          return typeof d.percent === 'number' ? d.percent : (d.total ? Math.round((d.correct / d.total) * 100) : 0);
+        }
+        if (snap.domainPercents && typeof snap.domainPercents[domainKey] === 'number') {
+          return snap.domainPercents[domainKey];
+        }
+        return null;
+      }
+
       function renderRetentionTrends() {
         const container = document.getElementById('retention-content');
 
@@ -1225,17 +1236,18 @@
           const history = raw ? JSON.parse(raw) : [];
 
           if (!history.length) {
-            container.innerHTML = '<p style="color: var(--text-muted)">No retention history yet. Complete quizzes to track progress over time.</p>';
+            container.innerHTML = '<p style="color: var(--text-muted)">No retention history yet. Save scores in the <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue);">Personalized Review Guide</a> to track progress over time.</p>';
             return;
           }
 
           let html = '';
           domainConfig.forEach(domain => {
             const series = history.map(snap => {
-              const merged = snap.merged || snap;
-              const v = merged[domain.key] || { correct: 0, total: 0 };
-              return v.total ? v.correct / v.total : 0;
-            });
+              const pct = getPercentFromSnapshot(snap, domain.key);
+              return pct !== null ? pct / 100 : null;
+            }).filter(v => v !== null);
+
+            if (!series.length) return;
 
             const lastPct = series[series.length - 1] || 0;
             const prevPct = series.length > 1 ? series[series.length - 2] : null;
@@ -1243,7 +1255,6 @@
             const deltaText = delta !== null ? `${delta >= 0 ? '+' : ''}${delta}%` : '';
             const deltaColor = delta && delta >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
 
-            // Simple sparkline
             const sparkline = makeSparklineSvg(series);
 
             html += `
@@ -1257,7 +1268,7 @@
             `;
           });
 
-          container.innerHTML = html;
+          container.innerHTML = html || '<p style="color: var(--text-muted)">No retention data for configured domains.</p>';
         } catch (e) {
           container.innerHTML = '<p style="color: var(--text-muted)">Error loading retention data.</p>';
         }
