@@ -848,33 +848,27 @@
         <!-- Domains will be rendered here by JavaScript -->
       </div>
 
-      <!-- Controls Panel -->
+      <!-- Controls Panel (Simplified - Score editing in Personalized Review) -->
       <div class="controls-panel">
         <div class="controls-panel-header">
           <div class="controls-panel-title">
-            <i class="fas fa-sliders-h"></i> Score Settings
+            <i class="fas fa-info-circle"></i> Data Source
           </div>
           <button class="debug-toggle-btn" id="debug-toggle">
             <i class="fas fa-bug"></i> Debug
           </button>
         </div>
         <div class="controls-row">
-          <div class="control-group">
-            <label>Blend:</label>
-            <select id="blend-select">
-              <option value="0.6">60% Quiz / 40% Confidence</option>
-              <option value="0.7">70% Quiz / 30% Confidence</option>
-              <option value="0.5">50% Quiz / 50% Confidence</option>
-              <option value="0.4">40% Quiz / 60% Confidence</option>
-            </select>
+          <div class="control-group" style="flex: 1;">
+            <p style="margin: 0; color: var(--text-secondary); font-size: 0.9em;">
+              <i class="fas fa-sync-alt" style="color: var(--azure-blue);"></i>
+              Scores sync automatically from <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue); font-weight: 600;">Personalized Review Guide</a>
+            </p>
           </div>
           <div class="control-group">
-            <button class="domain-action-btn secondary" id="save-scores-btn">
-              <i class="fas fa-save"></i> Save Scores
-            </button>
-            <button class="domain-action-btn secondary" id="reset-scores-btn">
-              <i class="fas fa-undo"></i> Reset
-            </button>
+            <a href="azure_personalized_review_guide.html" class="domain-action-btn primary">
+              <i class="fas fa-edit"></i> Update Scores
+            </a>
           </div>
         </div>
         <div class="debug-panel" id="debug-panel">
@@ -931,13 +925,14 @@
 
     <script>
       // ===== DOMAIN CONFIGURATION =====
+      // Domain keys must match the keys used in mergedQuizScores from Personalized Review Guide
       const domainConfig = [
-        { key: 'identities', name: 'Identities & Governance', icon: 'fas fa-id-card', guideLink: 'microsoft_entra_id_concepts_guide.html' },
-        { key: 'storage', name: 'Storage', icon: 'fas fa-database', guideLink: 'azure_storage_replication_rto_rpo_guide.html' },
-        { key: 'compute', name: 'Compute', icon: 'fas fa-server', guideLink: 'azure_vms_deep_dive_guide.html' },
-        { key: 'networking', name: 'Networking', icon: 'fas fa-network-wired', guideLink: 'azure_vnet_deep_dive_guide.html' },
-        { key: 'monitoring', name: 'Monitoring & Backup', icon: 'fas fa-chart-bar', guideLink: 'azure_monitor_maintenance_guide.html' },
-        { key: 'app-service', name: 'App Service & Containers', icon: 'fas fa-cloud', guideLink: 'azure_app_service_guide.html' }
+        { key: 'Identities', name: 'Identities & Governance', icon: 'fas fa-id-card', guideLink: 'microsoft_entra_id_concepts_guide.html' },
+        { key: 'Storage', name: 'Storage', icon: 'fas fa-database', guideLink: 'azure_storage_replication_rto_rpo_guide.html' },
+        { key: 'Compute', name: 'Compute', icon: 'fas fa-server', guideLink: 'azure_vms_deep_dive_guide.html' },
+        { key: 'Networking', name: 'Networking', icon: 'fas fa-network-wired', guideLink: 'azure_vnet_deep_dive_guide.html' },
+        { key: 'Monitoring', name: 'Monitoring & Backup', icon: 'fas fa-chart-bar', guideLink: 'azure_monitor_maintenance_guide.html' },
+        { key: 'App Service & Containers', name: 'App Service & Containers', icon: 'fas fa-cloud', guideLink: 'azure_app_service_guide.html' }
       ];
 
       // ===== STUDY TOPICS DATA =====
@@ -1037,38 +1032,8 @@
         } catch (e) { return {}; }
       }
 
-      function setStoredScores(scores) {
-        try {
-          localStorage.setItem('mergedQuizScores', JSON.stringify(scores));
-          window.dispatchEvent(new CustomEvent('mergedQuizScoresUpdated'));
-        } catch (e) {}
-      }
-
-      function getStoredConfidence() {
-        try {
-          const raw = localStorage.getItem('hubDomainConfidence');
-          return raw ? JSON.parse(raw) : {};
-        } catch (e) { return {}; }
-      }
-
-      function setStoredConfidence(conf) {
-        try {
-          localStorage.setItem('hubDomainConfidence', JSON.stringify(conf));
-        } catch (e) {}
-      }
-
-      function getBlendRatio() {
-        try {
-          const raw = localStorage.getItem('hubBlendRatio');
-          return raw ? parseFloat(raw) : 0.6;
-        } catch (e) { return 0.6; }
-      }
-
-      function setBlendRatio(ratio) {
-        try {
-          localStorage.setItem('hubBlendRatio', ratio.toString());
-        } catch (e) {}
-      }
+      // Score editing removed - all input happens in Personalized Review Guide
+      // Hub is read-only and syncs from localStorage
 
       function getTheme() {
         try {
@@ -1082,40 +1047,26 @@
         } catch (e) {}
       }
 
-      // ===== RAG COLOR HELPERS =====
+      // ===== RAG COLOR HELPERS (Matches Personalized Review Guide thresholds) =====
       function getRagClass(percent) {
-        if (percent < 50) return 'rag-red';
-        if (percent < 70) return 'rag-amber';
-        return 'rag-green';
+        if (percent >= 76) return 'rag-green';
+        if (percent >= 50) return 'rag-amber';
+        return 'rag-red';
       }
 
-      // ===== CALCULATE MASTERY =====
-      function calculateMastery(domainKey) {
-        const scores = getStoredScores();
-        const confidence = getStoredConfidence();
-        const blend = getBlendRatio();
+      // Mastery calculation removed - Hub now uses simple quiz percentages from Personalized Review
 
-        const domainScore = scores[domainKey] || { correct: 0, total: 0 };
-        const quizPercent = domainScore.total > 0 ? (domainScore.correct / domainScore.total) : 0;
-        const confPercent = (confidence[domainKey] || 0) / 100;
-
-        const mastery = (quizPercent * blend) + (confPercent * (1 - blend));
-        return Math.round(mastery * 100);
-      }
-
-      // ===== RENDER DOMAIN CARDS =====
+      // ===== RENDER DOMAIN CARDS (Read-Only - Data sourced from Personalized Review) =====
       function renderDomainCards() {
         const grid = document.getElementById('domain-grid');
         const scores = getStoredScores();
-        const confidence = getStoredConfidence();
 
         grid.innerHTML = '';
 
         domainConfig.forEach(domain => {
           const score = scores[domain.key] || { correct: 0, total: 0 };
-          const confValue = confidence[domain.key] || 50;
-          const mastery = calculateMastery(domain.key);
-          const ragClass = getRagClass(mastery);
+          const percent = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
+          const ragClass = getRagClass(percent);
 
           const card = document.createElement('div');
           card.className = 'domain-card';
@@ -1125,21 +1076,14 @@
                 <i class="${domain.icon}"></i>
                 ${domain.name}
               </div>
-              <div class="domain-mastery ${ragClass}">${mastery}%</div>
+              <div class="domain-mastery ${ragClass}">${percent}%</div>
             </div>
             <div class="progress-bar-container">
-              <div class="progress-bar ${ragClass}" style="width: ${mastery}%"></div>
+              <div class="progress-bar ${ragClass}" style="width: ${percent}%"></div>
             </div>
-            <div class="score-editor-row">
-              <label>Quiz:</label>
-              <input type="number" class="score-input" id="correct-${domain.key}" value="${score.correct}" min="0" data-domain="${domain.key}" data-field="correct">
-              <span>/</span>
-              <input type="number" class="score-input" id="total-${domain.key}" value="${score.total}" min="0" data-domain="${domain.key}" data-field="total">
-              <div class="confidence-slider-container">
-                <label style="min-width: auto;">Confidence:</label>
-                <input type="range" class="confidence-slider" id="conf-${domain.key}" min="0" max="100" value="${confValue}" data-domain="${domain.key}">
-                <span class="confidence-value" id="conf-val-${domain.key}">${confValue}%</span>
-              </div>
+            <div class="score-display-row" style="display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 0.9em; color: var(--text-secondary);">
+              <span><strong>Quiz Score:</strong> ${score.correct}/${score.total}</span>
+              <span class="rag-badge ${ragClass}" style="margin-left: auto;">${percent}%</span>
             </div>
             <div class="domain-actions">
               <a href="${domain.guideLink}" class="domain-action-btn primary">
@@ -1148,71 +1092,29 @@
               <a href="azure_personalized_review_guide.html#${domain.key}-focused-card" class="domain-action-btn secondary">
                 <i class="fas fa-clipboard-check"></i> Flashcards
               </a>
+              <a href="azure_personalized_review_guide.html" class="domain-action-btn" style="background: var(--azure-blue); color: white;">
+                <i class="fas fa-edit"></i> Update Scores
+              </a>
             </div>
           `;
           grid.appendChild(card);
         });
-
-        // Attach event listeners
-        document.querySelectorAll('.score-input').forEach(input => {
-          input.addEventListener('change', handleScoreChange);
-        });
-        document.querySelectorAll('.confidence-slider').forEach(slider => {
-          slider.addEventListener('input', handleConfidenceChange);
-        });
       }
 
-      function handleScoreChange(e) {
-        const domain = e.target.dataset.domain;
-        const field = e.target.dataset.field;
-        const value = parseInt(e.target.value) || 0;
+      // Score editing removed - all score input happens in Personalized Review Guide
 
-        const scores = getStoredScores();
-        if (!scores[domain]) scores[domain] = { correct: 0, total: 0 };
-        scores[domain][field] = value;
-        setStoredScores(scores);
-
-        renderDomainCards();
-        updatePrimaryFocus();
-        updateNextSteps();
-      }
-
-      function handleConfidenceChange(e) {
-        const domain = e.target.dataset.domain;
-        const value = parseInt(e.target.value);
-
-        const confidence = getStoredConfidence();
-        confidence[domain] = value;
-        setStoredConfidence(confidence);
-
-        document.getElementById(`conf-val-${domain}`).textContent = `${value}%`;
-
-        // Update mastery display
-        const mastery = calculateMastery(domain);
-        const ragClass = getRagClass(mastery);
-        const card = e.target.closest('.domain-card');
-        const masteryEl = card.querySelector('.domain-mastery');
-        const progressBar = card.querySelector('.progress-bar');
-
-        masteryEl.textContent = `${mastery}%`;
-        masteryEl.className = `domain-mastery ${ragClass}`;
-        progressBar.className = `progress-bar ${ragClass}`;
-        progressBar.style.width = `${mastery}%`;
-
-        updatePrimaryFocus();
-        updateNextSteps();
-      }
-
-      // ===== PRIMARY FOCUS =====
+      // ===== PRIMARY FOCUS (Uses quiz data from Personalized Review) =====
       function updatePrimaryFocus() {
+        const scores = getStoredScores();
         let weakest = null;
-        let lowestMastery = 101;
+        let lowestPercent = 101;
 
         domainConfig.forEach(domain => {
-          const mastery = calculateMastery(domain.key);
-          if (mastery < lowestMastery) {
-            lowestMastery = mastery;
-            weakest = domain;
+          const score = scores[domain.key] || { correct: 0, total: 0 };
+          const percent = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
+          if (percent < lowestPercent) {
+            lowestPercent = percent;
+            weakest = { ...domain, correct: score.correct, total: score.total };
           }
         });
 
@@ -1223,13 +1125,13 @@
 
         if (weakest) {
           nameEl.textContent = weakest.name;
-          scoreEl.textContent = `${lowestMastery}% Mastery`;
+          scoreEl.textContent = `${lowestPercent}% (${weakest.correct}/${weakest.total})`;
           linkEl.href = weakest.guideLink;
 
-          // Update widget color based on severity
-          if (lowestMastery < 50) {
+          // Update widget color based on RAG thresholds
+          if (lowestPercent < 50) {
             widget.style.background = 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)';
-          } else if (lowestMastery < 70) {
+          } else if (lowestPercent < 76) {
             widget.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
           } else {
             widget.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
@@ -1237,31 +1139,33 @@
         }
       }
 
-      // ===== NEXT STEPS TRACKER =====
+      // ===== NEXT STEPS TRACKER (Uses quiz data from Personalized Review) =====
       function updateNextSteps() {
         const list = document.getElementById('next-steps-list');
+        const scores = getStoredScores();
         const steps = [];
 
-        // Find weakest domains and recommend actions
-        const domainMasteries = domainConfig.map(d => ({
-          ...d,
-          mastery: calculateMastery(d.key)
-        })).sort((a, b) => a.mastery - b.mastery);
+        // Find weakest domains by quiz percentage
+        const domainScores = domainConfig.map(d => {
+          const score = scores[d.key] || { correct: 0, total: 0 };
+          const percent = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
+          return { ...d, percent, correct: score.correct, total: score.total };
+        }).sort((a, b) => a.percent - b.percent);
 
-        const weakest = domainMasteries.slice(0, 3);
+        const weakest = domainScores.slice(0, 3);
 
         weakest.forEach(domain => {
-          if (domain.mastery < 50) {
+          if (domain.percent < 50) {
             steps.push({
               icon: 'fas fa-exclamation-circle',
-              text: `Critical: Review ${domain.name} flashcards`,
+              text: `Critical: Review ${domain.name} flashcards (${domain.percent}%)`,
               link: `azure_personalized_review_guide.html#${domain.key}-focused-card`,
               color: '#ef4444'
             });
-          } else if (domain.mastery < 70) {
+          } else if (domain.percent < 76) {
             steps.push({
               icon: 'fas fa-book',
-              text: `Practice: ${domain.name} study guide`,
+              text: `Practice: ${domain.name} study guide (${domain.percent}%)`,
               link: domain.guideLink,
               color: '#f59e0b'
             });
@@ -1278,12 +1182,12 @@
           });
         }
 
-        // Add lab recommendation for domains near 70%
-        const nearMastery = domainMasteries.find(d => d.mastery >= 60 && d.mastery < 75);
-        if (nearMastery) {
+        // Add lab recommendation for domains near 76%
+        const nearTarget = domainScores.find(d => d.percent >= 60 && d.percent < 76);
+        if (nearTarget) {
           steps.push({
             icon: 'fas fa-flask',
-            text: `Hands-on: Complete ${nearMastery.name} lab exercises`,
+            text: `Hands-on: Complete ${nearTarget.name} lab exercises`,
             link: 'az104_vm_cli_lab_guide.html',
             color: '#10b981'
           });
@@ -1292,7 +1196,7 @@
         if (steps.length === 0) {
           steps.push({
             icon: 'fas fa-trophy',
-            text: 'Great job! All domains above 70%. Keep reviewing!',
+            text: 'Great job! All domains above 76%. Keep reviewing!',
             link: '#',
             color: '#10b981'
           });
@@ -1400,9 +1304,8 @@
 
         const data = {
           mergedQuizScores: getStoredScores(),
-          hubDomainConfidence: getStoredConfidence(),
-          hubBlendRatio: getBlendRatio(),
-          hubTheme: getTheme()
+          hubTheme: getTheme(),
+          dataSource: 'Personalized Review Guide (localStorage)'
         };
 
         content.textContent = JSON.stringify(data, null, 2);
@@ -1529,51 +1432,12 @@
         `;
       }
 
-      // ===== BLEND SELECT =====
-      function initBlendSelect() {
-        const select = document.getElementById('blend-select');
-        const current = getBlendRatio();
-        select.value = current.toString();
-
-        select.addEventListener('change', () => {
-          setBlendRatio(parseFloat(select.value));
-          renderDomainCards();
-          updatePrimaryFocus();
-          updateNextSteps();
-        });
-      }
-
-      // ===== SAVE/RESET BUTTONS =====
+      // ===== DEBUG TOGGLE =====
       function initControlButtons() {
-        document.getElementById('save-scores-btn').addEventListener('click', () => {
-          // Trigger save to history
-          try {
-            const scores = getStoredScores();
-            const rawHistory = localStorage.getItem('mergedQuizHistory');
-            const history = rawHistory ? JSON.parse(rawHistory) : [];
-            history.push({ timestamp: new Date().toISOString(), merged: scores });
-            // Keep last 30 entries
-            while (history.length > 30) history.shift();
-            localStorage.setItem('mergedQuizHistory', JSON.stringify(history));
-            renderRetentionTrends();
-            alert('Scores saved to history!');
-          } catch (e) {
-            alert('Error saving scores.');
-          }
-        });
-
-        document.getElementById('reset-scores-btn').addEventListener('click', () => {
-          if (confirm('Reset all domain scores and confidence? This cannot be undone.')) {
-            localStorage.removeItem('mergedQuizScores');
-            localStorage.removeItem('hubDomainConfidence');
-            renderDomainCards();
-            updatePrimaryFocus();
-            updateNextSteps();
-            updateDebugPanel();
-          }
-        });
-
-        document.getElementById('debug-toggle').addEventListener('click', toggleDebugPanel);
+        const debugToggle = document.getElementById('debug-toggle');
+        if (debugToggle) {
+          debugToggle.addEventListener('click', toggleDebugPanel);
+        }
       }
 
       // ===== STUDY ASSISTANT =====
@@ -1608,7 +1472,7 @@
 
         const scores = getStoredScores();
         if (!scores || Object.keys(scores).length === 0) {
-          contentEl.innerHTML = '<p style="color: var(--text-muted);">No quiz performance data found. Complete quizzes in the Personalized Review guide or enter scores in the domain cards above.</p>';
+          contentEl.innerHTML = '<p style="color: var(--text-muted);">No quiz performance data found. Update your scores in the <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue);">Personalized Review Guide</a> to see recommendations.</p>';
           return;
         }
 
@@ -1660,7 +1524,6 @@
         renderStudyAssistant();
         renderStudyTopics();
         updateProgressSummary();
-        initBlendSelect();
         initControlButtons();
 
         // Study Assistant refresh button
