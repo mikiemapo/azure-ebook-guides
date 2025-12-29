@@ -34,3 +34,18 @@ Configured as a static site deployment serving the `docs/` directory.
 - Pure static HTML/CSS/JS - no build step required
 - Uses CDN-hosted Font Awesome for icons
 - Cache-Control headers disabled for development
+
+## Data Contracts (localStorage)
+- **mergedQuizScores**: Domain scores with capitalized keys (Identities, Storage, Compute, Networking, Monitoring, App Service & Containers) containing {correct, total}
+- **domainScoreMetadata**: Per-domain metadata with {lastUpdated, source, quizName}
+- **mergedQuizHistory**: v2 versioned snapshots with {version, takenAt, source, merged, summary}
+
+## Stale Warning System
+- 14-day threshold for marking domains as stale
+- NEW badge (red): Domains never updated
+- STALE badge (orange): Domains not updated in 14+ days
+- Applies to both Personalized Review and main dashboard
+
+## Single Source of Truth Pattern
+- Personalized Review Guide (azure_personalized_review_guide.html) owns all score input and metadata
+- Main dashboard (index.html) is read-only and displays synced data from localStorage
