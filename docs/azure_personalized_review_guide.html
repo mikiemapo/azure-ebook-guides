@@ -443,6 +443,78 @@
         padding-left: 8px;
         margin: 6px 0 14px 0;
       }
+
+      /* Accordion System */
+      .accordion-section {
+        margin-bottom: 16px;
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        overflow: hidden;
+        background: var(--bg-secondary);
+        box-shadow: var(--shadow-sm);
+      }
+      .accordion-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 14px 18px;
+        background: var(--bg-tertiary);
+        cursor: pointer;
+        user-select: none;
+        transition: background 0.2s;
+        border-bottom: 1px solid transparent;
+      }
+      .accordion-header:hover {
+        background: var(--border-color);
+      }
+      .accordion-header.open {
+        border-bottom: 1px solid var(--border-color);
+      }
+      .accordion-title {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        font-size: 1em;
+        color: var(--text-primary);
+      }
+      .accordion-title i {
+        color: var(--azure-blue);
+      }
+      .accordion-meta {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.85em;
+        color: var(--text-secondary);
+      }
+      .accordion-chevron {
+        transition: transform 0.3s ease;
+        color: var(--text-muted);
+      }
+      .accordion-header.open .accordion-chevron {
+        transform: rotate(180deg);
+      }
+      .accordion-content {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease-out, padding 0.3s ease;
+        padding: 0 18px;
+      }
+      .accordion-content.open {
+        max-height: 5000px;
+        padding: 18px;
+        overflow: visible;
+      }
+      .accordion-badge {
+        padding: 3px 8px;
+        border-radius: 12px;
+        font-size: 0.75em;
+        font-weight: 600;
+      }
+      .accordion-badge.red { background: var(--rag-red-bg); color: var(--rag-red); }
+      .accordion-badge.amber { background: var(--rag-amber-bg); color: var(--rag-amber); }
+      .accordion-badge.green { background: var(--rag-green-bg); color: var(--rag-green); }
       .lab-highlight {
         animation: lab-highlight-pulse 2s ease-in-out 0s 2;
         border: 2px solid #ffcc33;
@@ -998,19 +1070,75 @@
 
         <!-- Debug panel moved into the Score Editor panel (collapsed by default) -->
 
-  <!-- Next Steps Tracker -->
-  <div class="next-steps-tracker">
-        <h3>
-          <i class="fas fa-arrow-circle-right"></i>Your Next Steps Tracker
-        </h3>
-        <div id="next-steps-content" class="tracker-content">
-          <!-- Dynamic content will be rendered here -->
-        </div>
-        <div class="az104-tip" style="margin-top: 15px">
-          <i class="fas fa-info-circle"></i>This section guides you to your next
-          priority flashcard and lab. Mark items as 'Strong' to progress!
-        </div>
+  <!-- SECTION NAVIGATION -->
+  <div id="section-nav" class="accordion-section" style="margin-bottom:20px;">
+    <div class="accordion-header" onclick="toggleAccordion('section-nav-content', this)">
+      <div class="accordion-title">
+        <i class="fas fa-compass"></i> Quick Navigation
       </div>
+      <i class="fas fa-chevron-down accordion-chevron"></i>
+    </div>
+    <div id="section-nav-content" class="accordion-content">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(150px, 1fr));gap:10px;">
+        <a href="#next-steps-section" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-arrow-circle-right" style="color:#d83b01;"></i> Next Steps
+        </a>
+        <a href="#performance-section" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-chart-pie" style="color:#ff9800;"></i> Performance
+        </a>
+        <a href="#identities-focused-card" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-user-shield" style="color:#0078d4;"></i> Identities
+        </a>
+        <a href="#storage-focused-card" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-database" style="color:#4caf50;"></i> Storage
+        </a>
+        <a href="#compute-focused-card" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-server" style="color:#9c27b0;"></i> Compute
+        </a>
+        <a href="#networking-focused-card" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-network-wired" style="color:#00bcd4;"></i> Networking
+        </a>
+        <a href="#monitoring-focused-card" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-chart-line" style="color:#ff5722;"></i> Monitoring
+        </a>
+        <a href="#study-tools-section" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-tools" style="color:#607d8b;"></i> Study Tools
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Next Steps Tracker -->
+  <div id="next-steps-section" class="accordion-section">
+    <div class="accordion-header open" onclick="toggleAccordion('next-steps-content-wrapper', this)">
+      <div class="accordion-title">
+        <i class="fas fa-arrow-circle-right" style="color:#d83b01;"></i> Your Next Steps
+      </div>
+      <div class="accordion-meta">
+        <span style="color:#28a745;">Always expanded for quick access</span>
+      </div>
+      <i class="fas fa-chevron-down accordion-chevron"></i>
+    </div>
+    <div id="next-steps-content-wrapper" class="accordion-content open">
+      <div id="next-steps-content" class="tracker-content">
+        <!-- Dynamic content will be rendered here -->
+      </div>
+      <div class="az104-tip" style="margin-top: 15px">
+        <i class="fas fa-info-circle"></i>This section guides you to your next
+        priority flashcard and lab. Mark items as 'Strong' to progress!
+      </div>
+    </div>
+  </div>
+
+  <script>
+  function toggleAccordion(contentId, headerEl) {
+    const content = document.getElementById(contentId);
+    if (!content) return;
+    const isOpen = content.classList.contains('open');
+    content.classList.toggle('open');
+    headerEl.classList.toggle('open');
+  }
+  </script>
       <!-- Domain progress rendering moved to consolidated script -->
 
   <!-- Inline lab-module mapping -->
@@ -2589,7 +2717,7 @@
 
       <div class="card-container">
         <!-- Card 1: Current Performance Snapshot -->
-        <div class="card">
+        <div class="card" id="performance-section">
           <input
             type="checkbox"
             id="performance-snapshot-toggle"
