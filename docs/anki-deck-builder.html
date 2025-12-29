@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anki Deck Builder | AZ-104 Study Hub</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --text-primary: #1e293b;
+      --text-secondary: #64748b;
+      --border-color: #e2e8f0;
+      --accent-blue: #3b82f6;
+      --accent-green: #22c55e;
+      --accent-red: #ef4444;
+      --accent-orange: #f97316;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+      --radius: 8px;
+    }
+
+    body.dark-mode {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-tertiary: #334155;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --border-color: #334155;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      color: var(--text-primary);
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .back-btn:hover { background: var(--bg-tertiary); }
+
+    .theme-toggle {
+      padding: 10px 16px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text-primary);
+    }
+
+    /* Hero */
+    .hero {
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+      color: white;
+      padding: 48px 32px;
+      border-radius: 12px;
+      margin-bottom: 32px;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      margin-bottom: 16px;
+    }
+    .hero h1 { font-size: 2.5rem; margin-bottom: 12px; }
+    .hero p { opacity: 0.9; max-width: 600px; }
+
+    /* Grid Layout */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 380px 1fr;
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .card-header i { color: var(--accent-blue); font-size: 18px; }
+    .card-title { font-size: 16px; font-weight: 600; }
+    .card-desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+    /* File Upload */
+    .upload-zone {
+      border: 2px dashed var(--border-color);
+      border-radius: var(--radius);
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .upload-zone:hover, .upload-zone.dragover {
+      border-color: var(--accent-blue);
+      background: rgba(59,130,246,0.05);
+    }
+    .upload-zone i { font-size: 32px; color: var(--text-secondary); margin-bottom: 12px; }
+    .upload-zone p { color: var(--text-secondary); font-size: 14px; }
+    .upload-zone input[type="file"] { display: none; }
+
+    .file-info {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-tertiary);
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      margin-top: 12px;
+    }
+    .file-info .name { font-weight: 500; }
+    .file-info .clear-btn {
+      background: none;
+      border: none;
+      color: var(--accent-red);
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    /* Template Download */
+    .template-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .template-btn {
+      flex: 1;
+      min-width: 120px;
+      padding: 10px 12px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    .template-btn:hover { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+
+    /* Form Fields */
+    .form-group { margin-bottom: 16px; }
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      margin-bottom: 6px;
+    }
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    /* Toggle Switch */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: var(--bg-tertiary);
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+    }
+    .toggle-label { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+    .toggle-label i { color: var(--accent-blue); }
+    .toggle-switch {
+      position: relative;
+      width: 48px;
+      height: 26px;
+    }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: var(--border-color);
+      border-radius: 26px;
+      transition: 0.3s;
+    }
+    .toggle-slider:before {
+      content: "";
+      position: absolute;
+      height: 20px;
+      width: 20px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+    .toggle-switch input:checked + .toggle-slider { background: var(--accent-blue); }
+    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
+
+    /* Export Button */
+    .export-btn {
+      width: 100%;
+      padding: 14px 20px;
+      background: var(--accent-blue);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .export-btn:hover:not(:disabled) { background: #2563eb; }
+    .export-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .export-status {
+      text-align: center;
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 8px;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--bg-tertiary);
+      padding: 4px;
+      border-radius: var(--radius);
+      margin-bottom: 16px;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 10px 16px;
+      background: none;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      transition: all 0.2s;
+    }
+    .tab-btn.active { background: var(--bg-secondary); color: var(--text-primary); box-shadow: var(--shadow-sm); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Data Table */
+    .table-container {
+      overflow-x: auto;
+      max-height: 500px;
+      overflow-y: auto;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 10px 12px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+    th {
+      background: var(--bg-tertiary);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    tr:hover { background: var(--bg-tertiary); }
+    tr.invalid { background: rgba(239,68,68,0.1); }
+    
+    .status-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+    .status-valid { background: rgba(34,197,94,0.15); color: var(--accent-green); }
+    .status-invalid { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+    .badge-green { background: rgba(34,197,94,0.15); color: var(--accent-green); }
+    .badge-red { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+
+    .tag {
+      display: inline-block;
+      padding: 2px 6px;
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      font-size: 10px;
+      margin: 2px;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+    .empty-state i { font-size: 48px; opacity: 0.3; margin-bottom: 16px; }
+    .empty-state h3 { font-size: 16px; margin-bottom: 8px; color: var(--text-primary); }
+
+    /* Card Preview */
+    .card-preview-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+      max-height: 500px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+    .preview-card-item {
+      padding: 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .preview-card-item:hover { border-color: var(--accent-blue); }
+    .preview-card-item h4 {
+      font-size: 14px;
+      margin-bottom: 8px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Anki Preview Modal */
+    .anki-preview {
+      background: linear-gradient(135deg, #0b1220 0%, #111827 50%, #0b1220 100%);
+      border-radius: var(--radius);
+      padding: 24px;
+      color: #e5e7eb;
+    }
+    .anki-preview .question { font-size: 18px; margin-bottom: 16px; }
+    .anki-preview .choice {
+      background: #ffffff;
+      color: #0f172a;
+      border: 1px solid #0f172a;
+      border-radius: 6px;
+      padding: 12px 14px;
+      margin: 8px 0;
+    }
+    .anki-preview .choice.correct {
+      background: #2ecc71;
+      border-color: #27ae60;
+    }
+    .anki-preview .explanation {
+      background: #2ecc71;
+      color: #000;
+      border-radius: 6px;
+      padding: 14px;
+      margin-top: 16px;
+    }
+    .anki-preview .explanation strong { display: block; margin-bottom: 6px; }
+
+    .preview-back-btn {
+      margin-bottom: 16px;
+      padding: 8px 16px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      cursor: pointer;
+      color: var(--text-primary);
+      font-size: 13px;
+    }
+
+    /* Template Preview */
+    .code-block {
+      background: #0f172a;
+      color: #e5e7eb;
+      padding: 16px;
+      border-radius: var(--radius);
+      overflow-x: auto;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 12px;
+      white-space: pre-wrap;
+      margin-bottom: 16px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .code-section h4 { font-size: 14px; margin-bottom: 8px; }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      padding: 16px 20px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-md);
+      z-index: 1000;
+      display: none;
+      max-width: 350px;
+    }
+    .toast.show { display: block; animation: slideIn 0.3s ease; }
+    .toast.success { border-left: 4px solid var(--accent-green); }
+    .toast.error { border-left: 4px solid var(--accent-red); }
+    .toast-title { font-weight: 600; margin-bottom: 4px; }
+    .toast-message { font-size: 13px; color: var(--text-secondary); }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <a href="index.html" class="back-btn">
+        <i class="fas fa-arrow-left"></i> Back to Study Hub
+      </a>
+      <button class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-moon"></i> Dark
+      </button>
+    </div>
+
+    <!-- Hero -->
+    <div class="hero">
+      <div class="hero-badge">
+        <i class="fas fa-sparkles"></i> Anki Deck Generator
+      </div>
+      <h1>CSV to Anki .apkg</h1>
+      <p>Convert your spreadsheet data into high-quality Anki flashcards with deterministic IDs and professional styling. All processing happens in your browser.</p>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="main-grid">
+      <!-- Left Column -->
+      <div class="left-column">
+        <!-- Input Data Card -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-file-upload"></i>
+            <div>
+              <div class="card-title">Input Data</div>
+              <div class="card-desc">Upload your MCQ CSV file</div>
+            </div>
+          </div>
+
+          <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fileInput').click()">
+            <i class="fas fa-cloud-upload-alt"></i>
+            <p>Drop CSV file here or click to browse</p>
+            <input type="file" id="fileInput" accept=".csv" onchange="handleFileUpload(event)">
+          </div>
+          
+          <div class="file-info" id="fileInfo" style="display:none;">
+            <span class="name" id="fileName"></span>
+            <button class="clear-btn" onclick="resetData()"><i class="fas fa-times"></i> Clear</button>
+          </div>
+
+          <div style="margin-top: 16px;">
+            <p style="font-size:12px; color:var(--text-secondary); margin-bottom: 8px;">Download template:</p>
+            <div class="template-btns">
+              <button class="template-btn" onclick="downloadTemplate('csv')">
+                <i class="fas fa-file-csv"></i> CSV Template
+              </button>
+              <button class="template-btn" onclick="downloadTemplate('example')">
+                <i class="fas fa-file-alt"></i> Example Data
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Deck Metadata Card -->
+        <div class="card">
+          <div class="card-header">
+            <i class="fas fa-database"></i>
+            <div>
+              <div class="card-title">Deck Metadata</div>
+              <div class="card-desc">Configure your deck settings</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="deckName">Deck Name</label>
+            <input type="text" id="deckName" placeholder="e.g. AZ-104 Study Guide::Azure Monitor">
+          </div>
+
+          <div class="form-group">
+            <label for="deckDesc">Description (Optional)</label>
+            <textarea id="deckDesc" placeholder="Deck description..."></textarea>
+          </div>
+
+          <div class="toggle-row">
+            <div class="toggle-label">
+              <i class="fas fa-shuffle"></i>
+              <span>Randomize Answer Positions</span>
+            </div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="shuffleToggle">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <button class="export-btn" id="exportBtn" disabled onclick="exportDeck()">
+            <i class="fas fa-download"></i> Download .apkg File
+          </button>
+          <div class="export-status" id="exportStatus"></div>
+        </div>
+
+        <!-- Pre-built Decks Link -->
+        <div class="card" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; border: none;">
+          <div class="card-header" style="margin-bottom: 8px;">
+            <i class="fas fa-layer-group" style="color: white;"></i>
+            <div>
+              <div class="card-title">Pre-Built Decks Available</div>
+            </div>
+          </div>
+          <p style="font-size: 13px; opacity: 0.9; margin-bottom: 12px;">Download ready-made AZ-104 flashcard decks covering all exam domains.</p>
+          <a href="anki-deck-library.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: white; color: #1e40af; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px;">
+            <i class="fas fa-arrow-right"></i> View Deck Library
+          </a>
+        </div>
+      </div>
+
+      <!-- Right Column -->
+      <div class="right-column">
+        <div class="card" style="height: fit-content;">
+          <!-- Tabs -->
+          <div class="tabs">
+            <button class="tab-btn active" data-tab="preview" onclick="switchTab('preview')">
+              <i class="fas fa-table"></i> Data Preview
+            </button>
+            <button class="tab-btn" data-tab="cardview" onclick="switchTab('cardview')">
+              <i class="fas fa-eye"></i> Card View
+            </button>
+            <button class="tab-btn" data-tab="template" onclick="switchTab('template')">
+              <i class="fas fa-code"></i> Template
+            </button>
+          </div>
+
+          <!-- Data Preview Tab -->
+          <div class="tab-content active" id="tab-preview">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <div>
+                <strong>Card Preview</strong>
+                <p style="font-size: 12px; color: var(--text-secondary);">Review parsed cards before export</p>
+              </div>
+              <div style="display: flex; gap: 8px;">
+                <span class="badge badge-green" id="validCount"><i class="fas fa-check"></i> 0 Valid</span>
+                <span class="badge badge-red" id="invalidCount" style="display:none;"><i class="fas fa-exclamation-triangle"></i> 0 Invalid</span>
+              </div>
+            </div>
+            
+            <div id="dataPreview">
+              <div class="empty-state">
+                <i class="fas fa-database"></i>
+                <h3>No data loaded yet</h3>
+                <p>Upload a CSV file to see the preview</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Card View Tab -->
+          <div class="tab-content" id="tab-cardview">
+            <div id="cardViewContent">
+              <div class="empty-state">
+                <i class="fas fa-eye"></i>
+                <h3>No cards to preview</h3>
+                <p>Upload a CSV file to see Anki card previews</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Template Tab -->
+          <div class="tab-content" id="tab-template">
+            <div class="code-section">
+              <h4>Front Template</h4>
+              <pre class="code-block">&lt;div style="color:#e5e7eb; font-family:system-ui;"&gt;
+  &lt;div style="font-size:20px; margin-bottom:16px;"&gt;{{Question}}&lt;/div&gt;
+  &lt;div class="choice" data-key="A"&gt;A. {{A}}&lt;/div&gt;
+  &lt;div class="choice" data-key="B"&gt;B. {{B}}&lt;/div&gt;
+  &lt;div class="choice" data-key="C"&gt;C. {{C}}&lt;/div&gt;
+  &lt;div class="choice" data-key="D"&gt;D. {{D}}&lt;/div&gt;
+&lt;/div&gt;</pre>
+            </div>
+
+            <div class="code-section">
+              <h4>Back Template</h4>
+              <pre class="code-block">&lt;div style="color:#e5e7eb; font-family:system-ui;"&gt;
+  &lt;div style="font-size:20px; margin-bottom:16px;"&gt;{{Question}}&lt;/div&gt;
+  &lt;div class="choice {{#isCorrectA}}correct{{/isCorrectA}}"&gt;A. {{A}}&lt;/div&gt;
+  &lt;div class="choice {{#isCorrectB}}correct{{/isCorrectB}}"&gt;B. {{B}}&lt;/div&gt;
+  &lt;div class="choice {{#isCorrectC}}correct{{/isCorrectC}}"&gt;C. {{C}}&lt;/div&gt;
+  &lt;div class="choice {{#isCorrectD}}correct{{/isCorrectD}}"&gt;D. {{D}}&lt;/div&gt;
+  &lt;div class="explanation"&gt;
+    &lt;strong&gt;Explanation&lt;/strong&gt;&lt;br&gt;{{Explanation}}
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+            </div>
+
+            <div class="code-section">
+              <h4>Card Styling (CSS)</h4>
+              <pre class="code-block">.card {
+  background: linear-gradient(135deg, #0b1220 0%, #111827 50%, #0b1220 100%);
+  color: #e5e7eb;
+  min-height: 100vh;
+  padding: 16px;
+}
+.choice {
+  background: #ffffff;
+  color: #0f172a;
+  border: 1px solid #0f172a;
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin: 8px 0;
+}
+.choice.correct {
+  background: #2ecc71 !important;
+  border-color: #27ae60;
+}</pre>
+            </div>
+
+            <div style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: var(--radius); padding: 16px;">
+              <p style="font-weight: 600; margin-bottom: 8px;">Model Information</p>
+              <div style="font-family: monospace; font-size: 12px; color: var(--text-secondary);">
+                <p>Model ID: 1607392310</p>
+                <p>Deck ID: 2051212310</p>
+                <p>Fields: Question, A, B, C, D, Correct, Explanation, Tags, Source, Batch + isCorrect flags</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast">
+    <div class="toast-title" id="toastTitle"></div>
+    <div class="toast-message" id="toastMessage"></div>
+  </div>
+
+  <script>
+    // ============ State ============
+    let cards = [];
+    let selectedPreviewCard = null;
+
+    // ============ MCQ Model Config ============
+    const MCQ_MODEL = {
+      NOTE_TYPE_ID: 1607392310,
+      DECK_ID: 2051212310,
+      MODEL_NAME: "MCQ",
+      FIELDS: ["Question", "A", "B", "C", "D", "Correct", "Explanation", "Tags", "Source", "Batch", "isCorrectA", "isCorrectB", "isCorrectC", "isCorrectD"],
+      FRONT_TEMPLATE: `<div style="color:#e5e7eb; font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial;">
+  <div style="font-size:20px; margin-bottom:16px;">{{Question}}</div>
+  <div class="choice" data-key="A">A. {{A}}</div>
+  <div class="choice" data-key="B">B. {{B}}</div>
+  <div class="choice" data-key="C">C. {{C}}</div>
+  <div class="choice" data-key="D">D. {{D}}</div>
+</div>`,
+      BACK_TEMPLATE: `<div style="color:#e5e7eb; font-family:system-ui;">
+  <div style="font-size:20px; margin-bottom:16px;">{{Question}}</div>
+  <div class="choice {{#isCorrectA}}correct{{/isCorrectA}}" data-key="A">A. {{A}}</div>
+  <div class="choice {{#isCorrectB}}correct{{/isCorrectB}}" data-key="B">B. {{B}}</div>
+  <div class="choice {{#isCorrectC}}correct{{/isCorrectC}}" data-key="C">C. {{C}}</div>
+  <div class="choice {{#isCorrectD}}correct{{/isCorrectD}}" data-key="D">D. {{D}}</div>
+  <div style="background:#2ecc71; color:#000; border-radius:6px; padding:12px; margin-top:16px;">
+    <strong>Explanation</strong><br>{{Explanation}}
+  </div>
+</div>`,
+      CSS: `.card { background: linear-gradient(135deg, #0b1220 0%, #111827 50%, #0b1220 100%) !important; color: #e5e7eb; min-height: 100vh; padding: 16px; }
+.choice { background: #ffffff; color: #0f172a; border:1px solid #0f172a; border-radius:6px; padding:10px 12px; margin:8px 0; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18); }
+.choice.correct { background:#2ecc71 !important; color: #0f172a; border-color:#27ae60; }`
+    };
+
+    // ============ Theme Toggle ============
+    function toggleTheme() {
+      document.body.classList.toggle('dark-mode');
+      const btn = document.querySelector('.theme-toggle');
+      if (document.body.classList.contains('dark-mode')) {
+        btn.innerHTML = '<i class="fas fa-sun"></i> Light';
+      } else {
+        btn.innerHTML = '<i class="fas fa-moon"></i> Dark';
+      }
+    }
+
+    // ============ Tab Switching ============
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+      document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+    }
+
+    // ============ File Upload ============
+    const uploadZone = document.getElementById('uploadZone');
+    uploadZone.addEventListener('dragover', e => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+    uploadZone.addEventListener('dragleave', () => uploadZone.classList.remove('dragover'));
+    uploadZone.addEventListener('drop', e => {
+      e.preventDefault();
+      uploadZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file && file.name.endsWith('.csv')) {
+        parseCSV(file);
+      }
+    });
+
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (file) parseCSV(file);
+    }
+
+    function parseCSV(file) {
+      Papa.parse(file, {
+        header: true,
+        skipEmptyLines: true,
+        complete: function(results) {
+          cards = processData(results.data);
+          document.getElementById('fileName').textContent = file.name;
+          document.getElementById('fileInfo').style.display = 'flex';
+          updateUI();
+          showToast('success', 'File Loaded', `Parsed ${cards.length} cards from ${file.name}`);
+        },
+        error: function(err) {
+          showToast('error', 'Parse Error', err.message);
+        }
+      });
+    }
+
+    function resetData() {
+      cards = [];
+      selectedPreviewCard = null;
+      document.getElementById('fileInfo').style.display = 'none';
+      document.getElementById('fileInput').value = '';
+      updateUI();
+    }
+
+    // ============ Data Processing ============
+    function processData(data) {
+      return data.map(row => {
+        const getValue = (keys) => {
+          for (const key of keys) {
+            if (row[key] !== undefined) return row[key];
+            const rowKey = Object.keys(row).find(k => k.toLowerCase() === key.toLowerCase());
+            if (rowKey && row[rowKey] !== undefined) return row[rowKey];
+          }
+          return "";
+        };
+
+        const A = getValue(["Option_A", "ChoiceA", "A"]);
+        const B = getValue(["Option_B", "ChoiceB", "B"]);
+        const C = getValue(["Option_C", "ChoiceC", "C"]);
+        const D = getValue(["Option_D", "ChoiceD", "D"]);
+        const Question = getValue(["Question"]);
+        const CorrectRaw = getValue(["Correct_Answer", "Correct"]);
+        const Explanation = getValue(["Explanation"]);
+        const Tags = getValue(["Tags"]);
+        const Source = getValue(["Source"]);
+        const Batch = getValue(["Batch"]);
+
+        const errors = [];
+        if (!Question.trim()) errors.push("Missing Question");
+        if (!A.trim()) errors.push("Missing choice A");
+        if (!B.trim()) errors.push("Missing choice B");
+        if (!C.trim()) errors.push("Missing choice C");
+        if (!D.trim()) errors.push("Missing choice D");
+        if (!CorrectRaw.trim()) errors.push("Missing Correct");
+        if (!Explanation.trim()) errors.push("Missing Explanation");
+        
+        const correct = (CorrectRaw || "").trim().toUpperCase();
+        if (correct && !["A", "B", "C", "D"].includes(correct)) {
+          errors.push(`Invalid Correct: ${correct}`);
+        }
+
+        const content = `${Question}|${A}|${B}|${C}|${D}`;
+        const id = CryptoJS.SHA256(content).toString(CryptoJS.enc.Hex).substring(0, 16);
+
+        return {
+          id,
+          Question, A, B, C, D,
+          Correct: correct,
+          Explanation, Tags, Source, Batch,
+          isCorrectA: correct === "A" ? "1" : "",
+          isCorrectB: correct === "B" ? "1" : "",
+          isCorrectC: correct === "C" ? "1" : "",
+          isCorrectD: correct === "D" ? "1" : "",
+          isValid: errors.length === 0,
+          errors
+        };
+      });
+    }
+
+    function shuffleCard(card) {
+      if (!card.isValid) return card;
+      const originalCorrect = card.originalCorrect || card.Correct;
+      const choices = [
+        { key: "A", text: card.A },
+        { key: "B", text: card.B },
+        { key: "C", text: card.C },
+        { key: "D", text: card.D }
+      ];
+      const correctChoice = choices.find(c => c.key === card.Correct);
+      if (!correctChoice) return card;
+
+      const shuffled = [...choices];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+      }
+
+      const keys = ["A", "B", "C", "D"];
+      const newCorrectIndex = shuffled.findIndex(c => c === correctChoice);
+      const newCorrect = keys[newCorrectIndex];
+
+      return {
+        ...card,
+        A: shuffled[0].text,
+        B: shuffled[1].text,
+        C: shuffled[2].text,
+        D: shuffled[3].text,
+        Correct: newCorrect,
+        originalCorrect,
+        isCorrectA: newCorrect === "A" ? "1" : "",
+        isCorrectB: newCorrect === "B" ? "1" : "",
+        isCorrectC: newCorrect === "C" ? "1" : "",
+        isCorrectD: newCorrect === "D" ? "1" : ""
+      };
+    }
+
+    // ============ UI Update ============
+    function updateUI() {
+      const validCount = cards.filter(c => c.isValid).length;
+      const invalidCount = cards.filter(c => !c.isValid).length;
+
+      document.getElementById('validCount').innerHTML = `<i class="fas fa-check"></i> ${validCount} Valid`;
+      if (invalidCount > 0) {
+        document.getElementById('invalidCount').style.display = 'inline-flex';
+        document.getElementById('invalidCount').innerHTML = `<i class="fas fa-exclamation-triangle"></i> ${invalidCount} Invalid`;
+      } else {
+        document.getElementById('invalidCount').style.display = 'none';
+      }
+
+      document.getElementById('exportBtn').disabled = validCount === 0;
+      document.getElementById('exportStatus').textContent = validCount > 0 
+        ? `Ready to export ${validCount} valid card${validCount !== 1 ? 's' : ''}`
+        : '';
+
+      renderDataPreview();
+      renderCardView();
+    }
+
+    function renderDataPreview() {
+      const container = document.getElementById('dataPreview');
+      if (cards.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-database"></i>
+            <h3>No data loaded yet</h3>
+            <p>Upload a CSV file to see the preview</p>
+          </div>`;
+        return;
+      }
+
+      let html = `
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th style="width:60px;">Status</th>
+                <th style="width:100px;">ID</th>
+                <th>Question</th>
+                <th style="width:70px;">Answer</th>
+                <th style="width:120px;">Tags</th>
+              </tr>
+            </thead>
+            <tbody>`;
+      
+      cards.forEach(card => {
+        const statusClass = card.isValid ? 'status-valid' : 'status-invalid';
+        const statusIcon = card.isValid ? 'fa-check' : 'fa-exclamation-triangle';
+        const rowClass = card.isValid ? '' : 'invalid';
+        const tags = (card.Tags || '').split(/[,;]/).filter(Boolean).map(t => `<span class="tag">${t.trim()}</span>`).join('');
+        
+        html += `
+          <tr class="${rowClass}">
+            <td><div class="status-icon ${statusClass}"><i class="fas ${statusIcon}"></i></div></td>
+            <td style="font-family:monospace; font-size:11px; color:var(--text-secondary);">${card.id.substring(0,8)}...</td>
+            <td>
+              <div style="font-weight:500; font-size:13px;">${escapeHtml(card.Question.substring(0, 80))}${card.Question.length > 80 ? '...' : ''}</div>
+              ${!card.isValid ? `<div style="color:var(--accent-red); font-size:11px; margin-top:4px;">${card.errors[0]}</div>` : ''}
+            </td>
+            <td style="font-weight:700; text-align:center; font-size:16px;">${card.Correct}</td>
+            <td>${tags}</td>
+          </tr>`;
+      });
+
+      html += '</tbody></table></div>';
+      container.innerHTML = html;
+    }
+
+    function renderCardView() {
+      const container = document.getElementById('cardViewContent');
+      const validCards = cards.filter(c => c.isValid);
+
+      if (validCards.length === 0) {
+        container.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-eye"></i>
+            <h3>No cards to preview</h3>
+            <p>Upload a CSV file to see Anki card previews</p>
+          </div>`;
+        return;
+      }
+
+      if (selectedPreviewCard) {
+        const c = selectedPreviewCard;
+        container.innerHTML = `
+          <button class="preview-back-btn" onclick="selectedPreviewCard=null; renderCardView();">
+            <i class="fas fa-arrow-left"></i> Back to list
+          </button>
+          <div class="anki-preview">
+            <div class="question">${escapeHtml(c.Question)}</div>
+            <div class="choice ${c.Correct === 'A' ? 'correct' : ''}">A. ${escapeHtml(c.A)}</div>
+            <div class="choice ${c.Correct === 'B' ? 'correct' : ''}">B. ${escapeHtml(c.B)}</div>
+            <div class="choice ${c.Correct === 'C' ? 'correct' : ''}">C. ${escapeHtml(c.C)}</div>
+            <div class="choice ${c.Correct === 'D' ? 'correct' : ''}">D. ${escapeHtml(c.D)}</div>
+            <div class="explanation">
+              <strong>Explanation</strong>
+              ${escapeHtml(c.Explanation)}
+            </div>
+          </div>`;
+        return;
+      }
+
+      let html = '<p style="font-size:13px; margin-bottom:12px;"><strong>Select a card to preview:</strong></p>';
+      html += '<div class="card-preview-container">';
+      validCards.slice(0, 20).forEach((card, idx) => {
+        html += `
+          <div class="preview-card-item" onclick="selectPreviewCard(${idx})">
+            <h4>${escapeHtml(card.Question)}</h4>
+            <span class="badge badge-green">Answer: ${card.Correct}</span>
+          </div>`;
+      });
+      if (validCards.length > 20) {
+        html += `<p style="grid-column:1/-1; text-align:center; color:var(--text-secondary); font-size:12px;">Showing 20 of ${validCards.length} cards</p>`;
+      }
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function selectPreviewCard(idx) {
+      selectedPreviewCard = cards.filter(c => c.isValid)[idx];
+      renderCardView();
+    }
+
+    // ============ Template Download ============
+    function downloadTemplate(type) {
+      let content, filename;
+      if (type === 'csv') {
+        content = 'Question,A,B,C,D,Correct,Explanation,Tags,Source,Batch\n';
+        filename = 'anki_mcq_template.csv';
+      } else {
+        content = `Question,A,B,C,D,Correct,Explanation,Tags,Source,Batch
+"What is the primary purpose of Azure Virtual Networks?","Hosting web applications","Isolating and segmenting Azure resources","Storing blob data","Managing user identities",B,"Azure Virtual Networks (VNets) provide isolation and segmentation for Azure resources, enabling secure communication between resources.",Networking;VNet,Microsoft Learn,AZ-104
+"Which Azure service provides fully managed MySQL databases?","Azure SQL Database","Azure Cosmos DB","Azure Database for MySQL","Azure Synapse Analytics",C,"Azure Database for MySQL is a fully managed database service for MySQL, offering high availability and security.",Database;MySQL,Microsoft Learn,AZ-104`;
+        filename = 'anki_mcq_example.csv';
+      }
+      
+      const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+
+    // ============ Export to .apkg ============
+    async function exportDeck() {
+      const deckName = document.getElementById('deckName').value.trim();
+      if (!deckName) {
+        showToast('error', 'Missing Deck Name', 'Please enter a name for your Anki deck.');
+        return;
+      }
+
+      const validCards = cards.filter(c => c.isValid);
+      if (validCards.length === 0) {
+        showToast('error', 'No Valid Cards', 'There are no valid cards to export.');
+        return;
+      }
+
+      const exportBtn = document.getElementById('exportBtn');
+      exportBtn.disabled = true;
+      exportBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+
+      try {
+        const shouldShuffle = document.getElementById('shuffleToggle').checked;
+        const cardsToExport = shouldShuffle ? validCards.map(shuffleCard) : validCards;
+        
+        const blob = await generateAnkiPackage(deckName, cardsToExport);
+        const filename = `${deckName.replace(/\s+/g, '_')}.apkg`;
+        
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+
+        showToast('success', 'Deck Generated!', `Downloaded ${filename} with ${validCards.length} cards.${shouldShuffle ? ' Answers shuffled.' : ''}`);
+      } catch (err) {
+        console.error('Export failed:', err);
+        showToast('error', 'Generation Failed', err.message);
+      } finally {
+        exportBtn.disabled = false;
+        exportBtn.innerHTML = '<i class="fas fa-download"></i> Download .apkg File';
+      }
+    }
+
+    async function generateAnkiPackage(deckName, cards) {
+      const SQL = await initSqlJs({
+        locateFile: file => `https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/${file}`
+      });
+
+      const db = new SQL.Database();
+      const SEPARATOR = "\x1f";
+
+      db.run(`
+        CREATE TABLE col (id integer primary key, crt integer not null, mod integer not null, scm integer not null, ver integer not null, dty integer not null, usn integer not null, ls integer not null, conf text not null, models text not null, decks text not null, dconf text not null, tags text not null);
+        CREATE TABLE notes (id integer primary key, guid text not null, mid integer not null, mod integer not null, usn integer not null, tags text not null, flds text not null, sfld integer not null, csum integer not null, flags integer not null, data text not null);
+        CREATE TABLE cards (id integer primary key, nid integer not null, did integer not null, ord integer not null, mod integer not null, usn integer not null, type integer not null, queue integer not null, due integer not null, ivl integer not null, factor integer not null, reps integer not null, lapses integer not null, left integer not null, odue integer not null, odid integer not null, flags integer not null, data text not null);
+        CREATE TABLE revlog (id integer primary key, cid integer not null, usn integer not null, ease integer not null, ivl integer not null, lastIvl integer not null, factor integer not null, time integer not null, type integer not null);
+        CREATE TABLE graves (usn integer not null, oid integer not null, type integer not null);
+      `);
+
+      const now = Math.floor(Date.now() / 1000);
+      const nowMs = Date.now();
+
+      const models = {};
+      models[MCQ_MODEL.NOTE_TYPE_ID] = {
+        id: MCQ_MODEL.NOTE_TYPE_ID, name: MCQ_MODEL.MODEL_NAME, type: 0, mod: now, usn: -1, sortf: 0, did: MCQ_MODEL.DECK_ID,
+        tmpls: [{ name: "Card 1", ord: 0, qfmt: MCQ_MODEL.FRONT_TEMPLATE, afmt: MCQ_MODEL.BACK_TEMPLATE, bqfmt: "", bafmt: "", did: null }],
+        flds: MCQ_MODEL.FIELDS.map((name, idx) => ({ name, ord: idx, sticky: false, rtl: false, font: "Arial", size: 20, media: [] })),
+        css: MCQ_MODEL.CSS, latexPre: "", latexPost: "", req: [[0, "all", [0]]]
+      };
+
+      const decks = {};
+      decks[MCQ_MODEL.DECK_ID] = { id: MCQ_MODEL.DECK_ID, mod: now, name: deckName, usn: -1, lrnToday: [0,0], revToday: [0,0], newToday: [0,0], timeToday: [0,0], collapsed: false, browserCollapsed: false, desc: "", dyn: 0, conf: 1, extendNew: 10, extendRev: 50 };
+      decks[1] = { id: 1, mod: now, name: "Default", usn: 0, lrnToday: [0,0], revToday: [0,0], newToday: [0,0], timeToday: [0,0], collapsed: false, browserCollapsed: false, desc: "", dyn: 0, conf: 1, extendNew: 10, extendRev: 50 };
+
+      const dconf = { 1: { id: 1, mod: now, name: "Default", usn: 0, maxTaken: 60, autoplay: true, timer: 0, replayq: true, new: { bury: false, delays: [1,10], initialFactor: 2500, ints: [1,4,7], order: 1, perDay: 20 }, rev: { bury: false, ease4: 1.3, ivlFct: 1, maxIvl: 36500, perDay: 200, hardFactor: 1.2 }, lapse: { delays: [10], leechAction: 0, leechFails: 8, minInt: 1, mult: 0 } } };
+      const conf = { nextPos: 1, estTimes: true, activeDecks: [1], sortType: "noteFld", timeLim: 0, sortBackwards: false, addToCur: true, curDeck: 1, newBury: true, newSpread: 0, dueCounts: true, curModel: now, collapseTime: 1200 };
+
+      db.run(`INSERT INTO col VALUES(1, ${now}, ${nowMs}, ${nowMs}, 11, 0, 0, 0, '${JSON.stringify(conf).replace(/'/g, "''")}', '${JSON.stringify(models).replace(/'/g, "''")}', '${JSON.stringify(decks).replace(/'/g, "''")}', '${JSON.stringify(dconf).replace(/'/g, "''")}', '{}')`);
+
+      let noteId = nowMs;
+      let cardId = nowMs;
+
+      for (const card of cards) {
+        if (!card.isValid) continue;
+        const fields = [card.Question, card.A, card.B, card.C, card.D, card.Correct, card.Explanation, card.Tags, card.Source, card.Batch, card.isCorrectA, card.isCorrectB, card.isCorrectC, card.isCorrectD];
+        const flds = fields.join(SEPARATOR);
+        const guid = Math.random().toString(36).substring(2, 12);
+        let csum = 0;
+        for (let i = 0; i < card.Question.length; i++) { csum = ((csum << 5) - csum) + card.Question.charCodeAt(i); csum = csum & csum; }
+        csum = Math.abs(csum);
+
+        noteId++;
+        cardId++;
+
+        db.run(`INSERT INTO notes VALUES(${noteId}, '${guid}', ${MCQ_MODEL.NOTE_TYPE_ID}, ${now}, -1, ' ${(card.Tags || '').replace(/'/g, "''")} ', '${flds.replace(/'/g, "''")}', 0, ${csum}, 0, '')`);
+        db.run(`INSERT INTO cards VALUES(${cardId}, ${noteId}, ${MCQ_MODEL.DECK_ID}, 0, ${now}, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '')`);
+      }
+
+      const data = db.export();
+      const zip = new JSZip();
+      zip.file("collection.anki2", data);
+      zip.file("media", "{}");
+      return await zip.generateAsync({ type: "blob" });
+    }
+
+    // ============ Helpers ============
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text || '';
+      return div.innerHTML;
+    }
+
+    function showToast(type, title, message) {
+      const toast = document.getElementById('toast');
+      toast.className = `toast show ${type}`;
+      document.getElementById('toastTitle').textContent = title;
+      document.getElementById('toastMessage').textContent = message;
+      setTimeout(() => toast.classList.remove('show'), 4000);
+    }
+  </script>
+</body>
+</html>

@@ -28,7 +28,8 @@ Configured as a static site deployment serving the `docs/` directory.
 - Font Awesome icons
 - Anchor navigation for deep-linking
 - Quiz integration with instant feedback
-- External tool links (e.g., Anki Deck Builder) with support for `externalUrl` in studyTopics
+- Local Anki Deck Builder (anki-deck-builder.html) for CSV to .apkg conversion
+- Anki Deck Library (anki-deck-library.html) with 11 pre-built AZ-104 decks
 
 ## Architecture Notes
 - Pure static HTML/CSS/JS - no build step required
@@ -49,3 +50,10 @@ Configured as a static site deployment serving the `docs/` directory.
 ## Single Source of Truth Pattern
 - Personalized Review Guide (azure_personalized_review_guide.html) owns all score input and metadata
 - Main dashboard (index.html) is read-only and displays synced data from localStorage
+
+## Anki Deck Builder (anki-deck-builder.html)
+- Fully client-side CSV to .apkg converter (no server required)
+- Uses CDN-hosted libraries: PapaParse, sql.js, JSZip, CryptoJS
+- Features: CSV upload, template download, data preview, card preview, answer shuffling
+- MCQ card model with professional dark theme styling
+- Supports column formats: Question, A/B/C/D (or ChoiceA-D), Correct, Explanation, Tags, Source, Batch
