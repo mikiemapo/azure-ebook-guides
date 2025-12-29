@@ -719,6 +719,9 @@
               <span id="priority-score-badge" style="background:rgba(255,255,255,0.2);padding:6px 14px;border-radius:20px;font-size:1.1em;font-weight:600;">--</span>
               <span id="priority-status" style="font-size:0.95em;opacity:0.9;">Calculating...</span>
             </div>
+            <div style="font-size:11px;opacity:0.7;margin-top:6px;">
+              <i class="fas fa-sync-alt"></i> Auto-rotates when you update scores
+            </div>
           </div>
           <div style="display:flex;flex-direction:column;gap:8px;">
             <a id="priority-study-btn" href="#" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#d83b01;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:1em;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:transform 0.2s, box-shadow 0.2s;">
@@ -865,74 +868,130 @@
 }
         </script>
 
-        <!-- Compact Score Editor (floating, minimal footprint) -->
+        <!-- Redesigned Score Editor: Quick Mode + Advanced Toggle -->
         <div id="score-editor" style="position:fixed;right:12px;bottom:12px;z-index:1200;font-family:inherit">
-          <button id="score-editor-toggle" title="Open score editor" style="background:#2c3e50;color:#fff;border:0;border-radius:6px;padding:6px 8px;cursor:pointer">Scores ▾</button>
-          <div id="score-editor-panel" style="display:none;background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 10px;box-shadow:0 6px 18px rgba(0,0,0,0.08);width:340px;margin-top:6px">
-            <div style="font-size:13px;margin-bottom:6px;font-weight:700">Quick: Add Quiz Marks</div>
-            <div style="display:flex;gap:6px;margin-bottom:6px">
-              <select id="score-editor-domain" style="flex:1;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px"></select>
+          <button id="score-editor-toggle" title="Open score editor" style="background:#2c3e50;color:#fff;border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-size:14px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+            <i class="fas fa-edit"></i> Scores
+          </button>
+          <div id="score-editor-panel" style="display:none;background:#fff;border:1px solid #ddd;border-radius:10px;padding:0;box-shadow:0 8px 24px rgba(0,0,0,0.15);width:320px;margin-top:8px;overflow:hidden;">
+            
+            <!-- QUICK MODE (Always Visible) -->
+            <div style="padding:16px;background:linear-gradient(135deg,#2c3e50 0%,#34495e 100%);color:#fff;">
+              <div style="font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px;">
+                <i class="fas fa-plus-circle"></i> Add Quiz Score
+              </div>
+              <select id="score-editor-domain" style="width:100%;padding:10px;border:0;border-radius:6px;font-size:14px;margin-bottom:10px;background:#fff;color:#333;"></select>
+              <div style="display:flex;gap:8px;margin-bottom:12px;">
+                <input id="score-editor-add-correct" type="number" placeholder="Correct" style="flex:1;padding:10px;border:0;border-radius:6px;font-size:14px;text-align:center;" />
+                <span style="color:#fff;font-size:18px;align-self:center;">/</span>
+                <input id="score-editor-add-total" type="number" placeholder="Total" style="width:80px;padding:10px;border:0;border-radius:6px;font-size:14px;text-align:center;" />
+              </div>
+              <button id="score-editor-apply" style="width:100%;background:#27ae60;color:#fff;border:0;padding:12px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:600;transition:background 0.2s;">
+                <i class="fas fa-check"></i> Apply Score
+              </button>
             </div>
-            <div id="score-editor-last-updated" style="font-size:11px;color:#666;margin-bottom:6px;padding:4px 6px;background:#f8f9fa;border-radius:4px;display:none">
-              <span id="score-editor-stale-badge" style="display:none;background:#f39c12;color:#fff;padding:1px 5px;border-radius:3px;font-size:10px;margin-right:6px">STALE</span>
-              <i class="fas fa-clock" style="margin-right:4px"></i>
+            
+            <!-- Status Message -->
+            <div id="score-editor-msg" style="font-size:12px;color:#666;padding:8px 16px;min-height:20px;background:#f8f9fa;border-bottom:1px solid #eee;"></div>
+            
+            <!-- Last Updated Info -->
+            <div id="score-editor-last-updated" style="font-size:11px;color:#666;padding:8px 16px;background:#f8f9fa;display:none;border-bottom:1px solid #eee;">
+              <span id="score-editor-stale-badge" style="display:none;background:#f39c12;color:#fff;padding:2px 6px;border-radius:3px;font-size:10px;margin-right:6px;">STALE</span>
+              <i class="fas fa-clock" style="margin-right:4px;"></i>
               <span id="score-editor-last-updated-text">Never updated</span>
             </div>
-            <div style="display:flex;gap:6px;margin-bottom:6px">
-              <input id="score-editor-add-correct" type="number" placeholder="+ correct (use negative to subtract)" style="flex:1;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px" />
-              <input id="score-editor-add-total" type="number" placeholder="+ total (use negative to subtract)" style="width:84px;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px" />
+            
+            <!-- ADVANCED TOGGLE -->
+            <div style="padding:12px 16px;border-bottom:1px solid #eee;">
+              <button id="score-editor-advanced-toggle" style="background:none;border:0;color:#666;cursor:pointer;font-size:12px;display:flex;align-items:center;gap:6px;padding:0;">
+                <i class="fas fa-cog"></i> Advanced Options <i class="fas fa-chevron-down" id="advanced-chevron"></i>
+              </button>
             </div>
-            <div style="display:flex;gap:6px;margin-bottom:6px">
-              <select id="score-editor-source" style="flex:1;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px">
-                <option value="">-- Source --</option>
-                <option value="Whizlabs">Whizlabs</option>
-                <option value="Tutorials Dojo">Tutorials Dojo</option>
-                <option value="Microsoft Learn">Microsoft Learn</option>
-                <option value="Udemy">Udemy</option>
-                <option value="Practice Test">Practice Test</option>
-                <option value="Other">Other</option>
-              </select>
-              <input id="score-editor-quiz-name" type="text" placeholder="Quiz name (optional)" style="flex:1;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px" />
-            </div>
-            <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px">
-              <div style="display:flex;gap:6px;align-items:center">
-                <label style="font-size:12px;color:#444;margin-right:6px">Blend:</label>
-                <select id="score-editor-blend" title="Blend quiz vs confidence" style="flex:1;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px">
+            
+            <!-- ADVANCED OPTIONS (Hidden by default) -->
+            <div id="score-editor-advanced" style="display:none;padding:12px 16px;background:#fafafa;">
+              <!-- Source & Quiz Name -->
+              <div style="margin-bottom:10px;">
+                <label style="font-size:11px;color:#666;display:block;margin-bottom:4px;">Quiz Source</label>
+                <select id="score-editor-source" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:13px;">
+                  <option value="">-- Select Source --</option>
+                  <option value="Whizlabs">Whizlabs</option>
+                  <option value="Tutorials Dojo">Tutorials Dojo</option>
+                  <option value="Microsoft Learn">Microsoft Learn</option>
+                  <option value="Udemy">Udemy</option>
+                  <option value="Practice Test">Practice Test</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div style="margin-bottom:10px;">
+                <label style="font-size:11px;color:#666;display:block;margin-bottom:4px;">Quiz Name (optional)</label>
+                <input id="score-editor-quiz-name" type="text" placeholder="e.g., Practice Test #3" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:13px;box-sizing:border-box;" />
+              </div>
+              
+              <!-- Blend Setting -->
+              <div style="margin-bottom:10px;">
+                <label style="font-size:11px;color:#666;display:block;margin-bottom:4px;">
+                  Score Blend <button id="blend-tip-btn" title="What is blend?" style="border:0;background:#e0e0e0;padding:2px 6px;border-radius:3px;cursor:pointer;font-size:10px;color:#555;margin-left:4px;">?</button>
+                </label>
+                <select id="score-editor-blend" style="width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:13px;">
                   <option value="0.6">60% quiz / 40% confidence</option>
                   <option value="0.7">70% quiz / 30% confidence</option>
                   <option value="0.5">50% quiz / 50% confidence</option>
                   <option value="0.4">40% quiz / 60% confidence</option>
                 </select>
-                <button id="blend-tip-btn" title="What is blend?" style="margin-left:8px;border:0;background:#eef;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:12px;color:#234">i</button>
-              </div>
-              <div id="blend-tip" style="display:none;font-size:12px;color:#444;line-height:1.2">Blend controls how much weight the page gives to your quiz numbers versus your self-rated confidence when calculating domain mastery. For example, 60% quiz / 40% confidence blends both to produce the displayed percent and affects recommended labs.</div>
-            </div>
-            <div style="display:flex;gap:6px;justify-content:flex-end;align-items:center">
-              <button id="score-editor-apply" style="background:#3498db;color:#fff;border:0;padding:6px 8px;border-radius:4px;cursor:pointer">Apply</button>
-              <button id="score-editor-undo" title="Undo last Apply" disabled style="background:#f39c12;color:#fff;border:0;padding:6px 8px;border-radius:4px;cursor:pointer;margin-left:4px">Undo</button>
-              <button id="score-editor-save" style="background:#27ae60;color:#fff;border:0;padding:6px 8px;border-radius:4px;cursor:pointer;margin-left:4px">Save</button>
-            </div>
-            <div style="display:flex;align-items:center;gap:8px;margin-top:8px;margin-bottom:4px">
-              <input type="checkbox" id="score-editor-autocollapse" />
-              <label for="score-editor-autocollapse" style="font-size:13px;color:#444;cursor:pointer">Auto-collapse other domains when opening a domain</label>
-            </div>
-            <div id="score-editor-msg" style="font-size:12px;color:#666;margin-top:8px;min-height:18px"></div>
-
-            <!-- Collapsed debug area inside Score Editor -->
-            <div style="margin-top:8px">
-              <button id="debug-toggle" style="background:#f3f3f3;border:0;padding:6px 8px;border-radius:4px;cursor:pointer;font-size:12px">Debug ▾</button>
-              <div id="debug-area" style="display:none;margin-top:8px">
-                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                  <strong style="font-size:13px">Debug</strong>
-                  <div>
-                    <button id="debug-refresh" style="background:#3498db;color:#fff;border:0;padding:4px 6px;border-radius:4px;cursor:pointer;font-size:12px">Refresh</button>
-                  </div>
+                <div id="blend-tip" style="display:none;font-size:11px;color:#666;margin-top:6px;line-height:1.4;padding:8px;background:#fff;border-radius:4px;border:1px solid #eee;">
+                  Blend controls how much weight is given to quiz scores vs self-rated confidence when calculating mastery.
                 </div>
-                <div style="max-height:180px;overflow:auto;font-family:monospace;background:#fafafa;padding:6px;border-radius:4px;border:1px solid #f0f0f0" id="debug-panel-body">loading...</div>
+              </div>
+              
+              <!-- Actions Row -->
+              <div style="display:flex;gap:8px;margin-bottom:10px;">
+                <button id="score-editor-undo" title="Undo last Apply" disabled style="flex:1;background:#f39c12;color:#fff;border:0;padding:8px;border-radius:4px;cursor:pointer;font-size:12px;opacity:0.5;">
+                  <i class="fas fa-undo"></i> Undo
+                </button>
+                <button id="score-editor-save" style="flex:1;background:#3498db;color:#fff;border:0;padding:8px;border-radius:4px;cursor:pointer;font-size:12px;">
+                  <i class="fas fa-save"></i> Save
+                </button>
+              </div>
+              
+              <!-- Auto-collapse checkbox -->
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+                <input type="checkbox" id="score-editor-autocollapse" style="margin:0;" />
+                <label for="score-editor-autocollapse" style="font-size:11px;color:#666;cursor:pointer;">Auto-collapse domains</label>
+              </div>
+              
+              <!-- Debug Toggle -->
+              <div style="border-top:1px solid #eee;padding-top:10px;">
+                <button id="debug-toggle" style="background:#f0f0f0;border:0;padding:6px 10px;border-radius:4px;cursor:pointer;font-size:11px;color:#666;width:100%;">
+                  <i class="fas fa-bug"></i> Debug Panel
+                </button>
+                <div id="debug-area" style="display:none;margin-top:8px;">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                    <strong style="font-size:11px;color:#666;">Debug Info</strong>
+                    <button id="debug-refresh" style="background:#3498db;color:#fff;border:0;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:10px;">Refresh</button>
+                  </div>
+                  <div style="max-height:120px;overflow:auto;font-family:monospace;background:#fff;padding:6px;border-radius:4px;border:1px solid #eee;font-size:10px;" id="debug-panel-body">loading...</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
+        
+        <script>
+        // Advanced toggle functionality
+        document.addEventListener('DOMContentLoaded', function() {
+          const advToggle = document.getElementById('score-editor-advanced-toggle');
+          const advPanel = document.getElementById('score-editor-advanced');
+          const advChevron = document.getElementById('advanced-chevron');
+          if (advToggle && advPanel) {
+            advToggle.addEventListener('click', function() {
+              const isHidden = advPanel.style.display === 'none';
+              advPanel.style.display = isHidden ? 'block' : 'none';
+              advChevron.className = isHidden ? 'fas fa-chevron-up' : 'fas fa-chevron-down';
+            });
+          }
+        });
+        </script>
 
         <!-- Toast / temporary confirmation -->
         <div id="global-toast" style="position:fixed;right:12px;bottom:84px;z-index:1300;display:none;max-width:320px;background:rgba(0,0,0,0.85);color:#fff;padding:10px 12px;border-radius:6px;box-shadow:0 8px 20px rgba(0,0,0,0.3);font-size:13px"></div>
