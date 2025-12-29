@@ -707,135 +707,150 @@
         <i class="fas fa-bullseye"></i>Personalized Review: Weak Spot Focus
       </h1>
 
-      <!-- Dual Focus: Current Priorities -->
-      <div style="background:var(--next-step-bg);border:2px solid var(--next-step-border);border-radius:8px;padding:20px;margin-bottom:25px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
-        <h3 style="color:var(--next-step-title-color);margin:0 0 15px 0;display:flex;align-items:center;gap:10px;">
-          <i class="fas fa-crosshairs"></i> Active Study Focus (2 Domains)
-        </h3>
-        
-        <!-- Two-column layout for dual focus -->
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:15px;">
-          
-          <!-- PRIMARY FOCUS: Identities & Governance -->
-          <div style="background:#fff;border:2px solid #ff9800;padding:15px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-            <div style="background:#ff9800;color:#fff;padding:4px 8px;border-radius:4px;display:inline-block;font-size:11px;font-weight:bold;margin-bottom:10px;">
-              🎯 PRIMARY FOCUS
-            </div>
-            <h4 style="color:#d83b01;margin:0 0 10px 0;font-size:16px;">
-              <i class="fas fa-user-shield"></i> Identities & Governance
-            </h4>
-            <div style="background:#fff3cd;padding:8px;border-radius:4px;margin-bottom:10px;">
-              <div style="font-size:13px;color:#856404;"><strong>Latest Performance:</strong> 10/17 (58.82%)</div>
-              <div style="font-size:12px;color:#856404;">Tutorials Dojo - Nov 29, 2025</div>
-            </div>
-            <div style="font-size:13px;margin-bottom:8px;">
-              <strong>Cumulative:</strong> <span id="identities-live-score">35/61 (57.38%)</span>
-            </div>
-            <div style="font-size:13px;color:#28a745;">
-              <strong>Target:</strong> 75%+ on next quiz
+      <!-- SIMPLIFIED PRIORITY DASHBOARD -->
+      <div id="priority-dashboard" style="background:linear-gradient(135deg, #d83b01 0%, #ff6f00 100%);border-radius:12px;padding:24px;margin-bottom:25px;box-shadow:0 4px 16px rgba(216,59,1,0.3);color:#fff;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+          <div style="flex:1;min-width:200px;">
+            <div style="font-size:12px;text-transform:uppercase;letter-spacing:1px;opacity:0.9;margin-bottom:4px;">Your #1 Priority</div>
+            <h2 id="priority-domain-name" style="margin:0 0 8px 0;font-size:1.8em;font-weight:700;">
+              <i class="fas fa-spinner fa-spin"></i> Loading...
+            </h2>
+            <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+              <span id="priority-score-badge" style="background:rgba(255,255,255,0.2);padding:6px 14px;border-radius:20px;font-size:1.1em;font-weight:600;">--</span>
+              <span id="priority-status" style="font-size:0.95em;opacity:0.9;">Calculating...</span>
             </div>
           </div>
-          
-          <!-- SECONDARY FOCUS: Compute -->
-          <div style="background:#fff;border:2px solid #90caf9;padding:15px;border-radius:6px;box-shadow:0 2px 4px rgba(0,0,0,0.1);">
-            <div style="background:#2196f3;color:#fff;padding:4px 8px;border-radius:4px;display:inline-block;font-size:11px;font-weight:bold;margin-bottom:10px;">
-              📌 SECONDARY FOCUS
-            </div>
-            <h4 style="color:#1565c0;margin:0 0 10px 0;font-size:16px;">
-              <i class="fas fa-server"></i> Compute & VMs
-            </h4>
-            <div style="background:#e3f2fd;padding:8px;border-radius:4px;margin-bottom:10px;">
-              <div style="font-size:13px;color:#0d47a1;"><strong>Latest Performance:</strong> 10/21 (47.62%)</div>
-              <div style="font-size:12px;color:#0d47a1;">Recent quiz update</div>
-            </div>
-            <div style="font-size:13px;margin-bottom:8px;">
-              <strong>Cumulative:</strong> <span id="compute-live-score">24/59 (40.68%)</span>
-            </div>
-            <div style="font-size:13px;color:#f57c00;">
-              <strong>Status:</strong> Ongoing improvement
-            </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <a id="priority-study-btn" href="#" style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#d83b01;padding:12px 24px;border-radius:8px;font-weight:600;text-decoration:none;font-size:1em;box-shadow:0 2px 8px rgba(0,0,0,0.15);transition:transform 0.2s, box-shadow 0.2s;">
+              <i class="fas fa-book-open"></i> Start Studying
+            </a>
+            <button id="priority-details-toggle" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.3);padding:8px 16px;border-radius:6px;cursor:pointer;font-size:0.9em;transition:background 0.2s;">
+              <i class="fas fa-chevron-down"></i> See Details
+            </button>
           </div>
-        </div>
-        
-        <!-- Spaced Repetition Retake Readiness -->
-        <div style="background:#f0f8ff;border:2px solid #4a90e2;padding:15px;border-radius:6px;margin-bottom:15px;">
-          <h4 style="color:#1565c0;margin:0 0 12px 0;font-size:15px;">
-            <i class="fas fa-sync-alt"></i> Retake Readiness (Spaced Repetition)
-          </h4>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-            <div style="background:#fff;padding:10px;border-radius:4px;border-left:3px solid #ffc107;">
-              <div style="font-size:13px;color:#f57c00;margin-bottom:4px;">
-                <strong>🟡 Identities & Governance</strong>
-              </div>
-              <div style="font-size:12px;color:#555;">
-                <span id="identities-days-since" style="font-weight:bold;color:#f57c00;">0 days</span> since Nov 29 quiz
-              </div>
-              <div style="font-size:11px;color:#f57c00;margin-top:4px;">
-                ⏳ TOO FRESH - Wait 3-5 days before retake
-              </div>
-            </div>
-            <div style="background:#fff;padding:10px;border-radius:4px;border-left:3px solid #ff9800;">
-              <div style="font-size:13px;color:#e65100;margin-bottom:4px;">
-                <strong>🟡 Compute & VMs</strong>
-              </div>
-              <div style="font-size:12px;color:#555;">
-                Continue review & practice
-              </div>
-              <div style="font-size:11px;color:#666;margin-top:4px;">
-                Focus: VMSS, Container Apps, Availability Sets
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Next Quiz to Take -->
-        <div style="background:#fff;border:2px solid #9c27b0;padding:15px;border-radius:6px;margin-bottom:15px;">
-          <h4 style="color:#6a1b9a;margin:0 0 10px 0;font-size:15px;">
-            <i class="fas fa-clipboard-check"></i> Next Fresh Quiz
-          </h4>
-          <div style="background:#f3e5f5;padding:12px;border-radius:4px;">
-            <div style="font-size:14px;font-weight:bold;color:#6a1b9a;margin-bottom:6px;">
-              → Section-Based: Implement and Manage Storage (AZ-104)
-            </div>
-            <div style="font-size:12px;color:#555;">
-              <strong>Why this next:</strong> Weakest untested domain (current score: 48.33%)
-            </div>
-            <div style="font-size:12px;color:#666;margin-top:6px;">
-              <strong>After Storage:</strong> Auto-rotate to lowest performing domain
-            </div>
-          </div>
-        </div>
-        
-        <!-- Action Plan for Primary Focus -->
-        <div style="background:#fff;padding:15px;border-radius:6px;border-left:4px solid #ff9800;">
-          <h4 style="color:#2c3e50;margin:0 0 12px 0;font-size:15px;">
-            <i class="fas fa-tasks"></i> Current Action Plan: Identities & Governance
-          </h4>
-          <ol style="margin:0;padding-left:20px;line-height:1.8;font-size:14px;">
-            <li><strong>Priority #1:</strong> Review <span style="background:#fff3cd;padding:2px 6px;border-radius:3px;">Azure Policy inheritance rules</span> (resources retain region, inherit target RG policies)</li>
-            <li><strong>Drill practice:</strong> Azure Policy scopes, RBAC assignments, Group licensing</li>
-            <li><strong>Deep dive:</strong> B2B invites, SSPR configuration, RBAC vs Entra Domain Services</li>
-            <li><strong>Retake quiz:</strong> Identities & Governance section targeting 75%+</li>
-          </ol>
         </div>
       </div>
-      
+
+      <!-- EXPANDABLE DETAILS SECTION (hidden by default) -->
+      <div id="priority-details-panel" style="display:none;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:10px;padding:20px;margin-bottom:25px;box-shadow:var(--shadow-sm);">
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;">
+          <!-- All Domains Overview -->
+          <div style="background:var(--bg-tertiary);padding:16px;border-radius:8px;border-left:4px solid var(--azure-blue);">
+            <h4 style="margin:0 0 12px 0;color:var(--text-primary);font-size:14px;display:flex;align-items:center;gap:8px;">
+              <i class="fas fa-chart-bar" style="color:var(--azure-blue);"></i> Domain Overview
+            </h4>
+            <div id="details-domain-list" style="font-size:13px;color:var(--text-secondary);line-height:1.8;">
+              Loading domain scores...
+            </div>
+          </div>
+          
+          <!-- Quick Actions -->
+          <div style="background:var(--bg-tertiary);padding:16px;border-radius:8px;border-left:4px solid #9c27b0;">
+            <h4 style="margin:0 0 12px 0;color:var(--text-primary);font-size:14px;display:flex;align-items:center;gap:8px;">
+              <i class="fas fa-bolt" style="color:#9c27b0;"></i> Quick Actions
+            </h4>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <a id="details-weakest-link" href="#" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-secondary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:background 0.2s;">
+                <i class="fas fa-exclamation-triangle" style="color:#dc3545;"></i> Study Weakest: <span id="weakest-domain-name">--</span>
+              </a>
+              <a href="#domain-progress-section" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-secondary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:background 0.2s;">
+                <i class="fas fa-list" style="color:var(--azure-blue);"></i> View All Domains
+              </a>
+              <a href="#study-tools-section" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--bg-secondary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:background 0.2s;">
+                <i class="fas fa-tools" style="color:#28a745;"></i> Study Tools
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <script>
-      // Auto-calculate days since Identities quiz (Nov 29, 2025)
-      function updateDaysSince() {
-        const quizDate = new Date('2025-11-29');
-        const today = new Date();
-        const diffTime = Math.abs(today - quizDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+      // Priority Dashboard Logic
+      function initPriorityDashboard() {
+        const scores = JSON.parse(localStorage.getItem('mergedQuizScores') || '{}');
+        const domainGuides = {
+          'Identities': 'azure_identities_governance.html',
+          'Storage': 'azure_storage_deep_dive.html',
+          'Compute': 'azure_compute_vms_deep_dive.html',
+          'Networking': 'azure_networking_deep_dive.html',
+          'Monitoring': 'azure_monitor_backup_deep_dive.html',
+          'App Service & Containers': 'azure_app_service_containers.html'
+        };
         
-        const daysElement = document.getElementById('identities-days-since');
-        if (daysElement) {
-          daysElement.textContent = diffDays + ' days';
+        // Calculate percentages and find weakest
+        let weakest = null;
+        let weakestPercent = 101;
+        const domainData = [];
+        
+        for (const [domain, data] of Object.entries(scores)) {
+          const percent = data.total > 0 ? Math.round((data.correct / data.total) * 100) : 0;
+          domainData.push({ domain, correct: data.correct, total: data.total, percent });
+          if (percent < weakestPercent) {
+            weakestPercent = percent;
+            weakest = domain;
+          }
+        }
+        
+        // Sort by percent ascending (weakest first)
+        domainData.sort((a, b) => a.percent - b.percent);
+        
+        // Update priority dashboard
+        const nameEl = document.getElementById('priority-domain-name');
+        const scoreEl = document.getElementById('priority-score-badge');
+        const statusEl = document.getElementById('priority-status');
+        const btnEl = document.getElementById('priority-study-btn');
+        const weakestLinkEl = document.getElementById('details-weakest-link');
+        const weakestNameEl = document.getElementById('weakest-domain-name');
+        
+        if (weakest && nameEl) {
+          const data = scores[weakest];
+          const percent = Math.round((data.correct / data.total) * 100);
+          nameEl.innerHTML = `<i class="fas fa-crosshairs"></i> ${weakest}`;
+          scoreEl.textContent = `${percent}% (${data.correct}/${data.total})`;
+          
+          if (percent < 50) {
+            statusEl.textContent = 'Needs immediate attention';
+          } else if (percent < 75) {
+            statusEl.textContent = 'Building momentum - keep going!';
+          } else {
+            statusEl.textContent = 'Strong progress!';
+          }
+          
+          btnEl.href = domainGuides[weakest] || '#';
+          weakestLinkEl.href = domainGuides[weakest] || '#';
+          weakestNameEl.textContent = weakest;
+        }
+        
+        // Populate domain list in details
+        const listEl = document.getElementById('details-domain-list');
+        if (listEl && domainData.length > 0) {
+          listEl.innerHTML = domainData.map(d => {
+            const ragClass = d.percent < 50 ? 'color:#dc3545' : d.percent < 75 ? 'color:#fd7e14' : 'color:#28a745';
+            return `<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border-color);">
+              <span>${d.domain}</span>
+              <span style="${ragClass};font-weight:600;">${d.percent}%</span>
+            </div>`;
+          }).join('');
         }
       }
       
-      // Update on page load
-      updateDaysSince();
+      // Toggle details panel
+      document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('priority-details-toggle');
+        const panel = document.getElementById('priority-details-panel');
+        if (toggleBtn && panel) {
+          toggleBtn.addEventListener('click', function() {
+            const isHidden = panel.style.display === 'none';
+            panel.style.display = isHidden ? 'block' : 'none';
+            toggleBtn.innerHTML = isHidden 
+              ? '<i class="fas fa-chevron-up"></i> Hide Details'
+              : '<i class="fas fa-chevron-down"></i> See Details';
+          });
+        }
+        
+        // Initialize dashboard after a short delay to ensure localStorage is ready
+        setTimeout(initPriorityDashboard, 100);
+      });
       </script>
 
         <!-- Inline saved merged quiz scores (editable by in-page Save) -->
