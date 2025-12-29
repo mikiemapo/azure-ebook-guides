@@ -501,6 +501,65 @@
         transition: max-height 0.4s ease-out, padding 0.3s ease;
         padding: 0 18px;
       }
+
+      /* Sticky Jump Menu */
+      .sticky-jump-menu {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 1200;
+        background: var(--bg-secondary);
+        border-bottom: 1px solid var(--border-color);
+        box-shadow: var(--shadow-md);
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transform: translateY(-100%);
+        transition: transform 0.3s ease;
+        flex-wrap: wrap;
+      }
+      .sticky-jump-menu.visible {
+        transform: translateY(0);
+      }
+      .sticky-jump-btn {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        padding: 6px 10px;
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        font-size: 12px;
+        color: var(--text-primary);
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .sticky-jump-btn:hover {
+        background: var(--azure-blue);
+        color: #fff;
+        border-color: var(--azure-blue);
+      }
+      .sticky-jump-btn i {
+        font-size: 11px;
+      }
+      @media (max-width: 768px) {
+        .sticky-jump-menu {
+          gap: 4px;
+          padding: 6px 10px;
+        }
+        .sticky-jump-btn {
+          padding: 5px 8px;
+          font-size: 11px;
+        }
+        .sticky-jump-btn span {
+          display: none;
+        }
+      }
       .accordion-content.open {
         max-height: 5000px;
         padding: 18px;
@@ -748,6 +807,47 @@
     </style>
   </head>
   <body>
+    <!-- Sticky Jump Menu (hidden until scroll) -->
+    <nav id="sticky-jump-menu" class="sticky-jump-menu">
+      <a href="#priority-dashboard" class="sticky-jump-btn"><i class="fas fa-bullseye" style="color:#d83b01;"></i><span>Top</span></a>
+      <a href="#next-steps-section" class="sticky-jump-btn"><i class="fas fa-arrow-circle-right" style="color:#d83b01;"></i><span>Next</span></a>
+      <a href="#performance-section" class="sticky-jump-btn"><i class="fas fa-chart-pie" style="color:#ff9800;"></i><span>Stats</span></a>
+      <a href="#identities-focused-card" class="sticky-jump-btn"><i class="fas fa-user-shield" style="color:#0078d4;"></i></a>
+      <a href="#storage-focused-card" class="sticky-jump-btn"><i class="fas fa-database" style="color:#4caf50;"></i></a>
+      <a href="#compute-focused-card" class="sticky-jump-btn"><i class="fas fa-server" style="color:#9c27b0;"></i></a>
+      <a href="#networking-focused-card" class="sticky-jump-btn"><i class="fas fa-network-wired" style="color:#00bcd4;"></i></a>
+      <a href="#monitoring-focused-card" class="sticky-jump-btn"><i class="fas fa-chart-line" style="color:#ff5722;"></i></a>
+    </nav>
+
+    <script>
+    (function() {
+      const menu = document.getElementById('sticky-jump-menu');
+      let ticking = false;
+      
+      function updateStickyMenu() {
+        const scrollY = window.scrollY || window.pageYOffset;
+        if (scrollY > 400) {
+          menu.classList.add('visible');
+          document.body.style.paddingTop = '50px';
+        } else {
+          menu.classList.remove('visible');
+          document.body.style.paddingTop = '0';
+        }
+        ticking = false;
+      }
+      
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          window.requestAnimationFrame(updateStickyMenu);
+          ticking = true;
+        }
+      });
+      
+      // Initialize on page load (in case user refreshes mid-scroll)
+      updateStickyMenu();
+    })();
+    </script>
+
     <!-- Theme Toggle Button -->
     <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
       <i class="fas fa-moon"></i>
@@ -2206,9 +2306,8 @@
               dbgContainer.appendChild(leftGroup); dbgContainer.appendChild(rightGroup); panel.appendChild(dbgContainer);
               // Load persisted toggle state
               try{ const raw = localStorage.getItem('scoreEditorShowSyncIndicator'); if (raw) syncToggle.checked = (raw === 'true'); }catch(e){}
-              // ensure badge reflects initial state
-              try{ updateDebugBadge(); }catch(e){}
-              syncToggle.addEventListener('change', ()=>{ try{ localStorage.setItem('scoreEditorShowSyncIndicator', syncToggle.checked ? 'true' : 'false'); updateDebugPanel(); updateDebugBadge(); }catch(e){} });
+              // Badge no longer shows by default - only during Apply confirmation
+              syncToggle.addEventListener('change', ()=>{ try{ localStorage.setItem('scoreEditorShowSyncIndicator', syncToggle.checked ? 'true' : 'false'); updateDebugPanel(); }catch(e){} });
               // Handlers
               reloadBtn.addEventListener('click', ()=>{
                 try{
@@ -2221,11 +2320,11 @@
                   Object.keys(mergedQuizScores).forEach(k=>{ payloadToStore[k] = { correct: mergedQuizScores[k].correct||0, total: mergedQuizScores[k].total||0 }; });
                   try{ localStorage.setItem('mergedQuizScores', JSON.stringify(payloadToStore)); }catch(e){}
                   try{ window.dispatchEvent(new CustomEvent('mergedQuizScoresUpdated', { detail: payloadToStore })); }catch(e){}
-                  updateMergedQuizScoresFromConfidence(); renderDomainProgress(); updateNextStepsTracker(); updateDebugPanel(); updateDebugBadge(); showToast('Reloaded mergedQuizScores from inline JSON',3000);
+                  updateMergedQuizScoresFromConfidence(); renderDomainProgress(); updateNextStepsTracker(); updateDebugPanel(); showToast('Reloaded mergedQuizScores from inline JSON',3000);
                 }catch(e){ showToast('Reload failed'); }
               });
               clearBtn.addEventListener('click', ()=>{
-                try{ localStorage.removeItem('mergedQuizScores'); showToast('Cleared mergedQuizScores from localStorage',3000); updateDebugPanel(); updateDebugBadge(); // reload from inline
+                try{ localStorage.removeItem('mergedQuizScores'); showToast('Cleared mergedQuizScores from localStorage',3000); updateDebugPanel(); // reload from inline
                   try{ loadMergedQuizScoresFromJson(); updateMergedQuizScoresFromConfidence(); renderDomainProgress(); updateNextStepsTracker(); }catch(e){}
                 }catch(e){ showToast('Clear failed'); }
               });
@@ -2261,6 +2360,9 @@
             const inQuizName = document.getElementById('score-editor-quiz-name');
             const msg = document.getElementById('score-editor-msg');
 
+            // Store pending apply data for confirmation modal
+            let pendingApply = null;
+
             applyBtn.addEventListener('click', () => {
               const domain = select.value;
               const deltaC = parseInt(inCorrect.value || 0, 10);
@@ -2269,51 +2371,122 @@
               const data = mergedQuizScores[domain];
               if (!data) { msg.textContent = 'Unknown domain.'; return; }
 
-              // Capture a snapshot for one-step undo (persist to localStorage)
-              try{
-                const prev = JSON.stringify(mergedQuizScores);
-                localStorage.setItem('lastScoreEditorSnapshot', prev);
-                enableUndo();
-              }catch(e){}
+              // Calculate preview values
+              const newCorrect = Math.max(0, Math.round((data.correct || 0) + (isNaN(deltaC) ? 0 : deltaC)));
+              const newTotal = Math.max(0, Math.round((data.total || 0) + (isNaN(deltaT) ? 0 : deltaT)));
+              const finalCorrect = Math.min(newCorrect, newTotal);
+              const currentPct = data.total ? Math.round((data.correct / data.total) * 100) : 0;
+              const newPct = newTotal ? Math.round((finalCorrect / newTotal) * 100) : 0;
 
-              // apply deltas (allow negative values for subtraction)
-              data.correct = (data.correct || 0) + (isNaN(deltaC) ? 0 : deltaC);
-              data.total = (data.total || 0) + (isNaN(deltaT) ? 0 : deltaT);
-              // Normalize values: totals and corrects cannot be negative; correct cannot exceed total
-              data.total = Math.max(0, Math.round(data.total));
-              data.correct = Math.max(0, Math.round(data.correct));
-              if (data.correct > data.total) data.correct = data.total;
+              // Check for destructive changes (resetting or large reductions)
+              const isDestructive = newTotal === 0 || (deltaT < -10 && newTotal < (data.total || 0) / 2);
+              const isReset = newTotal === 0 && newCorrect === 0;
 
-              // Persist current selections and blend, and persist mergedQuizScores to localStorage and inline JSON
-              try{ saveFlashcardState(); saveScoreEditorBlend(); }catch(e){}
-              try {
-                const payload = {};
-                Object.keys(mergedQuizScores).forEach(k => { payload[k] = { correct: mergedQuizScores[k].correct || 0, total: mergedQuizScores[k].total || 0 }; });
-                // update inline script block so Save later matches current state
-                const el = document.getElementById('merged-quiz-scores-json');
-                if (el) el.textContent = JSON.stringify(payload, null, 2);
-                try { localStorage.setItem('mergedQuizScores', JSON.stringify(payload)); } catch(e){}
-                try { window.dispatchEvent(new CustomEvent('mergedQuizScoresUpdated', { detail: payload })); } catch(e){}
-              } catch(e){}
+              // Build preview HTML showing current merged scores + proposed change
+              const previewEl = document.getElementById('apply-score-preview');
+              if (previewEl) {
+                let html = `<div style="margin-bottom:10px;"><strong style="color:#0078d4;">${domain}</strong></div>`;
+                html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:13px;">`;
+                html += `<div style="padding:8px;background:#fff;border-radius:4px;border:1px solid #ddd;">
+                  <div style="color:#666;font-size:11px;">Current</div>
+                  <div style="font-weight:600;color:#333;">${data.correct || 0}/${data.total || 0} (${currentPct}%)</div>
+                </div>`;
+                const afterBg = isDestructive ? '#fff3cd' : '#e8f5e9';
+                const afterBorder = isDestructive ? '#ff9800' : '#4caf50';
+                const afterColor = isDestructive ? '#e65100' : '#2e7d32';
+                html += `<div style="padding:8px;background:${afterBg};border-radius:4px;border:1px solid ${afterBorder};">
+                  <div style="color:${afterColor};font-size:11px;">After Update</div>
+                  <div style="font-weight:600;color:${afterColor};">${finalCorrect}/${newTotal} (${newPct}%)</div>
+                </div>`;
+                html += `</div>`;
+                html += `<div style="margin-top:10px;padding-top:10px;border-top:1px solid #e0e0e0;font-size:12px;color:#666;">`;
+                html += `Change: <strong>${deltaC >= 0 ? '+' + deltaC : deltaC}</strong> correct, <strong>${deltaT >= 0 ? '+' + deltaT : deltaT}</strong> total`;
+                html += `</div>`;
+                if (isReset) {
+                  html += `<div style="margin-top:10px;padding:10px;background:#ffebee;border-radius:4px;border:1px solid #f44336;color:#c62828;font-size:12px;">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>Warning:</strong> This will reset all scores to zero. You can undo this action.
+                  </div>`;
+                } else if (isDestructive) {
+                  html += `<div style="margin-top:10px;padding:10px;background:#fff3cd;border-radius:4px;border:1px solid #ff9800;color:#e65100;font-size:12px;">
+                    <i class="fas fa-exclamation-circle"></i> <strong>Note:</strong> This is a large reduction. You can undo this action.
+                  </div>`;
+                }
+                previewEl.innerHTML = html;
+              }
 
-              // re-run adjusted/confidence and UI
-              updateMergedQuizScoresFromConfidence(); renderDomainProgress(); updateNextStepsTracker();
-              msg.textContent = `Applied ${deltaC >= 0 ? '+'+deltaC : deltaC} correct, ${deltaT >= 0 ? '+'+deltaT : deltaT} total to ${domain}. New: ${data.correct}/${data.total}.`;
-              inCorrect.value = ''; inTotal.value = '';
+              // Store pending apply for confirmation
+              pendingApply = { domain, deltaC, deltaT, source: inSource ? inSource.value : '', quizName: inQuizName ? inQuizName.value : '' };
 
-              // Save domain metadata (source, quiz name, timestamp)
-              try {
-                const source = inSource ? inSource.value : '';
-                const quizName = inQuizName ? inQuizName.value : '';
-                saveDomainMetadata(domain, source, quizName);
-                updateScoreEditorLastUpdated(domain);
-              } catch(e) {}
-
-              // UI helpers
-              showToast(`Applied changes to ${domain}`);
-              try{ pushMergedQuizHistory('apply'); }catch(e){}
-              updateDebugPanel();
+              // Show confirmation modal
+              const applyModal = document.getElementById('apply-score-modal');
+              if (applyModal) applyModal.style.display = 'flex';
             });
+
+            // Apply confirmation modal handlers
+            const applyModal = document.getElementById('apply-score-modal');
+            if (applyModal) {
+              const cancelBtn = document.getElementById('apply-score-cancel');
+              const confirmBtn = document.getElementById('apply-score-confirm');
+              
+              cancelBtn && cancelBtn.addEventListener('click', () => {
+                applyModal.style.display = 'none';
+                pendingApply = null;
+              });
+
+              confirmBtn && confirmBtn.addEventListener('click', () => {
+                if (!pendingApply) { applyModal.style.display = 'none'; return; }
+                
+                const { domain, deltaC, deltaT, source, quizName } = pendingApply;
+                const data = mergedQuizScores[domain];
+
+                // Capture a snapshot for one-step undo (persist to localStorage)
+                try{
+                  const prev = JSON.stringify(mergedQuizScores);
+                  localStorage.setItem('lastScoreEditorSnapshot', prev);
+                  enableUndo();
+                }catch(e){}
+
+                // apply deltas (allow negative values for subtraction)
+                data.correct = (data.correct || 0) + (isNaN(deltaC) ? 0 : deltaC);
+                data.total = (data.total || 0) + (isNaN(deltaT) ? 0 : deltaT);
+                // Normalize values: totals and corrects cannot be negative; correct cannot exceed total
+                data.total = Math.max(0, Math.round(data.total));
+                data.correct = Math.max(0, Math.round(data.correct));
+                if (data.correct > data.total) data.correct = data.total;
+
+                // Persist current selections and blend, and persist mergedQuizScores to localStorage and inline JSON
+                try{ saveFlashcardState(); saveScoreEditorBlend(); }catch(e){}
+                try {
+                  const payload = {};
+                  Object.keys(mergedQuizScores).forEach(k => { payload[k] = { correct: mergedQuizScores[k].correct || 0, total: mergedQuizScores[k].total || 0 }; });
+                  // update inline script block so Save later matches current state
+                  const el = document.getElementById('merged-quiz-scores-json');
+                  if (el) el.textContent = JSON.stringify(payload, null, 2);
+                  try { localStorage.setItem('mergedQuizScores', JSON.stringify(payload)); } catch(e){}
+                  try { window.dispatchEvent(new CustomEvent('mergedQuizScoresUpdated', { detail: payload })); } catch(e){}
+                } catch(e){}
+
+                // re-run adjusted/confidence and UI
+                updateMergedQuizScoresFromConfidence(); renderDomainProgress(); updateNextStepsTracker();
+                msg.textContent = `Applied ${deltaC >= 0 ? '+'+deltaC : deltaC} correct, ${deltaT >= 0 ? '+'+deltaT : deltaT} total to ${domain}. New: ${data.correct}/${data.total}.`;
+                inCorrect.value = ''; inTotal.value = '';
+
+                // Save domain metadata (source, quiz name, timestamp)
+                try {
+                  saveDomainMetadata(domain, source, quizName);
+                  updateScoreEditorLastUpdated(domain);
+                } catch(e) {}
+
+                // UI helpers
+                showToast(`Applied changes to ${domain}`);
+                try{ pushMergedQuizHistory('apply'); }catch(e){}
+                updateDebugPanel();
+
+                // Close modal and clear pending
+                applyModal.style.display = 'none';
+                pendingApply = null;
+              });
+            }
 
             // blend tip toggle
             const blendTipBtn = document.getElementById('blend-tip-btn');
@@ -2963,6 +3136,25 @@
               <i class="fas fa-star"></i>Focus on the "Storage" domain first, as
               it's identified as your major weak spot. Use the flashcards and
               labs below! Mark your confidence level for each item.
+            </div>
+          </div>
+        </div>
+
+        <!-- Apply Score Confirmation Modal -->
+        <div id="apply-score-modal" style="display:none;position:fixed;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:1500;align-items:flex-start;justify-content:flex-start;padding:20px;">
+          <div style="background:#fff;padding:20px;border-radius:10px;max-width:400px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,0.3);margin-left:10px;margin-top:60px;">
+            <h3 style="margin-top:0;display:flex;align-items:center;gap:8px;color:#1a1a1a;">
+              <i class="fas fa-check-circle" style="color:#27ae60;"></i> Confirm Score Update
+            </h3>
+            <div id="apply-score-preview" style="background:#f8f9fa;border-radius:8px;padding:14px;margin:12px 0;border:1px solid #e0e0e0;">
+              <!-- Preview will be populated dynamically -->
+            </div>
+            <p style="color:#666;font-size:13px;margin:0 0 16px 0;">This will update your merged quiz scores. You can undo this action.</p>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+              <button id="apply-score-cancel" style="background:#e0e0e0;color:#333;border:0;padding:10px 16px;border-radius:6px;cursor:pointer;font-size:14px;">Cancel</button>
+              <button id="apply-score-confirm" style="background:#27ae60;color:#fff;border:0;padding:10px 16px;border-radius:6px;cursor:pointer;font-size:14px;font-weight:600;">
+                <i class="fas fa-check"></i> Apply Changes
+              </button>
             </div>
           </div>
         </div>
