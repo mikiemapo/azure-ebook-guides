@@ -15,36 +15,134 @@
     />
     <style>
       :root {
+        /* Theme Colors - Light Mode */
+        --bg-primary: #f0f4f8;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #f8f9fa;
+        --text-primary: #323130;
+        --text-secondary: #605e5c;
+        --text-muted: #8a8886;
+        --border-color: #d1d1d1;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.08);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.12);
+        --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.16);
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+
+        /* Azure Colors */
         --azure-blue: #0078d4;
         --azure-blue-dark: #005a9e;
         --azure-bg-light: #f0f4f8;
         --text-dark: #323130;
         --text-light: #ffffff;
-        --border-color: #d1d1d1;
         --card-bg: #ffffff;
         --diagram-bg: #f8f9fa;
         --success-color: #107c10;
         --warning-color: #d83b01;
         --info-color: #005a9e;
         --shadow-color: rgba(0, 0, 0, 0.1);
+
+        /* RAG Color System */
+        --rag-red: #dc3545;
+        --rag-red-bg: #f8d7da;
+        --rag-amber: #fd7e14;
+        --rag-amber-bg: #fff3cd;
+        --rag-green: #28a745;
+        --rag-green-bg: #d4edda;
+
         /* Personalized Review specific colors */
-        --review-main-color: #d83b01; /* Orange for main review section */
-        --snapshot-card-color: #ff9800; /* Lighter orange for snapshot */
-        --flashcard-card-color: #0078d4; /* Azure blue for flashcards */
-        --lab-card-color: #4caf50; /* Green for labs */
-        --az104-tip-color: #ffc107; /* Gold for exam tips */
-        --flashcard-reveal-bg: #e6f2ff; /* Light blue for revealed content */
-        --flashcard-reveal-border: #0078d4; /* Azure blue for revealed border */
+        --review-main-color: #d83b01;
+        --snapshot-card-color: #ff9800;
+        --flashcard-card-color: #0078d4;
+        --lab-card-color: #4caf50;
+        --az104-tip-color: #ffc107;
+        --flashcard-reveal-bg: #e6f2ff;
+        --flashcard-reveal-border: #0078d4;
 
         /* Confidence Colors */
-        --confidence-weak: #e74c3c; /* Red */
-        --confidence-medium: #f1c40f; /* Yellow */
-        --confidence-strong: #2ecc71; /* Green */
+        --confidence-weak: #dc3545;
+        --confidence-medium: #fd7e14;
+        --confidence-strong: #28a745;
 
         /* Next Steps Section Colors */
         --next-step-bg: #fdfaf5;
         --next-step-border: #ffcc80;
         --next-step-title-color: #d83b01;
+      }
+
+      /* Dark Mode Theme */
+      [data-theme="dark"] {
+        --bg-primary: #1a1d21;
+        --bg-secondary: #252a30;
+        --bg-tertiary: #2d333b;
+        --text-primary: #e6e6e6;
+        --text-secondary: #b0b0b0;
+        --text-muted: #8b949e;
+        --border-color: #444c56;
+        --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
+        --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.5);
+        --azure-bg-light: #1a1d21;
+        --text-dark: #e6e6e6;
+        --card-bg: #252a30;
+        --diagram-bg: #2d333b;
+        --flashcard-reveal-bg: #1e3a5f;
+        --next-step-bg: #2d2a25;
+        --next-step-border: #8b6914;
+      }
+
+      /* RAG Progress Bar Classes */
+      .rag-bar {
+        height: 8px;
+        border-radius: 4px;
+        background: var(--border-color);
+        overflow: hidden;
+        margin: 8px 0;
+      }
+      .rag-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 0.4s ease, background-color 0.3s ease;
+      }
+      .rag-bar-fill.rag-red { background: var(--rag-red); }
+      .rag-bar-fill.rag-amber { background: var(--rag-amber); }
+      .rag-bar-fill.rag-green { background: var(--rag-green); }
+
+      .rag-badge {
+        display: inline-block;
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        font-weight: 600;
+      }
+      .rag-badge.rag-red { background: var(--rag-red-bg); color: var(--rag-red); }
+      .rag-badge.rag-amber { background: var(--rag-amber-bg); color: var(--rag-amber); }
+      .rag-badge.rag-green { background: var(--rag-green-bg); color: var(--rag-green); }
+
+      /* Theme Toggle Button */
+      .theme-toggle {
+        position: fixed;
+        top: 12px;
+        right: 12px;
+        z-index: 1100;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 14px;
+        background: var(--azure-blue);
+        color: white;
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        font-size: 0.9em;
+        font-weight: 500;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s ease;
+      }
+      .theme-toggle:hover {
+        background: var(--azure-blue-dark);
+        transform: translateY(-1px);
       }
 
       html {
@@ -474,22 +572,31 @@
         align-items: center;
         justify-content: flex-end;
         padding-right: 5px;
-        color: var(--text-dark);
-        font-weight: normal;
+        color: var(--text-light);
+        font-weight: 600;
         transition: width 0.4s ease-in-out, background-color 0.4s ease-in-out;
         font-size: 0.8em;
+        border-radius: 3px;
       }
+      /* RAG Color System: Red (0-50%), Amber (51-75%), Green (76-100%) */
+      .domain-progress-row .progress-meter .progress-bar.rag-green {
+        background-color: var(--rag-green);
+      }
+      .domain-progress-row .progress-meter .progress-bar.rag-amber {
+        background-color: var(--rag-amber);
+      }
+      .domain-progress-row .progress-meter .progress-bar.rag-red {
+        background-color: var(--rag-red);
+      }
+      /* Legacy classes mapped to RAG */
       .domain-progress-row .progress-meter .progress-bar.strong {
-        background-color: var(--confidence-strong);
-        color: var(--text-light);
+        background-color: var(--rag-green);
       }
       .domain-progress-row .progress-meter .progress-bar.medium {
-        background-color: var(--confidence-medium);
-        color: var(--text-dark);
+        background-color: var(--rag-amber);
       }
       .domain-progress-row .progress-meter .progress-bar.weak {
-        background-color: var(--confidence-weak);
-        color: var(--text-light);
+        background-color: var(--rag-red);
       }
 
       .domain-progress-row .domain-percentage-text {
@@ -569,6 +676,12 @@
     </style>
   </head>
   <body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="theme-toggle" title="Toggle dark/light mode">
+      <i class="fas fa-moon"></i>
+      <span>Dark</span>
+    </button>
+
     <!-- Whizlabs data and merged quiz scores are centralized in the consolidated script below -->
     <div class="back-to-hub-container">
       <div class="back-to-hub">
@@ -1160,13 +1273,23 @@
               const data = mergedQuizScores[domain] || { correct: 0, total: 0 };
               const rawPercent = data.total ? Math.round((data.correct / data.total) * 100) : 0;
               const percent = (typeof data.adjustedPercent === 'number') ? Math.round(data.adjustedPercent) : rawPercent;
-              let confidenceClass = "weak";
-              if (percent >= 80) confidenceClass = "strong";
-              else if (percent >= 40) confidenceClass = "medium";
+              // RAG Color System: Red (0-49%), Amber (50-75%), Green (76-100%)
+              let ragClass = "rag-red";
+              if (percent >= 76) ragClass = "rag-green";
+              else if (percent >= 50) ragClass = "rag-amber";
               
-              console.log(`Rendering ${domain}: ${data.correct}/${data.total} = ${percent}%`);
+              console.log(`Rendering ${domain}: ${data.correct}/${data.total} = ${percent}% [${ragClass}]`);
               
-              const html = `\n                <div class="domain-progress-row">\n                  <span class="domain-icon"><i class="fas ${domainIcons[domain]}"></i></span>\n                  <span class="domain-name">${domainDisplayNames[domain]}</span>\n                  <span class="progress-meter">\n                    <span class="progress-bar ${confidenceClass}" style="width: ${percent}%">${percent}%</span>\n                  </span>\n                  <span class="domain-percentage-text">${data.correct || 0}/${data.total || 0}</span>\n                </div>\n              `;
+              const html = `
+                <div class="domain-progress-row">
+                  <span class="domain-icon"><i class="fas ${domainIcons[domain]}"></i></span>
+                  <span class="domain-name">${domainDisplayNames[domain]}</span>
+                  <span class="progress-meter">
+                    <span class="progress-bar ${ragClass}" style="width: ${Math.max(percent, 5)}%">${percent}%</span>
+                  </span>
+                  <span class="domain-percentage-text">${data.correct || 0}/${data.total || 0}</span>
+                </div>
+              `;
               container.insertAdjacentHTML('beforeend', html);
               const statEl = document.getElementById(domain.toLowerCase() + "-quiz-stats");
               if (statEl) statEl.textContent = `(${data.correct || 0}/${data.total || 0} correct, ${percent}%)`;
@@ -4266,6 +4389,51 @@
         if(document.readyState === 'loading'){
           document.addEventListener('DOMContentLoaded', initReinforcement);
         } else { initReinforcement(); }
+      })();
+    </script>
+
+    <!-- Theme Toggle Script -->
+    <script>
+      (function() {
+        const THEME_KEY = 'prg-theme';
+
+        function initTheme() {
+          const saved = localStorage.getItem(THEME_KEY);
+          if (saved === 'dark') {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            updateToggleButton(true);
+          }
+        }
+
+        function toggleTheme() {
+          const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+          if (isDark) {
+            document.documentElement.removeAttribute('data-theme');
+            localStorage.setItem(THEME_KEY, 'light');
+            updateToggleButton(false);
+          } else {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            localStorage.setItem(THEME_KEY, 'dark');
+            updateToggleButton(true);
+          }
+        }
+
+        function updateToggleButton(isDark) {
+          const btn = document.getElementById('theme-toggle');
+          if (!btn) return;
+          const icon = btn.querySelector('i');
+          const text = btn.querySelector('span');
+          if (isDark) {
+            if (icon) { icon.className = 'fas fa-sun'; }
+            if (text) { text.textContent = 'Light'; }
+          } else {
+            if (icon) { icon.className = 'fas fa-moon'; }
+            if (text) { text.textContent = 'Dark'; }
+          }
+        }
+
+        initTheme();
+        document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
       })();
     </script>
   </body>
