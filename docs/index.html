@@ -493,6 +493,11 @@
         color: var(--warning-color);
       }
 
+      .topic-badge.tool {
+        background: rgba(139,92,246,0.15);
+        color: #8b5cf6;
+      }
+
       /* Progress Summary */
       .progress-summary {
         text-align: center;
@@ -939,6 +944,7 @@
       const studyTopics = [
         // === Personalized Study Tools ===
         { id: "guide-personalized-review", title: "Personalized Review: Weak Spot Focus", filename: "azure_personalized_review_guide.html", category: "Personalized Study Tools", icon: "fas fa-bullseye", type: "guide" },
+        { id: "tool-anki-deck-builder", title: "Anki Deck Builder", externalUrl: "https://anki-deck-builder--mikem37.replit.app/", category: "Personalized Study Tools", icon: "fas fa-layer-group", type: "tool" },
         // === Lab Reviews & Practical ===
         { id: "guide-lab-webapp-up-cli", title: "Lab: Deploy Static HTML with `az webapp up`", filename: "az104_webapp_up_lab_guide.html", category: "Lab Reviews & Practical", icon: "fas fa-cloud-upload-alt", type: "guide" },
         { id: "flashcard-event-grid-storage", title: "Flashcard: Event Grid Subscription to Blob Storage (Lab)", filename: "flashcard_event_grid_storage.html", category: "Lab Reviews & Practical", icon: "fas fa-bolt", type: "guide" },
@@ -1385,12 +1391,17 @@
             let badge = '';
             if (topic.type === 'quiz') badge = '<span class="topic-badge quiz">Quiz</span>';
             else if (topic.type === 'sorter') badge = '<span class="topic-badge sorter">Sorter</span>';
+            else if (topic.type === 'tool') badge = '<span class="topic-badge tool">Tool</span>';
+
+            const linkUrl = topic.externalUrl || topic.filename;
+            const externalAttrs = topic.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
+            const externalIcon = topic.externalUrl ? ' <i class="fas fa-external-link-alt" style="font-size: 0.7em; opacity: 0.6;"></i>' : '';
 
             li.innerHTML = `
               <input type="checkbox" id="${topic.id}" ${savedState ? 'checked' : ''}>
-              <a href="${topic.filename}">
+              <a href="${linkUrl}" ${externalAttrs}>
                 <i class="${topic.icon}"></i>
-                ${topic.title}
+                ${topic.title}${externalIcon}
                 ${badge}
               </a>
             `;

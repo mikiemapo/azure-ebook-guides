@@ -28,6 +28,7 @@ Configured as a static site deployment serving the `docs/` directory.
 - Font Awesome icons
 - Anchor navigation for deep-linking
 - Quiz integration with instant feedback
+- External tool links (e.g., Anki Deck Builder) with support for `externalUrl` in studyTopics
 
 ## Architecture Notes
 - Pure static HTML/CSS/JS - no build step required
