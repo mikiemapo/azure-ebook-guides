@@ -853,14 +853,31 @@
         <!-- Compact Score Editor (floating, minimal footprint) -->
         <div id="score-editor" style="position:fixed;right:12px;bottom:12px;z-index:1200;font-family:inherit">
           <button id="score-editor-toggle" title="Open score editor" style="background:#2c3e50;color:#fff;border:0;border-radius:6px;padding:6px 8px;cursor:pointer">Scores ▾</button>
-          <div id="score-editor-panel" style="display:none;background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 10px;box-shadow:0 6px 18px rgba(0,0,0,0.08);width:320px;margin-top:6px">
+          <div id="score-editor-panel" style="display:none;background:#fff;border:1px solid #ddd;border-radius:6px;padding:8px 10px;box-shadow:0 6px 18px rgba(0,0,0,0.08);width:340px;margin-top:6px">
             <div style="font-size:13px;margin-bottom:6px;font-weight:700">Quick: Add Quiz Marks</div>
             <div style="display:flex;gap:6px;margin-bottom:6px">
               <select id="score-editor-domain" style="flex:1;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px"></select>
             </div>
+            <div id="score-editor-last-updated" style="font-size:11px;color:#666;margin-bottom:6px;padding:4px 6px;background:#f8f9fa;border-radius:4px;display:none">
+              <span id="score-editor-stale-badge" style="display:none;background:#f39c12;color:#fff;padding:1px 5px;border-radius:3px;font-size:10px;margin-right:6px">STALE</span>
+              <i class="fas fa-clock" style="margin-right:4px"></i>
+              <span id="score-editor-last-updated-text">Never updated</span>
+            </div>
             <div style="display:flex;gap:6px;margin-bottom:6px">
               <input id="score-editor-add-correct" type="number" placeholder="+ correct (use negative to subtract)" style="flex:1;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px" />
               <input id="score-editor-add-total" type="number" placeholder="+ total (use negative to subtract)" style="width:84px;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px" />
+            </div>
+            <div style="display:flex;gap:6px;margin-bottom:6px">
+              <select id="score-editor-source" style="flex:1;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px">
+                <option value="">-- Source --</option>
+                <option value="Whizlabs">Whizlabs</option>
+                <option value="Tutorials Dojo">Tutorials Dojo</option>
+                <option value="Microsoft Learn">Microsoft Learn</option>
+                <option value="Udemy">Udemy</option>
+                <option value="Practice Test">Practice Test</option>
+                <option value="Other">Other</option>
+              </select>
+              <input id="score-editor-quiz-name" type="text" placeholder="Quiz name (optional)" style="flex:1;padding:6px;border:1px solid #ccc;border-radius:4px;font-size:13px" />
             </div>
             <div style="display:flex;flex-direction:column;gap:6px;margin-bottom:6px">
               <div style="display:flex;gap:6px;align-items:center">
@@ -1828,7 +1845,20 @@
             });
             const panel = document.getElementById('score-editor-panel');
             const toggle = document.getElementById('score-editor-toggle');
-            toggle.addEventListener('click', () => { panel.style.display = panel.style.display === 'none' ? 'block' : 'none'; });
+            toggle.addEventListener('click', () => { 
+              panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+              if (panel.style.display === 'block') {
+                try { updateScoreEditorLastUpdated(select.value); } catch(e) {}
+              }
+            });
+
+            // Update last updated display when domain changes
+            select.addEventListener('change', () => {
+              try { updateScoreEditorLastUpdated(select.value); } catch(e) {}
+            });
+
+            // Initial update for first domain
+            try { updateScoreEditorLastUpdated(select.value); } catch(e) {}
 
             // Toast + Undo + Debug helpers (scoped to the score editor wiring)
             const toastEl = document.getElementById('global-toast');
@@ -2025,6 +2055,8 @@
             const saveBtn = document.getElementById('score-editor-save');
             const inCorrect = document.getElementById('score-editor-add-correct');
             const inTotal = document.getElementById('score-editor-add-total');
+            const inSource = document.getElementById('score-editor-source');
+            const inQuizName = document.getElementById('score-editor-quiz-name');
             const msg = document.getElementById('score-editor-msg');
 
             applyBtn.addEventListener('click', () => {
@@ -2066,6 +2098,14 @@
               updateMergedQuizScoresFromConfidence(); renderDomainProgress(); updateNextStepsTracker();
               msg.textContent = `Applied ${deltaC >= 0 ? '+'+deltaC : deltaC} correct, ${deltaT >= 0 ? '+'+deltaT : deltaT} total to ${domain}. New: ${data.correct}/${data.total}.`;
               inCorrect.value = ''; inTotal.value = '';
+
+              // Save domain metadata (source, quiz name, timestamp)
+              try {
+                const source = inSource ? inSource.value : '';
+                const quizName = inQuizName ? inQuizName.value : '';
+                saveDomainMetadata(domain, source, quizName);
+                updateScoreEditorLastUpdated(domain);
+              } catch(e) {}
 
               // UI helpers
               showToast(`Applied changes to ${domain}`);
@@ -2210,6 +2250,93 @@
                 }
               }catch(e){}
             }
+
+              // --- Domain Metadata (last updated, source, quiz name) ---
+              const DOMAIN_META_KEY = 'domainScoreMetadata';
+              const STALE_DAYS_THRESHOLD = 14;
+
+              function getDomainMetadata() {
+                try {
+                  const raw = localStorage.getItem(DOMAIN_META_KEY);
+                  return raw ? JSON.parse(raw) : {};
+                } catch(e) { return {}; }
+              }
+
+              function saveDomainMetadata(domain, source, quizName) {
+                try {
+                  const meta = getDomainMetadata();
+                  meta[domain] = {
+                    lastUpdated: new Date().toISOString(),
+                    source: source || '',
+                    quizName: quizName || ''
+                  };
+                  localStorage.setItem(DOMAIN_META_KEY, JSON.stringify(meta));
+                } catch(e) {}
+              }
+
+              function getDaysAgo(isoDate) {
+                if (!isoDate) return null;
+                const then = new Date(isoDate);
+                const now = new Date();
+                const diff = Math.floor((now - then) / (1000 * 60 * 60 * 24));
+                return diff;
+              }
+
+              function formatLastUpdated(isoDate) {
+                if (!isoDate) return 'Never updated';
+                const d = new Date(isoDate);
+                const days = getDaysAgo(isoDate);
+                const dateStr = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+                if (days === 0) return `Today (${dateStr})`;
+                if (days === 1) return `Yesterday (${dateStr})`;
+                return `${days} days ago (${dateStr})`;
+              }
+
+              function updateScoreEditorLastUpdated(domain) {
+                const container = document.getElementById('score-editor-last-updated');
+                const textEl = document.getElementById('score-editor-last-updated-text');
+                const staleBadge = document.getElementById('score-editor-stale-badge');
+                const sourceSelect = document.getElementById('score-editor-source');
+                const quizNameInput = document.getElementById('score-editor-quiz-name');
+                if (!container || !textEl) return;
+
+                const meta = getDomainMetadata();
+                const domainMeta = meta[domain] || {};
+
+                // Hydrate source and quiz name fields with saved values
+                if (sourceSelect) {
+                  sourceSelect.value = domainMeta.source || '';
+                }
+                if (quizNameInput) {
+                  quizNameInput.value = domainMeta.quizName || '';
+                }
+
+                if (!domainMeta.lastUpdated) {
+                  container.style.display = 'block';
+                  textEl.innerHTML = '<strong style="color:#e74c3c">Never updated</strong> - Enter quiz scores above';
+                  staleBadge.style.display = 'inline';
+                  staleBadge.textContent = 'NEW';
+                  staleBadge.style.background = '#e74c3c';
+                  return;
+                }
+
+                const days = getDaysAgo(domainMeta.lastUpdated);
+                const isStale = days >= STALE_DAYS_THRESHOLD;
+                container.style.display = 'block';
+
+                let info = formatLastUpdated(domainMeta.lastUpdated);
+                if (domainMeta.source) info += ` | ${domainMeta.source}`;
+                if (domainMeta.quizName) info += `: ${domainMeta.quizName}`;
+                textEl.textContent = info;
+
+                if (isStale) {
+                  staleBadge.style.display = 'inline';
+                  staleBadge.textContent = 'STALE';
+                  staleBadge.style.background = '#f39c12';
+                } else {
+                  staleBadge.style.display = 'none';
+                }
+              }
 
               // --- Retention history (trend scope) helpers ---
               const HISTORY_KEY = 'mergedQuizHistory';

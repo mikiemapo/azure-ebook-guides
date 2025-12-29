@@ -1060,6 +1060,54 @@
         return 'rag-red';
       }
 
+      // ===== DOMAIN METADATA HELPERS (Last updated, source, stale warning) =====
+      const DOMAIN_META_KEY = 'domainScoreMetadata';
+      const STALE_DAYS_THRESHOLD = 14;
+
+      function getDomainMetadata() {
+        try {
+          const raw = localStorage.getItem(DOMAIN_META_KEY);
+          return raw ? JSON.parse(raw) : {};
+        } catch(e) { return {}; }
+      }
+
+      function getDaysAgo(isoDate) {
+        if (!isoDate) return null;
+        const then = new Date(isoDate);
+        const now = new Date();
+        return Math.floor((now - then) / (1000 * 60 * 60 * 24));
+      }
+
+      function formatLastUpdatedShort(isoDate) {
+        if (!isoDate) return 'Never updated';
+        const days = getDaysAgo(isoDate);
+        if (days === 0) return 'Today';
+        if (days === 1) return 'Yesterday';
+        return `${days} days ago`;
+      }
+
+      function getDomainLastUpdatedHtml(domainKey) {
+        const meta = getDomainMetadata();
+        const domainMeta = meta[domainKey] || {};
+
+        if (!domainMeta.lastUpdated) {
+          return '<span class="stale-badge" style="background:#e74c3c;color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75em;">NEW</span> <span style="color:#e74c3c;">Never updated</span>';
+        }
+
+        const days = getDaysAgo(domainMeta.lastUpdated);
+        const isStale = days >= STALE_DAYS_THRESHOLD;
+        let html = '';
+
+        if (isStale) {
+          html += '<span class="stale-badge" style="background:#f39c12;color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75em;margin-right:4px;">STALE</span> ';
+        }
+
+        html += `<i class="fas fa-clock" style="opacity:0.6;margin-right:4px;"></i>${formatLastUpdatedShort(domainMeta.lastUpdated)}`;
+        if (domainMeta.source) html += ` | ${domainMeta.source}`;
+
+        return html;
+      }
+
       // Mastery calculation removed - Hub now uses simple quiz percentages from Personalized Review
 
       // ===== RENDER DOMAIN CARDS (Read-Only - Data sourced from Personalized Review) =====
@@ -1090,6 +1138,9 @@
             <div class="score-display-row" style="display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 0.9em; color: var(--text-secondary);">
               <span><strong>Quiz Score:</strong> ${score.correct}/${score.total}</span>
               <span class="rag-badge ${ragClass}" style="margin-left: auto;">${percent}%</span>
+            </div>
+            <div class="last-updated-row" style="font-size: 0.8em; color: var(--text-muted); padding: 4px 0 8px 0; border-top: 1px solid var(--border-color);">
+              ${getDomainLastUpdatedHtml(domain.key)}
             </div>
             <div class="domain-actions">
               <a href="${domain.guideLink}" class="domain-action-btn primary">
