@@ -841,7 +841,7 @@
         <!-- Inline saved merged quiz scores (editable by in-page Save) -->
         <script id="merged-quiz-scores-json" type="application/json">
         {
-  "Identities": { "correct": 35, "total": 61 },
+  "Identities": { "correct": 36, "total": 64 },
   "Storage": { "correct": 29, "total": 60 },
   "Compute": { "correct": 24, "total": 59 },
   "Networking": { "correct": 18, "total": 31 },
@@ -1069,7 +1069,7 @@
           };
 
           const mergedQuizScores = {
-            Identities: { correct: 25, total: 44 },
+            Identities: { correct: 36, total: 64 },
             Storage: { correct: 29, total: 60 },
             Compute: { correct: 24, total: 59 },
             Networking: { correct: 18, total: 31 },
@@ -1077,37 +1077,52 @@
             "App Service & Containers": { correct: 1, total: 5 }
           };
 
-          // If a persisted mergedQuizScores exists in localStorage, prefer it.
-          // Otherwise fall back to the inline JSON script tag. This ensures
-          // that Apply (which writes to localStorage) survives page reloads.
-          (function loadMergedQuizScoresFromJson(){
+          // Score loading priority:
+          // 1. localStorage (persisted by Apply/Save) - takes precedence
+          // 2. Inline JSON script tag (baseline/initial scores)
+          // This ensures that Apply/Save changes survive page reloads
+          (function loadMergedQuizScores(){
             try {
-              // FORCE CLEAR localStorage to ensure fresh data loads
-              localStorage.removeItem('mergedQuizScores');
-              localStorage.removeItem('mergedQuizAdjusted');
-              localStorage.removeItem('quizFlashcardState');
-              console.log('Cleared localStorage for fresh data load');
+              // First, try to load from localStorage (user's applied changes)
+              const storedRaw = localStorage.getItem('mergedQuizScores');
+              if (storedRaw) {
+                try {
+                  const stored = JSON.parse(storedRaw);
+                  if (stored && typeof stored === 'object' && Object.keys(stored).length > 0) {
+                    Object.keys(stored).forEach(k => {
+                      if (stored[k] && (typeof stored[k].correct !== 'undefined' || typeof stored[k].total !== 'undefined')) {
+                        mergedQuizScores[k] = { correct: stored[k].correct || 0, total: stored[k].total || 0 };
+                      }
+                    });
+                    console.log('Loaded mergedQuizScores from localStorage:', mergedQuizScores);
+                    return; // Successfully loaded from localStorage, skip inline JSON
+                  }
+                } catch (parseErr) {
+                  console.warn('Failed to parse localStorage mergedQuizScores, falling back to inline JSON', parseErr);
+                }
+              }
               
-              // Force load from inline script element in the HTML
+              // Fallback: Load from inline JSON script element (baseline scores)
               const el = document.getElementById('merged-quiz-scores-json');
               if (!el || !el.textContent || !el.textContent.trim()) {
-                console.error('Could not find merged-quiz-scores-json element or it has no content');
+                console.warn('No localStorage data and no inline JSON found, using default scores');
                 return;
               }
               const payload = JSON.parse(el.textContent);
               if (payload && typeof payload === 'object') {
-                // FORCE OVERWRITE all scores with JSON data
                 Object.keys(payload).forEach(k => {
                   if (payload[k] && (typeof payload[k].correct !== 'undefined' || typeof payload[k].total !== 'undefined')) {
                     mergedQuizScores[k] = { correct: payload[k].correct || 0, total: payload[k].total || 0 };
                   }
                 });
-                console.log('FORCED OVERWRITE with JSON data. New mergedQuizScores:', mergedQuizScores);
-                console.log('Compute should be 10/21:', mergedQuizScores.Compute);
+                console.log('Loaded mergedQuizScores from inline JSON:', mergedQuizScores);
+                // Also persist to localStorage so future loads use this as baseline
+                try {
+                  localStorage.setItem('mergedQuizScores', JSON.stringify(mergedQuizScores));
+                } catch(e) {}
               }
-              console.log('Loaded fresh mergedQuizScores:', mergedQuizScores);
             } catch (e) {
-              console.warn('Failed to load persisted mergedQuizScores', e);
+              console.warn('Failed to load mergedQuizScores', e);
             }
           })();
 
@@ -1723,9 +1738,8 @@
           attachListeners();
           updateNextStepsTracker();
           
-          // Force console log to verify scores loaded correctly
+          // Log final scores for debugging
           console.log('Final mergedQuizScores after initialization:', mergedQuizScores);
-          console.log('Compute score should be 10/21:', mergedQuizScores.Compute);
           
           // Force a secondary render to ensure UI updates
           setTimeout(() => {
