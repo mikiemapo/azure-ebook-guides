@@ -1720,12 +1720,13 @@
             let studyStatus = 'inactive'; // inactive, slump, cooling, active
             
             // Extract all timestamps from history - ONLY count actual quiz attempts
-            // Filter out Score Editor saves (source contains 'editor' or 'manual')
+            // Filter out Score Editor saves and auto-saves (NOT actual quiz completions)
+            const EXCLUDED_SOURCES = ['editor', 'manual', 'score', 'apply', 'save', 'autosave', 'reval', 'migrated'];
             const quizOnlyHistory = history.filter(h => {
-              if (!h.source) return true; // Legacy entries without source
+              if (!h.source) return false; // Legacy entries without source = skip (likely not actual quizzes)
               const src = h.source.toLowerCase();
-              // Exclude manual/editor saves - only count actual quiz completions
-              return !src.includes('editor') && !src.includes('manual') && !src.includes('score');
+              // Only count actual quiz completions from quiz pages
+              return !EXCLUDED_SOURCES.some(excl => src.includes(excl));
             });
             
             const allHistoryDates = quizOnlyHistory
@@ -2275,7 +2276,7 @@
               
               statsHtml = `
                 <div class="study-stats-card">
-                  <h4><i class="fas fa-chart-bar"></i> Study Activity ${statusBadge}</h4>
+                  <h4><i class="fas fa-chart-bar"></i> Study Activity ${statusBadge} <button onclick="location.reload()" style="margin-left:12px;padding:4px 10px;font-size:0.75em;background:#f0f0f0;border:1px solid #ddd;border-radius:4px;cursor:pointer;" title="Refresh stats"><i class="fas fa-sync-alt"></i></button></h4>
                   <div class="study-stats-grid">
                     <div class="study-stat ${rateClass}">
                       <div class="stat-value">${stats.quizRate > 0 ? stats.quizRate.toFixed(1) : '--'}</div>
@@ -3347,12 +3348,23 @@
                 return null;
               }
 
+              // Sources to exclude from trend calculations (Score Editor saves, not actual quizzes)
+              const EXCLUDED_TREND_SOURCES = ['editor', 'manual', 'score', 'apply', 'save', 'autosave', 'reval', 'migrated'];
+              
+              function isQuizEntry(snap) {
+                if (!snap.source) return false; // No source = skip
+                const src = snap.source.toLowerCase();
+                return !EXCLUDED_TREND_SOURCES.some(excl => src.includes(excl));
+              }
+              
               function computeTrendMetrics(domain){
                 try{
                   const raw = localStorage.getItem(HISTORY_KEY);
                   if (!raw) return null;
                   const history = JSON.parse(raw);
-                  const arr = history.map(s => getPercentFromSnapshot(s, domain)).filter(v => v != null);
+                  // Filter to only actual quiz entries for accurate trends
+                  const quizHistory = history.filter(isQuizEntry);
+                  const arr = quizHistory.map(s => getPercentFromSnapshot(s, domain)).filter(v => v != null);
                   if (!arr.length) return null;
                   const first = arr[0];
                   const last = arr[arr.length - 1];
@@ -3382,10 +3394,11 @@
                     cardContainer.insertBefore(card, cardContainer.firstChild);
                     container = document.getElementById(containerId);
                   }
-                  // build content
+                  // build content - filter to only actual quiz entries
                   const raw = localStorage.getItem(HISTORY_KEY);
                   const history = raw ? JSON.parse(raw) : [];
-                  if (!history.length) { container.innerHTML = '<p style="color:#666">No retention history yet — snapshots will appear when you Apply/Save (or Re-evaluate with autosave).</p>'; return; }
+                  const quizOnlyHistory = history.filter(isQuizEntry);
+                  if (!quizOnlyHistory.length) { container.innerHTML = '<p style="color:#666">No quiz history yet — trends will appear after you complete actual quizzes (not Score Editor saves).</p>'; return; }
                   const domains = Object.keys(mergedQuizScores);
                   const rows = domains.map(domain => {
                     const m = computeTrendMetrics(domain);
