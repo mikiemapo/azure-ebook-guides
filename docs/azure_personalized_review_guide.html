@@ -1719,20 +1719,15 @@
             let medianInterval = null;
             let studyStatus = 'inactive'; // inactive, slump, cooling, active
             
-            // Extract all timestamps from history - ONLY count actual quiz attempts
-            // Filter out Score Editor saves and auto-saves (NOT actual quiz completions)
-            const EXCLUDED_SOURCES = ['editor', 'manual', 'score', 'apply', 'save', 'autosave', 'reval', 'migrated'];
-            const quizOnlyHistory = history.filter(h => {
-              if (!h.source) return false; // Legacy entries without source = skip (likely not actual quizzes)
-              const src = h.source.toLowerCase();
-              // Only count actual quiz completions from quiz pages
-              return !EXCLUDED_SOURCES.some(excl => src.includes(excl));
+            // Use ALL history entries for Study Activity (Score Editor saves = study activity)
+            // Consolidate by day to avoid inflated rates from multiple saves on same day
+            const historyByDay = {};
+            history.forEach(h => {
+              if (!h.takenAt) return;
+              const day = h.takenAt.split('T')[0];
+              historyByDay[day] = new Date(h.takenAt).getTime(); // Last timestamp for each day
             });
-            
-            const allHistoryDates = quizOnlyHistory
-              .map(h => h.takenAt ? new Date(h.takenAt).getTime() : null)
-              .filter(Boolean)
-              .sort((a, b) => a - b);
+            const allHistoryDates = Object.values(historyByDay).sort((a, b) => a - b);
             
             // Filter to rolling window (last 60 days)
             const windowStart = now - (ROLLING_WINDOW_DAYS * 24 * 60 * 60 * 1000);
@@ -3348,13 +3343,18 @@
                 return null;
               }
 
-              // Sources to exclude from trend calculations (Score Editor saves, not actual quizzes)
-              const EXCLUDED_TREND_SOURCES = ['editor', 'manual', 'score', 'apply', 'save', 'autosave', 'reval', 'migrated'];
-              
-              function isQuizEntry(snap) {
-                if (!snap.source) return false; // No source = skip
-                const src = snap.source.toLowerCase();
-                return !EXCLUDED_TREND_SOURCES.some(excl => src.includes(excl));
+              // Consolidate history entries by day to avoid spikes from multiple saves
+              // Takes the LAST entry per day (final score after all corrections)
+              function consolidateHistoryByDay(history) {
+                const byDay = {};
+                history.forEach(snap => {
+                  if (!snap.takenAt) return;
+                  const day = snap.takenAt.split('T')[0]; // Get just the date part
+                  byDay[day] = snap; // Last entry for each day wins
+                });
+                return Object.values(byDay).sort((a, b) => 
+                  new Date(a.takenAt).getTime() - new Date(b.takenAt).getTime()
+                );
               }
               
               function computeTrendMetrics(domain){
@@ -3362,9 +3362,9 @@
                   const raw = localStorage.getItem(HISTORY_KEY);
                   if (!raw) return null;
                   const history = JSON.parse(raw);
-                  // Filter to only actual quiz entries for accurate trends
-                  const quizHistory = history.filter(isQuizEntry);
-                  const arr = quizHistory.map(s => getPercentFromSnapshot(s, domain)).filter(v => v != null);
+                  // Consolidate by day to avoid spikes from add/subtract corrections
+                  const consolidatedHistory = consolidateHistoryByDay(history);
+                  const arr = consolidatedHistory.map(s => getPercentFromSnapshot(s, domain)).filter(v => v != null);
                   if (!arr.length) return null;
                   const first = arr[0];
                   const last = arr[arr.length - 1];
@@ -3394,11 +3394,11 @@
                     cardContainer.insertBefore(card, cardContainer.firstChild);
                     container = document.getElementById(containerId);
                   }
-                  // build content - filter to only actual quiz entries
+                  // build content - consolidate by day to show net progress
                   const raw = localStorage.getItem(HISTORY_KEY);
                   const history = raw ? JSON.parse(raw) : [];
-                  const quizOnlyHistory = history.filter(isQuizEntry);
-                  if (!quizOnlyHistory.length) { container.innerHTML = '<p style="color:#666">No quiz history yet — trends will appear after you complete actual quizzes (not Score Editor saves).</p>'; return; }
+                  const consolidatedHistory = consolidateHistoryByDay(history);
+                  if (!consolidatedHistory.length) { container.innerHTML = '<p style="color:#666">No study history yet — trends will appear when you save scores.</p>'; return; }
                   const domains = Object.keys(mergedQuizScores);
                   const rows = domains.map(domain => {
                     const m = computeTrendMetrics(domain);
