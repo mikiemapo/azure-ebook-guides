@@ -7,7 +7,7 @@ This is a static HTML website containing 86+ interactive study guides for the Mi
 - `docs/` - Main content directory containing all HTML study guides
   - `index.html` - Main study hub navigation page
   - `*.html` - Individual topic guides (Azure VMs, Storage, Networking, etc.)
-- `Anki-Decks/` - Anki flashcard decks (.apkg files)
+  - `Anki-Decks/` - Anki flashcard decks (.apkg files, served by the web server)
 - `tools/` - Python scripts for deck generation
 - `reports/` - Analysis and tracking reports
 - `server.py` - Simple Python HTTP server for development
