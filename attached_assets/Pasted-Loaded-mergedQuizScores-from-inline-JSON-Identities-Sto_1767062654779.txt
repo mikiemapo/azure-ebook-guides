@@ -1,0 +1,26 @@
+Loaded mergedQuizScores from inline JSON: {Identities: {…}, Storage: {…}, Compute: {…}, Networking: {…}, Monitoring: {…}, …}
+azure_personalized_review_guide.html:2022 Rendering domain progress with scores: {Identities: {…}, Storage: {…}, Compute: {…}, Networking: {…}, Monitoring: {…}, …}
+azure_personalized_review_guide.html:2031 Updated overall quiz score to: 50%
+azure_personalized_review_guide.html:2043 Rendering Identities: 36/64 = 56% [rag-amber]
+azure_personalized_review_guide.html:2043 Rendering Storage: 29/60 = 48% [rag-red]
+azure_personalized_review_guide.html:2043 Rendering Compute: 24/59 = 41% [rag-red]
+azure_personalized_review_guide.html:2043 Rendering Networking: 18/31 = 58% [rag-amber]
+azure_personalized_review_guide.html:2043 Rendering Monitoring: 14/26 = 54% [rag-amber]
+azure_personalized_review_guide.html:2043 Rendering App Service & Containers: 1/5 = 20% [rag-red]
+azure_personalized_review_guide.html:2059 Domain progress rendering complete. Container innerHTML length: 2780
+azure_personalized_review_guide.html:1731 Quiz History Debug: {totalEntries: 0, quizOnlyEntries: 0, sources: Array(0), recentEntries: Array(0)}
+azure_personalized_review_guide.html:1731 Quiz History Debug: {totalEntries: 0, quizOnlyEntries: 0, sources: Array(0), recentEntries: Array(0)}
+azure_personalized_review_guide.html:2646 Final mergedQuizScores after initialization: {Identities: {…}, Storage: {…}, Compute: {…}, Networking: {…}, Monitoring: {…}, …}
+azure_personalized_review_guide.html:2022 Rendering domain progress with scores: {Identities: {…}, Storage: {…}, Compute: {…}, Networking: {…}, Monitoring: {…}, …}
+azure_personalized_review_guide.html:2031 Updated overall quiz score to: 50%
+azure_personalized_review_guide.html:2043 Rendering Identities: 36/64 = 56% [rag-amber]
+azure_personalized_review_guide.html:2043 Rendering Storage: 29/60 = 48% [rag-red]
+azure_personalized_review_guide.html:2043 Rendering Compute: 24/59 = 41% [rag-red]
+azure_personalized_review_guide.html:2043 Rendering Networking: 18/31 = 58% [rag-amber]
+azure_personalized_review_guide.html:2043 Rendering Monitoring: 14/26 = 54% [rag-amber]
+azure_personalized_review_guide.html:2043 Rendering App Service & Containers: 1/5 = 20% [rag-red]
+azure_personalized_review_guide.html:2059 Domain progress rendering complete. Container innerHTML length: 2780
+azure_personalized_review_guide.html:2652 Forced secondary render complete
+console.log(JSON.parse(localStorage.getItem('mergedQuizHistory') || '[]').slice(-10))
+VM496:1 []length: 0[[Prototype]]: Array(0)
+undefined
