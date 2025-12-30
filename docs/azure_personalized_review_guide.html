@@ -1672,12 +1672,16 @@
           const LOGICAL_DOMAIN_ORDER = ['Identities', 'Storage', 'Compute', 'Networking', 'Monitoring'];
           const EXAM_READY_THRESHOLD = 75; // All domains must be >= 75%
           const CONSOLIDATION_DAYS = 7; // Buffer after reaching threshold for retention
+          const STALE_THRESHOLD_DAYS = 14; // Domain considered stale after 14 days
+          const ROLLING_WINDOW_DAYS = 60; // Use only recent activity for rate calculation
+          const SLUMP_MULTIPLIER = 1.5; // If gap > median * this, user is in a study slump
 
           // --- Calculate study statistics and exam readiness ---
           function getStudyStats() {
             const meta = getDomainMetadata();
             const history = getQuizHistory();
             const domains = Object.keys(domainCardIdMap);
+            const now = Date.now();
             
             // Calculate per-domain percents
             const domainPercents = {};
@@ -1692,67 +1696,152 @@
             const allAbove50 = domainsBelow50.length === 0;
             const allAbove75 = domainsAbove75.length === domains.length;
             
-            // Calculate quiz-taking rate using actual history snapshots
-            // Each entry in history represents a quiz score update event
+            // Calculate per-domain staleness
+            const domainStaleness = {};
+            domains.forEach(d => {
+              const lastUpdated = meta[d]?.lastUpdated ? new Date(meta[d].lastUpdated).getTime() : null;
+              if (!lastUpdated) {
+                domainStaleness[d] = { stale: true, daysSince: null, status: 'never' };
+              } else {
+                const daysSince = Math.floor((now - lastUpdated) / (1000 * 60 * 60 * 24));
+                domainStaleness[d] = {
+                  stale: daysSince > STALE_THRESHOLD_DAYS,
+                  daysSince,
+                  status: daysSince > STALE_THRESHOLD_DAYS ? 'stale' : 'active'
+                };
+              }
+            });
+            const staleDomains = domains.filter(d => domainStaleness[d]?.stale);
+            
+            // Calculate quiz-taking rate using ROLLING WINDOW (recent activity only)
             let quizRate = 0;
             let avgDaysBetweenUpdates = null;
+            let medianInterval = null;
+            let studyStatus = 'inactive'; // inactive, slump, cooling, active
             
-            if (history.length >= 2) {
-              // Extract timestamps from history (takenAt field)
-              const historyDates = history
-                .map(h => h.takenAt ? new Date(h.takenAt) : null)
-                .filter(Boolean)
-                .sort((a, b) => a - b);
-              
-              if (historyDates.length >= 2) {
-                const firstUpdate = historyDates[0];
-                const lastUpdate = historyDates[historyDates.length - 1];
-                const daySpan = Math.max(1, (lastUpdate - firstUpdate) / (1000 * 60 * 60 * 24));
-                // Count actual updates (history entries) per week
-                quizRate = Math.round((historyDates.length / daySpan) * 7 * 10) / 10;
-                avgDaysBetweenUpdates = Math.round(daySpan / (historyDates.length - 1) * 10) / 10;
+            // Extract all timestamps from history
+            const allHistoryDates = history
+              .map(h => h.takenAt ? new Date(h.takenAt).getTime() : null)
+              .filter(Boolean)
+              .sort((a, b) => a - b);
+            
+            // Filter to rolling window (last 60 days)
+            const windowStart = now - (ROLLING_WINDOW_DAYS * 24 * 60 * 60 * 1000);
+            const recentDates = allHistoryDates.filter(d => d >= windowStart);
+            
+            // Calculate intervals between quiz attempts
+            const intervals = [];
+            for (let i = 1; i < allHistoryDates.length; i++) {
+              intervals.push((allHistoryDates[i] - allHistoryDates[i - 1]) / (1000 * 60 * 60 * 24));
+            }
+            
+            // Calculate median interval (more robust than average for irregular patterns)
+            if (intervals.length > 0) {
+              const sorted = [...intervals].sort((a, b) => a - b);
+              medianInterval = sorted.length % 2 === 0 
+                ? (sorted[sorted.length / 2 - 1] + sorted[sorted.length / 2]) / 2
+                : sorted[Math.floor(sorted.length / 2)];
+              medianInterval = Math.round(medianInterval * 10) / 10;
+            }
+            
+            // Calculate rate based on recent activity only
+            if (recentDates.length >= 2) {
+              const firstRecent = recentDates[0];
+              const lastRecent = recentDates[recentDates.length - 1];
+              const daySpan = Math.max(1, (lastRecent - firstRecent) / (1000 * 60 * 60 * 24));
+              quizRate = Math.round((recentDates.length / daySpan) * 7 * 10) / 10;
+              avgDaysBetweenUpdates = Math.round(daySpan / (recentDates.length - 1) * 10) / 10;
+            } else if (intervals.length > 0) {
+              // Fall back to all-time average if no recent activity
+              avgDaysBetweenUpdates = medianInterval;
+            }
+            
+            // Calculate days since last update
+            const lastUpdateDates = domains.map(d => meta[d]?.lastUpdated ? new Date(meta[d].lastUpdated).getTime() : null).filter(Boolean);
+            let mostRecentUpdate = lastUpdateDates.length ? Math.max(...lastUpdateDates) : null;
+            
+            if (allHistoryDates.length > 0) {
+              const lastHistoryTime = allHistoryDates[allHistoryDates.length - 1];
+              if (!mostRecentUpdate || lastHistoryTime > mostRecentUpdate) {
+                mostRecentUpdate = lastHistoryTime;
               }
             }
             
-            // Calculate days since last update (from metadata or history)
-            const lastUpdateDates = domains.map(d => meta[d]?.lastUpdated ? new Date(meta[d].lastUpdated) : null).filter(Boolean);
-            let mostRecentUpdate = lastUpdateDates.length ? Math.max(...lastUpdateDates.map(d => d.getTime())) : null;
+            const daysSinceLastUpdate = mostRecentUpdate ? Math.floor((now - mostRecentUpdate) / (1000 * 60 * 60 * 24)) : null;
             
-            // Also check history for most recent update
-            if (history.length > 0) {
-              const lastHistoryEntry = history[history.length - 1];
-              if (lastHistoryEntry.takenAt) {
-                const historyTime = new Date(lastHistoryEntry.takenAt).getTime();
-                if (!mostRecentUpdate || historyTime > mostRecentUpdate) {
-                  mostRecentUpdate = historyTime;
-                }
-              }
+            // Determine study status (active, cooling, slump, inactive)
+            if (daysSinceLastUpdate === null) {
+              studyStatus = 'inactive';
+            } else if (daysSinceLastUpdate <= 7) {
+              studyStatus = 'active';
+            } else if (medianInterval && daysSinceLastUpdate > medianInterval * SLUMP_MULTIPLIER) {
+              studyStatus = 'slump';
+            } else if (daysSinceLastUpdate > 21) {
+              studyStatus = 'slump';
+            } else {
+              studyStatus = 'cooling';
             }
             
-            const daysSinceLastUpdate = mostRecentUpdate ? Math.floor((Date.now() - mostRecentUpdate) / (1000 * 60 * 60 * 24)) : null;
-            
-            // Estimate exam readiness date
+            // --- REALISTIC EXAM READINESS PREDICTION ---
             let estimatedExamDate = null;
             let daysToReady = null;
+            let readinessNote = null;
             
             if (allAbove75) {
               // Already exam ready - add consolidation period from last update
               const consolidationEnd = mostRecentUpdate ? new Date(mostRecentUpdate + CONSOLIDATION_DAYS * 24 * 60 * 60 * 1000) : new Date();
-              if (consolidationEnd > new Date()) {
+              if (consolidationEnd > now) {
                 estimatedExamDate = consolidationEnd;
-                daysToReady = Math.ceil((consolidationEnd - new Date()) / (1000 * 60 * 60 * 24));
+                daysToReady = Math.ceil((consolidationEnd - now) / (1000 * 60 * 60 * 24));
+                readinessNote = 'consolidation';
               } else {
-                estimatedExamDate = new Date(); // Ready now
+                estimatedExamDate = new Date();
                 daysToReady = 0;
+                readinessNote = 'ready';
               }
-            } else if (avgDaysBetweenUpdates && avgDaysBetweenUpdates > 0) {
-              // Estimate based on progress rate
+            } else if (studyStatus === 'slump' || studyStatus === 'inactive') {
+              // In a study slump - don't show aggressive date, show warning
+              readinessNote = 'slump';
+              // Still calculate an estimate but mark it as unreliable
               const domainsNeeding75 = domains.filter(d => domainPercents[d] < EXAM_READY_THRESHOLD);
-              // Assume each domain needs roughly avgDaysBetweenUpdates * 2 to improve significantly
-              const estimatedDaysPerDomain = avgDaysBetweenUpdates * 2;
-              const totalDaysNeeded = domainsNeeding75.length * estimatedDaysPerDomain + CONSOLIDATION_DAYS;
-              estimatedExamDate = new Date(Date.now() + totalDaysNeeded * 24 * 60 * 60 * 1000);
+              const avgGapToUse = medianInterval || 7; // Default to weekly if no data
+              // Estimate: each domain needs (75 - current) / velocity days
+              // Assume ~5-10 points improvement per study session on average
+              const pointsPerSession = 7;
+              let totalDaysNeeded = 0;
+              domainsNeeding75.forEach(d => {
+                const gap = EXAM_READY_THRESHOLD - domainPercents[d];
+                const sessionsNeeded = Math.ceil(gap / pointsPerSession);
+                totalDaysNeeded += sessionsNeeded * avgGapToUse;
+              });
+              // Add stale domain penalty (need to re-study)
+              totalDaysNeeded += staleDomains.length * avgGapToUse * 2;
+              totalDaysNeeded += CONSOLIDATION_DAYS;
+              estimatedExamDate = new Date(now + totalDaysNeeded * 24 * 60 * 60 * 1000);
               daysToReady = Math.ceil(totalDaysNeeded);
+            } else if (avgDaysBetweenUpdates && avgDaysBetweenUpdates > 0) {
+              // Active study - calculate realistic estimate
+              const domainsNeeding75 = domains.filter(d => domainPercents[d] < EXAM_READY_THRESHOLD);
+              // More realistic: each domain needs time based on gap to 75%
+              // Assume ~5-10 points improvement per focused study session
+              const pointsPerSession = quizRate >= 3 ? 8 : (quizRate >= 1 ? 6 : 5);
+              let totalDaysNeeded = 0;
+              domainsNeeding75.forEach(d => {
+                const gap = EXAM_READY_THRESHOLD - domainPercents[d];
+                const sessionsNeeded = Math.ceil(gap / pointsPerSession);
+                const daysForDomain = sessionsNeeded * avgDaysBetweenUpdates;
+                totalDaysNeeded = Math.max(totalDaysNeeded, daysForDomain); // Parallel study
+              });
+              // Add stale domain catch-up time
+              if (staleDomains.length > 0) {
+                totalDaysNeeded += staleDomains.length * avgDaysBetweenUpdates;
+              }
+              totalDaysNeeded += CONSOLIDATION_DAYS;
+              estimatedExamDate = new Date(now + totalDaysNeeded * 24 * 60 * 60 * 1000);
+              daysToReady = Math.ceil(totalDaysNeeded);
+              readinessNote = 'projected';
+            } else {
+              readinessNote = 'insufficient';
             }
             
             return {
@@ -1763,9 +1852,14 @@
               allAbove75,
               quizRate,
               avgDaysBetweenUpdates,
+              medianInterval,
               daysSinceLastUpdate,
+              studyStatus,
+              staleDomains,
+              domainStaleness,
               estimatedExamDate,
               daysToReady,
+              readinessNote,
               totalDomains: domains.length,
               readyCount: domainsAbove75.length
             };
@@ -2149,49 +2243,107 @@
             if (priority.percent >= 76) heroRagClass = 'rag-green';
             else if (priority.percent >= 50) heroRagClass = 'rag-amber';
 
-            // Build study stats section
+            // Build study stats section with status indicator
             let statsHtml = '';
-            if (stats.quizRate > 0 || stats.daysSinceLastUpdate !== null) {
+            if (stats.quizRate > 0 || stats.daysSinceLastUpdate !== null || stats.studyStatus) {
               const rateClass = stats.quizRate >= 3 ? 'highlight' : (stats.quizRate >= 1 ? '' : 'warning');
-              const daysClass = stats.daysSinceLastUpdate === null ? 'danger' : (stats.daysSinceLastUpdate > 7 ? 'warning' : 'highlight');
+              const daysClass = stats.daysSinceLastUpdate === null ? 'danger' : (stats.daysSinceLastUpdate > 14 ? 'danger' : (stats.daysSinceLastUpdate > 7 ? 'warning' : 'highlight'));
+              
+              // Study status badge
+              const statusBadges = {
+                active: '<span style="background:#28a745;color:#fff;padding:3px 10px;border-radius:12px;font-size:0.75em;font-weight:600;"><i class="fas fa-fire"></i> Active</span>',
+                cooling: '<span style="background:#6c757d;color:#fff;padding:3px 10px;border-radius:12px;font-size:0.75em;font-weight:600;"><i class="fas fa-clock"></i> Cooling</span>',
+                slump: '<span style="background:#f59e0b;color:#fff;padding:3px 10px;border-radius:12px;font-size:0.75em;font-weight:600;"><i class="fas fa-pause"></i> Paused</span>',
+                inactive: '<span style="background:#dc3545;color:#fff;padding:3px 10px;border-radius:12px;font-size:0.75em;font-weight:600;"><i class="fas fa-moon"></i> Inactive</span>'
+              };
+              const statusBadge = statusBadges[stats.studyStatus] || '';
+              
               statsHtml = `
                 <div class="study-stats-card">
-                  <h4><i class="fas fa-chart-bar"></i> Study Activity</h4>
+                  <h4><i class="fas fa-chart-bar"></i> Study Activity ${statusBadge}</h4>
                   <div class="study-stats-grid">
                     <div class="study-stat ${rateClass}">
                       <div class="stat-value">${stats.quizRate > 0 ? stats.quizRate.toFixed(1) : '--'}</div>
-                      <div class="stat-label">Updates/Week</div>
+                      <div class="stat-label">Quizzes/Week (60d)</div>
                     </div>
                     <div class="study-stat ${daysClass}">
                       <div class="stat-value">${stats.daysSinceLastUpdate !== null ? stats.daysSinceLastUpdate : '--'}</div>
-                      <div class="stat-label">Days Since Update</div>
+                      <div class="stat-label">Days Since Quiz</div>
                     </div>
                     <div class="study-stat">
                       <div class="stat-value">${stats.readyCount}/${stats.totalDomains}</div>
                       <div class="stat-label">Domains at 75%+</div>
                     </div>
                   </div>
+                  ${stats.medianInterval ? `<div style="text-align:center;margin-top:8px;font-size:0.85em;color:var(--text-secondary);">Typical gap: <strong>${stats.medianInterval}</strong> days between quizzes</div>` : ''}
                 </div>
               `;
             }
 
-            // Build exam readiness section
+            // Build exam readiness section with realistic messaging
             let examHtml = '';
-            if (stats.estimatedExamDate) {
+            const staleCount = stats.staleDomains ? stats.staleDomains.length : 0;
+            const staleWarning = staleCount > 0 ? `<div style="margin-top:8px;padding:8px;background:rgba(245,158,11,0.15);border-radius:6px;font-size:0.85em;color:#b45309;"><i class="fas fa-exclamation-triangle"></i> ${staleCount} domain${staleCount > 1 ? 's' : ''} need${staleCount === 1 ? 's' : ''} review (not updated in 14+ days)</div>` : '';
+            
+            if (stats.readinessNote === 'ready') {
+              examHtml = `
+                <div class="exam-readiness-card" style="border-color:#28a745;">
+                  <div class="readiness-title" style="color:#28a745;"><i class="fas fa-check-circle"></i> Exam Ready!</div>
+                  <div class="target-date" style="color:#28a745;">You're prepared</div>
+                  <div class="target-note">All domains at 75%+ - consider scheduling your exam</div>
+                  <div class="progress-summary">
+                    <strong>${stats.readyCount}</strong> of <strong>${stats.totalDomains}</strong> domains exam-ready
+                  </div>
+                </div>
+              `;
+            } else if (stats.readinessNote === 'consolidation') {
+              const dateStr = stats.estimatedExamDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+              examHtml = `
+                <div class="exam-readiness-card" style="border-color:#28a745;">
+                  <div class="readiness-title"><i class="fas fa-hourglass-half"></i> Consolidation Period</div>
+                  <div class="target-date">${dateStr}</div>
+                  <div class="target-note">~${stats.daysToReady} day${stats.daysToReady !== 1 ? 's' : ''} - Review and reinforce before exam</div>
+                  <div class="progress-summary">All domains at 75%+ - let knowledge settle</div>
+                </div>
+              `;
+            } else if (stats.readinessNote === 'slump') {
+              const dateStr = stats.estimatedExamDate ? stats.estimatedExamDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '--';
+              examHtml = `
+                <div class="exam-readiness-card" style="border-color:#f59e0b;background:linear-gradient(135deg,rgba(245,158,11,0.05),rgba(245,158,11,0.1));">
+                  <div class="readiness-title" style="color:#b45309;"><i class="fas fa-pause-circle"></i> Study Paused</div>
+                  <div class="target-date" style="color:#b45309;opacity:0.7;">${dateStr}</div>
+                  <div class="target-note" style="color:#92400e;">
+                    <strong>${stats.daysSinceLastUpdate || 0} days</strong> since last quiz - resume studying to get a reliable prediction
+                  </div>
+                  <div class="progress-summary">
+                    <strong>${stats.readyCount}</strong> of <strong>${stats.totalDomains}</strong> domains at 75%+ | 
+                    Median pace: <strong>${stats.medianInterval || '--'}</strong> days between quizzes
+                  </div>
+                  ${staleWarning}
+                  <div style="margin-top:10px;text-align:center;">
+                    <span style="background:#f59e0b;color:#fff;padding:6px 14px;border-radius:20px;font-size:0.85em;font-weight:600;">
+                      <i class="fas fa-play"></i> Take a quiz to update prediction
+                    </span>
+                  </div>
+                </div>
+              `;
+            } else if (stats.readinessNote === 'projected' && stats.estimatedExamDate) {
               const dateStr = stats.estimatedExamDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
               const daysText = stats.daysToReady === 0 ? 'Ready now!' : 
-                              stats.daysToReady === 1 ? 'Tomorrow' : 
+                              stats.daysToReady === 1 ? '~1 day' : 
                               `~${stats.daysToReady} days`;
-              const noteText = stats.allAbove75 ? 'All domains at 75%+ - consolidation period active' : 
-                              'Based on your current study rate';
+              const paceNote = stats.quizRate >= 3 ? 'Great pace!' : 
+                              stats.quizRate >= 1 ? 'Steady progress' : 
+                              'Consider increasing study frequency';
               examHtml = `
                 <div class="exam-readiness-card">
                   <div class="readiness-title"><i class="fas fa-calendar-check"></i> Estimated Exam Readiness</div>
                   <div class="target-date">${dateStr}</div>
-                  <div class="target-note">${daysText} - ${noteText}</div>
+                  <div class="target-note">${daysText} at your current pace (${stats.quizRate.toFixed(1)} quizzes/week)</div>
                   <div class="progress-summary">
-                    <strong>${stats.readyCount}</strong> of <strong>${stats.totalDomains}</strong> domains exam-ready (75%+)
+                    <strong>${stats.readyCount}</strong> of <strong>${stats.totalDomains}</strong> domains at 75%+ | ${paceNote}
                   </div>
+                  ${staleWarning}
                 </div>
               `;
             } else {
@@ -2199,7 +2351,10 @@
                 <div class="exam-readiness-card">
                   <div class="readiness-title"><i class="fas fa-calendar-check"></i> Estimated Exam Readiness</div>
                   <div class="target-date" style="color: var(--text-secondary)">Not enough data</div>
-                  <div class="target-note">Update at least 2 domain scores to enable prediction</div>
+                  <div class="target-note">Take at least 2 quizzes to enable prediction</div>
+                  <div class="progress-summary">
+                    <strong>${stats.readyCount}</strong> of <strong>${stats.totalDomains}</strong> domains at 75%+
+                  </div>
                 </div>
               `;
             }

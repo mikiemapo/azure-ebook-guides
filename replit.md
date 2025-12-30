@@ -71,3 +71,19 @@ Configured as a static site deployment serving the `docs/` directory.
   - Uses 75% threshold for all domains + 7-day consolidation buffer
   - Adapts prediction based on actual quiz-taking frequency from mergedQuizHistory
 - **RAG Color-Coded Display**: Red (<50%), Amber (50-75%), Green (>75%)
+
+## Realistic Exam Prediction (v2)
+- **Rolling Window**: Uses only last 60 days of activity for rate calculation
+- **Median Interval**: Uses median (not average) for robustness against irregular patterns
+- **Study Status Detection**:
+  - Active: Quizzed within 7 days
+  - Cooling: 8-14 days since last quiz
+  - Slump/Paused: >14 days or >1.5x typical gap
+  - Inactive: No quiz history
+- **Stale Domain Tracking**: Flags domains not updated in 14+ days
+- **Adaptive Prediction**:
+  - If in slump: Shows warning + encourages resuming study (date faded/unreliable)
+  - If active: Shows realistic date based on per-domain gap to 75% + typical pace
+  - Adds catch-up time for stale domains
+  - Points per session scaled by quiz frequency (5-8 points based on pace)
+- **Status Badges**: Visual indicator (Active/Cooling/Paused/Inactive) in stats section
