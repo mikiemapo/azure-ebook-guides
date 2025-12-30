@@ -57,3 +57,14 @@ Configured as a static site deployment serving the `docs/` directory.
 - Features: CSV upload, template download, data preview, card preview, answer shuffling
 - MCQ card model with professional dark theme styling
 - Supports column formats: Question, A/B/C/D (or ChoiceA-D), Correct, Explanation, Tags, Source, Batch
+
+## Next Steps Tracker (Enhanced)
+- **Smart Priority Logic**: 
+  - If any domain < 50%: prioritizes lowest scoring domain
+  - If all domains >= 50%: follows logical AZ-104 study order (Identities → Storage → Compute → Networking → Monitoring)
+- **Study Activity Stats**: Updates/week rate, days since last update, domains at 75%+
+- **Exam Readiness Prediction**: 
+  - Calculates estimated exam date based on study rate
+  - Uses 75% threshold for all domains + 7-day consolidation buffer
+  - Adapts prediction based on actual quiz-taking frequency
+- **RAG Color-Coded Hero**: Red (<50%), Amber (50-75%), Green (>75%)

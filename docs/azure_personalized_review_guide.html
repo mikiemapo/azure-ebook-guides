@@ -804,6 +804,122 @@
       .next-steps-tracker .tracker-item a:hover {
         text-decoration: underline;
       }
+
+      /* Enhanced Next Steps Hero Section */
+      .next-step-hero {
+        background: linear-gradient(135deg, #0078d4 0%, #005a9e 100%);
+        color: white;
+        border-radius: 12px;
+        padding: 20px 24px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      .next-step-hero .focus-label {
+        font-size: 0.85em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        opacity: 0.85;
+        margin-bottom: 6px;
+      }
+      .next-step-hero .domain-focus {
+        font-size: 1.5em;
+        font-weight: 700;
+        margin-bottom: 4px;
+      }
+      .next-step-hero .mastery-badge {
+        display: inline-block;
+        background: rgba(255,255,255,0.2);
+        padding: 4px 12px;
+        border-radius: 20px;
+        font-size: 0.9em;
+        margin-top: 8px;
+      }
+      .next-step-hero .priority-reason {
+        font-size: 0.85em;
+        opacity: 0.9;
+        margin-top: 10px;
+        font-style: italic;
+      }
+      .next-step-hero.rag-red { background: linear-gradient(135deg, #dc3545 0%, #b02a37 100%); }
+      .next-step-hero.rag-amber { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+      .next-step-hero.rag-green { background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%); }
+
+      /* Study Stats Card */
+      .study-stats-card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 20px;
+      }
+      .study-stats-card h4 {
+        margin: 0 0 12px 0;
+        font-size: 0.95em;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .study-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+      }
+      .study-stat {
+        text-align: center;
+        padding: 12px;
+        background: var(--bg-tertiary);
+        border-radius: 8px;
+      }
+      .study-stat .stat-value {
+        font-size: 1.4em;
+        font-weight: 700;
+        color: var(--azure-blue);
+      }
+      .study-stat .stat-label {
+        font-size: 0.8em;
+        color: var(--text-secondary);
+        margin-top: 4px;
+      }
+      .study-stat.highlight .stat-value { color: #28a745; }
+      .study-stat.warning .stat-value { color: #f59e0b; }
+      .study-stat.danger .stat-value { color: #dc3545; }
+
+      /* Exam Readiness Card */
+      .exam-readiness-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: 2px solid var(--border-color);
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+      [data-theme="dark"] .exam-readiness-card {
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+      }
+      .exam-readiness-card .readiness-title {
+        font-size: 0.9em;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--text-secondary);
+        margin-bottom: 10px;
+      }
+      .exam-readiness-card .target-date {
+        font-size: 1.6em;
+        font-weight: 700;
+        color: var(--azure-blue);
+        margin-bottom: 8px;
+      }
+      .exam-readiness-card .target-note {
+        font-size: 0.85em;
+        color: var(--text-secondary);
+      }
+      .exam-readiness-card .progress-summary {
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-color);
+        font-size: 0.9em;
+      }
     </style>
   </head>
   <body>
@@ -1552,6 +1668,190 @@
             Monitoring: "fa-chart-line"
           };
 
+          // Logical study order for AZ-104 domains (when all above 50%)
+          const LOGICAL_DOMAIN_ORDER = ['Identities', 'Storage', 'Compute', 'Networking', 'Monitoring'];
+          const EXAM_READY_THRESHOLD = 75; // All domains must be >= 75%
+          const CONSOLIDATION_DAYS = 7; // Buffer after reaching threshold for retention
+
+          // --- Calculate study statistics and exam readiness ---
+          function getStudyStats() {
+            const meta = getDomainMetadata();
+            const history = getQuizHistory();
+            const domains = Object.keys(domainCardIdMap);
+            
+            // Calculate per-domain percents
+            const domainPercents = {};
+            domains.forEach(domain => {
+              const data = mergedQuizScores[domain] || { correct: 0, total: 0 };
+              domainPercents[domain] = data.total ? Math.round((data.correct / data.total) * 100) : 0;
+            });
+            
+            // Count domains at different levels
+            const domainsBelow50 = domains.filter(d => domainPercents[d] < 50);
+            const domainsAbove75 = domains.filter(d => domainPercents[d] >= EXAM_READY_THRESHOLD);
+            const allAbove50 = domainsBelow50.length === 0;
+            const allAbove75 = domainsAbove75.length === domains.length;
+            
+            // Calculate quiz-taking rate using actual history snapshots
+            // Each entry in history represents a quiz score update event
+            let quizRate = 0;
+            let avgDaysBetweenUpdates = null;
+            
+            if (history.length >= 2) {
+              // Extract timestamps from history (takenAt field)
+              const historyDates = history
+                .map(h => h.takenAt ? new Date(h.takenAt) : null)
+                .filter(Boolean)
+                .sort((a, b) => a - b);
+              
+              if (historyDates.length >= 2) {
+                const firstUpdate = historyDates[0];
+                const lastUpdate = historyDates[historyDates.length - 1];
+                const daySpan = Math.max(1, (lastUpdate - firstUpdate) / (1000 * 60 * 60 * 24));
+                // Count actual updates (history entries) per week
+                quizRate = Math.round((historyDates.length / daySpan) * 7 * 10) / 10;
+                avgDaysBetweenUpdates = Math.round(daySpan / (historyDates.length - 1) * 10) / 10;
+              }
+            }
+            
+            // Calculate days since last update (from metadata or history)
+            const lastUpdateDates = domains.map(d => meta[d]?.lastUpdated ? new Date(meta[d].lastUpdated) : null).filter(Boolean);
+            let mostRecentUpdate = lastUpdateDates.length ? Math.max(...lastUpdateDates.map(d => d.getTime())) : null;
+            
+            // Also check history for most recent update
+            if (history.length > 0) {
+              const lastHistoryEntry = history[history.length - 1];
+              if (lastHistoryEntry.takenAt) {
+                const historyTime = new Date(lastHistoryEntry.takenAt).getTime();
+                if (!mostRecentUpdate || historyTime > mostRecentUpdate) {
+                  mostRecentUpdate = historyTime;
+                }
+              }
+            }
+            
+            const daysSinceLastUpdate = mostRecentUpdate ? Math.floor((Date.now() - mostRecentUpdate) / (1000 * 60 * 60 * 24)) : null;
+            
+            // Estimate exam readiness date
+            let estimatedExamDate = null;
+            let daysToReady = null;
+            
+            if (allAbove75) {
+              // Already exam ready - add consolidation period from last update
+              const consolidationEnd = mostRecentUpdate ? new Date(mostRecentUpdate + CONSOLIDATION_DAYS * 24 * 60 * 60 * 1000) : new Date();
+              if (consolidationEnd > new Date()) {
+                estimatedExamDate = consolidationEnd;
+                daysToReady = Math.ceil((consolidationEnd - new Date()) / (1000 * 60 * 60 * 24));
+              } else {
+                estimatedExamDate = new Date(); // Ready now
+                daysToReady = 0;
+              }
+            } else if (avgDaysBetweenUpdates && avgDaysBetweenUpdates > 0) {
+              // Estimate based on progress rate
+              const domainsNeeding75 = domains.filter(d => domainPercents[d] < EXAM_READY_THRESHOLD);
+              // Assume each domain needs roughly avgDaysBetweenUpdates * 2 to improve significantly
+              const estimatedDaysPerDomain = avgDaysBetweenUpdates * 2;
+              const totalDaysNeeded = domainsNeeding75.length * estimatedDaysPerDomain + CONSOLIDATION_DAYS;
+              estimatedExamDate = new Date(Date.now() + totalDaysNeeded * 24 * 60 * 60 * 1000);
+              daysToReady = Math.ceil(totalDaysNeeded);
+            }
+            
+            return {
+              domainPercents,
+              domainsBelow50,
+              domainsAbove75,
+              allAbove50,
+              allAbove75,
+              quizRate,
+              avgDaysBetweenUpdates,
+              daysSinceLastUpdate,
+              estimatedExamDate,
+              daysToReady,
+              totalDomains: domains.length,
+              readyCount: domainsAbove75.length
+            };
+          }
+
+          function getQuizHistory() {
+            try {
+              const raw = localStorage.getItem('mergedQuizHistory');
+              return raw ? JSON.parse(raw) : [];
+            } catch(e) { return []; }
+          }
+
+          function getDomainMetadata() {
+            try {
+              const raw = localStorage.getItem('domainScoreMetadata');
+              return raw ? JSON.parse(raw) : {};
+            } catch(e) { return {}; }
+          }
+
+          // Determine priority domain using smart logic
+          function getPriorityDomain() {
+            const stats = getStudyStats();
+            const domains = Object.keys(domainCardIdMap);
+            
+            // If any domain is below 50%, prioritize the lowest
+            if (stats.domainsBelow50.length > 0) {
+              let lowestDomain = stats.domainsBelow50[0];
+              let lowestPercent = stats.domainPercents[lowestDomain];
+              stats.domainsBelow50.forEach(d => {
+                if (stats.domainPercents[d] < lowestPercent) {
+                  lowestPercent = stats.domainPercents[d];
+                  lowestDomain = d;
+                }
+              });
+              return {
+                domain: lowestDomain,
+                percent: lowestPercent,
+                reason: 'Lowest scoring domain (below 50%)',
+                priority: 'critical'
+              };
+            }
+            
+            // All domains >= 50%: use logical order, find first incomplete flashcard
+            for (const domain of LOGICAL_DOMAIN_ORDER) {
+              if (!domainCardIdMap[domain]) continue;
+              const card = document.getElementById(domainCardIdMap[domain]);
+              if (!card) continue;
+              const nextFlash = card.querySelector('.flashcard-item input[type="checkbox"]:not(:checked)');
+              if (nextFlash) {
+                return {
+                  domain: domain,
+                  percent: stats.domainPercents[domain] || 0,
+                  reason: 'Following logical study path',
+                  priority: stats.domainPercents[domain] < 75 ? 'moderate' : 'polish'
+                };
+              }
+            }
+            
+            // All flashcards complete, find lowest domain not at 100%
+            let lowestDomain = null;
+            let lowestPercent = 101;
+            domains.forEach(d => {
+              const pct = stats.domainPercents[d] || 0;
+              if (pct < lowestPercent) {
+                lowestPercent = pct;
+                lowestDomain = d;
+              }
+            });
+            
+            if (lowestDomain && lowestPercent < 100) {
+              return {
+                domain: lowestDomain,
+                percent: lowestPercent,
+                reason: 'Reinforce weakest domain',
+                priority: lowestPercent >= 75 ? 'polish' : 'moderate'
+              };
+            }
+            
+            return {
+              domain: null,
+              percent: 100,
+              reason: 'All domains complete!',
+              priority: 'complete'
+            };
+          }
+
           // --- Utility: ensure lab items have checkboxes ---
           function ensureLabCheckboxes() {
             document.querySelectorAll(".card").forEach((card) => {
@@ -1748,22 +2048,26 @@
           }
 
           function updateNextStepsTracker() {
-            // Determine weakest domain based only on remaining flashcards
-            let weakestDomain = null; let lowestPercent = 101;
-            Object.keys(mergedQuizScores).forEach((domain) => {
-              const data = mergedQuizScores[domain] || { correct: 0, total: 0 };
-              const percent = (typeof data.adjustedPercent === 'number') ? Number(data.adjustedPercent) : (data.total ? (data.correct / data.total) * 100 : 0);
-              const card = document.getElementById(domainCardIdMap[domain]);
-              if (!card) return;
-              // Only consider uncompleted flashcards for prioritization
-              const nextFlash = card.querySelector('.flashcard-item input[type="checkbox"]:not(:checked)');
-              if (nextFlash && percent < lowestPercent) {
-                lowestPercent = percent; weakestDomain = domain;
-              }
-            });
             const trackerContent = document.getElementById('next-steps-content');
             if (!trackerContent) return;
-            if (!weakestDomain) { trackerContent.innerHTML = '<strong>All domains completed!</strong>'; return; }
+
+            // Get priority domain using smart logic
+            const priority = getPriorityDomain();
+            const stats = getStudyStats();
+            const weakestDomain = priority.domain;
+
+            // Handle completion state
+            if (!weakestDomain || priority.priority === 'complete') {
+              trackerContent.innerHTML = `
+                <div class="next-step-hero rag-green">
+                  <div class="focus-label">Congratulations!</div>
+                  <div class="domain-focus">All Domains Complete</div>
+                  <div class="mastery-badge">100% Mastery Achieved</div>
+                </div>
+              `;
+              return;
+            }
+
             const currentFlash = getNextFlashcard(weakestDomain);
             const nextFlashTitle = currentFlash && currentFlash.title ? currentFlash.title : 'All flashcards completed!';
             const matchedLabs = currentFlash && currentFlash.title ? recommendLabsForFlashcard(weakestDomain, currentFlash.title, 3) : [];
@@ -1771,16 +2075,15 @@
             let nextLabHtml = 'No relevant labs found.';
             if (matchedLabs.length) {
               nextLabHtml = matchedLabs.map(l => {
-                  const title = escapeHtml(l.title || 'Untitled Lab');
-                  const mins = l.estimatedMinutes ? ` (${l.estimatedMinutes} min)` : '';
-                  const challengeBadgeInline = l.challenge ? ` <span class="next-step-challenge">(Challenge #${escapeHtml((l.challengeId||'').toString())})</span>` : '';
-                // Prefer same-page anchors to avoid external login redirects.
+                const title = escapeHtml(l.title || 'Untitled Lab');
+                const mins = l.estimatedMinutes ? ` (${l.estimatedMinutes} min)` : '';
+                const challengeBadgeInline = l.challenge ? ` <span class="next-step-challenge">(Challenge #${escapeHtml((l.challengeId||'').toString())})</span>` : '';
                 const anchorId = `lab-${(l.labId||l.title||'').toString().replace(/[^a-z0-9-_]/gi, '-').toLowerCase()}`;
                 return `<a href="#${anchorId}" data-internal-link="true">${title}</a>${mins}${challengeBadgeInline}`;
               }).join(' <span style="color:#999">•</span> ');
             }
 
-            // Also update per-domain trackers inside each card so they reflect the next unchecked flashcard and recommended labs for that domain
+            // Also update per-domain trackers inside each card
             Object.keys(domainCardIdMap).forEach(domainKey => {
               try{
                 const card = document.getElementById(domainCardIdMap[domainKey]);
@@ -1799,7 +2102,6 @@
                     return `<a href="#${anchorId}" data-internal-link="true">${t}</a>${mins}`;
                   }).join(' <span style="color:#999">•</span> ');
                 }
-                // Update the first tracker-section (Next Flashcard)
                 const sections = tracker.querySelectorAll('.tracker-section');
                 if (sections && sections.length){
                   const flashSection = sections[0];
@@ -1810,60 +2112,132 @@
                   const labSection = sections[1];
                   const labTitleEl = labSection.querySelector('.tracker-item .title');
                   if (labTitleEl) labTitleEl.innerHTML = labHtml;
-                    // Update or insert recommended Anki deck hint for this domain
-                    try{
-                      const deckName = escapeHtml(getRecommendedAnkiDeck(domainKey));
-                      let deckItem = labSection.querySelector('.anki-deck-item');
-                      const deckInner = `<i class="fas fa-book"></i> <span class="title">Recommended Anki deck: ${deckName}</span>`;
-                      if (deckItem) {
-                        deckItem.innerHTML = deckInner;
-                      } else {
-                        labSection.insertAdjacentHTML('beforeend', `<div class="tracker-item anki-deck-item">${deckInner}</div>`);
-                      }
-                    }catch(e){}
+                  try{
+                    const deckName = escapeHtml(getRecommendedAnkiDeck(domainKey));
+                    let deckItem = labSection.querySelector('.anki-deck-item');
+                    const deckInner = `<i class="fas fa-book"></i> <span class="title">Recommended Anki deck: ${deckName}</span>`;
+                    if (deckItem) {
+                      deckItem.innerHTML = deckInner;
+                    } else {
+                      labSection.insertAdjacentHTML('beforeend', `<div class="tracker-item anki-deck-item">${deckInner}</div>`);
+                    }
+                  }catch(e){}
                 }
-              }catch(e){/* ignore per-card update failures */}
+              }catch(e){}
             });
             attachInternalLinkHandlers();
-          
-            // Render the global tracker content (cleaned HTML)
+
+            // Determine RAG color for hero
+            let heroRagClass = 'rag-red';
+            if (priority.percent >= 76) heroRagClass = 'rag-green';
+            else if (priority.percent >= 50) heroRagClass = 'rag-amber';
+
+            // Build study stats section
+            let statsHtml = '';
+            if (stats.quizRate > 0 || stats.daysSinceLastUpdate !== null) {
+              const rateClass = stats.quizRate >= 3 ? 'highlight' : (stats.quizRate >= 1 ? '' : 'warning');
+              const daysClass = stats.daysSinceLastUpdate === null ? 'danger' : (stats.daysSinceLastUpdate > 7 ? 'warning' : 'highlight');
+              statsHtml = `
+                <div class="study-stats-card">
+                  <h4><i class="fas fa-chart-bar"></i> Study Activity</h4>
+                  <div class="study-stats-grid">
+                    <div class="study-stat ${rateClass}">
+                      <div class="stat-value">${stats.quizRate > 0 ? stats.quizRate.toFixed(1) : '--'}</div>
+                      <div class="stat-label">Updates/Week</div>
+                    </div>
+                    <div class="study-stat ${daysClass}">
+                      <div class="stat-value">${stats.daysSinceLastUpdate !== null ? stats.daysSinceLastUpdate : '--'}</div>
+                      <div class="stat-label">Days Since Update</div>
+                    </div>
+                    <div class="study-stat">
+                      <div class="stat-value">${stats.readyCount}/${stats.totalDomains}</div>
+                      <div class="stat-label">Domains at 75%+</div>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }
+
+            // Build exam readiness section
+            let examHtml = '';
+            if (stats.estimatedExamDate) {
+              const dateStr = stats.estimatedExamDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+              const daysText = stats.daysToReady === 0 ? 'Ready now!' : 
+                              stats.daysToReady === 1 ? 'Tomorrow' : 
+                              `~${stats.daysToReady} days`;
+              const noteText = stats.allAbove75 ? 'All domains at 75%+ - consolidation period active' : 
+                              'Based on your current study rate';
+              examHtml = `
+                <div class="exam-readiness-card">
+                  <div class="readiness-title"><i class="fas fa-calendar-check"></i> Estimated Exam Readiness</div>
+                  <div class="target-date">${dateStr}</div>
+                  <div class="target-note">${daysText} - ${noteText}</div>
+                  <div class="progress-summary">
+                    <strong>${stats.readyCount}</strong> of <strong>${stats.totalDomains}</strong> domains exam-ready (75%+)
+                  </div>
+                </div>
+              `;
+            } else {
+              examHtml = `
+                <div class="exam-readiness-card">
+                  <div class="readiness-title"><i class="fas fa-calendar-check"></i> Estimated Exam Readiness</div>
+                  <div class="target-date" style="color: var(--text-secondary)">Not enough data</div>
+                  <div class="target-note">Update at least 2 domain scores to enable prediction</div>
+                </div>
+              `;
+            }
+
+            // Render the enhanced global tracker content
             trackerContent.innerHTML = `
-              <strong>Next Step: ${domainNamesMap[weakestDomain]} (~${Math.round(lowestPercent)}% Mastery)</strong>
-              <div style="margin:10px 0;display:flex;gap:8px;justify-content:center">
-                <button id="go-next-step-btn" style="background:#0078d4;color:#fff;border:0;padding:6px 10px;border-radius:5px;cursor:pointer">Go to Next Flashcard</button>
-                <button id="re-eval-btn" style="background:#f0ad4e;color:#fff;border:0;padding:6px 10px;border-radius:5px;cursor:pointer">Re-evaluate Recommendations</button>
+              <div class="next-step-hero ${heroRagClass}">
+                <div class="focus-label"><i class="fas fa-bullseye"></i> Current Focus</div>
+                <div class="domain-focus"><i class="fas ${domainIcons[weakestDomain] || 'fa-book'}"></i> ${domainDisplayNames[weakestDomain] || weakestDomain}</div>
+                <div class="mastery-badge">${Math.round(priority.percent)}% Mastery</div>
+                <div class="priority-reason">${escapeHtml(priority.reason)}</div>
               </div>
+
+              ${statsHtml}
+              ${examHtml}
+
+              <div style="margin:16px 0;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+                <button id="go-next-step-btn" style="background:#0078d4;color:#fff;border:0;padding:10px 16px;border-radius:6px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px">
+                  <i class="fas fa-arrow-right"></i> Go to Next Flashcard
+                </button>
+                <button id="re-eval-btn" style="background:#6c757d;color:#fff;border:0;padding:10px 16px;border-radius:6px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:6px">
+                  <i class="fas fa-sync"></i> Refresh
+                </button>
+              </div>
+
               <div class="tracker-section">
-                <strong><i class="fas fa-book-open"></i>Next Flashcard:</strong>
+                <strong><i class="fas fa-book-open"></i> Next Flashcard:</strong>
                 <div class="tracker-item">
                   <i class="fas fa-arrow-right"></i>
                   <span class="title">${escapeHtml(nextFlashTitle)}</span>
                 </div>
               </div>
               <div class="tracker-section">
-                <strong><i class="fas fa-flask"></i>Next Lab:</strong>
+                <strong><i class="fas fa-flask"></i> Recommended Labs:</strong>
                 <div class="tracker-item">
-                  <i class="fas fa-arrow-right"></i>
+                  <i class="fas fa-vial"></i>
                   <span class="title">${nextLabHtml}</span>
                 </div>
               </div>
               <div class="tracker-section">
-                <strong><i class="fas fa-book"></i>Recommended Anki Deck:</strong>
+                <strong><i class="fas fa-layer-group"></i> Anki Deck:</strong>
                 <div class="tracker-item">
-                  <i class="fas fa-book-open"></i>
+                  <i class="fas fa-book"></i>
                   <span class="title">${escapeHtml(getRecommendedAnkiDeck(weakestDomain))}</span>
                 </div>
               </div>
-              </div>
             `;
-            // attach the interactive tracker buttons
+
+            // Attach interactive button handlers
             try{
               const goBtn = trackerContent.querySelector('#go-next-step-btn');
               if (goBtn && currentFlash && currentFlash.element) {
                 goBtn.addEventListener('click', (ev)=>{
                   ev.preventDefault();
                   try{
-                    // Ensure the domain card containing the flashcard is expanded/open
                     try{
                       const domainKey = weakestDomain;
                       const cardId = domainCardIdMap[domainKey];
@@ -1871,14 +2245,12 @@
                       if (card) {
                         const toggle = card.querySelector('input.card-toggle');
                         if (toggle && !toggle.checked) {
-                          try { toggle.checked = true; } catch(e) { /* ignore */ }
-                          // also ensure the card-content is visible
+                          try { toggle.checked = true; } catch(e) {}
                           const content = card.querySelector('.card-content');
                           if (content) content.style.display = 'block';
                         }
                       }
                     }catch(e){}
-                    // reveal and scroll to the next flashcard
                     openFlashcardForCheckbox(currentFlash.element);
                   }catch(e){}
                 });
@@ -1891,22 +2263,19 @@
                     updateMergedQuizScoresFromConfidence();
                     renderDomainProgress();
                     updateNextStepsTracker();
-                    // Show a persistent clarifying toast unless autosave is enabled
                     try{
                       const autosaveEl = document.getElementById('score-editor-reval-autosave');
                       const autosave = autosaveEl ? !!autosaveEl.checked : false;
                       if (autosave) {
-                        // Persist adjustedPercent snapshot (separate key; does not modify correct/total)
                         const adj = {};
                         Object.keys(mergedQuizScores).forEach(k => { adj[k] = { adjustedPercent: mergedQuizScores[k].adjustedPercent }; });
                         try { localStorage.setItem('mergedQuizAdjusted', JSON.stringify(adj)); }catch(e){}
                         try{ pushMergedQuizHistory('reval-autosave'); }catch(e){}
-                        showToast('Recomputed recommendations and saved adjusted percents', 3000);
+                        showToast('Refreshed recommendations', 3000);
                       } else {
-                        // persistent toast (until replaced)
-                        showToast('Recomputed recommendations (not saved)', 0);
+                        showToast('Refreshed recommendations', 0);
                       }
-                    }catch(e){ showToast('Recomputed recommendations'); }
+                    }catch(e){ showToast('Refreshed recommendations'); }
                   }catch(e){}
                 });
               }
