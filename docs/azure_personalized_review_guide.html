@@ -1785,71 +1785,83 @@
             } catch(e) { return {}; }
           }
 
-          // Determine priority domain using smart logic
-          function getPriorityDomain() {
+          // Determine priority domains using smart logic - returns ranked array
+          // Index 0 = ALWAYS the weakest domain (lowest score)
+          // Index 1+ = Next step(s), using logical order if all domains >= 50%
+          function getPriorityDomains() {
             const stats = getStudyStats();
             const domains = Object.keys(domainCardIdMap);
             
-            // If any domain is below 50%, prioritize the lowest
-            if (stats.domainsBelow50.length > 0) {
-              let lowestDomain = stats.domainsBelow50[0];
-              let lowestPercent = stats.domainPercents[lowestDomain];
-              stats.domainsBelow50.forEach(d => {
-                if (stats.domainPercents[d] < lowestPercent) {
-                  lowestPercent = stats.domainPercents[d];
-                  lowestDomain = d;
-                }
-              });
-              return {
-                domain: lowestDomain,
-                percent: lowestPercent,
-                reason: 'Lowest scoring domain (below 50%)',
-                priority: 'critical'
-              };
-            }
-            
-            // All domains >= 50%: use logical order, find first incomplete flashcard
-            for (const domain of LOGICAL_DOMAIN_ORDER) {
-              if (!domainCardIdMap[domain]) continue;
-              const card = document.getElementById(domainCardIdMap[domain]);
-              if (!card) continue;
-              const nextFlash = card.querySelector('.flashcard-item input[type="checkbox"]:not(:checked)');
-              if (nextFlash) {
-                return {
-                  domain: domain,
-                  percent: stats.domainPercents[domain] || 0,
-                  reason: 'Following logical study path',
-                  priority: stats.domainPercents[domain] < 75 ? 'moderate' : 'polish'
-                };
-              }
-            }
-            
-            // All flashcards complete, find lowest domain not at 100%
-            let lowestDomain = null;
-            let lowestPercent = 101;
-            domains.forEach(d => {
-              const pct = stats.domainPercents[d] || 0;
-              if (pct < lowestPercent) {
-                lowestPercent = pct;
-                lowestDomain = d;
-              }
+            // Filter out domains with invalid/NaN percentages
+            const validDomains = domains.filter(d => {
+              const pct = stats.domainPercents[d];
+              return typeof pct === 'number' && !isNaN(pct);
             });
             
-            if (lowestDomain && lowestPercent < 100) {
-              return {
-                domain: lowestDomain,
-                percent: lowestPercent,
-                reason: 'Reinforce weakest domain',
-                priority: lowestPercent >= 75 ? 'polish' : 'moderate'
-              };
-            }
+            // If no valid domains, return empty
+            if (validDomains.length === 0) return [];
             
-            return {
-              domain: null,
-              percent: 100,
-              reason: 'All domains complete!',
-              priority: 'complete'
-            };
+            // Sort all domains by score ascending (lowest first)
+            const sortedByScore = [...validDomains].sort((a, b) => {
+              const pctA = stats.domainPercents[a] || 0;
+              const pctB = stats.domainPercents[b] || 0;
+              return pctA - pctB;
+            });
+            
+            // Index 0 is ALWAYS the weakest domain
+            const weakestDomain = sortedByScore[0];
+            const weakestPercent = stats.domainPercents[weakestDomain] || 0;
+            
+            const results = [{
+              domain: weakestDomain,
+              percent: weakestPercent,
+              reason: weakestPercent < 50 ? 'Weakest point - needs immediate attention' : 'Lowest scoring domain',
+              priority: weakestPercent < 50 ? 'critical' : (weakestPercent < 75 ? 'moderate' : 'polish'),
+              rank: 0
+            }];
+            
+            // For remaining domains (next steps), decide ordering strategy
+            const remaining = sortedByScore.slice(1);
+            if (remaining.length === 0) return results; // Only one domain
+            
+            if (stats.allAbove50) {
+              // All domains 50%+: order next steps by logical AZ-104 sequence
+              remaining.sort((a, b) => {
+                const orderA = LOGICAL_DOMAIN_ORDER.indexOf(a);
+                const orderB = LOGICAL_DOMAIN_ORDER.indexOf(b);
+                if (orderA >= 0 && orderB >= 0) return orderA - orderB;
+                if (orderA >= 0) return -1;
+                if (orderB >= 0) return 1;
+                return (stats.domainPercents[a] || 0) - (stats.domainPercents[b] || 0);
+              });
+            }
+            // Otherwise keep sorted by score (lowest first)
+            
+            remaining.forEach((domain, index) => {
+              const percent = stats.domainPercents[domain] || 0;
+              let reason, priority;
+              
+              if (percent < 50) {
+                reason = 'Below 50% threshold';
+                priority = 'critical';
+              } else if (percent < 75) {
+                reason = stats.allAbove50 ? 'Following AZ-104 study path' : 'Working toward exam readiness (75%)';
+                priority = 'moderate';
+              } else {
+                reason = 'Polish and maintain';
+                priority = 'polish';
+              }
+              
+              results.push({ domain, percent, reason, priority, rank: index + 1 });
+            });
+            
+            return results;
+          }
+          
+          // Legacy wrapper for backwards compatibility
+          function getPriorityDomain() {
+            const priorities = getPriorityDomains();
+            return priorities[0] || { domain: null, percent: 100, reason: 'All domains complete!', priority: 'complete' };
           }
 
           // --- Utility: ensure lab items have checkboxes ---
@@ -2051,13 +2063,16 @@
             const trackerContent = document.getElementById('next-steps-content');
             if (!trackerContent) return;
 
-            // Get priority domain using smart logic
-            const priority = getPriorityDomain();
+            // Get priority domains using smart logic - returns ranked array
+            const priorities = getPriorityDomains();
             const stats = getStudyStats();
-            const weakestDomain = priority.domain;
+            const priority = priorities[0] || null; // Weakest point (#1 Priority)
+            const nextStep = priorities[1] || null; // Next step (2nd priority)
+            const weakestDomain = priority ? priority.domain : null;
+            const nextStepDomain = nextStep ? nextStep.domain : null;
 
-            // Handle completion state
-            if (!weakestDomain || priority.priority === 'complete') {
+            // Handle no data or completion state
+            if (!priority || !weakestDomain || priority.priority === 'complete') {
               trackerContent.innerHTML = `
                 <div class="next-step-hero rag-green">
                   <div class="focus-label">Congratulations!</div>
@@ -2068,9 +2083,11 @@
               return;
             }
 
-            const currentFlash = getNextFlashcard(weakestDomain);
+            // Use next step domain for flashcard/lab recommendations (the actionable next item)
+            const focusDomain = nextStepDomain || weakestDomain;
+            const currentFlash = getNextFlashcard(focusDomain);
             const nextFlashTitle = currentFlash && currentFlash.title ? currentFlash.title : 'All flashcards completed!';
-            const matchedLabs = currentFlash && currentFlash.title ? recommendLabsForFlashcard(weakestDomain, currentFlash.title, 3) : [];
+            const matchedLabs = currentFlash && currentFlash.title ? recommendLabsForFlashcard(focusDomain, currentFlash.title, 3) : [];
 
             let nextLabHtml = 'No relevant labs found.';
             if (matchedLabs.length) {
@@ -2187,14 +2204,38 @@
               `;
             }
 
+            // Build Next Step section (2nd priority - the actionable next domain)
+            let nextStepHtml = '';
+            if (nextStep && nextStep.domain) {
+              const nextRagClass = nextStep.percent >= 76 ? 'rag-green' : (nextStep.percent >= 50 ? 'rag-amber' : 'rag-red');
+              nextStepHtml = `
+                <div class="next-step-section" style="margin-top:16px;padding:16px;background:var(--card-bg);border-radius:12px;border:2px solid var(--${nextRagClass === 'rag-green' ? 'success' : nextRagClass === 'rag-amber' ? 'warning' : 'danger'}-color, #0078d4);">
+                  <div style="font-size:0.85em;color:var(--text-secondary);font-weight:600;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;">
+                    <i class="fas fa-arrow-right"></i> Next Step
+                  </div>
+                  <div style="font-size:1.3em;font-weight:700;color:var(--text-primary);display:flex;align-items:center;gap:8px;">
+                    <i class="fas ${domainIcons[nextStep.domain] || 'fa-book'}"></i> ${domainDisplayNames[nextStep.domain] || nextStep.domain}
+                  </div>
+                  <div style="display:flex;gap:12px;margin-top:8px;flex-wrap:wrap;align-items:center;">
+                    <span style="background:${nextRagClass === 'rag-green' ? '#28a745' : nextRagClass === 'rag-amber' ? '#f59e0b' : '#dc3545'};color:#fff;padding:4px 12px;border-radius:20px;font-size:0.85em;font-weight:600;">
+                      ${Math.round(nextStep.percent)}%
+                    </span>
+                    <span style="color:var(--text-secondary);font-size:0.9em;">${escapeHtml(nextStep.reason)}</span>
+                  </div>
+                </div>
+              `;
+            }
+
             // Render the enhanced global tracker content
             trackerContent.innerHTML = `
               <div class="next-step-hero ${heroRagClass}">
-                <div class="focus-label"><i class="fas fa-bullseye"></i> Current Focus</div>
+                <div class="focus-label"><i class="fas fa-exclamation-triangle"></i> #1 Priority - Weakest Point</div>
                 <div class="domain-focus"><i class="fas ${domainIcons[weakestDomain] || 'fa-book'}"></i> ${domainDisplayNames[weakestDomain] || weakestDomain}</div>
                 <div class="mastery-badge">${Math.round(priority.percent)}% Mastery</div>
                 <div class="priority-reason">${escapeHtml(priority.reason)}</div>
               </div>
+
+              ${nextStepHtml}
 
               ${statsHtml}
               ${examHtml}
@@ -2209,7 +2250,7 @@
               </div>
 
               <div class="tracker-section">
-                <strong><i class="fas fa-book-open"></i> Next Flashcard:</strong>
+                <strong><i class="fas fa-book-open"></i> Next Flashcard (from ${domainDisplayNames[focusDomain] || focusDomain}):</strong>
                 <div class="tracker-item">
                   <i class="fas fa-arrow-right"></i>
                   <span class="title">${escapeHtml(nextFlashTitle)}</span>
@@ -2226,7 +2267,7 @@
                 <strong><i class="fas fa-layer-group"></i> Anki Deck:</strong>
                 <div class="tracker-item">
                   <i class="fas fa-book"></i>
-                  <span class="title">${escapeHtml(getRecommendedAnkiDeck(weakestDomain))}</span>
+                  <span class="title">${escapeHtml(getRecommendedAnkiDeck(focusDomain))}</span>
                 </div>
               </div>
             `;
@@ -2239,7 +2280,7 @@
                   ev.preventDefault();
                   try{
                     try{
-                      const domainKey = weakestDomain;
+                      const domainKey = focusDomain;
                       const cardId = domainCardIdMap[domainKey];
                       const card = document.getElementById(cardId);
                       if (card) {

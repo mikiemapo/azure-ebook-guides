@@ -59,12 +59,15 @@ Configured as a static site deployment serving the `docs/` directory.
 - Supports column formats: Question, A/B/C/D (or ChoiceA-D), Correct, Explanation, Tags, Source, Batch
 
 ## Next Steps Tracker (Enhanced)
+- **Dual Priority Display**:
+  - **#1 Priority (Weakest Point)**: Shows absolute lowest scoring domain - your most critical area
+  - **Next Step**: Shows 2nd lowest domain - the actionable next focus area
 - **Smart Priority Logic**: 
-  - If any domain < 50%: prioritizes lowest scoring domain
-  - If all domains >= 50%: follows logical AZ-104 study order (Identities → Storage → Compute → Networking → Monitoring)
-- **Study Activity Stats**: Updates/week rate, days since last update, domains at 75%+
+  - Domains ranked by score ascending (lowest first)
+  - If all domains >= 50%: reorders by logical AZ-104 study sequence (Identities → Storage → Compute → Networking → Monitoring)
+- **Study Activity Stats**: Updates/week rate (from quiz history), days since last update, domains at 75%+
 - **Exam Readiness Prediction**: 
   - Calculates estimated exam date based on study rate
   - Uses 75% threshold for all domains + 7-day consolidation buffer
-  - Adapts prediction based on actual quiz-taking frequency
-- **RAG Color-Coded Hero**: Red (<50%), Amber (50-75%), Green (>75%)
+  - Adapts prediction based on actual quiz-taking frequency from mergedQuizHistory
+- **RAG Color-Coded Display**: Red (<50%), Amber (50-75%), Green (>75%)
