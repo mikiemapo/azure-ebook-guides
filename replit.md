@@ -41,12 +41,6 @@ Configured as a static site deployment serving the `docs/` directory.
 - **domainScoreMetadata**: Per-domain metadata with {lastUpdated, source, quizName}
 - **mergedQuizHistory**: v2 versioned snapshots with {version, takenAt, source, merged, summary}
 
-## Stale Warning System
-- 14-day threshold for marking domains as stale
-- NEW badge (red): Domains never updated
-- STALE badge (orange): Domains not updated in 14+ days
-- Applies to both Personalized Review and main dashboard
-
 ## Single Source of Truth Pattern
 - Personalized Review Guide (azure_personalized_review_guide.html) owns all score input and metadata
 - Main dashboard (index.html) is read-only and displays synced data from localStorage
@@ -58,42 +52,102 @@ Configured as a static site deployment serving the `docs/` directory.
 - MCQ card model with professional dark theme styling
 - Supports column formats: Question, A/B/C/D (or ChoiceA-D), Correct, Explanation, Tags, Source, Batch
 
-## Next Steps Tracker (Enhanced)
+---
+
+## Study Activity Tracking System
+
+### Next Steps Tracker
 - **Dual Priority Display**:
   - **#1 Priority (Weakest Point)**: Shows absolute lowest scoring domain - your most critical area
   - **Next Step**: Shows 2nd lowest domain - the actionable next focus area
 - **Smart Priority Logic**: 
   - Domains ranked by score ascending (lowest first)
   - If all domains >= 50%: reorders by logical AZ-104 study sequence (Identities → Storage → Compute → Networking → Monitoring)
-- **Study Activity Stats**: Updates/week rate (from quiz history), days since last update, domains at 75%+
-- **Exam Readiness Prediction**: 
-  - Calculates estimated exam date based on study rate
-  - Uses 75% threshold for all domains + 7-day consolidation buffer
-  - Adapts prediction based on actual quiz-taking frequency from mergedQuizHistory
 - **RAG Color-Coded Display**: Red (<50%), Amber (50-75%), Green (>75%)
 
-## Realistic Exam Prediction (v2)
-- **Rolling Window**: Uses only last 60 days of activity for rate calculation
-- **Median Interval**: Uses median (not average) for robustness against irregular patterns
-- **Study Status Detection**:
-  - Active: Quizzed within 7 days
-  - Cooling: 8-14 days since last quiz
-  - Slump/Paused: >14 days or >1.5x typical gap
-  - Inactive: No quiz history
-- **Stale Domain Tracking**: Flags domains not updated in 14+ days
-- **Adaptive Prediction**:
-  - If in slump: Shows warning + encourages resuming study (date faded/unreliable)
-  - If active: Shows realistic date based on per-domain gap to 75% + typical pace
-  - Adds catch-up time for stale domains
-  - Points per session scaled by quiz frequency (5-8 points based on pace)
-- **Status Badges**: Visual indicator (Active/Cooling/Paused/Inactive) in stats section
+### Study Activity Stats
+- **Quizzes/Week (60d)**: Rolling 60-day window calculation of study frequency
+- **Days Since Quiz**: How many days since last Score Editor save
+- **Domains at 75%+**: Count of exam-ready domains
+- **Refresh Button**: Click to reload and see updated stats
+- **Status Badges**: Active (within 7 days), Cooling (8-14 days), Paused (14+ days), Inactive (no data)
 
-## Stale Warning System
+### Day Consolidation System
+Prevents inflated statistics from multiple Score Editor saves:
+- **Multiple saves on same day → count as 1 day** of study activity
+- Example: Save 10 times today → only counts as 1 day for rate calculation
+- Ensures "Quizzes/Week" reflects actual study days, not save clicks
+- Requires 2+ different days of activity to calculate a rate
+
+### Stale Warning System
 - 14-day threshold for marking domains as stale
-- NEW badge (red): Domains never updated
-- STALE badge (orange): Domains not updated in 14+ days
+- **NEW badge (red)**: Domains never updated
+- **STALE badge (orange)**: Domains not updated in 14+ days
 - Applies to both Personalized Review and main dashboard
 
-## Single Source of Truth Pattern
-- Personalized Review Guide (azure_personalized_review_guide.html) owns all score input and metadata
-- Main dashboard (index.html) is read-only and displays synced data from localStorage
+---
+
+## Dynamic Exam Readiness Prediction
+
+### How It Works
+- Uses your **actual study pace** from the rolling 60-day window
+- Estimates points improvement per session based on your frequency
+- Projects when all 6 domains will reach 75%+ threshold
+- Adds 7-day consolidation buffer for knowledge retention
+
+### Study Status Detection
+| Status | Condition | Prediction |
+|--------|-----------|------------|
+| Active | Studied within 7 days | Shows projected date |
+| Cooling | 8-14 days since last study | Shows date with caution |
+| Paused | 14+ days gap | "Prediction unavailable" |
+| Inactive | No quiz history | "Not enough data" |
+
+### Adaptive Prediction Logic
+- **If in slump**: Shows warning + encourages resuming study
+- **If active**: Shows realistic date based on your pace
+- **Pace scaling**: Points per session adjusted by study frequency (5-8 points)
+- **Stale domain penalty**: Adds catch-up time for neglected domains
+
+### Dynamic Adjustment
+The prediction updates every time you save scores:
+| Your Action | Effect on Prediction |
+|-------------|---------------------|
+| Study more frequently | Date moves closer |
+| Study less frequently | Date moves further |
+| Improve domain scores | Date moves closer |
+| Stop studying (14+ days) | Shows "Prediction unavailable" |
+
+---
+
+## Retention Trends
+
+### Day-Consolidated Sparklines
+- Shows your progress over time per domain
+- **Uses LAST entry per day only** - prevents artificial spikes
+- Add/subtract corrections within same day → only final score shows
+- Clean visualization of actual day-over-day progress
+
+### Trend Indicators
+- **▲ Delta**: Score improvement from first to last data point
+- **Sparkline**: Visual trend line showing progress trajectory
+- Moving average calculation for smoothed insights
+
+---
+
+## Score Editor Behavior
+
+### What Updates When You Save
+| Component | Updates? | Notes |
+|-----------|----------|-------|
+| Domain Scores | ✅ | Immediately reflected |
+| Days Since Quiz | ✅ | Resets to 0 (today) |
+| Study Status | ✅ | Shows "Active" |
+| Quizzes/Week | ✅ | After 2+ different days |
+| Retention Trends | ✅ | Last score of the day only |
+| Metadata | ✅ | lastUpdated timestamp |
+
+### Consolidation Examples
+- Save 6 times today → 1 consolidated day
+- Save on Monday + Friday → 2 days → rate can be calculated
+- Multiple add/subtract cycles → only final score per day in trends
