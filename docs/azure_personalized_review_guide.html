@@ -1728,13 +1728,6 @@
               return !src.includes('editor') && !src.includes('manual') && !src.includes('score');
             });
             
-            console.log('Quiz History Debug:', {
-              totalEntries: history.length,
-              quizOnlyEntries: quizOnlyHistory.length,
-              sources: history.map(h => h.source).filter(Boolean),
-              recentEntries: history.slice(-5).map(h => ({source: h.source, takenAt: h.takenAt}))
-            });
-            
             const allHistoryDates = quizOnlyHistory
               .map(h => h.takenAt ? new Date(h.takenAt).getTime() : null)
               .filter(Boolean)
