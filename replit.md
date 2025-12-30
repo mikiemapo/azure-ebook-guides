@@ -40,6 +40,7 @@ Configured as a static site deployment serving the `docs/` directory.
 - **mergedQuizScores**: Domain scores with capitalized keys (Identities, Storage, Compute, Networking, Monitoring, App Service & Containers) containing {correct, total}
 - **domainScoreMetadata**: Per-domain metadata with {lastUpdated, source, quizName}
 - **mergedQuizHistory**: v2 versioned snapshots with {version, takenAt, source, merged, summary}
+- **sourceRotationData**: Per-domain tracking of lastStudy/lastTest sources and dates
 
 ## Single Source of Truth Pattern
 - Personalized Review Guide (azure_personalized_review_guide.html) owns all score input and metadata
@@ -51,6 +52,35 @@ Configured as a static site deployment serving the `docs/` directory.
 - Features: CSV upload, template download, data preview, card preview, answer shuffling
 - MCQ card model with professional dark theme styling
 - Supports column formats: Question, A/B/C/D (or ChoiceA-D), Correct, Explanation, Tags, Source, Batch
+
+---
+
+## Study Workflow Loop Support
+
+### Source Rotation Tracker
+Prevents memorizing answers by tracking which source you last used:
+- **Per-domain tracking**: Shows "Last Study" and "Last Test" source for each domain
+- **Smart suggestions**: Recommends which source to use next based on rotation rule
+- **Quick Log Session**: One-click logging of study/test activity per domain
+- **Rotation Rule**: Study with Whizlabs → Test with Tutorials Dojo (or vice versa)
+- **localStorage key**: `sourceRotationData`
+
+### Weak Point Extractor
+Converts quiz review PDFs into NotebookLM-ready Focus Briefs:
+- **Paste Box**: Copy wrong answers from quiz review and paste
+- **Concept Parser**: Extracts Azure keywords and concepts automatically
+- **Focus Brief Generator**: Creates structured prompt for NotebookLM critique audio
+- **Copy Button**: One-click copy to clipboard for pasting into NotebookLM
+- **Supported formats**: Q:/Your Answer:/Correct:/Explanation: prefixes
+
+### AZ-104 Exam Objectives Reference
+Official Microsoft exam objectives mapped to study domains:
+- **1.x (15-20%)**: Manage Azure Identities and Governance → Identities domain
+- **2.x (15-20%)**: Implement and Manage Storage → Storage domain
+- **3.x (20-25%)**: Deploy and Manage Compute Resources → Compute + App Service domains
+- **4.x (20-25%)**: Implement and Manage Virtual Networking → Networking domain
+- **5.x (10-15%)**: Monitor and Maintain Azure Resources → Monitoring domain
+- Use objective codes (e.g., `1.2`, `3.3`) for Anki card tagging
 
 ---
 

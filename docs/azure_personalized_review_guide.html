@@ -1299,6 +1299,15 @@
         <a href="#next-steps-section" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
           <i class="fas fa-arrow-circle-right" style="color:#d83b01;"></i> Next Steps
         </a>
+        <a href="#source-rotation-section" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-sync-alt" style="color:#9c27b0;"></i> Source Rotation
+        </a>
+        <a href="#weak-point-extractor-section" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-search-minus" style="color:#dc3545;"></i> Weak Point Extractor
+        </a>
+        <a href="#az104-objectives-section" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-tasks" style="color:#0078d4;"></i> Exam Objectives
+        </a>
         <a href="#performance-section" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
           <i class="fas fa-chart-pie" style="color:#ff9800;"></i> Performance
         </a>
@@ -1342,6 +1351,519 @@
       <div class="az104-tip" style="margin-top: 15px">
         <i class="fas fa-info-circle"></i>This section guides you to your next
         priority flashcard and lab. Mark items as 'Strong' to progress!
+      </div>
+    </div>
+  </div>
+
+  <!-- SOURCE ROTATION TRACKER -->
+  <div id="source-rotation-section" class="accordion-section">
+    <div class="accordion-header" onclick="toggleAccordion('source-rotation-content', this)">
+      <div class="accordion-title">
+        <i class="fas fa-sync-alt" style="color:#9c27b0;"></i> Source Rotation Tracker
+      </div>
+      <div class="accordion-meta">
+        <span id="rotation-summary" style="font-size:12px;color:var(--text-muted);">Track study vs test sources</span>
+      </div>
+      <i class="fas fa-chevron-down accordion-chevron"></i>
+    </div>
+    <div id="source-rotation-content" class="accordion-content">
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+        <i class="fas fa-lightbulb" style="color:#ffc107;margin-right:6px;"></i>
+        <strong>Rotation Rule:</strong> Study with one source, test with another. This prevents memorizing answers.
+      </p>
+      <div id="source-rotation-grid" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:12px;">
+        <!-- Dynamic content rendered by script -->
+      </div>
+      <div style="margin-top:16px;padding:12px;background:var(--bg-tertiary);border-radius:8px;border:1px solid var(--border-color);">
+        <div style="font-size:12px;font-weight:600;color:var(--text-primary);margin-bottom:8px;">
+          <i class="fas fa-clock" style="margin-right:6px;color:var(--azure-blue);"></i>Quick Log Session
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">
+          <select id="rotation-log-domain" style="padding:8px;border:1px solid var(--border-color);border-radius:6px;font-size:13px;min-width:140px;">
+            <option value="">Select Domain</option>
+            <option value="Identities">Identities</option>
+            <option value="Storage">Storage</option>
+            <option value="Compute">Compute</option>
+            <option value="Networking">Networking</option>
+            <option value="Monitoring">Monitoring</option>
+            <option value="App Service & Containers">App Service & Containers</option>
+          </select>
+          <select id="rotation-log-source" style="padding:8px;border:1px solid var(--border-color);border-radius:6px;font-size:13px;min-width:140px;">
+            <option value="">Select Source</option>
+            <option value="Whizlabs">Whizlabs</option>
+            <option value="Tutorials Dojo">Tutorials Dojo</option>
+            <option value="Microsoft Learn">Microsoft Learn</option>
+            <option value="Udemy">Udemy</option>
+          </select>
+          <select id="rotation-log-type" style="padding:8px;border:1px solid var(--border-color);border-radius:6px;font-size:13px;min-width:100px;">
+            <option value="study">Studied</option>
+            <option value="test">Tested</option>
+          </select>
+          <button id="rotation-log-btn" style="padding:8px 16px;background:var(--azure-blue);color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">
+            <i class="fas fa-plus"></i> Log
+          </button>
+        </div>
+        <div id="rotation-log-msg" style="font-size:11px;color:var(--text-muted);margin-top:8px;"></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    const ROTATION_KEY = 'sourceRotationData';
+    const SOURCES = ['Whizlabs', 'Tutorials Dojo', 'Microsoft Learn', 'Udemy'];
+    const DOMAINS = ['Identities', 'Storage', 'Compute', 'Networking', 'Monitoring', 'App Service & Containers'];
+    
+    function getRotationData() {
+      try {
+        return JSON.parse(localStorage.getItem(ROTATION_KEY) || '{}');
+      } catch { return {}; }
+    }
+    
+    function saveRotationData(data) {
+      localStorage.setItem(ROTATION_KEY, JSON.stringify(data));
+    }
+    
+    function getSuggestion(lastStudy, lastTest) {
+      const ALL_SOURCES = ['Whizlabs', 'Tutorials Dojo', 'Microsoft Learn', 'Udemy'];
+      
+      function getAltSource(source) {
+        if (source === 'Whizlabs') return 'Tutorials Dojo';
+        if (source === 'Tutorials Dojo') return 'Whizlabs';
+        if (source === 'Microsoft Learn') return 'Whizlabs';
+        if (source === 'Udemy') return 'Tutorials Dojo';
+        return 'Whizlabs';
+      }
+      
+      if (!lastStudy && !lastTest) {
+        return { action: 'study', source: 'Whizlabs', reason: 'Start fresh!' };
+      }
+      if (lastStudy && !lastTest) {
+        const alt = getAltSource(lastStudy);
+        return { action: 'test', source: alt, reason: `Test with ${alt}` };
+      }
+      if (!lastStudy && lastTest) {
+        const alt = getAltSource(lastTest);
+        return { action: 'study', source: alt, reason: `Study with ${alt}` };
+      }
+      if (lastStudy === lastTest) {
+        const alt = getAltSource(lastStudy);
+        return { action: 'test', source: alt, reason: 'Rotate sources!' };
+      }
+      return { action: 'study', source: lastTest, reason: 'Continue rotation' };
+    }
+    
+    function updateRotationSummary(data) {
+      const summary = document.getElementById('rotation-summary');
+      if (!summary) return;
+      
+      const domains = Object.keys(data);
+      const tracked = domains.filter(d => data[d].lastStudy || data[d].lastTest).length;
+      const ready = domains.filter(d => data[d].lastStudy && data[d].lastTest).length;
+      
+      if (tracked === 0) {
+        summary.textContent = 'No sessions logged yet';
+        summary.style.color = 'var(--text-muted)';
+      } else {
+        summary.innerHTML = `<span style="color:#28a745;">${ready}/6 domains rotated</span> · ${tracked} tracked`;
+      }
+    }
+    
+    function renderRotationGrid() {
+      const grid = document.getElementById('source-rotation-grid');
+      if (!grid) return;
+      
+      const data = getRotationData();
+      updateRotationSummary(data);
+      let html = '';
+      
+      DOMAINS.forEach(domain => {
+        const d = data[domain] || {};
+        const lastStudy = d.lastStudy || null;
+        const lastTest = d.lastTest || null;
+        const suggestion = getSuggestion(lastStudy, lastTest);
+        
+        const studyBadge = lastStudy 
+          ? `<span style="background:#e8f5e9;color:#2e7d32;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:500;">${lastStudy}</span>`
+          : `<span style="background:#f5f5f5;color:#999;padding:3px 8px;border-radius:12px;font-size:11px;">None</span>`;
+        
+        const testBadge = lastTest
+          ? `<span style="background:#e3f2fd;color:#1565c0;padding:3px 8px;border-radius:12px;font-size:11px;font-weight:500;">${lastTest}</span>`
+          : `<span style="background:#f5f5f5;color:#999;padding:3px 8px;border-radius:12px;font-size:11px;">None</span>`;
+        
+        const suggestionColor = suggestion.action === 'test' ? '#1565c0' : '#2e7d32';
+        const suggestionIcon = suggestion.action === 'test' ? 'fa-clipboard-check' : 'fa-book-reader';
+        
+        html += `
+          <div style="background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:8px;padding:14px;">
+            <div style="font-weight:600;color:var(--text-primary);margin-bottom:10px;font-size:14px;">${domain}</div>
+            <div style="display:flex;gap:16px;margin-bottom:10px;font-size:12px;">
+              <div><span style="color:var(--text-muted);">Last Study:</span> ${studyBadge}</div>
+              <div><span style="color:var(--text-muted);">Last Test:</span> ${testBadge}</div>
+            </div>
+            <div style="background:${suggestionColor}15;border:1px solid ${suggestionColor}40;border-radius:6px;padding:8px 10px;display:flex;align-items:center;gap:8px;">
+              <i class="fas ${suggestionIcon}" style="color:${suggestionColor};"></i>
+              <span style="font-size:12px;color:${suggestionColor};font-weight:500;">
+                ${suggestion.action === 'test' ? 'Test' : 'Study'} with <strong>${suggestion.source}</strong>
+              </span>
+              <span style="font-size:10px;color:var(--text-muted);margin-left:auto;">${suggestion.reason}</span>
+            </div>
+          </div>
+        `;
+      });
+      
+      grid.innerHTML = html;
+    }
+    
+    function logSession() {
+      const domain = document.getElementById('rotation-log-domain').value;
+      const source = document.getElementById('rotation-log-source').value;
+      const type = document.getElementById('rotation-log-type').value;
+      const msg = document.getElementById('rotation-log-msg');
+      
+      if (!domain || !source) {
+        msg.textContent = 'Please select domain and source';
+        msg.style.color = '#dc3545';
+        return;
+      }
+      
+      const data = getRotationData();
+      if (!data[domain]) data[domain] = {};
+      
+      if (type === 'study') {
+        data[domain].lastStudy = source;
+        data[domain].lastStudyDate = new Date().toISOString();
+      } else {
+        data[domain].lastTest = source;
+        data[domain].lastTestDate = new Date().toISOString();
+      }
+      
+      saveRotationData(data);
+      renderRotationGrid();
+      updateRotationSummary(data);
+      
+      msg.textContent = `Logged: ${type === 'study' ? 'Studied' : 'Tested'} ${domain} with ${source}`;
+      msg.style.color = '#28a745';
+      
+      document.getElementById('rotation-log-domain').value = '';
+      document.getElementById('rotation-log-source').value = '';
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      renderRotationGrid();
+      const logBtn = document.getElementById('rotation-log-btn');
+      if (logBtn) logBtn.addEventListener('click', logSession);
+    });
+  })();
+  </script>
+
+  <!-- WEAK POINT EXTRACTOR -->
+  <div id="weak-point-extractor-section" class="accordion-section">
+    <div class="accordion-header" onclick="toggleAccordion('weak-point-extractor-content', this)">
+      <div class="accordion-title">
+        <i class="fas fa-search-minus" style="color:#dc3545;"></i> Weak Point Extractor
+      </div>
+      <div class="accordion-meta">
+        <span style="font-size:12px;color:var(--text-muted);">Paste quiz review → Get Focus Brief</span>
+      </div>
+      <i class="fas fa-chevron-down accordion-chevron"></i>
+    </div>
+    <div id="weak-point-extractor-content" class="accordion-content">
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+        <i class="fas fa-paste" style="color:#9c27b0;margin-right:6px;"></i>
+        Paste your wrong answers from quiz review PDFs. The tool extracts key concepts for your NotebookLM session.
+      </p>
+      <div style="margin-bottom:12px;">
+        <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:6px;">Paste Quiz Review Content:</label>
+        <textarea id="weak-point-input" placeholder="Paste your wrong answers here...&#10;&#10;Example:&#10;Q: Which Azure service provides managed Kubernetes?&#10;Your Answer: Azure Container Instances&#10;Correct: Azure Kubernetes Service (AKS)&#10;Explanation: AKS is a managed Kubernetes service..." style="width:100%;min-height:150px;padding:12px;border:1px solid var(--border-color);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:16px;">
+        <button id="extract-concepts-btn" style="padding:10px 20px;background:#dc3545;color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">
+          <i class="fas fa-magic"></i> Extract Concepts
+        </button>
+        <button id="clear-extractor-btn" style="padding:10px 16px;background:var(--bg-tertiary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:6px;cursor:pointer;font-size:13px;">
+          <i class="fas fa-eraser"></i> Clear
+        </button>
+      </div>
+      
+      <div id="extraction-stats" style="display:none;font-size:12px;color:var(--text-secondary);padding:8px 12px;background:var(--bg-tertiary);border-radius:6px;margin-bottom:12px;border:1px solid var(--border-color);"></div>
+      
+      <div id="focus-brief-output" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+          <h4 style="margin:0;font-size:14px;color:var(--text-primary);">
+            <i class="fas fa-clipboard-list" style="color:#28a745;margin-right:6px;"></i>Focus Brief for NotebookLM
+          </h4>
+          <button id="copy-focus-brief-btn" style="padding:6px 12px;background:#28a745;color:#fff;border:0;border-radius:4px;cursor:pointer;font-size:12px;">
+            <i class="fas fa-copy"></i> Copy
+          </button>
+        </div>
+        <div id="focus-brief-content" style="background:#f8fff8;border:1px solid #c8e6c9;border-radius:8px;padding:16px;font-size:13px;line-height:1.6;white-space:pre-wrap;"></div>
+        <div style="margin-top:12px;padding:10px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;font-size:12px;">
+          <i class="fas fa-lightbulb" style="color:#856404;margin-right:6px;"></i>
+          <strong>Next:</strong> Copy this brief and paste into NotebookLM to generate a critique audio lesson.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+  (function() {
+    const azureKeywords = [
+      'Azure', 'VM', 'Virtual Machine', 'Storage', 'Blob', 'Container', 'AKS', 'Kubernetes',
+      'VNet', 'Virtual Network', 'NSG', 'Network Security Group', 'Load Balancer', 'App Service',
+      'Function', 'Logic App', 'Key Vault', 'Monitor', 'Log Analytics', 'Application Insights',
+      'RBAC', 'Role', 'Identity', 'Entra', 'Active Directory', 'AD', 'Subscription', 'Resource Group',
+      'ARM', 'Template', 'Policy', 'Blueprint', 'Management Group', 'Tenant', 'SKU', 'Tier',
+      'Premium', 'Standard', 'Basic', 'Hot', 'Cool', 'Archive', 'Replication', 'LRS', 'ZRS', 'GRS',
+      'Endpoint', 'Private Link', 'Service Endpoint', 'Peering', 'Gateway', 'VPN', 'ExpressRoute',
+      'Firewall', 'WAF', 'CDN', 'Front Door', 'Traffic Manager', 'DNS', 'Backup', 'Recovery',
+      'Snapshot', 'Disk', 'Managed Disk', 'Scale Set', 'Availability Set', 'Zone', 'Region',
+      'ACR', 'Container Registry', 'ACI', 'Container Instance', 'Deployment Slot', 'Auto-swap',
+      'Defender', 'Security Center', 'Advisor', 'Cost Management', 'Reservation', 'Hybrid Benefit',
+      'Kerberos', 'SMB', 'NFS', 'NTFS', 'File Share', 'Queue', 'Table', 'Data Lake',
+      'Immutability', 'Soft Delete', 'Versioning', 'Lifecycle', 'Access Tier', 'SAS', 'Access Key'
+    ];
+    
+    function extractConcepts(text) {
+      if (!text.trim()) return { concepts: [], wrongAnswers: [], rawText: text, truncated: false };
+      
+      const lines = text.split('\n').filter(l => l.trim());
+      const concepts = new Set();
+      const wrongAnswers = [];
+      
+      let currentQuestion = '';
+      let currentWrong = '';
+      let currentCorrect = '';
+      let currentExplanation = '';
+      
+      lines.forEach(line => {
+        const l = line.trim();
+        
+        if (/^(Q:|Question:|\d+\.)/i.test(l)) {
+          if (currentQuestion || currentWrong || currentCorrect) {
+            wrongAnswers.push({ q: currentQuestion || '(Question text not found)', wrong: currentWrong, correct: currentCorrect, explanation: currentExplanation });
+          }
+          currentQuestion = l.replace(/^(Q:|Question:|\d+\.)\s*/i, '');
+          currentWrong = '';
+          currentCorrect = '';
+          currentExplanation = '';
+        } else if (/^(Your Answer:|You answered:|Selected:|Your response:)/i.test(l)) {
+          currentWrong = l.replace(/^(Your Answer:|You answered:|Selected:|Your response:)\s*/i, '');
+        } else if (/^(Correct:|Correct Answer:|Answer:|Right Answer:)/i.test(l)) {
+          currentCorrect = l.replace(/^(Correct:|Correct Answer:|Answer:|Right Answer:)\s*/i, '');
+        } else if (/^(Explanation:|Why:|Reason:|Details:)/i.test(l)) {
+          currentExplanation = l.replace(/^(Explanation:|Why:|Reason:|Details:)\s*/i, '');
+        } else if (currentExplanation) {
+          currentExplanation += ' ' + l;
+        } else if (!currentQuestion && l.length > 20) {
+          currentQuestion = l;
+        }
+        
+        azureKeywords.forEach(kw => {
+          const regex = new RegExp('\\b' + kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi');
+          if (regex.test(l)) {
+            concepts.add(kw);
+          }
+        });
+      });
+      
+      if (currentQuestion || currentWrong || currentCorrect) {
+        wrongAnswers.push({ q: currentQuestion || '(Question text not found)', wrong: currentWrong, correct: currentCorrect, explanation: currentExplanation });
+      }
+      
+      const conceptsArray = Array.from(concepts);
+      const truncated = conceptsArray.length > 50;
+      
+      return {
+        concepts: conceptsArray.slice(0, 50),
+        wrongAnswers: wrongAnswers,
+        rawText: text,
+        truncated: truncated
+      };
+    }
+    
+    function generateFocusBrief(extracted) {
+      if (!extracted || (!extracted.concepts.length && !extracted.wrongAnswers.length)) {
+        return "Could not extract structured concepts. Try pasting raw text - the tool will scan for Azure keywords.\n\nFor best results, include lines like:\nQ: [question]\nYour Answer: [wrong answer]\nCorrect: [correct answer]\nExplanation: [why]\n\nOr just paste any text containing Azure terms!";
+      }
+      
+      let brief = "=== FOCUS BRIEF FOR NOTEBOOKLM ===\n\n";
+      
+      if (extracted.truncated) {
+        brief += "[NOTE: Large input detected - showing top 50 concepts]\n\n";
+      }
+      
+      brief += "I need help understanding these Azure concepts I got wrong on my AZ-104 practice quiz:\n\n";
+      
+      if (extracted.wrongAnswers.length > 0) {
+        brief += `--- WRONG ANSWERS TO REVIEW (${extracted.wrongAnswers.length} found) ---\n\n`;
+        extracted.wrongAnswers.forEach((wa, i) => {
+          brief += `${i + 1}. QUESTION: ${wa.q}\n`;
+          if (wa.wrong) brief += `   MY WRONG ANSWER: ${wa.wrong}\n`;
+          if (wa.correct) brief += `   CORRECT ANSWER: ${wa.correct}\n`;
+          if (wa.explanation) brief += `   WHY: ${wa.explanation}\n`;
+          brief += '\n';
+        });
+      }
+      
+      if (extracted.concepts.length > 0) {
+        brief += `--- KEY CONCEPTS TO CLARIFY (${extracted.concepts.length} found) ---\n`;
+        brief += extracted.concepts.join(', ') + '\n\n';
+      }
+      
+      brief += "--- REQUEST ---\n";
+      brief += "Please explain each concept I got wrong in simple terms.\n";
+      brief += "Focus on: WHY the correct answer is right and WHY my answer was wrong.\n";
+      brief += "Include any mnemonics or patterns that help remember these distinctions.\n";
+      
+      return brief;
+    }
+    
+    function initExtractor() {
+      const extractBtn = document.getElementById('extract-concepts-btn');
+      const clearBtn = document.getElementById('clear-extractor-btn');
+      const copyBtn = document.getElementById('copy-focus-brief-btn');
+      const input = document.getElementById('weak-point-input');
+      const output = document.getElementById('focus-brief-output');
+      const content = document.getElementById('focus-brief-content');
+      
+      if (extractBtn) {
+        extractBtn.addEventListener('click', function() {
+          const text = input.value;
+          const extracted = extractConcepts(text);
+          const brief = generateFocusBrief(extracted);
+          
+          content.textContent = brief;
+          output.style.display = 'block';
+          
+          const statsEl = document.getElementById('extraction-stats');
+          if (statsEl && extracted) {
+            const qCount = extracted.wrongAnswers ? extracted.wrongAnswers.length : 0;
+            const cCount = extracted.concepts ? extracted.concepts.length : 0;
+            let statsHtml = `<i class="fas fa-chart-bar" style="margin-right:6px;"></i> Extracted: ${qCount} Q&A pairs, ${cCount} concepts`;
+            if (extracted.truncated) {
+              statsHtml += ` <span style="background:#fff3cd;color:#856404;padding:2px 6px;border-radius:4px;font-size:11px;margin-left:8px;">TRUNCATED - showing top 50</span>`;
+            }
+            statsEl.innerHTML = statsHtml;
+            statsEl.style.display = 'block';
+          }
+        });
+      }
+      
+      if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+          input.value = '';
+          output.style.display = 'none';
+          content.textContent = '';
+          const statsEl = document.getElementById('extraction-stats');
+          if (statsEl) statsEl.style.display = 'none';
+        });
+      }
+      
+      if (copyBtn) {
+        copyBtn.addEventListener('click', function() {
+          const text = content.textContent;
+          navigator.clipboard.writeText(text).then(() => {
+            copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => {
+              copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy';
+            }, 2000);
+          });
+        });
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', initExtractor);
+  })();
+  </script>
+
+  <!-- AZ-104 OBJECTIVE REFERENCE -->
+  <div id="az104-objectives-section" class="accordion-section">
+    <div class="accordion-header" onclick="toggleAccordion('az104-objectives-content', this)">
+      <div class="accordion-title">
+        <i class="fas fa-tasks" style="color:#0078d4;"></i> AZ-104 Exam Objectives
+      </div>
+      <div class="accordion-meta">
+        <span style="font-size:12px;color:var(--text-muted);">Official exam skill areas</span>
+      </div>
+      <i class="fas fa-chevron-down accordion-chevron"></i>
+    </div>
+    <div id="az104-objectives-content" class="accordion-content">
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:16px;">
+        <i class="fas fa-info-circle" style="color:var(--azure-blue);margin-right:6px;"></i>
+        Official Microsoft AZ-104 exam objectives mapped to study domains. Use these IDs when tagging Anki cards.
+      </p>
+      <div id="objectives-grid" style="display:grid;gap:12px;">
+        
+        <div style="background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:8px;padding:14px;border-left:4px solid #0078d4;">
+          <div style="font-weight:600;color:var(--text-primary);margin-bottom:8px;">
+            <span style="background:#0078d4;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;margin-right:8px;">15-20%</span>
+            Manage Azure Identities and Governance
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">1.1</code> Manage Microsoft Entra users and groups</div>
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">1.2</code> Manage access to Azure resources</div>
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">1.3</code> Manage Azure subscriptions and governance</div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text-muted);">Maps to: <strong>Identities</strong> domain</div>
+        </div>
+        
+        <div style="background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:8px;padding:14px;border-left:4px solid #4caf50;">
+          <div style="font-weight:600;color:var(--text-primary);margin-bottom:8px;">
+            <span style="background:#4caf50;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;margin-right:8px;">15-20%</span>
+            Implement and Manage Storage
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">2.1</code> Configure access to storage</div>
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">2.2</code> Configure Azure Files and Azure Blob Storage</div>
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">2.3</code> Configure Azure Storage security</div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text-muted);">Maps to: <strong>Storage</strong> domain</div>
+        </div>
+        
+        <div style="background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:8px;padding:14px;border-left:4px solid #9c27b0;">
+          <div style="font-weight:600;color:var(--text-primary);margin-bottom:8px;">
+            <span style="background:#9c27b0;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;margin-right:8px;">20-25%</span>
+            Deploy and Manage Azure Compute Resources
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">3.1</code> Automate deployment by using ARM templates or Bicep</div>
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">3.2</code> Create and configure VMs</div>
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">3.3</code> Provision and manage containers</div>
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">3.4</code> Create and configure Azure App Service</div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text-muted);">Maps to: <strong>Compute</strong> + <strong>App Service & Containers</strong> domains</div>
+        </div>
+        
+        <div style="background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:8px;padding:14px;border-left:4px solid #00bcd4;">
+          <div style="font-weight:600;color:var(--text-primary);margin-bottom:8px;">
+            <span style="background:#00bcd4;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;margin-right:8px;">20-25%</span>
+            Implement and Manage Virtual Networking
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">4.1</code> Configure virtual networks and subnets</div>
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">4.2</code> Configure secure access to virtual networks</div>
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">4.3</code> Configure load balancing</div>
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">4.4</code> Monitor virtual networks</div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text-muted);">Maps to: <strong>Networking</strong> domain</div>
+        </div>
+        
+        <div style="background:var(--bg-tertiary);border:1px solid var(--border-color);border-radius:8px;padding:14px;border-left:4px solid #ff5722;">
+          <div style="font-weight:600;color:var(--text-primary);margin-bottom:8px;">
+            <span style="background:#ff5722;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;margin-right:8px;">10-15%</span>
+            Monitor and Maintain Azure Resources
+          </div>
+          <div style="font-size:12px;color:var(--text-secondary);line-height:1.6;">
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">5.1</code> Monitor resources by using Azure Monitor</div>
+            <div><code style="background:#e8f4f8;padding:1px 4px;border-radius:3px;">5.2</code> Implement backup and recovery</div>
+          </div>
+          <div style="margin-top:8px;font-size:11px;color:var(--text-muted);">Maps to: <strong>Monitoring</strong> domain</div>
+        </div>
+        
+      </div>
+      <div class="az104-tip" style="margin-top:16px;">
+        <i class="fas fa-tags"></i> Use objective codes (e.g., <code>1.2</code>, <code>3.3</code>) when tagging your Anki cards for precise exam alignment.
       </div>
     </div>
   </div>
