@@ -87,3 +87,13 @@ Configured as a static site deployment serving the `docs/` directory.
   - Adds catch-up time for stale domains
   - Points per session scaled by quiz frequency (5-8 points based on pace)
 - **Status Badges**: Visual indicator (Active/Cooling/Paused/Inactive) in stats section
+
+## Stale Warning System
+- 14-day threshold for marking domains as stale
+- NEW badge (red): Domains never updated
+- STALE badge (orange): Domains not updated in 14+ days
+- Applies to both Personalized Review and main dashboard
+
+## Single Source of Truth Pattern
+- Personalized Review Guide (azure_personalized_review_guide.html) owns all score input and metadata
+- Main dashboard (index.html) is read-only and displays synced data from localStorage

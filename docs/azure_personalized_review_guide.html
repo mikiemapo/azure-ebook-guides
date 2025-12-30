@@ -1756,29 +1756,36 @@
               avgDaysBetweenUpdates = medianInterval;
             }
             
-            // Calculate days since last update
-            const lastUpdateDates = domains.map(d => meta[d]?.lastUpdated ? new Date(meta[d].lastUpdated).getTime() : null).filter(Boolean);
-            let mostRecentUpdate = lastUpdateDates.length ? Math.max(...lastUpdateDates) : null;
-            
+            // Calculate days since last QUIZ (from history, not metadata)
+            // Use quiz history as the source of truth for actual study activity
+            let daysSinceLastQuiz = null;
             if (allHistoryDates.length > 0) {
-              const lastHistoryTime = allHistoryDates[allHistoryDates.length - 1];
-              if (!mostRecentUpdate || lastHistoryTime > mostRecentUpdate) {
-                mostRecentUpdate = lastHistoryTime;
-              }
+              const lastQuizTime = allHistoryDates[allHistoryDates.length - 1];
+              daysSinceLastQuiz = Math.floor((now - lastQuizTime) / (1000 * 60 * 60 * 24));
             }
             
-            const daysSinceLastUpdate = mostRecentUpdate ? Math.floor((now - mostRecentUpdate) / (1000 * 60 * 60 * 24)) : null;
+            // Fall back to metadata only if no quiz history exists
+            const lastUpdateDates = domains.map(d => meta[d]?.lastUpdated ? new Date(meta[d].lastUpdated).getTime() : null).filter(Boolean);
+            let mostRecentMetaUpdate = lastUpdateDates.length ? Math.max(...lastUpdateDates) : null;
+            
+            // Use quiz history as primary, metadata as fallback
+            const daysSinceLastUpdate = daysSinceLastQuiz !== null ? daysSinceLastQuiz : 
+              (mostRecentMetaUpdate ? Math.floor((now - mostRecentMetaUpdate) / (1000 * 60 * 60 * 24)) : null);
             
             // Determine study status (active, cooling, slump, inactive)
+            // More aggressive slump detection: 14+ days = paused
             if (daysSinceLastUpdate === null) {
               studyStatus = 'inactive';
             } else if (daysSinceLastUpdate <= 7) {
               studyStatus = 'active';
-            } else if (medianInterval && daysSinceLastUpdate > medianInterval * SLUMP_MULTIPLIER) {
+            } else if (daysSinceLastUpdate > STALE_THRESHOLD_DAYS) {
+              // 14+ days without a quiz = study paused
               studyStatus = 'slump';
-            } else if (daysSinceLastUpdate > 21) {
+            } else if (medianInterval && daysSinceLastUpdate > medianInterval * SLUMP_MULTIPLIER) {
+              // Gap much larger than typical = slump
               studyStatus = 'slump';
             } else {
+              // 8-14 days = cooling off but still somewhat active
               studyStatus = 'cooling';
             }
             
@@ -2307,23 +2314,21 @@
                 </div>
               `;
             } else if (stats.readinessNote === 'slump') {
-              const dateStr = stats.estimatedExamDate ? stats.estimatedExamDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '--';
               examHtml = `
                 <div class="exam-readiness-card" style="border-color:#f59e0b;background:linear-gradient(135deg,rgba(245,158,11,0.05),rgba(245,158,11,0.1));">
                   <div class="readiness-title" style="color:#b45309;"><i class="fas fa-pause-circle"></i> Study Paused</div>
-                  <div class="target-date" style="color:#b45309;opacity:0.7;">${dateStr}</div>
+                  <div class="target-date" style="color:#b45309;">Prediction unavailable</div>
                   <div class="target-note" style="color:#92400e;">
-                    <strong>${stats.daysSinceLastUpdate || 0} days</strong> since last quiz - resume studying to get a reliable prediction
+                    <strong>${stats.daysSinceLastUpdate || 0} days</strong> since your last quiz
                   </div>
-                  <div class="progress-summary">
-                    <strong>${stats.readyCount}</strong> of <strong>${stats.totalDomains}</strong> domains at 75%+ | 
-                    Median pace: <strong>${stats.medianInterval || '--'}</strong> days between quizzes
+                  <div class="progress-summary" style="margin-top:12px;">
+                    <strong>${stats.readyCount}</strong> of <strong>${stats.totalDomains}</strong> domains at 75%+
+                    ${stats.medianInterval ? ` | Your typical pace: <strong>${stats.medianInterval}</strong> days between quizzes` : ''}
                   </div>
                   ${staleWarning}
-                  <div style="margin-top:10px;text-align:center;">
-                    <span style="background:#f59e0b;color:#fff;padding:6px 14px;border-radius:20px;font-size:0.85em;font-weight:600;">
-                      <i class="fas fa-play"></i> Take a quiz to update prediction
-                    </span>
+                  <div style="margin-top:12px;padding:12px;background:rgba(245,158,11,0.2);border-radius:8px;text-align:center;">
+                    <div style="font-weight:600;color:#92400e;margin-bottom:4px;"><i class="fas fa-info-circle"></i> Why no date?</div>
+                    <div style="font-size:0.85em;color:#78350f;">Your study activity has paused. Resume quizzing regularly (at least 2-3 times per week) to get a realistic exam date prediction.</div>
                   </div>
                 </div>
               `;
