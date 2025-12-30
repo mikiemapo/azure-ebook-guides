@@ -1776,6 +1776,17 @@
             const daysSinceLastUpdate = daysSinceLastQuiz !== null ? daysSinceLastQuiz : 
               (mostRecentMetaUpdate ? Math.floor((now - mostRecentMetaUpdate) / (1000 * 60 * 60 * 24)) : null);
             
+            // Debug: Log study activity calculation
+            console.log('Study Activity Debug:', {
+              historyEntries: history.length,
+              consolidatedDays: allHistoryDates.length,
+              recentDays: recentDates.length,
+              daysSinceLastQuiz,
+              daysSinceLastUpdate,
+              mostRecentMetaUpdate: mostRecentMetaUpdate ? new Date(mostRecentMetaUpdate).toISOString() : null,
+              quizRate
+            });
+            
             // Determine study status (active, cooling, slump, inactive)
             // More aggressive slump detection: 14+ days = paused
             if (daysSinceLastUpdate === null) {
