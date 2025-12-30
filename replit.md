@@ -10,13 +10,24 @@ This is a static HTML website containing 86+ interactive study guides for the Mi
   - `Anki-Decks/` - Anki flashcard decks (.apkg files, served by the web server)
 - `tools/` - Python scripts for deck generation
 - `reports/` - Analysis and tracking reports
-- `server.py` - Simple Python HTTP server for development
+- `server.py` - Flask server with API endpoints and static file serving
 
 ## Running the Project
-The project runs a Python HTTP server that serves the `docs/` directory on port 5000:
+The project runs a Flask server that serves the `docs/` directory on port 5000 and provides API endpoints:
 ```bash
 python server.py
 ```
+
+## API Endpoints
+- `GET /` - Serves index.html
+- `GET /<path>` - Serves static files from docs/
+- `POST /api/extract-concepts` - AI-powered concept extraction for Weak Point Extractor
+  - Input: `{"text": "quiz review content"}`
+  - Output: Concepts with Azure facts, study guide references, and NotebookLM summary
+  - Requires: `OPENAI_API_KEY` environment secret
+
+## Environment Secrets
+- `OPENAI_API_KEY` - OpenAI API key for AI-powered concept extraction (optional - fallback mode works without it)
 
 ## Deployment
 Configured as a static site deployment serving the `docs/` directory.
@@ -66,11 +77,15 @@ Prevents memorizing answers by tracking which source you last used:
 - **localStorage key**: `sourceRotationData`
 
 ### Weak Point Extractor
-Converts quiz review PDFs into NotebookLM-ready Focus Briefs:
-- **Paste Box**: Copy wrong answers from quiz review and paste
-- **Concept Parser**: Extracts Azure keywords and concepts automatically
-- **Focus Brief Generator**: Creates structured prompt for NotebookLM critique audio
-- **Copy Button**: One-click copy to clipboard for pasting into NotebookLM
+Converts quiz review PDFs into NotebookLM-ready Focus Briefs with two modes:
+- **Quick Extract**: Client-side keyword extraction (instant, no API needed)
+- **AI Extract**: Server-side OpenAI analysis with accurate Azure facts
+- **Features**:
+  - Paste box for quiz review content
+  - Concept parser extracts Azure keywords
+  - AI mode provides verified Azure facts and exam objective codes
+  - Study guide references link to relevant HTML guides
+  - Fallback mode works without OpenAI API credits
 - **Supported formats**: Q:/Your Answer:/Correct:/Explanation: prefixes
 
 ### AZ-104 Exam Objectives Reference

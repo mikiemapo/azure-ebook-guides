@@ -1577,13 +1577,20 @@
         <label style="font-size:12px;color:var(--text-muted);display:block;margin-bottom:6px;">Paste Quiz Review Content:</label>
         <textarea id="weak-point-input" placeholder="Paste your wrong answers here...&#10;&#10;Example:&#10;Q: Which Azure service provides managed Kubernetes?&#10;Your Answer: Azure Container Instances&#10;Correct: Azure Kubernetes Service (AKS)&#10;Explanation: AKS is a managed Kubernetes service..." style="width:100%;min-height:150px;padding:12px;border:1px solid var(--border-color);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;box-sizing:border-box;"></textarea>
       </div>
-      <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
         <button id="extract-concepts-btn" style="padding:10px 20px;background:#dc3545;color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">
-          <i class="fas fa-magic"></i> Extract Concepts
+          <i class="fas fa-magic"></i> Quick Extract
+        </button>
+        <button id="ai-extract-btn" style="padding:10px 20px;background:#0078d4;color:#fff;border:0;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500;">
+          <i class="fas fa-brain"></i> AI Extract (Azure Facts)
         </button>
         <button id="clear-extractor-btn" style="padding:10px 16px;background:var(--bg-tertiary);color:var(--text-primary);border:1px solid var(--border-color);border-radius:6px;cursor:pointer;font-size:13px;">
           <i class="fas fa-eraser"></i> Clear
         </button>
+      </div>
+      <div id="ai-loading" style="display:none;padding:12px;background:#e3f2fd;border:1px solid #2196f3;border-radius:6px;margin-bottom:12px;">
+        <i class="fas fa-spinner fa-spin" style="color:#2196f3;margin-right:8px;"></i>
+        <span style="color:#1565c0;">Analyzing with AI... This may take a few seconds.</span>
       </div>
       
       <div id="extraction-stats" style="display:none;font-size:12px;color:var(--text-secondary);padding:8px 12px;background:var(--bg-tertiary);border-radius:6px;margin-bottom:12px;border:1px solid var(--border-color);"></div>
@@ -1719,8 +1726,103 @@
       return brief;
     }
     
+    async function callAIExtract(text) {
+      const loadingEl = document.getElementById('ai-loading');
+      const statsEl = document.getElementById('extraction-stats');
+      const output = document.getElementById('focus-brief-output');
+      const content = document.getElementById('focus-brief-content');
+      
+      if (!text.trim()) {
+        statsEl.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#dc3545;margin-right:6px;"></i> Please paste some quiz content first.';
+        statsEl.style.display = 'block';
+        return;
+      }
+      
+      loadingEl.style.display = 'block';
+      statsEl.style.display = 'none';
+      output.style.display = 'none';
+      
+      try {
+        const response = await fetch('/api/extract-concepts', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ text: text })
+        });
+        
+        const data = await response.json();
+        loadingEl.style.display = 'none';
+        
+        if (data.error && !data.fallback) {
+          statsEl.innerHTML = `<i class="fas fa-exclamation-circle" style="color:#dc3545;margin-right:6px;"></i> Error: ${data.error}`;
+          statsEl.style.display = 'block';
+          return;
+        }
+        
+        let brief = "";
+        if (data.fallback) {
+          brief = "=== FOCUS BRIEF FOR NOTEBOOKLM (Fallback Mode) ===\n\n";
+          brief += "Note: AI analysis unavailable - using keyword extraction instead.\n";
+          brief += "To enable AI analysis, check your OpenAI API key has credits.\n\n";
+        } else {
+          brief = "=== AI-POWERED FOCUS BRIEF FOR NOTEBOOKLM ===\n\n";
+          brief += "These Azure facts are verified and accurate for the AZ-104 exam:\n\n";
+        }
+        
+        if (data.concepts && data.concepts.length > 0) {
+          brief += `--- CORRECTED CONCEPTS (${data.concepts.length} analyzed) ---\n\n`;
+          data.concepts.forEach((c, i) => {
+            brief += `${i + 1}. ${c.name.toUpperCase()}\n`;
+            brief += `   FACT: ${c.correct_fact}\n`;
+            if (c.why_wrong) brief += `   WHY YOU WERE WRONG: ${c.why_wrong}\n`;
+            if (c.objective) brief += `   EXAM OBJECTIVE: ${c.objective}\n`;
+            brief += '\n';
+          });
+        }
+        
+        if (data.summary) {
+          brief += "--- SUMMARY ---\n" + data.summary + "\n\n";
+        }
+        
+        if (data.local_concepts && data.local_concepts.length > 0 && data.fallback) {
+          brief += `--- DETECTED CONCEPTS (${data.local_concepts.length} found) ---\n`;
+          brief += data.local_concepts.join(', ') + '\n\n';
+        }
+        
+        if (data.guide_references && data.guide_references.length > 0) {
+          brief += "--- STUDY GUIDE REFERENCES ---\n";
+          data.guide_references.forEach(ref => {
+            brief += `• ${ref.concept}: See ${ref.section} (${ref.guide})\n`;
+          });
+          brief += "\n";
+        }
+        
+        brief += "--- REQUEST ---\n";
+        brief += "Please create a critique audio that:\n";
+        brief += "1. Explains WHY each of my answers was wrong\n";
+        brief += "2. Uses mnemonics or patterns to help me remember\n";
+        brief += "3. Quizzes me at the end to confirm understanding\n";
+        
+        content.textContent = brief;
+        output.style.display = 'block';
+        
+        const conceptCount = data.concepts ? data.concepts.length : (data.local_concepts ? data.local_concepts.length : 0);
+        const refCount = data.guide_references ? data.guide_references.length : 0;
+        let statsIcon = data.fallback ? 'fa-search' : 'fa-brain';
+        let statsColor = data.fallback ? '#ff9800' : '#0078d4';
+        let statsLabel = data.fallback ? 'Fallback mode' : 'AI analyzed';
+        statsEl.innerHTML = `<i class="fas ${statsIcon}" style="color:${statsColor};margin-right:6px;"></i> ${statsLabel}: ${conceptCount} concepts, ${refCount} guide references`;
+        statsEl.style.display = 'block';
+        
+      } catch (err) {
+        loadingEl.style.display = 'none';
+        statsEl.innerHTML = `<i class="fas fa-exclamation-circle" style="color:#dc3545;margin-right:6px;"></i> Connection error. Try Quick Extract instead.`;
+        statsEl.style.display = 'block';
+      }
+    }
+    
     function initExtractor() {
       const extractBtn = document.getElementById('extract-concepts-btn');
+      const aiExtractBtn = document.getElementById('ai-extract-btn');
       const clearBtn = document.getElementById('clear-extractor-btn');
       const copyBtn = document.getElementById('copy-focus-brief-btn');
       const input = document.getElementById('weak-point-input');
@@ -1740,13 +1842,19 @@
           if (statsEl && extracted) {
             const qCount = extracted.wrongAnswers ? extracted.wrongAnswers.length : 0;
             const cCount = extracted.concepts ? extracted.concepts.length : 0;
-            let statsHtml = `<i class="fas fa-chart-bar" style="margin-right:6px;"></i> Extracted: ${qCount} Q&A pairs, ${cCount} concepts`;
+            let statsHtml = `<i class="fas fa-chart-bar" style="margin-right:6px;"></i> Quick Extract: ${qCount} Q&A pairs, ${cCount} keywords`;
             if (extracted.truncated) {
-              statsHtml += ` <span style="background:#fff3cd;color:#856404;padding:2px 6px;border-radius:4px;font-size:11px;margin-left:8px;">TRUNCATED - showing top 50</span>`;
+              statsHtml += ` <span style="background:#fff3cd;color:#856404;padding:2px 6px;border-radius:4px;font-size:11px;margin-left:8px;">TRUNCATED</span>`;
             }
             statsEl.innerHTML = statsHtml;
             statsEl.style.display = 'block';
           }
+        });
+      }
+      
+      if (aiExtractBtn) {
+        aiExtractBtn.addEventListener('click', function() {
+          callAIExtract(input.value);
         });
       }
       
@@ -1757,6 +1865,8 @@
           content.textContent = '';
           const statsEl = document.getElementById('extraction-stats');
           if (statsEl) statsEl.style.display = 'none';
+          const loadingEl = document.getElementById('ai-loading');
+          if (loadingEl) loadingEl.style.display = 'none';
         });
       }
       
