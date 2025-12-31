@@ -480,98 +480,9 @@
     .toast-message { font-size: 13px; color: var(--text-secondary); }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
   </style>
+<script src="shared-navbar.js"></script>
 </head>
 <body>
-  <!-- Persistent Study Tools Navbar -->
-  <nav class="study-tools-navbar">
-    <div class="navbar-brand">
-      <a href="index.html" style="color:#fff;text-decoration:none;display:flex;align-items:center;gap:8px;">
-        <i class="fas fa-graduation-cap" style="color:#60a5fa;"></i>
-        <span>AZ-104 Hub</span>
-      </a>
-    </div>
-    <div class="navbar-tools">
-      <span class="navbar-label">Personalized Study Tools</span>
-      <a href="azure_personalized_review_guide.html" class="navbar-tool-btn">
-        <i class="fas fa-bullseye"></i>
-        <span>Personalized Review</span>
-      </a>
-      <a href="anki-deck-builder.html" class="navbar-tool-btn active-tool">
-        <i class="fas fa-hammer"></i>
-        <span>Deck Builder</span>
-      </a>
-      <a href="anki-deck-library.html" class="navbar-tool-btn">
-        <i class="fas fa-layer-group"></i>
-        <span>Deck Library</span>
-      </a>
-    </div>
-  </nav>
-  <style>
-    .study-tools-navbar {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 10px 20px;
-      background: linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%);
-      margin-bottom: 20px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-    .navbar-brand {
-      display: flex;
-      align-items: center;
-      font-weight: 700;
-      font-size: 1.1em;
-    }
-    .navbar-tools {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .navbar-label {
-      color: rgba(255,255,255,0.7);
-      font-size: 12px;
-      margin-right: 8px;
-      display: none;
-    }
-    @media (min-width: 768px) {
-      .navbar-label { display: inline; }
-    }
-    .navbar-tool-btn {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 8px 14px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 6px;
-      color: #fff;
-      text-decoration: none;
-      font-size: 13px;
-      font-weight: 500;
-      transition: all 0.2s;
-    }
-    .navbar-tool-btn:hover {
-      background: rgba(255,255,255,0.2);
-      transform: translateY(-1px);
-    }
-    .navbar-tool-btn.active-tool {
-      background: #f97316;
-      border-color: #f97316;
-    }
-    .navbar-tool-btn i { font-size: 14px; }
-    @media (max-width: 480px) {
-      .navbar-tool-btn span { display: none; }
-      .navbar-tool-btn { padding: 10px; }
-      .navbar-tool-btn i { font-size: 16px; }
-    }
-  </style>
-
   <div class="container">
     <!-- Header -->
     <div class="header">

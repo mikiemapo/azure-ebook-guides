@@ -40,12 +40,18 @@ Configured as a static site deployment serving the `docs/` directory.
 - Anchor navigation for deep-linking
 - Quiz integration with instant feedback
 - Local Anki Deck Builder (anki-deck-builder.html) for CSV to .apkg conversion
-- Anki Deck Library (anki-deck-library.html) with 11 pre-built AZ-104 decks
+- Anki Deck Library (anki-deck-library.html) - CPRS workflow-based deck building
+- **Persistent Navigation Bar** with search (shared-navbar.js) across all 88 pages
 
 ## Architecture Notes
 - Pure static HTML/CSS/JS - no build step required
 - Uses CDN-hosted Font Awesome for icons
 - Cache-Control headers disabled for development
+- **shared-navbar.js**: Dynamically injects persistent navbar with search on all pages
+  - Sticky positioning at top of viewport
+  - Search functionality for quick guide navigation
+  - Quick links to Review, Builder, Library tools
+  - Mobile responsive (icons-only on small screens)
 
 ## Data Contracts (localStorage)
 - **mergedQuizScores**: Domain scores with capitalized keys (Identities, Storage, Compute, Networking, Monitoring, App Service & Containers) containing {correct, total}
