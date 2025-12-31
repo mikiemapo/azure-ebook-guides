@@ -189,88 +189,88 @@ def generate_cprs():
             "fallback_reason": "OpenAI API key not configured",
             "concept": concept,
             "guide_references": guide_refs,
-            "steps": []
+            "questions": []
         }), 200
     
     try:
         prompt = f"""You are an Azure certification expert using the CPRS (Concept-Pathway Reinforcement System) methodology.
 
-Generate a complete 6-step CPRS question set for: "{concept}"
+Generate 6 SEPARATE multiple-choice questions (MCQ) for: "{concept}"
 
-Follow this EXACT structure:
+Each question MUST have 4 options (A, B, C, D) and one correct answer.
 
-STEP 1 - FOUNDATION (Root Purpose):
-Create a question: "What problem does {concept} exist to solve?"
-Provide the answer explaining the fundamental purpose.
+QUESTION 1 - FOUNDATION (Root Purpose):
+Test understanding of what problem {concept} solves.
+Example angle: "Which scenario best describes the primary use case for {concept}?"
 
-STEP 2 - DEFINITION (Textbook Clarity):
-Create a question: "What is {concept}?"
-Provide a precise, one-sentence definition.
+QUESTION 2 - DEFINITION (Textbook Clarity):
+Test knowing the precise definition of {concept}.
+Example angle: "Which statement correctly defines {concept}?"
 
-STEP 3 - DIFFERENTIATION (Compare Similar Services):
-Create a question: "How is {concept} different from [similar Azure service]?"
-Pick the most commonly confused alternative and explain the key differences.
+QUESTION 3 - DIFFERENTIATION (Compare Similar Services):
+Test distinguishing {concept} from commonly confused Azure services.
+Example angle: "A company needs [scenario]. Which service should they use: {concept} or [similar service]?"
 
-STEP 4 - SCENARIO MCQ (Exam-Style with Misdirection):
-Create a realistic AZ-104 exam question with 4 options (A, B, C, D).
-- All answers must sound plausible
-- Only ONE is the perfect match
-- Include subtle misdirection like Microsoft uses
-Provide the correct answer and brief explanation.
+QUESTION 4 - SCENARIO (Exam-Style Application):
+A realistic AZ-104 exam question applying {concept} to a business scenario.
+Include subtle misdirection like Microsoft uses. All options must sound plausible.
 
-STEP 5 - ANTI-CONFUSION (Explain Wrong Answers):
-For the MCQ above, explain why EACH wrong answer is incorrect.
-Focus on the subtle differences that make them wrong.
+QUESTION 5 - ANTI-CONFUSION (Trap Recognition):
+Test recognizing why wrong answers are wrong.
+Example angle: "Which statement about {concept} is FALSE?" or "Which scenario would NOT be appropriate for {concept}?"
 
-STEP 6 - COMPRESSION (1-Sentence Rule):
-Provide a single-sentence summary that captures the essence of {concept} for instant recall.
+QUESTION 6 - COMPRESSION (Memory Hook):
+Test the core takeaway that summarizes {concept}.
+Example angle: "Which one-sentence summary best captures the essence of {concept}?"
 
-Format your response as JSON:
+Format your response as JSON with ALL 6 questions as MCQs:
 {{
     "concept": "{concept}",
-    "steps": [
+    "questions": [
         {{
-            "step": 1,
-            "name": "Foundation",
-            "question": "the question",
-            "answer": "the answer"
-        }},
-        {{
-            "step": 2,
-            "name": "Definition", 
-            "question": "the question",
-            "answer": "the answer"
-        }},
-        {{
-            "step": 3,
-            "name": "Differentiation",
-            "question": "the question",
-            "compared_to": "the similar service",
-            "answer": "the differences"
-        }},
-        {{
-            "step": 4,
-            "name": "Scenario MCQ",
-            "question": "the scenario question",
+            "type": "Foundation",
+            "question": "the MCQ question text",
             "options": {{"A": "option A", "B": "option B", "C": "option C", "D": "option D"}},
             "correct": "A/B/C/D",
             "explanation": "why this is correct"
         }},
         {{
-            "step": 5,
-            "name": "Anti-Confusion",
-            "wrong_answers": [
-                {{"option": "X", "why_wrong": "explanation"}}
-            ]
+            "type": "Definition",
+            "question": "the MCQ question text",
+            "options": {{"A": "option A", "B": "option B", "C": "option C", "D": "option D"}},
+            "correct": "A/B/C/D",
+            "explanation": "why this is correct"
         }},
         {{
-            "step": 6,
-            "name": "Compression",
-            "summary": "one-sentence summary"
+            "type": "Differentiation",
+            "question": "the MCQ question text",
+            "options": {{"A": "option A", "B": "option B", "C": "option C", "D": "option D"}},
+            "correct": "A/B/C/D",
+            "explanation": "why this is correct"
+        }},
+        {{
+            "type": "Scenario",
+            "question": "the MCQ question text",
+            "options": {{"A": "option A", "B": "option B", "C": "option C", "D": "option D"}},
+            "correct": "A/B/C/D",
+            "explanation": "why this is correct"
+        }},
+        {{
+            "type": "Anti-Confusion",
+            "question": "the MCQ question text",
+            "options": {{"A": "option A", "B": "option B", "C": "option C", "D": "option D"}},
+            "correct": "A/B/C/D",
+            "explanation": "why this is correct"
+        }},
+        {{
+            "type": "Compression",
+            "question": "the MCQ question text",
+            "options": {{"A": "option A", "B": "option B", "C": "option C", "D": "option D"}},
+            "correct": "A/B/C/D",
+            "explanation": "why this is correct"
         }}
     ],
-    "objective": "X.X (the AZ-104 exam objective code)",
-    "anki_csv": "CSV-formatted cards for Anki import"
+    "objective": "X.X (the AZ-104 exam objective code)"
 }}"""
 
         response = openai_client.chat.completions.create(
@@ -294,7 +294,7 @@ Format your response as JSON:
             "fallback": True,
             "concept": concept,
             "guide_references": guide_refs,
-            "steps": []
+            "questions": []
         }), 200
 
 @app.route('/')

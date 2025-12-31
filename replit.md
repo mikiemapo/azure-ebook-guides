@@ -92,16 +92,16 @@ Converts quiz review PDFs into NotebookLM-ready Focus Briefs with two modes:
 - **Supported formats**: Q:/Your Answer:/Correct:/Explanation: prefixes
 
 ### CPRS Question Generator
-Generates complete 6-step CPRS (Concept-Pathway Reinforcement System) question sets:
+Generates 6 separate MCQ questions using the CPRS (Concept-Pathway Reinforcement System) methodology:
 - **Input**: Any Azure concept (e.g., "VNet Peering", "Azure Policy")
-- **Output**: Full mastery question set with:
-  1. **Foundation**: What problem does it solve?
-  2. **Definition**: Precise textbook definition
-  3. **Differentiation**: How is it different from similar services?
-  4. **Scenario MCQ**: Exam-style question with misdirection
-  5. **Anti-Confusion**: Why each wrong answer is incorrect
-  6. **Compression**: One-sentence memory hook
-- **Copy for Anki**: Exports MCQ as CSV for Anki Deck Builder
+- **Output**: 6 exam-style MCQs (A/B/C/D format), each testing a different mastery angle:
+  1. **Foundation MCQ**: Tests understanding of what problem the concept solves
+  2. **Definition MCQ**: Tests knowing the precise definition
+  3. **Differentiation MCQ**: Tests distinguishing from similar Azure services
+  4. **Scenario MCQ**: Realistic exam-style application question with misdirection
+  5. **Anti-Confusion MCQ**: Tests recognizing why wrong answers are wrong (e.g., "Which is FALSE?")
+  6. **Compression MCQ**: Tests the memory hook/key takeaway
+- **Copy for Anki**: Exports all 6 MCQs as CSV rows with tags (objective code + question type)
 - **API endpoint**: `POST /api/generate-cprs`
 
 ### AZ-104 Exam Objectives Reference
