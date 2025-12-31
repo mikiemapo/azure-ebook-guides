@@ -79,14 +79,30 @@ Prevents memorizing answers by tracking which source you last used:
 ### Weak Point Extractor
 Converts quiz review PDFs into NotebookLM-ready Focus Briefs with two modes:
 - **Quick Extract**: Client-side keyword extraction (instant, no API needed)
-- **AI Extract**: Server-side OpenAI analysis with accurate Azure facts
-- **Features**:
-  - Paste box for quiz review content
-  - Concept parser extracts Azure keywords
-  - AI mode provides verified Azure facts and exam objective codes
-  - Study guide references link to relevant HTML guides
-  - Fallback mode works without OpenAI API credits
+- **AI Extract**: Server-side OpenAI analysis using CPRS methodology
+- **CPRS Output Fields**:
+  - Foundation: What problem does this concept solve?
+  - Definition: Precise one-sentence definition
+  - Differentiation: How it differs from similar services
+  - Fact: The accurate Azure fact
+  - Why Wrong: Explanation of the misconception
+  - Memory Hook: One-sentence compression for recall
+  - Objective: AZ-104 exam objective code
+- **Fallback mode**: Works without OpenAI API credits
 - **Supported formats**: Q:/Your Answer:/Correct:/Explanation: prefixes
+
+### CPRS Question Generator
+Generates complete 6-step CPRS (Concept-Pathway Reinforcement System) question sets:
+- **Input**: Any Azure concept (e.g., "VNet Peering", "Azure Policy")
+- **Output**: Full mastery question set with:
+  1. **Foundation**: What problem does it solve?
+  2. **Definition**: Precise textbook definition
+  3. **Differentiation**: How is it different from similar services?
+  4. **Scenario MCQ**: Exam-style question with misdirection
+  5. **Anti-Confusion**: Why each wrong answer is incorrect
+  6. **Compression**: One-sentence memory hook
+- **Copy for Anki**: Exports MCQ as CSV for Anki Deck Builder
+- **API endpoint**: `POST /api/generate-cprs`
 
 ### AZ-104 Exam Objectives Reference
 Official Microsoft exam objectives mapped to study domains:

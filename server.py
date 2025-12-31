@@ -107,24 +107,33 @@ def extract_concepts():
         }), 200
     
     try:
-        prompt = f"""You are an Azure certification expert. Analyze the following quiz review content where the student got questions wrong.
+        prompt = f"""You are an Azure certification expert using the CPRS (Concept-Pathway Reinforcement System) methodology.
 
-For each concept mentioned, provide:
-1. The correct Azure fact (authoritative, accurate)
-2. A brief explanation of why the wrong answer was incorrect
-3. The AZ-104 exam objective it relates to (e.g., 1.2, 3.3)
+Analyze the following quiz review content where the student got questions wrong.
+
+For each concept mentioned, apply the CPRS framework:
+1. FOUNDATION: What problem does this concept solve?
+2. DEFINITION: Precise one-sentence definition
+3. DIFFERENTIATION: How is it different from commonly confused services?
+4. WHY WRONG: Why the student's answer was incorrect
+5. COMPRESSION: One-sentence memory hook for instant recall
+6. The AZ-104 exam objective it relates to (e.g., 1.2, 3.3)
 
 Format your response as JSON with this structure:
 {{
     "concepts": [
         {{
             "name": "concept name",
+            "foundation": "the root purpose/problem it solves",
+            "definition": "precise one-sentence definition",
+            "differentiation": "how it differs from similar services",
             "correct_fact": "the accurate Azure fact",
             "why_wrong": "brief explanation of the misconception",
+            "compression": "one-sentence memory hook",
             "objective": "X.X"
         }}
     ],
-    "summary": "A 2-3 sentence NotebookLM-ready summary focusing on the weak areas"
+    "summary": "A 2-3 sentence NotebookLM-ready summary using CPRS structure focusing on the weak areas"
 }}
 
 Quiz review content:
@@ -160,6 +169,132 @@ Quiz review content:
             "guide_references": guide_refs,
             "concepts": [],
             "summary": "AI analysis failed - using keyword extraction mode."
+        }), 200
+
+@app.route('/api/generate-cprs', methods=['POST'])
+def generate_cprs():
+    data = request.get_json()
+    if not data or 'concept' not in data:
+        return jsonify({"error": "No concept provided"}), 400
+    
+    concept = data['concept'].strip()
+    if not concept:
+        return jsonify({"error": "Concept cannot be empty"}), 400
+    
+    guide_refs = find_guide_references([concept])
+    
+    if not openai_client:
+        return jsonify({
+            "fallback": True,
+            "fallback_reason": "OpenAI API key not configured",
+            "concept": concept,
+            "guide_references": guide_refs,
+            "steps": []
+        }), 200
+    
+    try:
+        prompt = f"""You are an Azure certification expert using the CPRS (Concept-Pathway Reinforcement System) methodology.
+
+Generate a complete 6-step CPRS question set for: "{concept}"
+
+Follow this EXACT structure:
+
+STEP 1 - FOUNDATION (Root Purpose):
+Create a question: "What problem does {concept} exist to solve?"
+Provide the answer explaining the fundamental purpose.
+
+STEP 2 - DEFINITION (Textbook Clarity):
+Create a question: "What is {concept}?"
+Provide a precise, one-sentence definition.
+
+STEP 3 - DIFFERENTIATION (Compare Similar Services):
+Create a question: "How is {concept} different from [similar Azure service]?"
+Pick the most commonly confused alternative and explain the key differences.
+
+STEP 4 - SCENARIO MCQ (Exam-Style with Misdirection):
+Create a realistic AZ-104 exam question with 4 options (A, B, C, D).
+- All answers must sound plausible
+- Only ONE is the perfect match
+- Include subtle misdirection like Microsoft uses
+Provide the correct answer and brief explanation.
+
+STEP 5 - ANTI-CONFUSION (Explain Wrong Answers):
+For the MCQ above, explain why EACH wrong answer is incorrect.
+Focus on the subtle differences that make them wrong.
+
+STEP 6 - COMPRESSION (1-Sentence Rule):
+Provide a single-sentence summary that captures the essence of {concept} for instant recall.
+
+Format your response as JSON:
+{{
+    "concept": "{concept}",
+    "steps": [
+        {{
+            "step": 1,
+            "name": "Foundation",
+            "question": "the question",
+            "answer": "the answer"
+        }},
+        {{
+            "step": 2,
+            "name": "Definition", 
+            "question": "the question",
+            "answer": "the answer"
+        }},
+        {{
+            "step": 3,
+            "name": "Differentiation",
+            "question": "the question",
+            "compared_to": "the similar service",
+            "answer": "the differences"
+        }},
+        {{
+            "step": 4,
+            "name": "Scenario MCQ",
+            "question": "the scenario question",
+            "options": {{"A": "option A", "B": "option B", "C": "option C", "D": "option D"}},
+            "correct": "A/B/C/D",
+            "explanation": "why this is correct"
+        }},
+        {{
+            "step": 5,
+            "name": "Anti-Confusion",
+            "wrong_answers": [
+                {{"option": "X", "why_wrong": "explanation"}}
+            ]
+        }},
+        {{
+            "step": 6,
+            "name": "Compression",
+            "summary": "one-sentence summary"
+        }}
+    ],
+    "objective": "X.X (the AZ-104 exam objective code)",
+    "anki_csv": "CSV-formatted cards for Anki import"
+}}"""
+
+        response = openai_client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "You are an Azure certification expert. Generate accurate, exam-ready content following the CPRS methodology. All Azure facts must be authoritative and current."},
+                {"role": "user", "content": prompt}
+            ],
+            response_format={"type": "json_object"},
+            max_tokens=3000
+        )
+        
+        result = json.loads(response.choices[0].message.content)
+        result['guide_references'] = guide_refs
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({
+            "error": str(e),
+            "fallback": True,
+            "concept": concept,
+            "guide_references": guide_refs,
+            "steps": []
         }), 200
 
 @app.route('/')

@@ -1,0 +1,126 @@
+The Official Questioning Method for High-Quality AZ-104 MCQs
+🔶 
+CORE PRINCIPLE
+
+Every Azure concept must be mastered through this sequence:
+Understand its essence — why it exists.
+Understand its exact definition — what it is.
+Understand what it is NOT — differentiate similar services.
+Understand how Microsoft disguises it — common traps.
+Eliminate wrong answers logically — not guesswork.
+Compress the idea into a mental shortcut — fast recall.
+
+This method turns any concept into repeatable, exam-ready mastery.
+📚 
+THE SIX-STEP QUESTION FORMAT (Heart of CPRS)
+
+Every concept gets ALL six steps in order.
+STEP 1 — Foundation Breakdown (Root Purpose)
+
+Goal: Strip to fundamentals.
+Question Type:
+
+“What problem does ___ exist to solve?”
+Outcome: Establishes conceptual grounding.
+STEP 2 — Precise Definition (Textbook Clarity)
+
+Goal: Lock in exact meaning.
+Question Type:
+
+“What is ___?”
+Outcome: You can define it in one clean, correct sentence.
+STEP 3 — Differentiation Against Similar Services
+
+Goal: Prevent Microsoft-style confusion.
+Question Type:
+
+“How is X different from Y?”
+Outcome: Auto-eliminate 50% of wrong answers on any exam.
+STEP 4 — Scenario-Based Challenge (with Misdirection)
+
+Goal: Train real exam pattern recognition.
+Question Type:
+
+MCQ with all plausible answers, only one PERFECT match.
+Rules:
+
+All answers must look correct
+Only ONE answer satisfies all conditions
+Wrong answers must be wrong for subtle reasons
+
+Outcome: Learn to choose the “least wrong” answer — the real exam skill.
+STEP 5 — Anti-Confusion Reinforcement (Explain the Wrong Answers)
+
+Goal: Destroy future confusion.
+Question Type:
+
+“Why is each wrong answer NOT correct?”
+Outcome: Hard-cements conceptual differences.
+
+This is where knowledge becomes bulletproof.
+STEP 6 — Cognitive Compression (1-Sentence Rule)
+
+Goal: Create a mental shortcut.
+Question Type:
+
+“Summarize ___ in one sentence.”
+Outcome: Near-instant recall under exam pressure.
+🔷 
+THE THREE REQUIRED ANGLES
+
+Every CPRS batch MUST include all three.
+
+1. Functional Angle
+
+“What does it DO?”
+
+2. Comparative Angle
+
+“How is it different from similar services?”
+
+3. Situational Angle
+
+“When should I or should I NOT use it?”
+
+These match how Azure engineers think in the real world.
+🔶 
+THE MISDIRECTION RULESET
+
+This is what makes CPRS identical to Microsoft’s exam style.
+
+Distractor answers must be:
+Wrong — but almost right
+Correct sounding — until you catch the nuance
+Using Microsoft-favorite trap words
+Similar category but wrong scope
+Failing exactly one required condition
+
+Common Microsoft exam traps:
+Global vs Regional
+L4 vs L7
+Identity vs Access vs Policy
+Network routing vs network security
+Availability vs resiliency vs performance
+Private vs service endpoints
+RBAC vs NTFS vs share-level permissions
+
+CPRS uses all of these patterns.
+🧠 
+WHY CPRS WORKS (Based on Your Learning Profile)
+
+This system is perfect for you because you retain best when:
+You move through logical steps, not brute memorization
+You differentiate concepts clearly
+You see scenarios with misleads, not definitions
+You eliminate wrong options through reasoning
+You reinforce concepts from multiple angles
+You compress concepts into 1-sentence shortcuts
+
+This is tailored to your cognitive workflow.
+📝 
+FULL, FINAL PERMANENT DEFINITION (Copy/Paste This in Your Notes)
+
+Concept-Pathway Reinforcement System (CPRS)
+
+A structured questioning methodology that reinforces cloud concepts by progressively guiding the learner through six mastery stages: foundational purpose, precise definition, comparative differentiation, scenario-based application with realistic misdirection, elimination-style reasoning, and cognitive compression.
+Each CPRS question set covers functional, comparative, and situational angles to mimic real Microsoft exam logic and ensure deep, stable, long-term cloud understanding.

@@ -1308,6 +1308,9 @@
         <a href="#az104-objectives-section" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
           <i class="fas fa-tasks" style="color:#0078d4;"></i> Exam Objectives
         </a>
+        <a href="#cprs-generator-section" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
+          <i class="fas fa-brain" style="color:#9c27b0;"></i> CPRS Generator
+        </a>
         <a href="#performance-section" style="display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--bg-tertiary);border-radius:6px;text-decoration:none;color:var(--text-primary);font-size:13px;border:1px solid var(--border-color);transition:all 0.2s;">
           <i class="fas fa-chart-pie" style="color:#ff9800;"></i> Performance
         </a>
@@ -1769,11 +1772,15 @@
         }
         
         if (data.concepts && data.concepts.length > 0) {
-          brief += `--- CORRECTED CONCEPTS (${data.concepts.length} analyzed) ---\n\n`;
+          brief += `--- CPRS ANALYSIS (${data.concepts.length} concepts) ---\n\n`;
           data.concepts.forEach((c, i) => {
             brief += `${i + 1}. ${c.name.toUpperCase()}\n`;
+            if (c.foundation) brief += `   FOUNDATION: ${c.foundation}\n`;
+            if (c.definition) brief += `   DEFINITION: ${c.definition}\n`;
+            if (c.differentiation) brief += `   DIFFERENTIATION: ${c.differentiation}\n`;
             brief += `   FACT: ${c.correct_fact}\n`;
             if (c.why_wrong) brief += `   WHY YOU WERE WRONG: ${c.why_wrong}\n`;
+            if (c.compression) brief += `   MEMORY HOOK: ${c.compression}\n`;
             if (c.objective) brief += `   EXAM OBJECTIVE: ${c.objective}\n`;
             brief += '\n';
           });
@@ -1977,6 +1984,238 @@
       </div>
     </div>
   </div>
+
+  <!-- CPRS QUESTION GENERATOR -->
+  <div id="cprs-generator-section" class="accordion-section">
+    <div class="accordion-header" onclick="toggleAccordion('cprs-generator-content', this)">
+      <div class="accordion-title">
+        <i class="fas fa-brain" style="color:#9c27b0;"></i> CPRS Question Generator
+      </div>
+      <div class="accordion-meta">
+        <span style="font-size:12px;color:var(--text-muted);">6-step mastery for any concept</span>
+      </div>
+      <i class="fas fa-chevron-down accordion-chevron"></i>
+    </div>
+    <div id="cprs-generator-content" class="accordion-content">
+      <p style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;">
+        <i class="fas fa-graduation-cap" style="color:#9c27b0;margin-right:6px;"></i>
+        Enter any Azure concept to generate a complete CPRS (Concept-Pathway Reinforcement System) question set for exam mastery.
+      </p>
+      
+      <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <input type="text" id="cprs-concept-input" placeholder="e.g., VNet Peering, Azure Policy, Managed Identity..." style="flex:1;min-width:200px;padding:12px;border:1px solid var(--border-color);border-radius:8px;font-size:14px;background:var(--bg-secondary);color:var(--text-primary);">
+        <button id="cprs-generate-btn" style="padding:12px 20px;background:#9c27b0;color:#fff;border:0;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;white-space:nowrap;">
+          <i class="fas fa-magic"></i> Generate CPRS
+        </button>
+      </div>
+      
+      <div id="cprs-loading" style="display:none;padding:12px;background:#f3e5f5;border:1px solid #9c27b0;border-radius:6px;margin-bottom:12px;">
+        <i class="fas fa-spinner fa-spin" style="color:#9c27b0;margin-right:8px;"></i>
+        <span style="color:#6a1b9a;">Generating 6-step CPRS question set... This may take a moment.</span>
+      </div>
+      
+      <div id="cprs-stats" style="display:none;font-size:12px;color:var(--text-secondary);padding:8px 12px;background:var(--bg-tertiary);border-radius:6px;margin-bottom:12px;border:1px solid var(--border-color);"></div>
+      
+      <div id="cprs-output" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+          <h4 style="margin:0;font-size:14px;color:var(--text-primary);">
+            <i class="fas fa-list-ol" style="color:#9c27b0;margin-right:6px;"></i>CPRS Question Set
+          </h4>
+          <div style="display:flex;gap:8px;">
+            <button id="cprs-copy-anki-btn" style="padding:6px 12px;background:#ff9800;color:#fff;border:0;border-radius:4px;cursor:pointer;font-size:12px;">
+              <i class="fas fa-file-csv"></i> Copy for Anki
+            </button>
+            <button id="cprs-copy-all-btn" style="padding:6px 12px;background:#28a745;color:#fff;border:0;border-radius:4px;cursor:pointer;font-size:12px;">
+              <i class="fas fa-copy"></i> Copy All
+            </button>
+          </div>
+        </div>
+        <div id="cprs-content" style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:8px;padding:16px;font-size:13px;line-height:1.6;"></div>
+      </div>
+    </div>
+  </div>
+  
+  <script>
+  (function() {
+    async function generateCPRS(concept) {
+      const loadingEl = document.getElementById('cprs-loading');
+      const statsEl = document.getElementById('cprs-stats');
+      const outputEl = document.getElementById('cprs-output');
+      const contentEl = document.getElementById('cprs-content');
+      
+      if (!concept.trim()) {
+        statsEl.innerHTML = '<i class="fas fa-exclamation-triangle" style="color:#dc3545;margin-right:6px;"></i> Please enter an Azure concept.';
+        statsEl.style.display = 'block';
+        return;
+      }
+      
+      loadingEl.style.display = 'block';
+      statsEl.style.display = 'none';
+      outputEl.style.display = 'none';
+      
+      try {
+        const response = await fetch('/api/generate-cprs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ concept: concept })
+        });
+        
+        const data = await response.json();
+        loadingEl.style.display = 'none';
+        
+        if (data.error && !data.fallback) {
+          statsEl.innerHTML = `<i class="fas fa-exclamation-circle" style="color:#dc3545;margin-right:6px;"></i> Error: ${data.error}`;
+          statsEl.style.display = 'block';
+          return;
+        }
+        
+        if (data.fallback || !data.steps || data.steps.length === 0) {
+          statsEl.innerHTML = `<i class="fas fa-exclamation-circle" style="color:#ff9800;margin-right:6px;"></i> AI unavailable. Add OpenAI credits to generate CPRS content.`;
+          statsEl.style.display = 'block';
+          return;
+        }
+        
+        let html = '';
+        const stepColors = ['#0078d4', '#4caf50', '#ff9800', '#9c27b0', '#dc3545', '#00bcd4'];
+        const stepIcons = ['fa-foundation', 'fa-book', 'fa-not-equal', 'fa-question-circle', 'fa-times-circle', 'fa-compress'];
+        
+        data.steps.forEach((step, i) => {
+          const color = stepColors[i % stepColors.length];
+          html += `<div style="margin-bottom:16px;padding:14px;background:var(--bg-tertiary);border-radius:8px;border-left:4px solid ${color};">`;
+          html += `<div style="font-weight:600;color:${color};margin-bottom:8px;font-size:12px;text-transform:uppercase;">Step ${step.step}: ${step.name}</div>`;
+          
+          if (step.question) {
+            html += `<div style="font-weight:500;margin-bottom:6px;color:var(--text-primary);">Q: ${step.question}</div>`;
+          }
+          
+          if (step.answer) {
+            html += `<div style="color:var(--text-secondary);">A: ${step.answer}</div>`;
+          }
+          
+          if (step.compared_to) {
+            html += `<div style="color:var(--text-muted);font-size:12px;margin-top:4px;">Compared to: ${step.compared_to}</div>`;
+          }
+          
+          if (step.options) {
+            html += '<div style="margin-top:8px;">';
+            Object.entries(step.options).forEach(([key, val]) => {
+              const isCorrect = step.correct === key;
+              html += `<div style="padding:6px 10px;margin:4px 0;background:${isCorrect ? '#e8f5e9' : 'var(--bg-secondary)'};border-radius:4px;border:1px solid ${isCorrect ? '#4caf50' : 'var(--border-color)'};">`;
+              html += `<strong>${key}:</strong> ${val}`;
+              if (isCorrect) html += ' <i class="fas fa-check" style="color:#4caf50;margin-left:6px;"></i>';
+              html += '</div>';
+            });
+            html += '</div>';
+            if (step.explanation) {
+              html += `<div style="margin-top:8px;color:var(--text-secondary);font-size:12px;"><strong>Why:</strong> ${step.explanation}</div>`;
+            }
+          }
+          
+          if (step.wrong_answers) {
+            step.wrong_answers.forEach(wa => {
+              html += `<div style="margin-top:6px;padding:6px 10px;background:#ffebee;border-radius:4px;font-size:12px;">`;
+              html += `<strong style="color:#dc3545;">${wa.option}:</strong> ${wa.why_wrong}`;
+              html += '</div>';
+            });
+          }
+          
+          if (step.summary) {
+            html += `<div style="padding:10px;background:#e3f2fd;border-radius:6px;font-weight:500;color:#1565c0;">${step.summary}</div>`;
+          }
+          
+          html += '</div>';
+        });
+        
+        if (data.objective) {
+          html += `<div style="margin-top:12px;padding:10px;background:#fff3cd;border:1px solid #ffc107;border-radius:6px;font-size:12px;">`;
+          html += `<i class="fas fa-tag" style="color:#856404;margin-right:6px;"></i> <strong>Exam Objective:</strong> ${data.objective}`;
+          html += '</div>';
+        }
+        
+        if (data.guide_references && data.guide_references.length > 0) {
+          html += `<div style="margin-top:8px;font-size:12px;color:var(--text-muted);">`;
+          html += `<i class="fas fa-book-open" style="margin-right:6px;"></i> Study Guide: `;
+          data.guide_references.forEach(ref => {
+            html += `<a href="${ref.guide}" style="color:var(--azure-blue);">${ref.section}</a> `;
+          });
+          html += '</div>';
+        }
+        
+        contentEl.innerHTML = html;
+        contentEl.dataset.rawData = JSON.stringify(data);
+        outputEl.style.display = 'block';
+        
+        statsEl.innerHTML = `<i class="fas fa-brain" style="color:#9c27b0;margin-right:6px;"></i> Generated ${data.steps.length} CPRS steps for "${data.concept}"`;
+        statsEl.style.display = 'block';
+        
+      } catch (err) {
+        loadingEl.style.display = 'none';
+        statsEl.innerHTML = `<i class="fas fa-exclamation-circle" style="color:#dc3545;margin-right:6px;"></i> Connection error. Please try again.`;
+        statsEl.style.display = 'block';
+      }
+    }
+    
+    function formatForAnki(data) {
+      if (!data || !data.steps) return '';
+      let csv = 'Question,A,B,C,D,Correct,Explanation,Tags\n';
+      
+      data.steps.forEach(step => {
+        if (step.options && step.correct) {
+          const q = step.question.replace(/"/g, '""');
+          const opts = step.options;
+          const exp = (step.explanation || '').replace(/"/g, '""');
+          const tag = data.objective || 'CPRS';
+          csv += `"${q}","${opts.A || ''}","${opts.B || ''}","${opts.C || ''}","${opts.D || ''}","${step.correct}","${exp}","${tag}"\n`;
+        }
+      });
+      
+      return csv;
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+      const genBtn = document.getElementById('cprs-generate-btn');
+      const input = document.getElementById('cprs-concept-input');
+      const copyAllBtn = document.getElementById('cprs-copy-all-btn');
+      const copyAnkiBtn = document.getElementById('cprs-copy-anki-btn');
+      const contentEl = document.getElementById('cprs-content');
+      
+      if (genBtn) {
+        genBtn.addEventListener('click', () => generateCPRS(input.value));
+      }
+      
+      if (input) {
+        input.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter') generateCPRS(input.value);
+        });
+      }
+      
+      if (copyAllBtn) {
+        copyAllBtn.addEventListener('click', () => {
+          const text = contentEl.innerText;
+          navigator.clipboard.writeText(text).then(() => {
+            copyAllBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+            setTimeout(() => { copyAllBtn.innerHTML = '<i class="fas fa-copy"></i> Copy All'; }, 2000);
+          });
+        });
+      }
+      
+      if (copyAnkiBtn) {
+        copyAnkiBtn.addEventListener('click', () => {
+          try {
+            const data = JSON.parse(contentEl.dataset.rawData || '{}');
+            const csv = formatForAnki(data);
+            navigator.clipboard.writeText(csv).then(() => {
+              copyAnkiBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+              setTimeout(() => { copyAnkiBtn.innerHTML = '<i class="fas fa-file-csv"></i> Copy for Anki'; }, 2000);
+            });
+          } catch(e) {
+            alert('No Anki-compatible content available.');
+          }
+        });
+      }
+    });
+  })();
+  </script>
 
   <script>
   function toggleAccordion(contentId, headerEl) {
