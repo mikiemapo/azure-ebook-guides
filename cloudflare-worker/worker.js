@@ -80,10 +80,18 @@ function extractConceptsFromText(text) {
 function corsHeaders(origin) {
   return {
     "Access-Control-Allow-Origin": origin || "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
     "Content-Type": "application/json"
   };
+}
+
+function generateCacheKey(concept) {
+  return `cprs:${concept.toLowerCase().trim().replace(/\s+/g, '-')}`;
+}
+
+function generateUserId() {
+  return 'user_' + crypto.randomUUID();
 }
 
 async function callOpenAI(apiKey, messages, maxTokens = 2000) {
@@ -217,6 +225,16 @@ async function handleGenerateCPRS(request, env) {
 
     const guideRefs = findGuideReferences([concept]);
 
+    if (env.CPRS_CACHE) {
+      const cacheKey = generateCacheKey(concept);
+      const cached = await env.CPRS_CACHE.get(cacheKey, { type: "json" });
+      if (cached) {
+        cached.cached = true;
+        cached.guide_references = guideRefs;
+        return new Response(JSON.stringify(cached), { headers: corsHeaders(origin) });
+      }
+    }
+
     if (!env.OPENAI_API_KEY) {
       return new Response(JSON.stringify({
         fallback: true,
@@ -314,6 +332,11 @@ Format your response as JSON with ALL 6 questions as MCQs:
 
     result.guide_references = guideRefs;
 
+    if (env.CPRS_CACHE) {
+      const cacheKey = generateCacheKey(concept);
+      await env.CPRS_CACHE.put(cacheKey, JSON.stringify(result), { expirationTtl: 60 * 60 * 24 * 30 });
+    }
+
     return new Response(JSON.stringify(result), { headers: corsHeaders(origin) });
 
   } catch (e) {
@@ -324,6 +347,166 @@ Format your response as JSON with ALL 6 questions as MCQs:
       guide_references: [],
       questions: []
     }), { headers: corsHeaders(origin) });
+  }
+}
+
+async function handleSyncGet(request, env) {
+  const origin = request.headers.get("Origin");
+  const url = new URL(request.url);
+  const userId = url.searchParams.get("userId");
+
+  if (!userId) {
+    return new Response(JSON.stringify({ error: "userId required" }), {
+      status: 400,
+      headers: corsHeaders(origin)
+    });
+  }
+
+  if (!env.DB) {
+    return new Response(JSON.stringify({ error: "Database not configured" }), {
+      status: 503,
+      headers: corsHeaders(origin)
+    });
+  }
+
+  try {
+    const result = await env.DB.prepare(
+      "SELECT data, updated_at FROM user_scores WHERE user_id = ?"
+    ).bind(userId).first();
+
+    if (!result) {
+      return new Response(JSON.stringify({ found: false }), { headers: corsHeaders(origin) });
+    }
+
+    return new Response(JSON.stringify({
+      found: true,
+      data: JSON.parse(result.data),
+      updatedAt: result.updated_at
+    }), { headers: corsHeaders(origin) });
+
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: corsHeaders(origin)
+    });
+  }
+}
+
+async function handleSyncPut(request, env) {
+  const origin = request.headers.get("Origin");
+
+  try {
+    const body = await request.json();
+    const { userId, data } = body;
+
+    if (!userId || !data) {
+      return new Response(JSON.stringify({ error: "userId and data required" }), {
+        status: 400,
+        headers: corsHeaders(origin)
+      });
+    }
+
+    if (!env.DB) {
+      return new Response(JSON.stringify({ error: "Database not configured" }), {
+        status: 503,
+        headers: corsHeaders(origin)
+      });
+    }
+
+    const now = new Date().toISOString();
+    await env.DB.prepare(
+      `INSERT INTO user_scores (user_id, data, updated_at) 
+       VALUES (?, ?, ?) 
+       ON CONFLICT(user_id) DO UPDATE SET data = excluded.data, updated_at = excluded.updated_at`
+    ).bind(userId, JSON.stringify(data), now).run();
+
+    return new Response(JSON.stringify({ success: true, updatedAt: now }), { headers: corsHeaders(origin) });
+
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: corsHeaders(origin)
+    });
+  }
+}
+
+async function handleCreateUser(request, env) {
+  const origin = request.headers.get("Origin");
+  const userId = generateUserId();
+
+  return new Response(JSON.stringify({ userId }), { headers: corsHeaders(origin) });
+}
+
+async function handleGetAnkiDeck(request, env) {
+  const origin = request.headers.get("Origin");
+  const url = new URL(request.url);
+  const deckName = url.pathname.replace("/api/anki-decks/", "");
+
+  if (!deckName) {
+    return new Response(JSON.stringify({ error: "Deck name required" }), {
+      status: 400,
+      headers: corsHeaders(origin)
+    });
+  }
+
+  if (!env.ANKI_DECKS) {
+    return new Response(JSON.stringify({ error: "R2 storage not configured" }), {
+      status: 503,
+      headers: corsHeaders(origin)
+    });
+  }
+
+  try {
+    const object = await env.ANKI_DECKS.get(deckName);
+    
+    if (!object) {
+      return new Response(JSON.stringify({ error: "Deck not found" }), {
+        status: 404,
+        headers: corsHeaders(origin)
+      });
+    }
+
+    return new Response(object.body, {
+      headers: {
+        "Content-Type": "application/octet-stream",
+        "Content-Disposition": `attachment; filename="${deckName}"`,
+        "Access-Control-Allow-Origin": origin || "*"
+      }
+    });
+
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: corsHeaders(origin)
+    });
+  }
+}
+
+async function handleListAnkiDecks(request, env) {
+  const origin = request.headers.get("Origin");
+
+  if (!env.ANKI_DECKS) {
+    return new Response(JSON.stringify({ error: "R2 storage not configured" }), {
+      status: 503,
+      headers: corsHeaders(origin)
+    });
+  }
+
+  try {
+    const listed = await env.ANKI_DECKS.list();
+    const decks = listed.objects.map(obj => ({
+      name: obj.key,
+      size: obj.size,
+      uploaded: obj.uploaded
+    }));
+
+    return new Response(JSON.stringify({ decks }), { headers: corsHeaders(origin) });
+
+  } catch (e) {
+    return new Response(JSON.stringify({ error: e.message }), {
+      status: 500,
+      headers: corsHeaders(origin)
+    });
   }
 }
 
@@ -344,9 +527,43 @@ export default {
       return handleGenerateCPRS(request, env);
     }
 
+    if (url.pathname === "/api/sync" && request.method === "GET") {
+      return handleSyncGet(request, env);
+    }
+
+    if (url.pathname === "/api/sync" && request.method === "PUT") {
+      return handleSyncPut(request, env);
+    }
+
+    if (url.pathname === "/api/user" && request.method === "POST") {
+      return handleCreateUser(request, env);
+    }
+
+    if (url.pathname === "/api/anki-decks" && request.method === "GET") {
+      return handleListAnkiDecks(request, env);
+    }
+
+    if (url.pathname.startsWith("/api/anki-decks/") && request.method === "GET") {
+      return handleGetAnkiDeck(request, env);
+    }
+
     return new Response(JSON.stringify({
       status: "AZ-104 Study Hub API",
-      endpoints: ["/api/extract-concepts", "/api/generate-cprs"]
+      version: "2.0",
+      endpoints: [
+        "POST /api/extract-concepts",
+        "POST /api/generate-cprs",
+        "GET /api/sync?userId=xxx",
+        "PUT /api/sync",
+        "POST /api/user",
+        "GET /api/anki-decks",
+        "GET /api/anki-decks/:name"
+      ],
+      features: {
+        kvCaching: !!env.CPRS_CACHE,
+        d1Database: !!env.DB,
+        r2Storage: !!env.ANKI_DECKS
+      }
     }), { headers: corsHeaders(origin) });
   }
 };

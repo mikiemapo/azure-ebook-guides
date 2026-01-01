@@ -4,3 +4,15 @@ compatibility_date = "2024-01-01"
 
 [vars]
 
+[[kv_namespaces]]
+binding = "CPRS_CACHE"
+id = "REPLACE_WITH_YOUR_KV_NAMESPACE_ID"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "az104-study-db"
+database_id = "REPLACE_WITH_YOUR_D1_DATABASE_ID"
+
+[[r2_buckets]]
+binding = "ANKI_DECKS"
+bucket_name = "az104-anki-decks"
