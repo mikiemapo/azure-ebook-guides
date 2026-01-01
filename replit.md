@@ -11,6 +11,10 @@ This is a static HTML website containing 86+ interactive study guides for the Mi
 - `tools/` - Python scripts for deck generation
 - `reports/` - Analysis and tracking reports
 - `server.py` - Flask server with API endpoints and static file serving
+- `cloudflare-worker/` - Serverless API for GitHub Pages deployment
+  - `worker.js` - Cloudflare Worker with /api/extract-concepts and /api/generate-cprs
+  - `wrangler.toml` - Worker configuration
+- `DEPLOYMENT.md` - Step-by-step GitHub Pages deployment guide
 
 ## Running the Project
 The project runs a Flask server that serves the `docs/` directory on port 5000 and provides API endpoints:
@@ -30,7 +34,17 @@ python server.py
 - `OPENAI_API_KEY` - OpenAI API key for AI-powered concept extraction (optional - fallback mode works without it)
 
 ## Deployment
-Configured as a static site deployment serving the `docs/` directory.
+Two deployment options available:
+
+### Local Development (Replit)
+- Flask server on port 5000 serves static files and API endpoints
+- `api-config.js` has empty `baseUrl` to use local server
+
+### GitHub Pages + Cloudflare Workers (Production)
+- See `DEPLOYMENT.md` for complete setup instructions
+- Static files deployed to GitHub Pages (free)
+- API endpoints on Cloudflare Workers (free, 100K req/day)
+- Update `docs/api-config.js` with Worker URL for production
 
 ## Key Features
 - Interactive collapsible cards with CSS animations
