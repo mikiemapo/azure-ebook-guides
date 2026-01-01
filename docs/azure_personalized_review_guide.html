@@ -1250,6 +1250,52 @@
                 <label for="score-editor-autocollapse" style="font-size:11px;color:#666;cursor:pointer;">Auto-collapse domains</label>
               </div>
               
+              <!-- Cloud Sync Section -->
+              <div style="border-top:1px solid #eee;padding-top:10px;margin-bottom:10px;">
+                <button id="cloud-sync-toggle" style="background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);border:0;padding:8px 12px;border-radius:4px;cursor:pointer;font-size:11px;color:#fff;width:100%;font-weight:600;">
+                  <i class="fas fa-cloud"></i> Cloud Sync
+                </button>
+                <div id="cloud-sync-area" style="display:none;margin-top:8px;padding:10px;background:#fff;border-radius:6px;border:1px solid #e0e0e0;">
+                  <div id="sync-not-connected" style="text-align:center;">
+                    <p style="font-size:11px;color:#666;margin:0 0 10px 0;">Sync your scores across devices</p>
+                    <button id="sync-create-id" style="background:#667eea;color:#fff;border:0;padding:8px 16px;border-radius:4px;cursor:pointer;font-size:12px;width:100%;">
+                      <i class="fas fa-plus"></i> Create Sync ID
+                    </button>
+                    <div style="margin-top:10px;padding-top:10px;border-top:1px solid #eee;">
+                      <p style="font-size:10px;color:#888;margin:0 0 6px 0;">Or enter existing ID:</p>
+                      <input id="sync-existing-id" type="text" placeholder="user_xxxxxxxx-xxxx-xxxx-xxxx" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:4px;font-size:10px;box-sizing:border-box;margin-bottom:6px;font-family:monospace;" />
+                      <button id="sync-use-existing" style="background:#28a745;color:#fff;border:0;padding:6px 12px;border-radius:4px;cursor:pointer;font-size:11px;width:100%;">
+                        <i class="fas fa-link"></i> Connect
+                      </button>
+                    </div>
+                  </div>
+                  <div id="sync-connected" style="display:none;">
+                    <div style="display:flex;align-items:center;gap:6px;margin-bottom:8px;">
+                      <i class="fas fa-check-circle" style="color:#28a745;"></i>
+                      <span style="font-size:11px;color:#333;font-weight:600;">Connected</span>
+                    </div>
+                    <div style="font-size:10px;color:#666;margin-bottom:8px;word-break:break-all;font-family:monospace;background:#f5f5f5;padding:6px;border-radius:4px;">
+                      <span id="sync-user-id-display"></span>
+                      <button id="sync-copy-id" style="background:#e0e0e0;border:0;padding:2px 6px;border-radius:3px;cursor:pointer;font-size:9px;margin-left:4px;" title="Copy ID">
+                        <i class="fas fa-copy"></i>
+                      </button>
+                    </div>
+                    <div style="display:flex;gap:6px;">
+                      <button id="sync-push" style="flex:1;background:#3498db;color:#fff;border:0;padding:8px;border-radius:4px;cursor:pointer;font-size:11px;">
+                        <i class="fas fa-cloud-upload-alt"></i> Push
+                      </button>
+                      <button id="sync-pull" style="flex:1;background:#27ae60;color:#fff;border:0;padding:8px;border-radius:4px;cursor:pointer;font-size:11px;">
+                        <i class="fas fa-cloud-download-alt"></i> Pull
+                      </button>
+                    </div>
+                    <p id="sync-status" style="font-size:10px;color:#666;margin:8px 0 0 0;text-align:center;"></p>
+                    <button id="sync-disconnect" style="background:none;border:0;color:#dc3545;cursor:pointer;font-size:10px;margin-top:8px;width:100%;text-align:center;">
+                      <i class="fas fa-unlink"></i> Disconnect
+                    </button>
+                  </div>
+                </div>
+              </div>
+              
               <!-- Debug Toggle -->
               <div style="border-top:1px solid #eee;padding-top:10px;">
                 <button id="debug-toggle" style="background:#f0f0f0;border:0;padding:6px 10px;border-radius:4px;cursor:pointer;font-size:11px;color:#666;width:100%;">
@@ -3935,6 +3981,229 @@
             const blendTipBtn = document.getElementById('blend-tip-btn');
             const blendTip = document.getElementById('blend-tip');
             if (blendTipBtn && blendTip) blendTipBtn.addEventListener('click', () => { blendTip.style.display = blendTip.style.display === 'none' ? 'block' : 'none'; });
+
+            // --- Cloud Sync Functionality ---
+            const SYNC_USER_KEY = 'az104SyncUserId';
+            const apiBase = (window.AZ104_API_CONFIG && window.AZ104_API_CONFIG.baseUrl) || '';
+            
+            function getSyncUserId() {
+              return localStorage.getItem(SYNC_USER_KEY);
+            }
+            
+            function setSyncUserId(userId) {
+              localStorage.setItem(SYNC_USER_KEY, userId);
+            }
+            
+            function clearSyncUserId() {
+              localStorage.removeItem(SYNC_USER_KEY);
+            }
+            
+            function updateSyncUI() {
+              const userId = getSyncUserId();
+              const notConnected = document.getElementById('sync-not-connected');
+              const connected = document.getElementById('sync-connected');
+              const userIdDisplay = document.getElementById('sync-user-id-display');
+              
+              if (userId) {
+                if (notConnected) notConnected.style.display = 'none';
+                if (connected) connected.style.display = 'block';
+                if (userIdDisplay) userIdDisplay.textContent = userId;
+              } else {
+                if (notConnected) notConnected.style.display = 'block';
+                if (connected) connected.style.display = 'none';
+              }
+            }
+            
+            function setSyncStatus(message, isError = false) {
+              const statusEl = document.getElementById('sync-status');
+              if (statusEl) {
+                statusEl.textContent = message;
+                statusEl.style.color = isError ? '#dc3545' : '#28a745';
+              }
+            }
+            
+            // Toggle cloud sync panel
+            const cloudSyncToggle = document.getElementById('cloud-sync-toggle');
+            const cloudSyncArea = document.getElementById('cloud-sync-area');
+            if (cloudSyncToggle && cloudSyncArea) {
+              cloudSyncToggle.addEventListener('click', () => {
+                cloudSyncArea.style.display = cloudSyncArea.style.display === 'none' ? 'block' : 'none';
+                updateSyncUI();
+              });
+            }
+            
+            // Create new sync ID
+            const createIdBtn = document.getElementById('sync-create-id');
+            if (createIdBtn) {
+              createIdBtn.addEventListener('click', async () => {
+                try {
+                  createIdBtn.disabled = true;
+                  createIdBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating...';
+                  
+                  const response = await fetch(apiBase + '/api/user', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                  });
+                  
+                  const data = await response.json();
+                  if (data.userId) {
+                    setSyncUserId(data.userId);
+                    updateSyncUI();
+                    showToast('Sync ID created! Save this ID to sync on other devices.');
+                  } else {
+                    throw new Error(data.error || 'Failed to create ID');
+                  }
+                } catch (e) {
+                  showToast('Failed to create sync ID: ' + e.message);
+                } finally {
+                  createIdBtn.disabled = false;
+                  createIdBtn.innerHTML = '<i class="fas fa-plus"></i> Create Sync ID';
+                }
+              });
+            }
+            
+            // Use existing sync ID
+            const useExistingBtn = document.getElementById('sync-use-existing');
+            const existingIdInput = document.getElementById('sync-existing-id');
+            if (useExistingBtn && existingIdInput) {
+              useExistingBtn.addEventListener('click', () => {
+                const userId = existingIdInput.value.trim();
+                if (!userId) {
+                  showToast('Please enter a sync ID');
+                  return;
+                }
+                if (!userId.startsWith('user_')) {
+                  showToast('Invalid sync ID format');
+                  return;
+                }
+                setSyncUserId(userId);
+                updateSyncUI();
+                showToast('Connected to sync ID');
+              });
+            }
+            
+            // Copy sync ID
+            const copyIdBtn = document.getElementById('sync-copy-id');
+            if (copyIdBtn) {
+              copyIdBtn.addEventListener('click', () => {
+                const userId = getSyncUserId();
+                if (userId) {
+                  navigator.clipboard.writeText(userId).then(() => {
+                    showToast('Sync ID copied to clipboard');
+                  }).catch(() => {
+                    showToast('Failed to copy');
+                  });
+                }
+              });
+            }
+            
+            // Push scores to cloud
+            const pushBtn = document.getElementById('sync-push');
+            if (pushBtn) {
+              pushBtn.addEventListener('click', async () => {
+                const userId = getSyncUserId();
+                if (!userId) return;
+                
+                try {
+                  pushBtn.disabled = true;
+                  pushBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                  
+                  const syncData = {
+                    mergedQuizScores: JSON.parse(localStorage.getItem('mergedQuizScores') || '{}'),
+                    domainScoreMetadata: JSON.parse(localStorage.getItem('domainScoreMetadata') || '{}'),
+                    mergedQuizHistory: JSON.parse(localStorage.getItem('mergedQuizHistory') || '[]'),
+                    sourceRotationData: JSON.parse(localStorage.getItem('sourceRotationData') || '{}')
+                  };
+                  
+                  const response = await fetch(apiBase + '/api/sync', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ userId, data: syncData })
+                  });
+                  
+                  const result = await response.json();
+                  if (result.success) {
+                    setSyncStatus('Pushed at ' + new Date().toLocaleTimeString());
+                    showToast('Scores pushed to cloud');
+                  } else {
+                    throw new Error(result.error || 'Push failed');
+                  }
+                } catch (e) {
+                  setSyncStatus('Push failed: ' + e.message, true);
+                  showToast('Failed to push: ' + e.message);
+                } finally {
+                  pushBtn.disabled = false;
+                  pushBtn.innerHTML = '<i class="fas fa-cloud-upload-alt"></i> Push';
+                }
+              });
+            }
+            
+            // Pull scores from cloud
+            const pullBtn = document.getElementById('sync-pull');
+            if (pullBtn) {
+              pullBtn.addEventListener('click', async () => {
+                const userId = getSyncUserId();
+                if (!userId) return;
+                
+                try {
+                  pullBtn.disabled = true;
+                  pullBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                  
+                  const response = await fetch(apiBase + '/api/sync?userId=' + encodeURIComponent(userId));
+                  const result = await response.json();
+                  
+                  if (!result.found) {
+                    setSyncStatus('No data found in cloud', true);
+                    showToast('No cloud data found - push first');
+                    return;
+                  }
+                  
+                  const cloudData = result.data;
+                  if (cloudData.mergedQuizScores) {
+                    localStorage.setItem('mergedQuizScores', JSON.stringify(cloudData.mergedQuizScores));
+                    Object.keys(cloudData.mergedQuizScores).forEach(k => {
+                      mergedQuizScores[k] = cloudData.mergedQuizScores[k];
+                    });
+                  }
+                  if (cloudData.domainScoreMetadata) {
+                    localStorage.setItem('domainScoreMetadata', JSON.stringify(cloudData.domainScoreMetadata));
+                  }
+                  if (cloudData.mergedQuizHistory) {
+                    localStorage.setItem('mergedQuizHistory', JSON.stringify(cloudData.mergedQuizHistory));
+                  }
+                  if (cloudData.sourceRotationData) {
+                    localStorage.setItem('sourceRotationData', JSON.stringify(cloudData.sourceRotationData));
+                  }
+                  
+                  renderDomainProgress();
+                  updateNextStepsTracker();
+                  setSyncStatus('Pulled at ' + new Date().toLocaleTimeString());
+                  showToast('Scores pulled from cloud');
+                  
+                } catch (e) {
+                  setSyncStatus('Pull failed: ' + e.message, true);
+                  showToast('Failed to pull: ' + e.message);
+                } finally {
+                  pullBtn.disabled = false;
+                  pullBtn.innerHTML = '<i class="fas fa-cloud-download-alt"></i> Pull';
+                }
+              });
+            }
+            
+            // Disconnect
+            const disconnectBtn = document.getElementById('sync-disconnect');
+            if (disconnectBtn) {
+              disconnectBtn.addEventListener('click', () => {
+                if (confirm('Disconnect from cloud sync? Your local data will remain.')) {
+                  clearSyncUserId();
+                  updateSyncUI();
+                  showToast('Disconnected from cloud sync');
+                }
+              });
+            }
+            
+            // Initialize sync UI on load
+            updateSyncUI();
 
             // Save: open confirmation modal; actual save happens on confirm
             saveBtn.addEventListener('click', () => {
