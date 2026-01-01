@@ -54,6 +54,9 @@ vmTest*.rdp
 __pycache__/
 *.pyc
 
+# Local sync data (user scores)
+.sync_data/
+
 # System files
 .DS_Store
 .vscode/
