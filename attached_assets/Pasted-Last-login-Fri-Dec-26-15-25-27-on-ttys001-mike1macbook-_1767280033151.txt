@@ -1,0 +1,93 @@
+Last login: Fri Dec 26 15:25:27 on ttys001
+mike1macbook@Mike-14-M1-Pro ~ % checkaudio
+Checking for rogue HAL audio drivers...
+✅ No rogue audio drivers found. FaceTime safe to use!
+mike1macbook@Mike-14-M1-Pro ~ % 
+  [Restored Dec 26, 2025 at 17:15:55]
+Last login: Fri Dec 26 17:15:36 on console
+Restored session: Fri Dec 26 16:54:16 EST 2025
+mike1macbook@Mike-14-M1-Pro ~ % 
+  [Restored Jan 1, 2026 at 10:03:53]
+Last login: Thu Jan  1 09:41:05 on console
+Restored session: Fri Dec 26 17:28:23 EST 2025
+mike1macbook@Mike-14-M1-Pro ~ % checkaudio
+Checking for rogue HAL audio drivers...
+✅ No rogue audio drivers found. FaceTime safe to use!
+mike1macbook@Mike-14-M1-Pro ~ % npm install -g wrangler
+
+added 47 packages in 19s
+
+9 packages are looking for funding
+  run `npm fund` for details
+npm notice
+npm notice New major version of npm available! 10.8.2 -> 11.7.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v11.7.0
+npm notice To update run: npm install -g npm@11.7.0
+npm notice
+mike1macbook@Mike-14-M1-Pro ~ % npm install -g wrangler
+wrangler login
+cd path/to/cloudflare-worker
+wrangler deploy
+wrangler secret put OPENAI_API_KEY
+
+changed 47 packages in 6s
+
+9 packages are looking for funding
+  run `npm fund` for details
+
+ ⛅️ wrangler 4.54.0
+───────────────────
+Attempting to login via OAuth...
+Opening a link in your default browser: https://dash.cloudflare.com/oauth2/auth?response_type=code&client_id=54d11594-84e4-41aa-b438-e81b8fa78ee7&redirect_uri=http%3A%2F%2Flocalhost%3A8976%2Foauth%2Fcallback&scope=account%3Aread%20user%3Aread%20workers%3Awrite%20workers_kv%3Awrite%20workers_routes%3Awrite%20workers_scripts%3Awrite%20workers_tail%3Aread%20d1%3Awrite%20pages%3Awrite%20zone%3Aread%20ssl_certs%3Awrite%20ai%3Awrite%20queues%3Awrite%20pipelines%3Awrite%20secrets_store%3Awrite%20containers%3Awrite%20cloudchamber%3Awrite%20connectivity%3Aadmin%20offline_access&state=SYDGUjUZTnTi~0H-Lfagdb6YH170aTaN&code_challenge=kLS73D75BkzrIW4n4fFr7cwSm7k_h1TG5kTdG59Eiz4&code_challenge_method=S256
+Successfully logged in.
+cd: no such file or directory: path/to/cloudflare-worker
+
+Cloudflare collects anonymous telemetry about your usage of Wrangler. Learn more at https://github.com/cloudflare/workers-sdk/tree/main/packages/wrangler/telemetry.md
+
+ ⛅️ wrangler 4.54.0
+───────────────────
+
+✘ [ERROR] Missing entry-point to Worker script or to assets directory
+
+  
+  If there is code to deploy, you can either:
+  - Specify an entry-point to your Worker script via the command line (ex: `npx
+  wrangler deploy src/index.ts`)
+  - Or create a "wrangler.jsonc" file containing:
+  
+  ```
+  {
+    "name": "worker-name",
+    "compatibility_date": "2026-01-01",
+    "main": "src/index.ts"
+  }
+  ```
+  
+  
+  If are uploading a directory of assets, you can either:
+  - Specify the path to the directory of assets via the command line: (ex: `npx
+  wrangler deploy --assets=./dist`)
+  - Or create a "wrangler.jsonc" file containing:
+  
+  ```
+  {
+    "name": "worker-name",
+    "compatibility_date": "2026-01-01",
+    "assets": {
+      "directory": "./dist"
+    }
+  }
+  ```
+  
+
+
+🪵  Logs were written to "/Users/mike1macbook/Library/Preferences/.wrangler/logs/wrangler-2026-01-01_15-06-49_813.log"
+
+ ⛅️ wrangler 4.54.0
+───────────────────
+
+✘ [ERROR] Required Worker name missing. Please specify the Worker name in your Wrangler configuration file, or pass it as an argument with `--name <worker-name>`
+
+
+🪵  Logs were written to "/Users/mike1macbook/Library/Preferences/.wrangler/logs/wrangler-2026-01-01_15-06-50_604.log"
+mike1macbook@Mike-14-M1-Pro ~ % 
