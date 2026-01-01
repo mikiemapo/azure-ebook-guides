@@ -4158,20 +4158,28 @@
                     return;
                   }
                   
-                  const cloudData = result.data;
-                  if (cloudData.mergedQuizScores) {
+                  let cloudData = result.data;
+                  
+                  // Handle case where data might be double-stringified
+                  if (typeof cloudData === 'string') {
+                    try { cloudData = JSON.parse(cloudData); } catch(e) {}
+                  }
+                  
+                  if (cloudData && typeof cloudData.mergedQuizScores === 'object' && cloudData.mergedQuizScores !== null) {
                     localStorage.setItem('mergedQuizScores', JSON.stringify(cloudData.mergedQuizScores));
                     Object.keys(cloudData.mergedQuizScores).forEach(k => {
-                      mergedQuizScores[k] = cloudData.mergedQuizScores[k];
+                      if (typeof cloudData.mergedQuizScores[k] === 'object') {
+                        mergedQuizScores[k] = cloudData.mergedQuizScores[k];
+                      }
                     });
                   }
-                  if (cloudData.domainScoreMetadata) {
+                  if (cloudData && typeof cloudData.domainScoreMetadata === 'object') {
                     localStorage.setItem('domainScoreMetadata', JSON.stringify(cloudData.domainScoreMetadata));
                   }
-                  if (cloudData.mergedQuizHistory) {
+                  if (cloudData && Array.isArray(cloudData.mergedQuizHistory)) {
                     localStorage.setItem('mergedQuizHistory', JSON.stringify(cloudData.mergedQuizHistory));
                   }
-                  if (cloudData.sourceRotationData) {
+                  if (cloudData && typeof cloudData.sourceRotationData === 'object') {
                     localStorage.setItem('sourceRotationData', JSON.stringify(cloudData.sourceRotationData));
                   }
                   
