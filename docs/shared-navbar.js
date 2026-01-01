@@ -100,6 +100,9 @@
           <i class="fas fa-layer-group"></i>
           <span>Library</span>
         </a>
+        <button class="navbar-tool-btn theme-toggle-nav" id="navbar-theme-toggle" title="Toggle dark/light mode">
+          <i class="fas fa-moon"></i>
+        </button>
       </div>
     </nav>
   `;
@@ -245,6 +248,29 @@
 
     const searchInput = document.getElementById('navbar-search-input');
     const searchResults = document.getElementById('navbar-search-results');
+
+    // Theme toggle functionality
+    const themeToggle = document.getElementById('navbar-theme-toggle');
+    if (themeToggle) {
+      function updateThemeIcon() {
+        const isDark = document.body.classList.contains('dark-mode');
+        themeToggle.innerHTML = isDark ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+      }
+      
+      themeToggle.addEventListener('click', function() {
+        document.body.classList.toggle('dark-mode');
+        const isDark = document.body.classList.contains('dark-mode');
+        localStorage.setItem('az104-theme', isDark ? 'dark' : 'light');
+        updateThemeIcon();
+      });
+      
+      // Initialize from localStorage
+      const savedTheme = localStorage.getItem('az104-theme');
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+      }
+      updateThemeIcon();
+    }
 
     if (searchInput && searchResults) {
       function showPersonalizedSuggestions() {
