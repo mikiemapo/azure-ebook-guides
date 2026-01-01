@@ -1,29 +1,68 @@
 (function() {
   const guidePages = [
-    { name: "ARM Templates", url: "arm_templates_guide.html", tags: "arm json deployment infrastructure" },
-    { name: "Azure CLI & PowerShell", url: "azure_cli_ps_guide.html", tags: "cli powershell az commands" },
-    { name: "Compute Options", url: "azure_compute_options_guide.html", tags: "vm vmss compute" },
-    { name: "VNet Peering", url: "azure_vnet_peering_guide.html", tags: "networking peering virtual network" },
-    { name: "Storage Accounts", url: "azure_storage_accounts_guide.html", tags: "storage blob file queue table" },
-    { name: "Azure DNS", url: "azure_dns_services_guide.html", tags: "dns zones records" },
-    { name: "Load Balancer", url: "azure_load_balancer_guide.html", tags: "lb networking traffic" },
-    { name: "App Gateway", url: "azure_application_gateway_guide.html", tags: "waf layer7 gateway" },
-    { name: "NSG & ASG", url: "azure_nsg_asg_guide.html", tags: "security rules firewall" },
-    { name: "Azure Policy", url: "azure_policy_guide.html", tags: "governance compliance" },
-    { name: "RBAC", url: "azure_rbac_guide.html", tags: "roles permissions access" },
-    { name: "Azure Backup", url: "azure_backup_guide.html", tags: "backup recovery vault" },
-    { name: "Azure Monitor", url: "azure_monitor_guide.html", tags: "monitoring logs alerts" },
-    { name: "App Service", url: "azure_app_service_guide.html", tags: "webapp paas deployment" },
-    { name: "Container Instances", url: "azure_aci_container_groups_guide.html", tags: "aci containers docker" },
-    { name: "Docker Concepts", url: "azure_docker_concepts_guide.html", tags: "docker containers" },
-    { name: "Disaster Recovery", url: "azure_disaster_recovery_comprehensive_guide.html", tags: "dr asr backup" },
-    { name: "VM CLI Lab", url: "az104_vm_cli_lab_guide.html", tags: "vm lab cli" },
-    { name: "VNet Peering Lab", url: "az104_vnet_peering_cli_lab_guide.html", tags: "vnet peering lab" },
-    { name: "Identities Quiz", url: "azure_identities_vca_quiz.html", tags: "quiz identities entra" },
-    { name: "Storage Quiz", url: "azure_storage_vca_quiz.html", tags: "quiz storage" },
-    { name: "Compute Quiz", url: "azure_compute_vca_quiz.html", tags: "quiz compute vm" },
-    { name: "Networking Quiz", url: "azure_networking_vca_quiz.html", tags: "quiz networking" }
+    { name: "ARM Templates", url: "arm_templates_guide.html", tags: "arm json deployment infrastructure", domain: "Compute" },
+    { name: "Azure CLI & PowerShell", url: "azure_cli_ps_guide.html", tags: "cli powershell az commands", domain: null },
+    { name: "Compute Options", url: "azure_compute_options_guide.html", tags: "vm vmss compute scale sets", domain: "Compute" },
+    { name: "VNet Peering", url: "azure_vnet_peering_guide.html", tags: "networking peering virtual network vnet", domain: "Networking" },
+    { name: "Storage Accounts", url: "azure_storage_accounts_guide.html", tags: "storage blob file queue table", domain: "Storage" },
+    { name: "Azure DNS", url: "azure_dns_services_guide.html", tags: "dns zones records networking", domain: "Networking" },
+    { name: "Load Balancer", url: "azure_load_balancer_guide.html", tags: "lb networking traffic load balancer", domain: "Networking" },
+    { name: "App Gateway", url: "azure_application_gateway_guide.html", tags: "waf layer7 gateway application", domain: "Networking" },
+    { name: "NSG & ASG", url: "azure_nsg_asg_guide.html", tags: "security rules firewall nsg asg", domain: "Networking" },
+    { name: "Azure Policy", url: "azure_policy_guide.html", tags: "governance compliance policy", domain: "Identities" },
+    { name: "RBAC", url: "azure_rbac_guide.html", tags: "roles permissions access rbac identity", domain: "Identities" },
+    { name: "Azure Backup", url: "azure_backup_guide.html", tags: "backup recovery vault", domain: "Monitoring" },
+    { name: "Azure Monitor", url: "azure_monitor_guide.html", tags: "monitoring logs alerts metrics", domain: "Monitoring" },
+    { name: "App Service", url: "azure_app_service_guide.html", tags: "webapp paas deployment app service", domain: "App Service & Containers" },
+    { name: "Container Instances", url: "azure_aci_container_groups_guide.html", tags: "aci containers docker", domain: "App Service & Containers" },
+    { name: "Docker Concepts", url: "azure_docker_concepts_guide.html", tags: "docker containers", domain: "App Service & Containers" },
+    { name: "Disaster Recovery", url: "azure_disaster_recovery_comprehensive_guide.html", tags: "dr asr backup disaster recovery", domain: "Monitoring" },
+    { name: "VM CLI Lab", url: "az104_vm_cli_lab_guide.html", tags: "vm lab cli virtual machine", domain: "Compute" },
+    { name: "VNet Peering Lab", url: "az104_vnet_peering_cli_lab_guide.html", tags: "vnet peering lab networking", domain: "Networking" },
+    { name: "Identities Quiz", url: "azure_identities_vca_quiz.html", tags: "quiz identities entra rbac policy", domain: "Identities" },
+    { name: "Storage Quiz", url: "azure_storage_vca_quiz.html", tags: "quiz storage blob replication", domain: "Storage" },
+    { name: "Compute Quiz", url: "azure_compute_vca_quiz.html", tags: "quiz compute vm scale sets", domain: "Compute" },
+    { name: "Networking Quiz", url: "azure_networking_vca_quiz.html", tags: "quiz networking vnet nsg", domain: "Networking" },
+    { name: "Storage Replication", url: "azure_storage_replication_rto_rpo_guide.html", tags: "storage replication rto rpo lrs grs zrs", domain: "Storage" },
+    { name: "Entra ID", url: "azure_entra_id_guide.html", tags: "entra id azure ad identity authentication", domain: "Identities" },
+    { name: "Virtual Machines", url: "azure_virtual_machines_guide.html", tags: "vm virtual machine compute", domain: "Compute" },
+    { name: "Personalized Review", url: "azure_personalized_review_guide.html", tags: "review scores progress weak points", domain: null }
   ];
+
+  function getWeakDomains() {
+    try {
+      const scores = JSON.parse(localStorage.getItem('mergedQuizScores') || '{}');
+      const domainScores = [];
+      for (const [domain, data] of Object.entries(scores)) {
+        if (data && data.total > 0) {
+          const pct = Math.round((data.correct / data.total) * 100);
+          domainScores.push({ domain, pct, correct: data.correct, total: data.total });
+        }
+      }
+      domainScores.sort((a, b) => a.pct - b.pct);
+      return domainScores.slice(0, 2);
+    } catch (e) {
+      return [];
+    }
+  }
+
+  function getPersonalizedSuggestions() {
+    const weakDomains = getWeakDomains();
+    if (weakDomains.length === 0) return [];
+    
+    const suggestions = [];
+    for (const weak of weakDomains) {
+      const domainGuides = guidePages.filter(g => g.domain === weak.domain).slice(0, 2);
+      for (const guide of domainGuides) {
+        suggestions.push({
+          ...guide,
+          reason: `${weak.domain} (${weak.pct}%)`,
+          isPersonalized: true
+        });
+      }
+    }
+    return suggestions.slice(0, 4);
+  }
 
   const currentPage = window.location.pathname.split('/').pop() || 'index.html';
   
@@ -149,6 +188,9 @@
       .search-result-item:hover { background: rgba(255,255,255,0.1); }
       .search-result-item:last-child { border-bottom: none; }
       .search-result-item i { margin-right: 8px; color: #60a5fa; }
+      .search-result-item.personalized { border-left: 3px solid #f59e0b; }
+      .search-result-item .result-reason { font-size: 11px; color: #f59e0b; margin-left: 8px; }
+      .search-section-header { padding: 8px 12px; font-size: 11px; color: #f59e0b; text-transform: uppercase; font-weight: 600; background: rgba(245,158,11,0.1); }
       .no-results {
         padding: 12px;
         color: rgba(255,255,255,0.6);
@@ -205,10 +247,27 @@
     const searchResults = document.getElementById('navbar-search-results');
 
     if (searchInput && searchResults) {
+      function showPersonalizedSuggestions() {
+        const personalized = getPersonalizedSuggestions();
+        if (personalized.length > 0) {
+          let html = '<div class="search-section-header"><i class="fas fa-bullseye"></i> Focus on weak areas</div>';
+          html += personalized.map(page => 
+            `<a href="${page.url}" class="search-result-item personalized">
+              <i class="fas fa-fire"></i>${page.name}<span class="result-reason">${page.reason}</span>
+            </a>`
+          ).join('');
+          searchResults.innerHTML = html;
+          searchResults.classList.add('active');
+        } else {
+          searchResults.innerHTML = '';
+          searchResults.classList.remove('active');
+        }
+      }
+
       searchInput.addEventListener('input', function() {
         const query = this.value.toLowerCase().trim();
         if (query.length < 2) {
-          searchResults.classList.remove('active');
+          showPersonalizedSuggestions();
           return;
         }
 
@@ -236,6 +295,8 @@
       searchInput.addEventListener('focus', function() {
         if (this.value.length >= 2) {
           searchResults.classList.add('active');
+        } else {
+          showPersonalizedSuggestions();
         }
       });
     }
