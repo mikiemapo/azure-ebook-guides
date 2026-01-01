@@ -111,31 +111,38 @@
   const navbarCSS = `
     <style id="az104-navbar-styles">
       .az104-shared-navbar {
-        position: sticky;
-        top: 0;
-        z-index: 9999;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 8px 16px;
-        background: linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        flex-wrap: wrap;
-        gap: 10px;
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        position: fixed !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 9999 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        padding: 10px 20px !important;
+        background: linear-gradient(135deg, #1e3a5f 0%, #0d2137 100%) !important;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2) !important;
+        flex-wrap: nowrap !important;
+        gap: 12px !important;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        height: 50px !important;
+        min-height: 50px !important;
+        max-height: 50px !important;
       }
-      .az104-shared-navbar * { box-sizing: border-box; }
+      body { padding-top: 60px !important; }
+      .az104-shared-navbar * { box-sizing: border-box !important; }
       .navbar-brand a {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        color: #fff;
-        text-decoration: none;
-        font-weight: 700;
-        font-size: 1em;
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        color: #fff !important;
+        text-decoration: none !important;
+        font-weight: 700 !important;
+        font-size: 1em !important;
+        white-space: nowrap !important;
       }
-      .navbar-brand i { color: #60a5fa; font-size: 1.1em; }
-      .navbar-search { flex: 1; max-width: 300px; min-width: 150px; }
+      .navbar-brand i { color: #60a5fa !important; font-size: 1.1em !important; }
+      .navbar-search { flex: 1 !important; max-width: 300px !important; min-width: 120px !important; }
       .search-container {
         position: relative;
         width: 100%;
@@ -231,12 +238,17 @@
       }
       .navbar-tool-btn i { font-size: 12px; }
       @media (max-width: 600px) {
-        .az104-shared-navbar { padding: 8px 10px; }
-        .navbar-tool-btn span { display: none; }
-        .navbar-tool-btn { padding: 8px; }
-        .navbar-tool-btn i { font-size: 14px; }
-        .navbar-search { order: 3; flex-basis: 100%; max-width: 100%; }
-        .navbar-brand span { display: none; }
+        .az104-shared-navbar { 
+          padding: 8px 10px !important; 
+          height: 50px !important;
+          min-height: 50px !important;
+          max-height: 50px !important;
+        }
+        .navbar-tool-btn span { display: none !important; }
+        .navbar-tool-btn { padding: 8px !important; }
+        .navbar-tool-btn i { font-size: 14px !important; }
+        .navbar-search { min-width: 80px !important; max-width: 150px !important; }
+        .navbar-brand span { display: none !important; }
       }
     </style>
   `;
