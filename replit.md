@@ -29,9 +29,26 @@ python server.py
   - Input: `{"text": "quiz review content"}`
   - Output: Concepts with Azure facts, study guide references, and NotebookLM summary
   - Requires: `OPENAI_API_KEY` environment secret
+- `POST /api/generate-cprs` - Generate 6 MCQ questions using CPRS methodology
+  - Input: `{"concept": "Azure concept name"}`
+  - Output: 6 exam-style MCQs (Foundation, Definition, Differentiation, Scenario, Anti-Confusion, Compression)
+  - Uses KV caching to reduce OpenAI API costs
+- `POST /api/user` - Create new sync user ID
+  - Output: `{"userId": "user_[uuid]"}`
+- `GET /api/sync?userId=...` - Get synced quiz scores from cloud
+- `PUT /api/sync` - Push quiz scores to cloud
+  - Input: `{"userId": "user_...", "data": {...}}`
+- `GET /api/anki-decks` - List available Anki decks from R2 storage
+- `GET /api/anki-decks/:name` - Download specific Anki deck from R2
 
 ## Environment Secrets
 - `OPENAI_API_KEY` - OpenAI API key for AI-powered concept extraction (optional - fallback mode works without it)
+
+## Cloudflare Services (Production)
+- **KV Namespace (CPRS_CACHE)**: Caches CPRS responses for 30 days, reduces OpenAI costs by 50%+
+- **D1 Database (az104-study-db)**: Stores user sync data for cross-device score synchronization
+- **R2 Bucket (az104-anki-decks)**: Stores pre-built Anki .apkg files with zero egress fees
+- See `cloudflare-worker/CLOUDFLARE_SETUP.md` for setup instructions
 
 ## Deployment
 Two deployment options available:
@@ -72,6 +89,7 @@ Two deployment options available:
 - **domainScoreMetadata**: Per-domain metadata with {lastUpdated, source, quizName}
 - **mergedQuizHistory**: v2 versioned snapshots with {version, takenAt, source, merged, summary}
 - **sourceRotationData**: Per-domain tracking of lastStudy/lastTest sources and dates
+- **az104SyncUserId**: Cloud sync user ID (format: `user_[UUID]`) for cross-device synchronization
 
 ## Single Source of Truth Pattern
 - Personalized Review Guide (azure_personalized_review_guide.html) owns all score input and metadata
