@@ -1,18 +1,19 @@
 import os
 import json
 import re
+import uuid
 from flask import Flask, send_from_directory, request, jsonify
 from flask_cors import CORS
 from openai import OpenAI
-
-# the newest OpenAI model is "gpt-5" which was released August 7, 2025.
-# do not change this unless explicitly requested by the user
 
 app = Flask(__name__, static_folder='docs')
 CORS(app)
 
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 openai_client = OpenAI(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else None
+
+SYNC_DATA_DIR = os.path.join(os.path.dirname(__file__), '.sync_data')
+os.makedirs(SYNC_DATA_DIR, exist_ok=True)
 
 GUIDE_INDEX = {
     "Azure AD": {"file": "azure_ad_overview.html", "section": "Azure Active Directory"},
@@ -296,6 +297,55 @@ Format your response as JSON with ALL 6 questions as MCQs:
             "guide_references": guide_refs,
             "questions": []
         }), 200
+
+@app.route('/api/user', methods=['POST'])
+def create_user():
+    user_id = f"user_{uuid.uuid4()}"
+    return jsonify({"userId": user_id})
+
+@app.route('/api/sync', methods=['GET'])
+def get_sync():
+    user_id = request.args.get('userId')
+    if not user_id:
+        return jsonify({"error": "userId required"}), 400
+    
+    file_path = os.path.join(SYNC_DATA_DIR, f"{user_id}.json")
+    if not os.path.exists(file_path):
+        return jsonify({"found": False})
+    
+    try:
+        with open(file_path, 'r') as f:
+            sync_data = json.load(f)
+        return jsonify({
+            "found": True,
+            "data": sync_data.get("data", {}),
+            "updatedAt": sync_data.get("updatedAt", "")
+        })
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/sync', methods=['PUT'])
+def put_sync():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+    
+    user_id = data.get('userId')
+    sync_data = data.get('data')
+    
+    if not user_id or not sync_data:
+        return jsonify({"error": "userId and data required"}), 400
+    
+    file_path = os.path.join(SYNC_DATA_DIR, f"{user_id}.json")
+    
+    try:
+        from datetime import datetime
+        now = datetime.utcnow().isoformat() + "Z"
+        with open(file_path, 'w') as f:
+            json.dump({"data": sync_data, "updatedAt": now}, f)
+        return jsonify({"success": True, "updatedAt": now})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/')
 def serve_index():
