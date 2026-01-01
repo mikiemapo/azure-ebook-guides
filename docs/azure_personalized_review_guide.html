@@ -921,6 +921,7 @@
         font-size: 0.9em;
       }
     </style>
+  <script src="api-config.js"></script>
   <script src="shared-navbar.js"></script>
 </head>
   <body>
@@ -1747,7 +1748,8 @@
       output.style.display = 'none';
       
       try {
-        const response = await fetch('/api/extract-concepts', {
+        const apiBase = (window.AZ104_API_CONFIG && window.AZ104_API_CONFIG.baseUrl) || '';
+        const response = await fetch(apiBase + '/api/extract-concepts', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ text: text })
@@ -2055,7 +2057,8 @@
       outputEl.style.display = 'none';
       
       try {
-        const response = await fetch('/api/generate-cprs', {
+        const apiBase = (window.AZ104_API_CONFIG && window.AZ104_API_CONFIG.baseUrl) || '';
+        const response = await fetch(apiBase + '/api/generate-cprs', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ concept: concept })
