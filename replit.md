@@ -73,6 +73,9 @@ Two deployment options available:
 - Local Anki Deck Builder (anki-deck-builder.html) for CSV to .apkg conversion
 - Anki Deck Library (anki-deck-library.html) - CPRS workflow-based deck building
 - **Persistent Navigation Bar** with search (shared-navbar.js) across all 88 pages
+  - Personalized search suggestions based on weak domains from localStorage
+  - On focus: Shows guides for your 2 weakest domains with score percentages
+  - Guides tagged by domain for targeted recommendations
 
 ## Architecture Notes
 - Pure static HTML/CSS/JS - no build step required
