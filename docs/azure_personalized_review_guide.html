@@ -1146,6 +1146,123 @@
       });
       </script>
 
+      <!-- STUDY WORKFLOW CHECKLIST -->
+      <div id="workflow-checklist" style="background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:12px;padding:20px;margin-bottom:25px;box-shadow:var(--shadow-sm);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+          <h3 style="margin:0;font-size:1.2em;color:var(--text-primary);display:flex;align-items:center;gap:10px;">
+            <i class="fas fa-tasks" style="color:#9c27b0;"></i> Study Workflow Loop
+          </h3>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <span id="workflow-progress" style="font-size:13px;color:var(--text-secondary);">0/11 completed</span>
+            <a href="https://www.canva.com/design/DAG9I5NXsAc/YyLqtxeRar5QXHyVjpoUWg/edit" target="_blank" style="display:inline-flex;align-items:center;gap:6px;background:#00c4cc;color:#fff;padding:6px 12px;border-radius:6px;text-decoration:none;font-size:12px;font-weight:500;">
+              <i class="fab fa-figma"></i> Edit in Canva
+            </a>
+            <button id="workflow-reset-btn" title="Reset checklist" style="background:#e74c3c;color:#fff;border:0;padding:6px 10px;border-radius:6px;cursor:pointer;font-size:12px;">
+              <i class="fas fa-redo"></i>
+            </button>
+          </div>
+        </div>
+        <div id="workflow-items" style="display:flex;flex-direction:column;gap:8px;">
+          <!-- Items rendered by JS -->
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-color);font-size:12px;color:var(--text-muted);">
+          <i class="fas fa-sync-alt"></i> Loop: Tough Topic → Dual Quiz → Weak Point Extraction → Critique Audio → Anki MCQ → Rotate → Repeat
+        </div>
+      </div>
+      
+      <script>
+      // Study Workflow Checklist Logic
+      (function() {
+        const WORKFLOW_STEPS = [
+          { id: 1, text: 'Choose one hard topic and open your NotebookLM notebook for it', icon: 'fa-brain' },
+          { id: 2, text: 'Take 2 section quizzes (Whizlabs + Tutorials Dojo)', icon: 'fa-clipboard-check' },
+          { id: 3, text: 'Paste results → extract weak concepts & blind spots', icon: 'fa-search' },
+          { id: 4, text: 'Create a specific new notebook for the domain', icon: 'fa-folder-plus' },
+          { id: 5, text: 'Generate an audio lesson in NotebookLM (critique mode)', icon: 'fa-microphone' },
+          { id: 6, text: 'Listen repeatedly until the idea clicks', icon: 'fa-headphones' },
+          { id: 7, text: 'Convert audio → text and share for review', icon: 'fa-file-alt' },
+          { id: 8, text: 'Create 6 Anki MCQ flashcards from notes', icon: 'fa-layer-group' },
+          { id: 9, text: 'Rotate sources (Whizlabs ↔ Tutorials Dojo)', icon: 'fa-exchange-alt' },
+          { id: 10, text: 'Tag cards with AZ-104 objective IDs', icon: 'fa-tags' },
+          { id: 11, text: 'Repeat loop for next topic', icon: 'fa-redo' }
+        ];
+        
+        const STORAGE_KEY = 'studyWorkflowChecklist';
+        
+        function getCheckedItems() {
+          try {
+            return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+          } catch (e) {
+            return [];
+          }
+        }
+        
+        function saveCheckedItems(items) {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
+        }
+        
+        function updateProgress() {
+          const checked = getCheckedItems();
+          const progressEl = document.getElementById('workflow-progress');
+          if (progressEl) {
+            progressEl.textContent = `${checked.length}/${WORKFLOW_STEPS.length} completed`;
+          }
+        }
+        
+        function renderChecklist() {
+          const container = document.getElementById('workflow-items');
+          if (!container) return;
+          
+          const checked = getCheckedItems();
+          container.innerHTML = '';
+          
+          WORKFLOW_STEPS.forEach(step => {
+            const isChecked = checked.includes(step.id);
+            const item = document.createElement('label');
+            item.style.cssText = `display:flex;align-items:center;gap:12px;padding:10px 14px;background:${isChecked ? 'var(--rag-green-bg)' : 'var(--bg-tertiary)'};border-radius:8px;cursor:pointer;transition:all 0.2s;border:1px solid ${isChecked ? 'var(--rag-green)' : 'var(--border-color)'};`;
+            
+            item.innerHTML = `
+              <input type="checkbox" ${isChecked ? 'checked' : ''} data-step-id="${step.id}" style="width:18px;height:18px;accent-color:#28a745;cursor:pointer;">
+              <i class="fas ${step.icon}" style="color:${isChecked ? '#28a745' : '#9c27b0'};width:20px;text-align:center;"></i>
+              <span style="flex:1;font-size:14px;color:var(--text-primary);${isChecked ? 'text-decoration:line-through;opacity:0.7;' : ''}">${step.text}</span>
+              <span style="font-size:11px;color:var(--text-muted);">#${step.id}</span>
+            `;
+            
+            const checkbox = item.querySelector('input');
+            checkbox.addEventListener('change', function() {
+              const stepId = parseInt(this.dataset.stepId);
+              let items = getCheckedItems();
+              if (this.checked) {
+                if (!items.includes(stepId)) items.push(stepId);
+              } else {
+                items = items.filter(id => id !== stepId);
+              }
+              saveCheckedItems(items);
+              renderChecklist();
+            });
+            
+            container.appendChild(item);
+          });
+          
+          updateProgress();
+        }
+        
+        // Reset button
+        document.addEventListener('DOMContentLoaded', function() {
+          const resetBtn = document.getElementById('workflow-reset-btn');
+          if (resetBtn) {
+            resetBtn.addEventListener('click', function() {
+              if (confirm('Reset all checklist items? This starts a fresh loop.')) {
+                saveCheckedItems([]);
+                renderChecklist();
+              }
+            });
+          }
+          renderChecklist();
+        });
+      })();
+      </script>
+
         <!-- Inline saved merged quiz scores (editable by in-page Save) -->
         <script id="merged-quiz-scores-json" type="application/json">
         {

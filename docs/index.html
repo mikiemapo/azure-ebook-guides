@@ -127,22 +127,48 @@
       .domain-card {
         background: var(--bg-card);
         border-radius: var(--radius-md);
-        padding: 20px;
+        padding: 16px;
         box-shadow: var(--shadow-md);
         border: 1px solid var(--border-color);
         transition: var(--transition);
+        cursor: pointer;
       }
 
       .domain-card:hover {
         box-shadow: var(--shadow-lg);
-        transform: translateY(-2px);
       }
 
       .domain-card-header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
-        margin-bottom: 16px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+
+      .domain-card-details {
+        display: none;
+        padding-top: 12px;
+        border-top: 1px solid var(--border-color);
+        margin-top: 12px;
+      }
+
+      .domain-card.expanded .domain-card-details {
+        display: block;
+      }
+
+      .domain-card .expand-icon {
+        margin-left: 8px;
+        font-size: 0.8em;
+        color: var(--text-muted);
+        transition: transform 0.2s;
+      }
+
+      .domain-card.expanded .expand-icon {
+        transform: rotate(180deg);
+      }
+
+      .expand-icon.rotated {
+        transform: rotate(180deg);
       }
 
       .domain-card-title {
@@ -825,6 +851,31 @@
         </ul>
       </div>
 
+      <!-- Study Workflow Summary (shows only remaining items) -->
+      <div class="section-card" id="workflow-summary" style="margin-bottom: 24px;">
+        <div class="section-header" style="cursor:pointer;" onclick="document.getElementById('workflow-summary-content').style.display = document.getElementById('workflow-summary-content').style.display === 'none' ? 'block' : 'none'; this.querySelector('.expand-icon').classList.toggle('rotated');">
+          <div class="section-title">
+            <i class="fas fa-list-check" style="color:#9c27b0;"></i>
+            Study Workflow Loop
+            <i class="fas fa-chevron-down expand-icon" style="font-size:0.8em;margin-left:8px;transition:transform 0.2s;"></i>
+          </div>
+          <span id="workflow-summary-count" style="font-size:0.9em;color:var(--text-muted);">Loading...</span>
+        </div>
+        <div id="workflow-summary-content" class="section-content" style="display: none; padding: 16px;">
+          <div id="workflow-summary-items" style="display:flex;flex-direction:column;gap:6px;">
+            Loading workflow...
+          </div>
+          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-color);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+            <a href="azure_personalized_review_guide.html#workflow-checklist" class="domain-action-btn primary" style="font-size:0.85em;">
+              <i class="fas fa-edit"></i> Edit Checklist
+            </a>
+            <a href="https://www.canva.com/design/DAG9I5NXsAc/YyLqtxeRar5QXHyVjpoUWg/edit" target="_blank" class="domain-action-btn" style="background:#00c4cc;color:#fff;font-size:0.85em;">
+              <i class="fab fa-figma"></i> Open in Canva
+            </a>
+          </div>
+        </div>
+      </div>
+
       <!-- Retention Trends -->
       <div class="retention-trends" id="retention-trends">
         <h3><i class="fas fa-chart-line"></i> Retention Trends</h3>
@@ -1046,7 +1097,7 @@
 
       // Mastery calculation removed - Hub now uses simple quiz percentages from Personalized Review
 
-      // ===== RENDER DOMAIN CARDS (Read-Only - Data sourced from Personalized Review) =====
+      // ===== RENDER DOMAIN CARDS (Read-Only - Collapsed by default) =====
       function renderDomainCards() {
         const grid = document.getElementById('domain-grid');
         const scores = getStoredScores();
@@ -1065,31 +1116,40 @@
               <div class="domain-card-title">
                 <i class="${domain.icon}"></i>
                 ${domain.name}
+                <i class="fas fa-chevron-down expand-icon"></i>
               </div>
               <div class="domain-mastery ${ragClass}">${percent}%</div>
             </div>
-            <div class="progress-bar-container">
+            <div class="progress-bar-container" style="margin-bottom: 0;">
               <div class="progress-bar ${ragClass}" style="width: ${percent}%"></div>
             </div>
-            <div class="score-display-row" style="display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 0.9em; color: var(--text-secondary);">
-              <span><strong>Quiz Score:</strong> ${score.correct}/${score.total}</span>
-              <span class="rag-badge ${ragClass}" style="margin-left: auto;">${percent}%</span>
-            </div>
-            <div class="last-updated-row" style="font-size: 0.8em; color: var(--text-muted); padding: 4px 0 8px 0; border-top: 1px solid var(--border-color);">
-              ${getDomainLastUpdatedHtml(domain.key)}
-            </div>
-            <div class="domain-actions">
-              <a href="${domain.guideLink}" class="domain-action-btn primary">
-                <i class="fas fa-book"></i> Study Guide
-              </a>
-              <a href="azure_personalized_review_guide.html#${domain.key}-focused-card" class="domain-action-btn secondary">
-                <i class="fas fa-clipboard-check"></i> Flashcards
-              </a>
-              <a href="azure_personalized_review_guide.html" class="domain-action-btn" style="background: var(--azure-blue); color: white;">
-                <i class="fas fa-edit"></i> Update Scores
-              </a>
+            <div class="domain-card-details">
+              <div class="score-display-row" style="display: flex; align-items: center; gap: 12px; padding: 8px 0; font-size: 0.9em; color: var(--text-secondary);">
+                <span><strong>Quiz Score:</strong> ${score.correct}/${score.total}</span>
+                <span class="rag-badge ${ragClass}" style="margin-left: auto;">${percent}%</span>
+              </div>
+              <div class="last-updated-row" style="font-size: 0.8em; color: var(--text-muted); padding: 4px 0 8px 0;">
+                ${getDomainLastUpdatedHtml(domain.key)}
+              </div>
+              <div class="domain-actions">
+                <a href="${domain.guideLink}" class="domain-action-btn primary" onclick="event.stopPropagation();">
+                  <i class="fas fa-book"></i> Study Guide
+                </a>
+                <a href="azure_personalized_review_guide.html#${domain.key}-focused-card" class="domain-action-btn secondary" onclick="event.stopPropagation();">
+                  <i class="fas fa-clipboard-check"></i> Flashcards
+                </a>
+                <a href="azure_personalized_review_guide.html" class="domain-action-btn" style="background: var(--azure-blue); color: white;" onclick="event.stopPropagation();">
+                  <i class="fas fa-edit"></i> Update Scores
+                </a>
+              </div>
             </div>
           `;
+          
+          card.addEventListener('click', function(e) {
+            if (e.target.tagName === 'A' || e.target.closest('a')) return;
+            this.classList.toggle('expanded');
+          });
+          
           grid.appendChild(card);
         });
       }
@@ -1498,6 +1558,61 @@
         contentEl.innerHTML = out;
       }
 
+      // ===== WORKFLOW SUMMARY (Only unchecked items) =====
+      const WORKFLOW_STEPS = [
+        { id: 1, text: 'Choose one hard topic and open NotebookLM', icon: 'fa-brain' },
+        { id: 2, text: 'Take 2 section quizzes (Whizlabs + Tutorials Dojo)', icon: 'fa-clipboard-check' },
+        { id: 3, text: 'Extract weak concepts & blind spots', icon: 'fa-search' },
+        { id: 4, text: 'Create a specific notebook for the domain', icon: 'fa-folder-plus' },
+        { id: 5, text: 'Generate audio lesson in NotebookLM (critique mode)', icon: 'fa-microphone' },
+        { id: 6, text: 'Listen repeatedly until the idea clicks', icon: 'fa-headphones' },
+        { id: 7, text: 'Convert audio → text for review', icon: 'fa-file-alt' },
+        { id: 8, text: 'Create 6 Anki MCQ flashcards', icon: 'fa-layer-group' },
+        { id: 9, text: 'Rotate sources (Whizlabs ↔ Tutorials Dojo)', icon: 'fa-exchange-alt' },
+        { id: 10, text: 'Tag cards with AZ-104 objective IDs', icon: 'fa-tags' },
+        { id: 11, text: 'Repeat loop for next topic', icon: 'fa-redo' }
+      ];
+
+      function renderWorkflowSummary() {
+        const countEl = document.getElementById('workflow-summary-count');
+        const itemsEl = document.getElementById('workflow-summary-items');
+        if (!countEl || !itemsEl) return;
+        
+        let checked = [];
+        try {
+          checked = JSON.parse(localStorage.getItem('studyWorkflowChecklist')) || [];
+        } catch (e) { checked = []; }
+        
+        const remaining = WORKFLOW_STEPS.filter(s => !checked.includes(s.id));
+        const completed = WORKFLOW_STEPS.length - remaining.length;
+        
+        countEl.textContent = remaining.length === 0 
+          ? '✓ All done!' 
+          : `${remaining.length} remaining`;
+        countEl.style.color = remaining.length === 0 ? 'var(--success-color)' : 'var(--text-muted)';
+        
+        if (remaining.length === 0) {
+          itemsEl.innerHTML = `
+            <div style="text-align:center;padding:20px;color:var(--success-color);">
+              <i class="fas fa-check-circle" style="font-size:2em;margin-bottom:8px;"></i>
+              <p style="margin:0;">All steps completed! Ready to start a new topic loop.</p>
+            </div>
+          `;
+        } else {
+          let html = '';
+          remaining.forEach(step => {
+            html += `
+              <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg-primary);border-radius:6px;font-size:0.9em;">
+                <i class="fas ${step.icon}" style="color:#9c27b0;width:18px;text-align:center;"></i>
+                <span style="flex:1;">${step.text}</span>
+                <span style="color:var(--text-muted);font-size:0.8em;">#${step.id}</span>
+              </div>
+            `;
+          });
+          itemsEl.innerHTML = html;
+        }
+      }
+
       // ===== INIT =====
       document.addEventListener('DOMContentLoaded', () => {
         renderDomainCards();
@@ -1505,6 +1620,7 @@
         updateNextSteps();
         renderRetentionTrends();
         renderStudyAssistant();
+        renderWorkflowSummary();
         renderStudyTopics();
         updateProgressSummary();
         initControlButtons();
@@ -1525,6 +1641,9 @@
           renderRetentionTrends();
           renderStudyAssistant();
           updateDebugPanel();
+        }
+        if (e.key === 'studyWorkflowChecklist') {
+          renderWorkflowSummary();
         }
       });
     </script>
