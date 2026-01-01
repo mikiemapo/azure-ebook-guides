@@ -93,6 +93,7 @@ Two deployment options available:
 - **mergedQuizHistory**: v2 versioned snapshots with {version, takenAt, source, merged, summary}
 - **sourceRotationData**: Per-domain tracking of lastStudy/lastTest sources and dates
 - **az104SyncUserId**: Cloud sync user ID (format: `user_[UUID]`) for cross-device synchronization
+- **studyWorkflowChecklist**: Array of completed step IDs [1-11] for the Study Workflow Loop
 
 ## Single Source of Truth Pattern
 - Personalized Review Guide (azure_personalized_review_guide.html) owns all score input and metadata
@@ -108,6 +109,20 @@ Two deployment options available:
 ---
 
 ## Study Workflow Loop Support
+
+### Study Workflow Loop Checklist
+Interactive checklist for the 11-step study workflow (based on Canva master document):
+- **Personalized Review**: Full checklist with checkboxes, "Edit in Canva" button, reset button
+- **Main Hub**: Summary view showing only remaining (unchecked) items
+- **Steps tracked**: NotebookLM → Dual Quiz → Weak Point Extraction → Critique Audio → Anki MCQ → Rotate → Repeat
+- **localStorage key**: `studyWorkflowChecklist` (array of completed step IDs)
+- **Cross-tab sync**: Updates reflected via storage event listener
+- **Canva link**: https://www.canva.com/design/DAG9I5NXsAc/
+
+### Collapsible Domain Cards (Main Hub)
+- Domain cards default to collapsed state (name + % + progress bar only)
+- Click to expand for full details (quiz score, last updated, action buttons)
+- Reduces scrolling on main dashboard significantly
 
 ### Source Rotation Tracker
 Prevents memorizing answers by tracking which source you last used:
