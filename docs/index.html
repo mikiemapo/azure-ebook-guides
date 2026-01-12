@@ -895,12 +895,68 @@
       // ===== DOMAIN CONFIGURATION =====
       // Domain keys must match the keys used in mergedQuizScores from Personalized Review Guide
       // Note: App Service & Containers is now part of Compute domain (AZ-104 exam structure)
+      // Official AZ-104 Exam Objectives (April 2025)
       const domainConfig = [
-        { key: 'Identities', name: 'Identities & Governance', icon: 'fas fa-id-card', guideLink: 'microsoft_entra_id_concepts_guide.html' },
-        { key: 'Storage', name: 'Storage', icon: 'fas fa-database', guideLink: 'azure_storage_replication_rto_rpo_guide.html' },
-        { key: 'Compute', name: 'Compute (incl. App Service)', icon: 'fas fa-server', guideLink: 'azure_vms_deep_dive_guide.html' },
-        { key: 'Networking', name: 'Networking', icon: 'fas fa-network-wired', guideLink: 'azure_vnet_deep_dive_guide.html' },
-        { key: 'Monitoring', name: 'Monitoring & Backup', icon: 'fas fa-chart-bar', guideLink: 'azure_monitor_maintenance_guide.html' }
+        { 
+          key: 'Identities', 
+          name: 'Identities & Governance', 
+          icon: 'fas fa-id-card', 
+          guideLink: 'microsoft_entra_id_concepts_guide.html',
+          weight: '20-25%',
+          objectives: [
+            { id: '1.1', name: 'Manage Microsoft Entra users and groups' },
+            { id: '1.2', name: 'Manage access to Azure resources' },
+            { id: '1.3', name: 'Manage Azure subscriptions and governance' }
+          ]
+        },
+        { 
+          key: 'Storage', 
+          name: 'Storage', 
+          icon: 'fas fa-database', 
+          guideLink: 'azure_storage_replication_rto_rpo_guide.html',
+          weight: '15-20%',
+          objectives: [
+            { id: '2.1', name: 'Configure access to storage' },
+            { id: '2.2', name: 'Configure and manage storage accounts' },
+            { id: '2.3', name: 'Configure Azure Files and Azure Blob Storage' }
+          ]
+        },
+        { 
+          key: 'Compute', 
+          name: 'Compute (incl. App Service)', 
+          icon: 'fas fa-server', 
+          guideLink: 'azure_vms_deep_dive_guide.html',
+          weight: '20-25%',
+          objectives: [
+            { id: '3.1', name: 'Automate deployment with ARM/Bicep' },
+            { id: '3.2', name: 'Create and configure virtual machines' },
+            { id: '3.3', name: 'Provision and manage containers' },
+            { id: '3.4', name: 'Create and configure Azure App Service' }
+          ]
+        },
+        { 
+          key: 'Networking', 
+          name: 'Networking', 
+          icon: 'fas fa-network-wired', 
+          guideLink: 'azure_vnet_deep_dive_guide.html',
+          weight: '15-20%',
+          objectives: [
+            { id: '4.1', name: 'Configure and manage virtual networks' },
+            { id: '4.2', name: 'Configure secure access to virtual networks' },
+            { id: '4.3', name: 'Configure name resolution and load balancing' }
+          ]
+        },
+        { 
+          key: 'Monitoring', 
+          name: 'Monitoring & Backup', 
+          icon: 'fas fa-chart-bar', 
+          guideLink: 'azure_monitor_maintenance_guide.html',
+          weight: '10-15%',
+          objectives: [
+            { id: '5.1', name: 'Monitor resources by using Azure Monitor' },
+            { id: '5.2', name: 'Implement backup and recovery' }
+          ]
+        }
       ];
       
       // Migration: Merge "App Service & Containers" scores into Compute
@@ -1129,6 +1185,14 @@
               </div>
               <div class="last-updated-row" style="font-size: 0.8em; color: var(--text-muted); padding: 4px 0 8px 0;">
                 ${getDomainLastUpdatedHtml(domain.key)}
+              </div>
+              <div class="exam-objectives" style="background: var(--bg-tertiary); border-radius: 6px; padding: 10px; margin: 8px 0; font-size: 0.85em;">
+                <div style="font-weight: 600; color: var(--text-primary); margin-bottom: 6px;">
+                  <i class="fas fa-clipboard-list" style="color: var(--azure-blue); margin-right: 6px;"></i>Exam Objectives (${domain.weight})
+                </div>
+                <ul style="margin: 0; padding-left: 18px; color: var(--text-secondary); line-height: 1.6;">
+                  ${domain.objectives.map(obj => `<li><strong>${obj.id}</strong> ${obj.name}</li>`).join('')}
+                </ul>
               </div>
               <div class="domain-actions">
                 <a href="${domain.guideLink}" class="domain-action-btn primary" onclick="event.stopPropagation();">

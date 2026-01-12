@@ -269,21 +269,51 @@
       localStorage.setItem('theme', isDark ? 'light' : 'dark');
     });
 
-    // AZ-104 Domain configuration
+    // AZ-104 Domain configuration (Official Exam Objectives - April 2025)
     const DOMAINS = [
-      { key: 'Identities', name: 'Identities & Governance', icon: 'fa-id-card', color: '#0078d4', objectives: ['1.1', '1.2', '1.3', '1.4'] },
-      { key: 'Storage', name: 'Storage', icon: 'fa-database', color: '#107c10', objectives: ['2.1', '2.2', '2.3'] },
-      { key: 'Compute', name: 'Compute', icon: 'fa-server', color: '#ff9800', objectives: ['3.1', '3.2', '3.3', '3.4'] },
-      { key: 'Networking', name: 'Networking', icon: 'fa-network-wired', color: '#9c27b0', objectives: ['4.1', '4.2', '4.3', '4.4'] },
-      { key: 'Monitoring', name: 'Monitoring', icon: 'fa-chart-bar', color: '#d83b01', objectives: ['5.1', '5.2'] }
+      { key: 'Identities', name: 'Identities & Governance', icon: 'fa-id-card', color: '#0078d4', weight: '20-25%', objectives: [
+        { id: '1.1', name: 'Manage Microsoft Entra users and groups' },
+        { id: '1.2', name: 'Manage access to Azure resources' },
+        { id: '1.3', name: 'Manage Azure subscriptions and governance' }
+      ]},
+      { key: 'Storage', name: 'Storage', icon: 'fa-database', color: '#107c10', weight: '15-20%', objectives: [
+        { id: '2.1', name: 'Configure access to storage' },
+        { id: '2.2', name: 'Configure and manage storage accounts' },
+        { id: '2.3', name: 'Configure Azure Files and Azure Blob Storage' }
+      ]},
+      { key: 'Compute', name: 'Compute', icon: 'fa-server', color: '#ff9800', weight: '20-25%', objectives: [
+        { id: '3.1', name: 'Automate deployment with ARM/Bicep' },
+        { id: '3.2', name: 'Create and configure virtual machines' },
+        { id: '3.3', name: 'Provision and manage containers' },
+        { id: '3.4', name: 'Create and configure Azure App Service' }
+      ]},
+      { key: 'Networking', name: 'Networking', icon: 'fa-network-wired', color: '#9c27b0', weight: '15-20%', objectives: [
+        { id: '4.1', name: 'Configure and manage virtual networks' },
+        { id: '4.2', name: 'Configure secure access to virtual networks' },
+        { id: '4.3', name: 'Configure name resolution and load balancing' }
+      ]},
+      { key: 'Monitoring', name: 'Monitoring', icon: 'fa-chart-bar', color: '#d83b01', weight: '10-15%', objectives: [
+        { id: '5.1', name: 'Monitor resources by using Azure Monitor' },
+        { id: '5.2', name: 'Implement backup and recovery' }
+      ]}
     ];
 
     // Map objective code to domain
     function objectiveToDomain(objective) {
       if (!objective) return 'Uncategorized';
-      const code = objective.split('.')[0];
+      const code = objective.toString().split('.')[0];
       const mapping = { '1': 'Identities', '2': 'Storage', '3': 'Compute', '4': 'Networking', '5': 'Monitoring' };
       return mapping[code] || 'Uncategorized';
+    }
+    
+    // Get objective name by ID
+    function getObjectiveName(objId) {
+      for (const domain of DOMAINS) {
+        for (const obj of domain.objectives) {
+          if (obj.id === objId) return obj.name;
+        }
+      }
+      return objId;
     }
 
     // Extract topics from CPRS data
