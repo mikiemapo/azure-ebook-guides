@@ -243,7 +243,11 @@
       </a>
     </div>
 
-    <div class="empty-state">
+    <div id="library-content">
+      <!-- Saved decks will be rendered here -->
+    </div>
+
+    <div class="empty-state" id="empty-state" style="display:none;">
       <i class="fas fa-folder-open"></i>
       <h3>Your Deck Library is Empty</h3>
       <p>Build your first deck using the CPRS Generator above. Your custom decks will appear here once saved.</p>
@@ -253,12 +257,30 @@
       <h4><i class="fas fa-lightbulb"></i> CPRS Deck Building Tips</h4>
       <ul>
         <li><strong>One concept at a time</strong> - Generate CPRS for each Azure concept you struggled with</li>
+        <li><strong>Use "Save to Library"</strong> - Saves the deck for later access</li>
         <li><strong>Use "Copy for Anki"</strong> - Exports the MCQ in CSV format ready for Deck Builder</li>
         <li><strong>Tag by exam objective</strong> - Use 1.1, 2.3, 3.4 etc. for easy filtering</li>
         <li><strong>Study consistently</strong> - Spaced repetition works best with daily practice</li>
       </ul>
     </div>
   </div>
+
+  <style>
+    .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin: 24px 0; }
+    .deck-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; transition: transform 0.2s, box-shadow 0.2s; }
+    .deck-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .deck-concept { font-weight: 600; font-size: 1.1em; color: var(--text-primary); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+    .deck-meta { font-size: 0.85em; color: var(--text-secondary); margin-bottom: 12px; }
+    .deck-meta span { display: block; margin: 4px 0; }
+    .deck-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .deck-btn { padding: 8px 12px; border: 0; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
+    .deck-btn.primary { background: #9c27b0; color: #fff; }
+    .deck-btn.secondary { background: #ff9800; color: #fff; }
+    .deck-btn.danger { background: #dc3545; color: #fff; }
+    .library-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
+    .library-header h2 { margin: 0; font-size: 1.2em; color: var(--text-primary); }
+    .clear-all-btn { padding: 8px 16px; background: #dc3545; color: #fff; border: 0; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  </style>
 
   <script>
     const toggle = document.getElementById('theme-toggle');
@@ -273,6 +295,89 @@
       toggle.innerHTML = isDark ? '<i class="fas fa-moon"></i> Dark' : '<i class="fas fa-sun"></i> Light';
       localStorage.setItem('theme', isDark ? 'light' : 'dark');
     });
+    
+    function formatForAnki(data) {
+      if (!data || !data.questions) return '';
+      let csv = 'Question,A,B,C,D,Correct,Explanation,Tags\n';
+      data.questions.forEach(q => {
+        if (q.options && q.correct) {
+          const question = q.question.replace(/"/g, '""');
+          const opts = q.options;
+          const exp = (q.explanation || '').replace(/"/g, '""');
+          const tag = `${data.objective || 'CPRS'},${q.type}`;
+          csv += `"${question}","${(opts.A || '').replace(/"/g, '""')}","${(opts.B || '').replace(/"/g, '""')}","${(opts.C || '').replace(/"/g, '""')}","${(opts.D || '').replace(/"/g, '""')}","${q.correct}","${exp}","${tag}"\n`;
+        }
+      });
+      return csv;
+    }
+    
+    function renderLibrary() {
+      const library = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
+      const container = document.getElementById('library-content');
+      const emptyState = document.getElementById('empty-state');
+      
+      if (library.length === 0) {
+        container.innerHTML = '';
+        emptyState.style.display = 'block';
+        return;
+      }
+      
+      emptyState.style.display = 'none';
+      
+      let html = '<div class="library-header">';
+      html += `<h2><i class="fas fa-layer-group" style="color:#9c27b0;margin-right:8px;"></i>${library.length} Saved Deck${library.length === 1 ? '' : 's'}</h2>`;
+      html += '<button class="clear-all-btn" onclick="clearAllDecks()"><i class="fas fa-trash"></i> Clear All</button>';
+      html += '</div>';
+      
+      html += '<div class="deck-grid">';
+      library.slice().reverse().forEach(deck => {
+        const date = new Date(deck.savedAt).toLocaleDateString();
+        html += `<div class="deck-card" data-id="${deck.id}">`;
+        html += `<div class="deck-concept"><i class="fas fa-brain" style="color:#9c27b0;"></i>${deck.concept}</div>`;
+        html += '<div class="deck-meta">';
+        html += `<span><i class="fas fa-list" style="margin-right:6px;"></i>${deck.questionCount} questions</span>`;
+        if (deck.objective) html += `<span><i class="fas fa-tag" style="margin-right:6px;"></i>Objective: ${deck.objective}</span>`;
+        html += `<span><i class="fas fa-calendar" style="margin-right:6px;"></i>Saved: ${date}</span>`;
+        html += '</div>';
+        html += '<div class="deck-actions">';
+        html += `<button class="deck-btn secondary" onclick="copyDeckCSV(${deck.id})"><i class="fas fa-file-csv"></i> Copy CSV</button>`;
+        html += `<button class="deck-btn danger" onclick="deleteDeck(${deck.id})"><i class="fas fa-trash"></i> Delete</button>`;
+        html += '</div>';
+        html += '</div>';
+      });
+      html += '</div>';
+      
+      container.innerHTML = html;
+    }
+    
+    function copyDeckCSV(id) {
+      const library = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
+      const deck = library.find(d => d.id === id);
+      if (!deck || !deck.data) {
+        alert('Deck data not found.');
+        return;
+      }
+      const csv = formatForAnki(deck.data);
+      navigator.clipboard.writeText(csv).then(() => {
+        alert('CSV copied to clipboard! Paste into a text file and import to Anki.');
+      });
+    }
+    
+    function deleteDeck(id) {
+      if (!confirm('Delete this deck from your library?')) return;
+      let library = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
+      library = library.filter(d => d.id !== id);
+      localStorage.setItem('cprsLibrary', JSON.stringify(library));
+      renderLibrary();
+    }
+    
+    function clearAllDecks() {
+      if (!confirm('Delete ALL saved decks? This cannot be undone.')) return;
+      localStorage.removeItem('cprsLibrary');
+      renderLibrary();
+    }
+    
+    document.addEventListener('DOMContentLoaded', renderLibrary);
   </script>
 </body>
 </html>

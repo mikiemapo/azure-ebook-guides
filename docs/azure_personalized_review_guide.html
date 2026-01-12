@@ -2173,6 +2173,9 @@
         <button id="cprs-generate-btn" style="padding:12px 20px;background:#9c27b0;color:#fff;border:0;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;white-space:nowrap;">
           <i class="fas fa-magic"></i> Generate CPRS
         </button>
+        <button id="cprs-clear-btn" style="padding:12px 16px;background:#6c757d;color:#fff;border:0;border-radius:8px;cursor:pointer;font-size:14px;font-weight:500;white-space:nowrap;" title="Clear input and output">
+          <i class="fas fa-eraser"></i> Clear
+        </button>
       </div>
       
       <div id="cprs-loading" style="display:none;padding:12px;background:#f3e5f5;border:1px solid #9c27b0;border-radius:6px;margin-bottom:12px;">
@@ -2187,7 +2190,10 @@
           <h4 style="margin:0;font-size:14px;color:var(--text-primary);">
             <i class="fas fa-list-ol" style="color:#9c27b0;margin-right:6px;"></i>CPRS Question Set
           </h4>
-          <div style="display:flex;gap:8px;">
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button id="cprs-save-library-btn" style="padding:6px 12px;background:#9c27b0;color:#fff;border:0;border-radius:4px;cursor:pointer;font-size:12px;">
+              <i class="fas fa-save"></i> Save to Library
+            </button>
             <button id="cprs-copy-anki-btn" style="padding:6px 12px;background:#ff9800;color:#fff;border:0;border-radius:4px;cursor:pointer;font-size:12px;">
               <i class="fas fa-file-csv"></i> Copy for Anki
             </button>
@@ -2335,13 +2341,28 @@
     
     document.addEventListener('DOMContentLoaded', function() {
       const genBtn = document.getElementById('cprs-generate-btn');
+      const clearBtn = document.getElementById('cprs-clear-btn');
       const input = document.getElementById('cprs-concept-input');
       const copyAllBtn = document.getElementById('cprs-copy-all-btn');
       const copyAnkiBtn = document.getElementById('cprs-copy-anki-btn');
+      const saveLibraryBtn = document.getElementById('cprs-save-library-btn');
       const contentEl = document.getElementById('cprs-content');
+      const outputEl = document.getElementById('cprs-output');
+      const statsEl = document.getElementById('cprs-stats');
       
       if (genBtn) {
         genBtn.addEventListener('click', () => generateCPRS(input.value));
+      }
+      
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          input.value = '';
+          outputEl.style.display = 'none';
+          statsEl.style.display = 'none';
+          contentEl.innerHTML = '';
+          contentEl.dataset.rawData = '';
+          input.focus();
+        });
       }
       
       if (input) {
@@ -2371,6 +2392,34 @@
             });
           } catch(e) {
             alert('No Anki-compatible content available.');
+          }
+        });
+      }
+      
+      if (saveLibraryBtn) {
+        saveLibraryBtn.addEventListener('click', () => {
+          try {
+            const rawData = contentEl.dataset.rawData;
+            if (!rawData) {
+              alert('No CPRS data to save. Generate a question set first.');
+              return;
+            }
+            const data = JSON.parse(rawData);
+            const library = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
+            const deckEntry = {
+              id: Date.now(),
+              concept: data.concept || input.value,
+              objective: data.objective || '',
+              questionCount: data.questions ? data.questions.length : 0,
+              savedAt: new Date().toISOString(),
+              data: data
+            };
+            library.push(deckEntry);
+            localStorage.setItem('cprsLibrary', JSON.stringify(library));
+            saveLibraryBtn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+            setTimeout(() => { saveLibraryBtn.innerHTML = '<i class="fas fa-save"></i> Save to Library'; }, 2000);
+          } catch(e) {
+            alert('Failed to save to library.');
           }
         });
       }
