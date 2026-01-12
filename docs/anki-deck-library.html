@@ -33,121 +33,150 @@
       line-height: 1.6;
       padding: 20px;
     }
-    .container {
-      max-width: 900px;
-      margin: 0 auto;
-    }
-    .back-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      color: var(--azure-blue);
-      text-decoration: none;
-      font-weight: 600;
-      margin-bottom: 20px;
-      padding: 10px 16px;
-      background: var(--bg-secondary);
-      border-radius: 8px;
-      border: 1px solid var(--border-color);
-    }
-    .back-link:hover { background: var(--azure-blue); color: #fff; }
-    h1 {
-      color: var(--warning-color);
-      margin-bottom: 10px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .subtitle {
-      color: var(--text-secondary);
-      margin-bottom: 30px;
-      font-size: 1.1em;
-    }
-    .workflow-section {
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { color: var(--purple); margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+    .subtitle { color: var(--text-secondary); margin-bottom: 24px; font-size: 1em; }
+    
+    .insights-panel {
       background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
       color: #fff;
-      padding: 28px;
+      padding: 24px;
       border-radius: 12px;
       margin-bottom: 24px;
       box-shadow: 0 4px 16px rgba(156,39,176,0.3);
     }
-    .workflow-section h2 { margin: 0 0 12px 0; font-size: 1.4em; }
-    .workflow-section p { opacity: 0.95; margin-bottom: 20px; line-height: 1.7; }
-    .workflow-steps {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 20px;
+    .insights-panel h2 { margin: 0 0 16px 0; font-size: 1.2em; }
+    .coverage-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 16px;
     }
-    .workflow-step {
-      background: rgba(255,255,255,0.2);
-      padding: 8px 14px;
-      border-radius: 20px;
-      font-size: 0.9em;
-      display: flex;
-      align-items: center;
-      gap: 6px;
+    .coverage-item {
+      background: rgba(255,255,255,0.15);
+      padding: 12px 8px;
+      border-radius: 8px;
+      text-align: center;
+      font-size: 0.85em;
     }
-    .workflow-step .step-num {
-      background: #fff;
-      color: #9c27b0;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .coverage-item .count {
+      font-size: 1.8em;
       font-weight: bold;
-      font-size: 11px;
+      display: block;
     }
-    .action-buttons {
+    .coverage-item .label { opacity: 0.9; font-size: 0.8em; }
+    .coverage-item.has-decks { background: rgba(76, 175, 80, 0.4); }
+    .coverage-item.no-decks { background: rgba(244, 67, 54, 0.3); }
+    .insight-message {
+      background: rgba(255,255,255,0.2);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.95em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .insight-message i { font-size: 1.2em; }
+    
+    .action-bar {
       display: flex;
       gap: 12px;
+      margin-bottom: 24px;
       flex-wrap: wrap;
     }
     .action-btn {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      background: #fff;
-      color: #9c27b0;
-      padding: 12px 24px;
-      border-radius: 8px;
-      text-decoration: none;
-      font-weight: 600;
-      transition: transform 0.2s;
-    }
-    .action-btn:hover { transform: scale(1.05); }
-    .action-btn.secondary {
-      background: rgba(255,255,255,0.2);
-      color: #fff;
-      border: 2px solid rgba(255,255,255,0.4);
-    }
-    .builder-section {
-      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-      color: white;
-      padding: 24px;
-      border-radius: 12px;
-      margin-bottom: 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .builder-section h3 { margin: 0 0 6px 0; font-size: 1.1em; }
-    .builder-section p { margin: 0; opacity: 0.9; font-size: 0.95em; }
-    .builder-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: white;
-      color: #d97706;
       padding: 12px 20px;
       border-radius: 8px;
       text-decoration: none;
       font-weight: 600;
+      font-size: 0.9em;
+      border: none;
+      cursor: pointer;
     }
+    .action-btn.primary { background: #9c27b0; color: #fff; }
+    .action-btn.secondary { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); }
+    .action-btn:hover { opacity: 0.9; }
+    
+    .domain-section {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .domain-header {
+      padding: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+    }
+    .domain-header:hover { background: var(--border-color); }
+    .domain-title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .domain-title .icon { font-size: 1.1em; }
+    .domain-count {
+      background: var(--purple);
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.8em;
+      font-weight: 600;
+    }
+    .domain-count.empty { background: #6c757d; }
+    .domain-content { padding: 0; display: none; }
+    .domain-content.open { display: block; padding: 16px; }
+    
+    .deck-list { display: flex; flex-direction: column; gap: 8px; }
+    .deck-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      background: var(--bg-primary);
+      border-radius: 8px;
+      border: 1px solid var(--border-color);
+    }
+    .deck-info { flex: 1; }
+    .deck-name { font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .deck-topics { font-size: 0.85em; color: var(--text-secondary); }
+    .deck-topics span {
+      display: inline-block;
+      background: var(--bg-secondary);
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 6px;
+      margin-top: 4px;
+      border: 1px solid var(--border-color);
+      font-size: 0.9em;
+    }
+    .deck-actions { display: flex; gap: 6px; }
+    .deck-btn {
+      padding: 6px 10px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.8em;
+    }
+    .deck-btn.copy { background: #ff9800; color: #fff; }
+    .deck-btn.delete { background: #dc3545; color: #fff; }
+    
+    .empty-domain {
+      color: var(--text-secondary);
+      font-style: italic;
+      padding: 12px;
+      text-align: center;
+    }
+    
     .empty-state {
       background: var(--bg-secondary);
       border: 2px dashed var(--border-color);
@@ -156,35 +185,10 @@
       text-align: center;
       margin: 30px 0;
     }
-    .empty-state i {
-      font-size: 48px;
-      color: var(--text-secondary);
-      margin-bottom: 16px;
-    }
-    .empty-state h3 {
-      color: var(--text-primary);
-      margin-bottom: 8px;
-    }
-    .empty-state p {
-      color: var(--text-secondary);
-      max-width: 400px;
-      margin: 0 auto;
-    }
-    .tip-box {
-      background: #fff3cd;
-      border: 1px solid #ffc107;
-      border-radius: 8px;
-      padding: 16px;
-      margin-top: 30px;
-      color: #856404;
-    }
-    [data-theme="dark"] .tip-box {
-      background: #3d3200;
-      border-color: #665200;
-      color: #ffc107;
-    }
-    .tip-box h4 { margin-bottom: 8px; }
-    .tip-box ul { margin-left: 20px; }
+    .empty-state i { font-size: 48px; color: var(--text-secondary); margin-bottom: 16px; }
+    .empty-state h3 { color: var(--text-primary); margin-bottom: 8px; }
+    .empty-state p { color: var(--text-secondary); max-width: 400px; margin: 0 auto; }
+    
     .theme-toggle {
       position: fixed;
       top: 20px;
@@ -200,92 +204,61 @@
       gap: 6px;
       color: var(--text-primary);
     }
+    
+    @media (max-width: 600px) {
+      .coverage-grid { grid-template-columns: repeat(3, 1fr); }
+      .deck-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+      .deck-actions { width: 100%; justify-content: flex-end; }
+    }
   </style>
-<script src="shared-navbar.js"></script>
+  <script src="shared-navbar.js"></script>
 </head>
 <body>
   <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon"></i> Dark</button>
   
   <div class="container">
-    
     <h1><i class="fas fa-layer-group"></i> Anki Deck Library</h1>
-    <p class="subtitle">Build custom flashcard decks using the CPRS methodology for maximum retention.</p>
+    <p class="subtitle">Track your CPRS study coverage across all AZ-104 domains</p>
 
-    <div class="workflow-section">
-      <h2><i class="fas fa-brain"></i> CPRS Deck Building Workflow</h2>
-      <p>Create high-quality Anki decks using the Concept-Pathway Reinforcement System. Each card covers all 6 mastery steps for deep understanding.</p>
-      
-      <div class="workflow-steps">
-        <div class="workflow-step"><span class="step-num">1</span> Enter Azure concept</div>
-        <div class="workflow-step"><span class="step-num">2</span> Generate CPRS questions</div>
-        <div class="workflow-step"><span class="step-num">3</span> Copy MCQ to CSV</div>
-        <div class="workflow-step"><span class="step-num">4</span> Build .apkg deck</div>
-        <div class="workflow-step"><span class="step-num">5</span> Import to Anki</div>
+    <div class="insights-panel" id="insights-panel">
+      <h2><i class="fas fa-chart-pie"></i> Domain Coverage</h2>
+      <div class="coverage-grid" id="coverage-grid">
+        <!-- Coverage stats rendered here -->
       </div>
-      
-      <div class="action-buttons">
-        <a href="azure_personalized_review_guide.html#cprs-generator-section" class="action-btn">
-          <i class="fas fa-brain"></i> Open CPRS Generator
-        </a>
-        <a href="anki-deck-builder.html" class="action-btn secondary">
-          <i class="fas fa-hammer"></i> Open Deck Builder
-        </a>
+      <div class="insight-message" id="insight-message">
+        <i class="fas fa-lightbulb"></i>
+        <span id="insight-text">Loading insights...</span>
       </div>
     </div>
 
-    <div class="builder-section">
-      <div>
-        <h3><i class="fas fa-magic"></i> Quick CSV to Anki</h3>
-        <p>Have a CSV file ready? Convert it directly to an .apkg deck in your browser.</p>
-      </div>
-      <a href="anki-deck-builder.html" class="builder-btn">
-        <i class="fas fa-arrow-right"></i> Open Deck Builder
+    <div class="action-bar">
+      <a href="azure_personalized_review_guide.html#cprs-generator-section" class="action-btn primary">
+        <i class="fas fa-brain"></i> Generate CPRS Deck
       </a>
+      <a href="anki-deck-builder.html" class="action-btn secondary">
+        <i class="fas fa-hammer"></i> CSV to Anki Builder
+      </a>
+      <button class="action-btn secondary" id="clear-all-btn" style="margin-left:auto;">
+        <i class="fas fa-trash"></i> Clear All
+      </button>
     </div>
 
-    <div id="library-content">
-      <!-- Saved decks will be rendered here -->
+    <div id="domain-sections">
+      <!-- Domain sections rendered here -->
     </div>
 
     <div class="empty-state" id="empty-state" style="display:none;">
       <i class="fas fa-folder-open"></i>
-      <h3>Your Deck Library is Empty</h3>
-      <p>Build your first deck using the CPRS Generator above. Your custom decks will appear here once saved.</p>
-    </div>
-
-    <div class="tip-box">
-      <h4><i class="fas fa-lightbulb"></i> CPRS Deck Building Tips</h4>
-      <ul>
-        <li><strong>One concept at a time</strong> - Generate CPRS for each Azure concept you struggled with</li>
-        <li><strong>Use "Save to Library"</strong> - Saves the deck for later access</li>
-        <li><strong>Use "Copy for Anki"</strong> - Exports the MCQ in CSV format ready for Deck Builder</li>
-        <li><strong>Tag by exam objective</strong> - Use 1.1, 2.3, 3.4 etc. for easy filtering</li>
-        <li><strong>Study consistently</strong> - Spaced repetition works best with daily practice</li>
-      </ul>
+      <h3>No Decks Yet</h3>
+      <p>Generate your first CPRS deck to start tracking your study coverage.</p>
     </div>
   </div>
 
-  <style>
-    .deck-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin: 24px 0; }
-    .deck-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; transition: transform 0.2s, box-shadow 0.2s; }
-    .deck-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .deck-concept { font-weight: 600; font-size: 1.1em; color: var(--text-primary); margin-bottom: 8px; display: flex; align-items: center; gap: 8px; }
-    .deck-meta { font-size: 0.85em; color: var(--text-secondary); margin-bottom: 12px; }
-    .deck-meta span { display: block; margin: 4px 0; }
-    .deck-actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .deck-btn { padding: 8px 12px; border: 0; border-radius: 6px; cursor: pointer; font-size: 12px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; }
-    .deck-btn.primary { background: #9c27b0; color: #fff; }
-    .deck-btn.secondary { background: #ff9800; color: #fff; }
-    .deck-btn.danger { background: #dc3545; color: #fff; }
-    .library-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 12px; }
-    .library-header h2 { margin: 0; font-size: 1.2em; color: var(--text-primary); }
-    .clear-all-btn { padding: 8px 16px; background: #dc3545; color: #fff; border: 0; border-radius: 6px; cursor: pointer; font-size: 13px; }
-  </style>
-
   <script>
+    // Theme toggle
     const toggle = document.getElementById('theme-toggle');
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark') {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') {
       document.documentElement.setAttribute('data-theme', 'dark');
       toggle.innerHTML = '<i class="fas fa-sun"></i> Light';
     }
@@ -295,7 +268,53 @@
       toggle.innerHTML = isDark ? '<i class="fas fa-moon"></i> Dark' : '<i class="fas fa-sun"></i> Light';
       localStorage.setItem('theme', isDark ? 'light' : 'dark');
     });
-    
+
+    // AZ-104 Domain configuration
+    const DOMAINS = [
+      { key: 'Identities', name: 'Identities & Governance', icon: 'fa-id-card', color: '#0078d4', objectives: ['1.1', '1.2', '1.3', '1.4'] },
+      { key: 'Storage', name: 'Storage', icon: 'fa-database', color: '#107c10', objectives: ['2.1', '2.2', '2.3'] },
+      { key: 'Compute', name: 'Compute', icon: 'fa-server', color: '#ff9800', objectives: ['3.1', '3.2', '3.3', '3.4'] },
+      { key: 'Networking', name: 'Networking', icon: 'fa-network-wired', color: '#9c27b0', objectives: ['4.1', '4.2', '4.3', '4.4'] },
+      { key: 'Monitoring', name: 'Monitoring', icon: 'fa-chart-bar', color: '#d83b01', objectives: ['5.1', '5.2'] }
+    ];
+
+    // Map objective code to domain
+    function objectiveToDomain(objective) {
+      if (!objective) return 'Uncategorized';
+      const code = objective.split('.')[0];
+      const mapping = { '1': 'Identities', '2': 'Storage', '3': 'Compute', '4': 'Networking', '5': 'Monitoring' };
+      return mapping[code] || 'Uncategorized';
+    }
+
+    // Extract topics from CPRS data
+    function extractTopics(data) {
+      const topics = new Set();
+      if (data.concept) topics.add(data.concept);
+      if (data.questions) {
+        data.questions.forEach(q => {
+          if (q.type) topics.add(q.type);
+        });
+      }
+      return Array.from(topics).slice(0, 4);
+    }
+
+    // Get weak domains from quiz scores
+    function getWeakDomains() {
+      try {
+        const scores = JSON.parse(localStorage.getItem('mergedQuizScores') || '{}');
+        const domainScores = [];
+        DOMAINS.forEach(d => {
+          const data = scores[d.key];
+          if (data && data.total > 0) {
+            domainScores.push({ domain: d.key, pct: Math.round((data.correct / data.total) * 100) });
+          }
+        });
+        domainScores.sort((a, b) => a.pct - b.pct);
+        return domainScores.filter(d => d.pct < 70).slice(0, 2);
+      } catch (e) { return []; }
+    }
+
+    // Format for Anki CSV
     function formatForAnki(data) {
       if (!data || !data.questions) return '';
       let csv = 'Question,A,B,C,D,Correct,Explanation,Tags\n';
@@ -310,47 +329,151 @@
       });
       return csv;
     }
-    
+
+    // Render the library
     function renderLibrary() {
       const library = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
-      const container = document.getElementById('library-content');
+      const domainSections = document.getElementById('domain-sections');
       const emptyState = document.getElementById('empty-state');
-      
-      if (library.length === 0) {
-        container.innerHTML = '';
+      const coverageGrid = document.getElementById('coverage-grid');
+      const insightText = document.getElementById('insight-text');
+
+      // Group decks by domain
+      const decksByDomain = {};
+      DOMAINS.forEach(d => decksByDomain[d.key] = []);
+      decksByDomain['Uncategorized'] = [];
+
+      library.forEach(deck => {
+        const domain = objectiveToDomain(deck.objective || deck.data?.objective);
+        if (decksByDomain[domain]) {
+          decksByDomain[domain].push(deck);
+        } else {
+          decksByDomain['Uncategorized'].push(deck);
+        }
+      });
+
+      // Render coverage grid
+      let coverageHtml = '';
+      const weakDomains = getWeakDomains();
+      DOMAINS.forEach(d => {
+        const count = decksByDomain[d.key].length;
+        const hasDecks = count > 0;
+        coverageHtml += `<div class="coverage-item ${hasDecks ? 'has-decks' : 'no-decks'}">
+          <span class="count">${count}</span>
+          <span class="label">${d.name.split(' ')[0]}</span>
+        </div>`;
+      });
+      coverageGrid.innerHTML = coverageHtml;
+
+      // Generate insight message
+      const totalDecks = library.length;
+      const domainsWithDecks = DOMAINS.filter(d => decksByDomain[d.key].length > 0).length;
+      const domainsWithoutDecks = DOMAINS.filter(d => decksByDomain[d.key].length === 0).map(d => d.name.split(' ')[0]);
+      const weakWithoutDecks = weakDomains.filter(w => decksByDomain[w.domain].length === 0);
+
+      let insight = '';
+      if (totalDecks === 0) {
+        insight = 'Start by generating CPRS decks for your weakest domains to build targeted study material.';
+      } else if (weakWithoutDecks.length > 0) {
+        insight = `You're weak in ${weakWithoutDecks.map(w => w.domain).join(' and ')} (${weakWithoutDecks.map(w => w.pct + '%').join(', ')}) but have no decks for ${weakWithoutDecks.length === 1 ? 'it' : 'them'}. Generate CPRS decks to improve!`;
+      } else if (domainsWithoutDecks.length > 0) {
+        insight = `Good progress! You have ${totalDecks} deck${totalDecks > 1 ? 's' : ''} across ${domainsWithDecks} domain${domainsWithDecks > 1 ? 's' : ''}. Consider adding decks for: ${domainsWithoutDecks.join(', ')}.`;
+      } else {
+        insight = `Excellent coverage! You have decks for all 5 domains. Keep studying and add more as you find weak spots.`;
+      }
+      insightText.textContent = insight;
+
+      // Render domain sections
+      if (totalDecks === 0) {
+        domainSections.innerHTML = '';
         emptyState.style.display = 'block';
         return;
       }
-      
       emptyState.style.display = 'none';
-      
-      let html = '<div class="library-header">';
-      html += `<h2><i class="fas fa-layer-group" style="color:#9c27b0;margin-right:8px;"></i>${library.length} Saved Deck${library.length === 1 ? '' : 's'}</h2>`;
-      html += '<button class="clear-all-btn" onclick="clearAllDecks()"><i class="fas fa-trash"></i> Clear All</button>';
-      html += '</div>';
-      
-      html += '<div class="deck-grid">';
-      library.slice().reverse().forEach(deck => {
-        const date = new Date(deck.savedAt).toLocaleDateString();
-        html += `<div class="deck-card" data-id="${deck.id}">`;
-        html += `<div class="deck-concept"><i class="fas fa-brain" style="color:#9c27b0;"></i>${deck.concept}</div>`;
-        html += '<div class="deck-meta">';
-        html += `<span><i class="fas fa-list" style="margin-right:6px;"></i>${deck.questionCount} questions</span>`;
-        if (deck.objective) html += `<span><i class="fas fa-tag" style="margin-right:6px;"></i>Objective: ${deck.objective}</span>`;
-        html += `<span><i class="fas fa-calendar" style="margin-right:6px;"></i>Saved: ${date}</span>`;
-        html += '</div>';
-        html += '<div class="deck-actions">';
-        html += `<button class="deck-btn secondary" onclick="copyDeckCSV(${deck.id})"><i class="fas fa-file-csv"></i> Copy CSV</button>`;
-        html += `<button class="deck-btn danger" onclick="deleteDeck(${deck.id})"><i class="fas fa-trash"></i> Delete</button>`;
-        html += '</div>';
-        html += '</div>';
+
+      let sectionsHtml = '';
+      DOMAINS.forEach(d => {
+        const decks = decksByDomain[d.key];
+        const count = decks.length;
+        sectionsHtml += `<div class="domain-section">
+          <div class="domain-header" onclick="toggleDomain('${d.key}')">
+            <div class="domain-title">
+              <i class="fas ${d.icon} icon" style="color:${d.color};"></i>
+              ${d.name}
+            </div>
+            <span class="domain-count ${count === 0 ? 'empty' : ''}">${count} deck${count !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="domain-content" id="domain-${d.key}">
+            ${count === 0 ? '<div class="empty-domain">No decks yet - generate CPRS for this domain</div>' : ''}
+            <div class="deck-list">
+              ${decks.map(deck => `
+                <div class="deck-item">
+                  <div class="deck-info">
+                    <div class="deck-name">${deck.concept || deck.data?.concept || 'Untitled'}</div>
+                    <div class="deck-topics">
+                      ${extractTopics(deck.data || {}).map(t => `<span>${t}</span>`).join('')}
+                    </div>
+                  </div>
+                  <div class="deck-actions">
+                    <button class="deck-btn copy" onclick="copyDeck(${deck.id})" title="Copy as CSV"><i class="fas fa-copy"></i></button>
+                    <button class="deck-btn delete" onclick="deleteDeck(${deck.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>`;
       });
-      html += '</div>';
-      
-      container.innerHTML = html;
+
+      // Add uncategorized if any
+      if (decksByDomain['Uncategorized'].length > 0) {
+        const decks = decksByDomain['Uncategorized'];
+        sectionsHtml += `<div class="domain-section">
+          <div class="domain-header" onclick="toggleDomain('Uncategorized')">
+            <div class="domain-title">
+              <i class="fas fa-question-circle icon" style="color:#6c757d;"></i>
+              Uncategorized
+            </div>
+            <span class="domain-count">${decks.length} deck${decks.length !== 1 ? 's' : ''}</span>
+          </div>
+          <div class="domain-content" id="domain-Uncategorized">
+            <div class="deck-list">
+              ${decks.map(deck => `
+                <div class="deck-item">
+                  <div class="deck-info">
+                    <div class="deck-name">${deck.concept || deck.data?.concept || 'Untitled'}</div>
+                    <div class="deck-topics">
+                      ${extractTopics(deck.data || {}).map(t => `<span>${t}</span>`).join('')}
+                    </div>
+                  </div>
+                  <div class="deck-actions">
+                    <button class="deck-btn copy" onclick="copyDeck(${deck.id})" title="Copy as CSV"><i class="fas fa-copy"></i></button>
+                    <button class="deck-btn delete" onclick="deleteDeck(${deck.id})" title="Delete"><i class="fas fa-trash"></i></button>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>`;
+      }
+
+      domainSections.innerHTML = sectionsHtml;
+
+      // Auto-expand domains with decks
+      DOMAINS.forEach(d => {
+        if (decksByDomain[d.key].length > 0) {
+          const content = document.getElementById(`domain-${d.key}`);
+          if (content) content.classList.add('open');
+        }
+      });
     }
-    
-    function copyDeckCSV(id) {
+
+    function toggleDomain(key) {
+      const content = document.getElementById(`domain-${key}`);
+      if (content) content.classList.toggle('open');
+    }
+
+    function copyDeck(id) {
       const library = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
       const deck = library.find(d => d.id === id);
       if (!deck || !deck.data) {
@@ -359,24 +482,24 @@
       }
       const csv = formatForAnki(deck.data);
       navigator.clipboard.writeText(csv).then(() => {
-        alert('CSV copied to clipboard! Paste into a text file and import to Anki.');
+        alert('CSV copied! Paste into Anki Deck Builder or save as .csv file.');
       });
     }
-    
+
     function deleteDeck(id) {
-      if (!confirm('Delete this deck from your library?')) return;
+      if (!confirm('Delete this deck?')) return;
       let library = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
       library = library.filter(d => d.id !== id);
       localStorage.setItem('cprsLibrary', JSON.stringify(library));
       renderLibrary();
     }
-    
-    function clearAllDecks() {
+
+    document.getElementById('clear-all-btn').addEventListener('click', () => {
       if (!confirm('Delete ALL saved decks? This cannot be undone.')) return;
       localStorage.removeItem('cprsLibrary');
       renderLibrary();
-    }
-    
+    });
+
     document.addEventListener('DOMContentLoaded', renderLibrary);
   </script>
 </body>
