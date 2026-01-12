@@ -982,79 +982,81 @@
       })();
 
       // ===== STUDY TOPICS DATA =====
+      // Organized by official AZ-104 exam domains
       const studyTopics = [
-        // === Personalized Study Tools ===
-        { id: "guide-personalized-review", title: "Personalized Review: Weak Spot Focus", filename: "azure_personalized_review_guide.html", category: "Personalized Study Tools", icon: "fas fa-bullseye", type: "guide" },
-        { id: "tool-anki-deck-builder", title: "Anki Deck Builder", filename: "anki-deck-builder.html", category: "Personalized Study Tools", icon: "fas fa-magic", type: "guide" },
-        { id: "tool-anki-deck-library", title: "Anki Deck Library", filename: "anki-deck-library.html", category: "Personalized Study Tools", icon: "fas fa-layer-group", type: "guide" },
-        // === Lab Reviews & Practical ===
-        { id: "guide-lab-webapp-up-cli", title: "Lab: Deploy Static HTML with `az webapp up`", filename: "az104_webapp_up_lab_guide.html", category: "Lab Reviews & Practical", icon: "fas fa-cloud-upload-alt", type: "guide" },
-        { id: "flashcard-event-grid-storage", title: "Flashcard: Event Grid Subscription to Blob Storage (Lab)", filename: "flashcard_event_grid_storage.html", category: "Lab Reviews & Practical", icon: "fas fa-bolt", type: "guide" },
-        { id: "guide-lab-vm-cli", title: "Lab Review: VM CLI & Networking", filename: "az104_vm_cli_lab_guide.html", category: "Lab Reviews & Practical", icon: "fas fa-vial", type: "guide" },
-        { id: "guide-lab-linux-disk-ade", title: "Lab: Linux VM Disk Prep & Conceptual ADE", filename: "az104_linux_vm_add_disk_ade_guide.html", category: "Lab Reviews & Practical", icon: "fab fa-linux", type: "guide" },
-        { id: "guide-lab-windows-vm-image", title: "Lab Review: Windows VM, Web Server & Image Capture", filename: "az104_windows_vm_image_lab_guide.html", category: "Lab Reviews & Practical", icon: "fas fa-flask", type: "guide" },
-        { id: "guide-lab-vm-resize-cli", title: "Lab: Resizing an Azure VM (CLI)", filename: "az104_vm_resize_lab_guide.html", category: "Lab Reviews & Practical", icon: "fas fa-arrows-alt-v", type: "guide" },
-        { id: "guide-lab-vnet-peering-cli", title: "Lab Review: VNet Peering with Azure CLI", filename: "az104_vnet_peering_cli_lab_guide.html", category: "Lab Reviews & Practical", icon: "fas fa-link", type: "guide" },
-        // === Interactive Sorters ===
-        { id: "sorter-compute-scenarios", title: "Azure Compute - Scenario Sorter", filename: "azure_compute_scenario_sorter.html", category: "Interactive Sorters", icon: "fas fa-random", type: "sorter" },
-        { id: "sorter-network-components", title: "Azure Networking - Purpose Sorter", filename: "azure_network_components_sorter.html", category: "Interactive Sorters", icon: "fas fa-project-diagram", type: "sorter" },
-        { id: "sorter-nat-vs-firewall", title: "NAT Gateway vs. Azure Firewall Sorter", filename: "azure_nat_vs_firewall_sorter.html", category: "Interactive Sorters", icon: "fas fa-exchange-alt", type: "sorter" },
-        { id: "sorter-load-balancing", title: "Load Balancing Options Sorter", filename: "azure_load_balancing_sorter.html", category: "Interactive Sorters", icon: "fas fa-balance-scale-right", type: "sorter" },
-        // === Azure Core & Governance ===
-        { id: "guide-shared-responsibility-sorter", title: "Shared Responsibility Sorter", filename: "shared_responsibility_sorter.html", category: "Azure Core & Governance", icon: "fas fa-people-arrows", type: "sorter" },
-        { id: "shared-responsibility_guide", title: "Shared Responsibility Guide", filename: "AZ-104_shared_responsibility_guide.html", category: "Azure Core & Governance", icon: "fas fa-handshake", type: "guide" },
-        { id: "guide-policy", title: "Azure Policy Guide", filename: "azure_policy_guide.html", category: "Azure Core & Governance", icon: "fas fa-balance-scale", type: "guide" },
-        { id: "guide-policy-gov", title: "Azure Policy: Governance & Compliance", filename: "Azure Policy- Governance and Compliance Management.html", category: "Azure Core & Governance", icon: "fas fa-balance-scale-left", type: "guide" },
-        { id: "guide-keyvault", title: "Azure Key Vault Guide", filename: "Azure-key_vault_guide.html", category: "Azure Core & Governance", icon: "fas fa-key", type: "guide" },
-        { id: "guide-entra-id-concepts", title: "Microsoft Entra ID Core Concepts", filename: "microsoft_entra_id_concepts_guide.html", category: "Azure Core & Governance", icon: "fas fa-id-card", type: "guide" },
-        // === Azure CLI, PowerShell & ARM ===
-        { id: "guide-cli-ps", title: "Azure CLI & PowerShell Guide", filename: "azure_cli_ps_guide.html", category: "Azure CLI, PowerShell & ARM", icon: "fas fa-laptop-code", type: "guide" },
-        { id: "guide-arm", title: "ARM Templates Guide", filename: "arm_template_concise_guide.html", category: "Azure CLI, PowerShell & ARM", icon: "fas fa-file-code", type: "guide" },
-        { id: "guide-terraform-basics", title: "Terraform Basics for Azure (AZ-104 Lab Prep)", filename: "azure_terraform_basics_guide.html", category: "Azure CLI, PowerShell & ARM", icon: "fab fa-terraform", type: "guide" },
-        // === Azure Storage ===
-        { id: "guide-storage-overview", title: "Storage Account Overview", filename: "Study Guide Azure Storage Account Overview.html", category: "Azure Storage", icon: "fas fa-server", type: "guide" },
-        { id: "guide-storage-options", title: "Storage Options & Architecture", filename: "Study Guide Azure Storage Options and Architecture.html", category: "Azure Storage", icon: "fas fa-cubes", type: "guide" },
-        { id: "guide-storage-arch", title: "Storage Architecture Guide", filename: "azure_storage_architecture_guide.html", category: "Azure Storage", icon: "fas fa-building", type: "guide" },
-        { id: "guide-storage-flashcards", title: "Storage Redundancy Flashcards", filename: "azure_storage_flashcards.html", category: "Azure Storage", icon: "fas fa-clone", type: "guide" },
-        { id: "guide-redundancy", title: "Storage Redundancy Guide", filename: "redundancy_study_guide.html", category: "Azure Storage", icon: "fas fa-sync-alt", type: "guide" },
-        { id: "guide-lifecycle-tiers", title: "Blob Lifecycle & Tiers Guide", filename: "Azure_storage_lifecycle_tiers_guide.html", category: "Azure Storage", icon: "fas fa-recycle", type: "guide" },
-        { id: "guide-versioning-lifecycle", title: "Blob Versioning & Lifecycle", filename: "blob_versioning_lifecycle_guide.html", category: "Azure Storage", icon: "fas fa-project-diagram", type: "guide" },
-        { id: "guide-immutable", title: "Immutable Storage Guide", filename: "immutable_storage_guide.html", category: "Azure Storage", icon: "fas fa-lock", type: "guide" },
-        { id: "guide-blob-concepts", title: "Blob Storage Concepts", filename: "azure study guide Blob Storage Concepts.html", category: "Azure Storage", icon: "fas fa-file-invoice", type: "guide" },
-        { id: "guide-azcopy", title: "AzCopy v10 Guide", filename: "AzCopy v10.html", category: "Azure Storage", icon: "fas fa-terminal", type: "guide" },
-        // === Azure Networking ===
-        { id: "guide-gateway-lb", title: "Azure Gateway Load Balancer Deep Dive", filename: "azure_gateway_load_balancer_guide.html", category: "Azure Networking", icon: "fas fa-route", type: "guide" },
-        { id: "guide-nsg", title: "Network Security Groups (NSGs) Explained", filename: "azure_network_security_groups_guide.html", category: "Azure Networking", icon: "fas fa-user-shield", type: "guide" },
-        { id: "guide-load-balancing", title: "Azure Load Balancing Services Explained", filename: "azure_load_balancing_guide.html", category: "Azure Networking", icon: "fas fa-balance-scale-right", type: "guide" },
-        { id: "guide-azure-dns", title: "Azure DNS Services Explained", filename: "azure_dns_services_guide.html", category: "Azure Networking", icon: "fas fa-globe-americas", type: "guide" },
-        { id: "guide-vpn-gateway", title: "Azure VPN Gateway Explained", filename: "azure_vpn_gateway_guide.html", category: "Azure Networking", icon: "fas fa-dungeon", type: "guide" },
-        { id: "guide-app-gateway", title: "Azure Application Gateway Deep Dive", filename: "azure_application_gateway_guide.html", category: "Azure Networking", icon: "fas fa-globe", type: "guide" },
-        { id: "guide-vnet-deep-dive", title: "Azure Virtual Networks (VNets) Deep Dive", filename: "azure_vnet_deep_dive_guide.html", category: "Azure Networking", icon: "fas fa-network-wired", type: "guide" },
-        { id: "guide-networking-components", title: "Networking Components Guide", filename: "azure_networking_components_guide.html", category: "Azure Networking", icon: "fas fa-sitemap", type: "guide" },
-        { id: "guide-network-security-tools", title: "Network Security Tools Guide", filename: "azure_network_security_tools_guide.html", category: "Azure Networking", icon: "fas fa-shield-alt", type: "guide" },
-        { id: "guide-azure-firewall", title: "Azure Firewall Deep Dive", filename: "azure_firewall_guide.html", category: "Azure Networking", icon: "fas fa-fire-alt", type: "guide" },
-        { id: "guide-network-topologies", title: "Azure Network Topologies: Mesh vs. Hub-Spoke", filename: "azure_network_topologies_guide.html", category: "Azure Networking", icon: "fas fa-project-diagram", type: "guide" },
-        { id: "guide-expressroute", title: "Azure ExpressRoute Explained", filename: "azure_expressroute_guide.html", category: "Azure Networking", icon: "fas fa-globe", type: "guide" },
-        { id: "guide-lb-troubleshooting", title: "Lab Review: Azure Load Balancer Troubleshooting", filename: "azure_load_balancer_troubleshooting_guide.html", category: "Azure Networking", icon: "fas fa-exclamation-triangle", type: "guide" },
-        // === Azure Compute & Containers ===
-        { id: "guide-aks-intro", title: "AKS Introduction Guide", filename: "Azure Kuberenets Serv aks_intro_guide.html", category: "Azure Compute & Containers", icon: "fas fa-dharmachakra", type: "guide" },
-        { id: "guide-docker-concepts", title: "Docker Concepts & Role in Azure", filename: "azure_docker_concepts_guide.html", category: "Azure Compute & Containers", icon: "fab fa-docker", type: "guide" },
-        { id: "guide-compute-options", title: "Comparing Azure Compute Options Guide", filename: "azure_compute_options_guide.html", category: "Azure Compute & Containers", icon: "fas fa-cogs", type: "guide" },
-        { id: "guide-aci-container-groups", title: "Azure Containers: ACI & Container Groups Guide", filename: "azure_aci_container_groups_guide.html", category: "Azure Compute & Containers", icon: "fas fa-boxes", type: "guide" },
-        { id: "guide-vms-deep-dive-main", title: "Azure VMs Deep Dive (Incl. Disks & ADE)", filename: "azure_vms_deep_dive_guide.html", category: "Azure Compute & Containers", icon: "fas fa-server", type: "guide" },
-        { id: "guide-vmss", title: "Azure Virtual Machine Scale Sets (VMSS) Guide", filename: "azure_vmss_guide.html", category: "Azure Compute & Containers", icon: "fas fa-layer-group", type: "guide" },
-        { id: "guide-trusted-launch", title: "Azure Trusted Launch for Gen2 VMs Guide", filename: "azure_trusted_launch_guide.html", category: "Azure Compute & Containers", icon: "fas fa-user-shield", type: "guide" },
-        { id: "guide-app-service", title: "Azure App Service: Web Apps & Scaling Guide", filename: "azure_app_service_guide.html", category: "Azure Compute & Containers", icon: "fas fa-rocket", type: "guide" },
-        // === Azure Monitoring & Management ===
-        { id: "guide-storage-replication-rto-rpo", title: "CRITICAL: RTO/RPO Storage Replication Strategy", filename: "azure_storage_replication_rto_rpo_guide.html", category: "Azure Monitoring & Management", icon: "fas fa-exclamation-triangle", type: "guide", priority: "critical" },
-        { id: "guide-monitor-maintenance", title: "Azure Monitor & Maintenance Guide", filename: "azure_monitor_maintenance_guide.html", category: "Azure Monitoring & Management", icon: "fas fa-desktop", type: "guide" },
-        // === Quizzes ===
-        { id: "quiz-storage-aks-arm", title: "Storage, AKS & ARM Quiz", filename: "azure_storage_aks_arm_quiz.html", category: "Quizzes", icon: "fas fa-tasks", type: "quiz" },
-        { id: "quiz-redundancy-arm-aks", title: "Redundancy, ARM & AKS Quiz", filename: "azure_redundancy_arm_aks_quiz.html", category: "Quizzes", icon: "fas fa-sync-alt", type: "quiz" },
-        { id: "quiz-networking-components", title: "Azure Networking Components Quiz", filename: "azure_networking_quiz.html", category: "Quizzes", icon: "fas fa-project-diagram", type: "quiz" },
-        { id: "quiz-compute-vca", title: "Compute Quiz: VMs, Containers & App Services", filename: "azure_compute_vca_quiz.html", category: "Quizzes", icon: "fas fa-laptop-code", type: "quiz" },
-        { id: "quiz-app-service-detailed", title: "Detailed Azure App Service Quiz", filename: "azure_app_service_detailed_quiz.html", category: "Quizzes", icon: "fas fa-rocket", type: "quiz" },
-        { id: "quiz-dns-concepts", title: "Azure DNS Concepts Quiz", filename: "azure_dns_quiz.html", category: "Quizzes", icon: "fas fa-globe-americas", type: "quiz" },
+        // === Study Tools ===
+        { id: "guide-personalized-review", title: "Personalized Review: Weak Spot Focus", filename: "azure_personalized_review_guide.html", category: "Study Tools", icon: "fas fa-bullseye", type: "guide" },
+        { id: "tool-anki-deck-builder", title: "Anki Deck Builder", filename: "anki-deck-builder.html", category: "Study Tools", icon: "fas fa-magic", type: "guide" },
+        { id: "tool-anki-deck-library", title: "Anki Deck Library", filename: "anki-deck-library.html", category: "Study Tools", icon: "fas fa-layer-group", type: "guide" },
+        
+        // === Domain 1: Identities & Governance (20-25%) ===
+        { id: "guide-entra-id-concepts", title: "Microsoft Entra ID Core Concepts", filename: "microsoft_entra_id_concepts_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-id-card", type: "guide" },
+        { id: "guide-policy", title: "Azure Policy Guide", filename: "azure_policy_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-balance-scale", type: "guide" },
+        { id: "guide-policy-gov", title: "Azure Policy: Governance & Compliance", filename: "Azure Policy- Governance and Compliance Management.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-balance-scale-left", type: "guide" },
+        { id: "guide-keyvault", title: "Azure Key Vault Guide", filename: "Azure-key_vault_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-key", type: "guide" },
+        { id: "guide-shared-responsibility-sorter", title: "Shared Responsibility Sorter", filename: "shared_responsibility_sorter.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-people-arrows", type: "sorter" },
+        { id: "shared-responsibility_guide", title: "Shared Responsibility Guide", filename: "AZ-104_shared_responsibility_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-handshake", type: "guide" },
+        
+        // === Domain 2: Storage (15-20%) ===
+        { id: "guide-storage-overview", title: "Storage Account Overview", filename: "Study Guide Azure Storage Account Overview.html", category: "2. Storage (15-20%)", icon: "fas fa-server", type: "guide" },
+        { id: "guide-storage-options", title: "Storage Options & Architecture", filename: "Study Guide Azure Storage Options and Architecture.html", category: "2. Storage (15-20%)", icon: "fas fa-cubes", type: "guide" },
+        { id: "guide-storage-arch", title: "Storage Architecture Guide", filename: "azure_storage_architecture_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-building", type: "guide" },
+        { id: "guide-storage-flashcards", title: "Storage Redundancy Flashcards", filename: "azure_storage_flashcards.html", category: "2. Storage (15-20%)", icon: "fas fa-clone", type: "guide" },
+        { id: "guide-redundancy", title: "Storage Redundancy Guide", filename: "redundancy_study_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-sync-alt", type: "guide" },
+        { id: "guide-lifecycle-tiers", title: "Blob Lifecycle & Tiers Guide", filename: "Azure_storage_lifecycle_tiers_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-recycle", type: "guide" },
+        { id: "guide-versioning-lifecycle", title: "Blob Versioning & Lifecycle", filename: "blob_versioning_lifecycle_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-project-diagram", type: "guide" },
+        { id: "guide-immutable", title: "Immutable Storage Guide", filename: "immutable_storage_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-lock", type: "guide" },
+        { id: "guide-blob-concepts", title: "Blob Storage Concepts", filename: "azure study guide Blob Storage Concepts.html", category: "2. Storage (15-20%)", icon: "fas fa-file-invoice", type: "guide" },
+        { id: "guide-azcopy", title: "AzCopy v10 Guide", filename: "AzCopy v10.html", category: "2. Storage (15-20%)", icon: "fas fa-terminal", type: "guide" },
+        { id: "flashcard-event-grid-storage", title: "Flashcard: Event Grid Subscription to Blob Storage", filename: "flashcard_event_grid_storage.html", category: "2. Storage (15-20%)", icon: "fas fa-bolt", type: "guide" },
+        { id: "guide-storage-replication-rto-rpo", title: "CRITICAL: RTO/RPO Storage Replication Strategy", filename: "azure_storage_replication_rto_rpo_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-exclamation-triangle", type: "guide", priority: "critical" },
+        { id: "quiz-storage-aks-arm", title: "Storage, AKS & ARM Quiz", filename: "azure_storage_aks_arm_quiz.html", category: "2. Storage (15-20%)", icon: "fas fa-tasks", type: "quiz" },
+        { id: "quiz-redundancy-arm-aks", title: "Redundancy, ARM & AKS Quiz", filename: "azure_redundancy_arm_aks_quiz.html", category: "2. Storage (15-20%)", icon: "fas fa-sync-alt", type: "quiz" },
+        
+        // === Domain 3: Compute (20-25%) ===
+        { id: "guide-cli-ps", title: "Azure CLI & PowerShell Guide", filename: "azure_cli_ps_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-laptop-code", type: "guide" },
+        { id: "guide-arm", title: "ARM Templates Guide", filename: "arm_template_concise_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-file-code", type: "guide" },
+        { id: "guide-terraform-basics", title: "Terraform Basics for Azure", filename: "azure_terraform_basics_guide.html", category: "3. Compute (20-25%)", icon: "fab fa-terraform", type: "guide" },
+        { id: "guide-vms-deep-dive-main", title: "Azure VMs Deep Dive (Incl. Disks & ADE)", filename: "azure_vms_deep_dive_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-server", type: "guide" },
+        { id: "guide-vmss", title: "Azure Virtual Machine Scale Sets (VMSS) Guide", filename: "azure_vmss_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-layer-group", type: "guide" },
+        { id: "guide-trusted-launch", title: "Azure Trusted Launch for Gen2 VMs Guide", filename: "azure_trusted_launch_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-user-shield", type: "guide" },
+        { id: "guide-aks-intro", title: "AKS Introduction Guide", filename: "Azure Kuberenets Serv aks_intro_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-dharmachakra", type: "guide" },
+        { id: "guide-docker-concepts", title: "Docker Concepts & Role in Azure", filename: "azure_docker_concepts_guide.html", category: "3. Compute (20-25%)", icon: "fab fa-docker", type: "guide" },
+        { id: "guide-compute-options", title: "Comparing Azure Compute Options Guide", filename: "azure_compute_options_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-cogs", type: "guide" },
+        { id: "guide-aci-container-groups", title: "Azure Containers: ACI & Container Groups Guide", filename: "azure_aci_container_groups_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-boxes", type: "guide" },
+        { id: "guide-app-service", title: "Azure App Service: Web Apps & Scaling Guide", filename: "azure_app_service_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-rocket", type: "guide" },
+        { id: "guide-lab-webapp-up-cli", title: "Lab: Deploy Static HTML with `az webapp up`", filename: "az104_webapp_up_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-cloud-upload-alt", type: "guide" },
+        { id: "guide-lab-vm-cli", title: "Lab Review: VM CLI & Networking", filename: "az104_vm_cli_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-vial", type: "guide" },
+        { id: "guide-lab-linux-disk-ade", title: "Lab: Linux VM Disk Prep & Conceptual ADE", filename: "az104_linux_vm_add_disk_ade_guide.html", category: "3. Compute (20-25%)", icon: "fab fa-linux", type: "guide" },
+        { id: "guide-lab-windows-vm-image", title: "Lab Review: Windows VM, Web Server & Image Capture", filename: "az104_windows_vm_image_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-flask", type: "guide" },
+        { id: "guide-lab-vm-resize-cli", title: "Lab: Resizing an Azure VM (CLI)", filename: "az104_vm_resize_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-arrows-alt-v", type: "guide" },
+        { id: "sorter-compute-scenarios", title: "Azure Compute - Scenario Sorter", filename: "azure_compute_scenario_sorter.html", category: "3. Compute (20-25%)", icon: "fas fa-random", type: "sorter" },
+        { id: "quiz-compute-vca", title: "Compute Quiz: VMs, Containers & App Services", filename: "azure_compute_vca_quiz.html", category: "3. Compute (20-25%)", icon: "fas fa-laptop-code", type: "quiz" },
+        { id: "quiz-app-service-detailed", title: "Detailed Azure App Service Quiz", filename: "azure_app_service_detailed_quiz.html", category: "3. Compute (20-25%)", icon: "fas fa-rocket", type: "quiz" },
+        
+        // === Domain 4: Networking (15-20%) ===
+        { id: "guide-vnet-deep-dive", title: "Azure Virtual Networks (VNets) Deep Dive", filename: "azure_vnet_deep_dive_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-network-wired", type: "guide" },
+        { id: "guide-networking-components", title: "Networking Components Guide", filename: "azure_networking_components_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-sitemap", type: "guide" },
+        { id: "guide-nsg", title: "Network Security Groups (NSGs) Explained", filename: "azure_network_security_groups_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-user-shield", type: "guide" },
+        { id: "guide-network-security-tools", title: "Network Security Tools Guide", filename: "azure_network_security_tools_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-shield-alt", type: "guide" },
+        { id: "guide-azure-firewall", title: "Azure Firewall Deep Dive", filename: "azure_firewall_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-fire-alt", type: "guide" },
+        { id: "guide-load-balancing", title: "Azure Load Balancing Services Explained", filename: "azure_load_balancing_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-balance-scale-right", type: "guide" },
+        { id: "guide-gateway-lb", title: "Azure Gateway Load Balancer Deep Dive", filename: "azure_gateway_load_balancer_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-route", type: "guide" },
+        { id: "guide-app-gateway", title: "Azure Application Gateway Deep Dive", filename: "azure_application_gateway_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-globe", type: "guide" },
+        { id: "guide-azure-dns", title: "Azure DNS Services Explained", filename: "azure_dns_services_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-globe-americas", type: "guide" },
+        { id: "guide-vpn-gateway", title: "Azure VPN Gateway Explained", filename: "azure_vpn_gateway_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-dungeon", type: "guide" },
+        { id: "guide-expressroute", title: "Azure ExpressRoute Explained", filename: "azure_expressroute_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-globe", type: "guide" },
+        { id: "guide-network-topologies", title: "Azure Network Topologies: Mesh vs. Hub-Spoke", filename: "azure_network_topologies_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-project-diagram", type: "guide" },
+        { id: "guide-lab-vnet-peering-cli", title: "Lab Review: VNet Peering with Azure CLI", filename: "az104_vnet_peering_cli_lab_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-link", type: "guide" },
+        { id: "guide-lb-troubleshooting", title: "Lab Review: Azure Load Balancer Troubleshooting", filename: "azure_load_balancer_troubleshooting_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-exclamation-triangle", type: "guide" },
+        { id: "sorter-network-components", title: "Azure Networking - Purpose Sorter", filename: "azure_network_components_sorter.html", category: "4. Networking (15-20%)", icon: "fas fa-project-diagram", type: "sorter" },
+        { id: "sorter-nat-vs-firewall", title: "NAT Gateway vs. Azure Firewall Sorter", filename: "azure_nat_vs_firewall_sorter.html", category: "4. Networking (15-20%)", icon: "fas fa-exchange-alt", type: "sorter" },
+        { id: "sorter-load-balancing", title: "Load Balancing Options Sorter", filename: "azure_load_balancing_sorter.html", category: "4. Networking (15-20%)", icon: "fas fa-balance-scale-right", type: "sorter" },
+        { id: "quiz-networking-components", title: "Azure Networking Components Quiz", filename: "azure_networking_quiz.html", category: "4. Networking (15-20%)", icon: "fas fa-project-diagram", type: "quiz" },
+        { id: "quiz-dns-concepts", title: "Azure DNS Concepts Quiz", filename: "azure_dns_quiz.html", category: "4. Networking (15-20%)", icon: "fas fa-globe-americas", type: "quiz" },
+        
+        // === Domain 5: Monitoring (10-15%) ===
+        { id: "guide-monitor-maintenance", title: "Azure Monitor & Maintenance Guide", filename: "azure_monitor_maintenance_guide.html", category: "5. Monitoring (10-15%)", icon: "fas fa-desktop", type: "guide" },
       ];
 
       // Deduplicate topics
