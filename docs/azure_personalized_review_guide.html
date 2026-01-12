@@ -2535,14 +2535,35 @@
             ]
           };
 
+          // 5 AZ-104 Domains (App Service & Containers merged into Compute)
           const mergedQuizScores = {
             Identities: { correct: 36, total: 64 },
             Storage: { correct: 29, total: 60 },
-            Compute: { correct: 24, total: 59 },
+            Compute: { correct: 25, total: 64 },
             Networking: { correct: 18, total: 31 },
-            Monitoring: { correct: 14, total: 26 },
-            "App Service & Containers": { correct: 1, total: 5 }
+            Monitoring: { correct: 14, total: 26 }
           };
+          
+          // Migration: Merge "App Service & Containers" scores into Compute
+          (function migrateAppServiceToCompute() {
+            try {
+              const stored = localStorage.getItem('mergedQuizScores');
+              if (!stored) return;
+              const scores = JSON.parse(stored);
+              if (scores['App Service & Containers']) {
+                const appService = scores['App Service & Containers'];
+                const compute = scores['Compute'] || { correct: 0, total: 0 };
+                compute.correct = (compute.correct || 0) + (appService.correct || 0);
+                compute.total = (compute.total || 0) + (appService.total || 0);
+                scores['Compute'] = compute;
+                delete scores['App Service & Containers'];
+                localStorage.setItem('mergedQuizScores', JSON.stringify(scores));
+                console.log('Migrated App Service & Containers scores into Compute:', scores);
+              }
+            } catch (e) {
+              console.warn('Migration error:', e);
+            }
+          })();
 
           // Score loading priority:
           // 1. localStorage (persisted by Apply/Save) - takes precedence
@@ -4775,187 +4796,17 @@
             <div class="flashcard-content-area show" id="personalized-review-essay">
               <h4><i class="fas fa-lightbulb"></i>Personalized Review: Weak Spot Focus</h4>
 
-              <!-- Microsoft Entra ID Quick Reference Cheat Sheet -->
+              <!-- Link to Entra ID Quick Reference (moved to dedicated guide) -->
               <div style="background:#e3f2fd;border-left:4px solid #2196f3;padding:15px;margin:15px 0;border-radius:4px;">
                 <h4 style="color:#1976d2;margin:0 0 10px 0;">
-                  <i class="fas fa-graduation-cap"></i> Microsoft Entra ID Quick Reference (Tutorials Dojo)
+                  <i class="fas fa-graduation-cap"></i> Microsoft Entra ID Quick Reference
                 </h4>
-                
-                <details style="margin-bottom:10px;">
-                  <summary style="cursor:pointer;font-weight:bold;color:#1976d2;">📜 Licenses & Features</summary>
-                  <div style="margin-top:8px;padding-left:15px;">
-                    <p><strong>4 License Types:</strong></p>
-                    <ul>
-                      <li><strong>Free:</strong> User & group management (on-prem directory)</li>
-                      <li><strong>Premium P1:</strong> Access to on-prem + cloud resources</li>
-                      <li><strong>Premium P2:</strong> P1 + Identity Protection</li>
-                      <li><strong>Pay as you go:</strong> Azure AD B2C</li>
-                    </ul>
-                    <p><strong>Key Features:</strong></p>
-                    <ul>
-                      <li>Authentication: SSPR, MFA, custom banned passwords, smart lockout</li>
-                      <li><strong>B2B:</strong> Manage external identities (guest collaboration)</li>
-                      <li><strong>B2C:</strong> Customer identity service (control sign-up/sign-in)</li>
-                      <li>Conditional access for cloud apps</li>
-                      <li>Device identity management</li>
-                      <li><strong>Entra Domain Services:</strong> Domain join, group policy, auth</li>
-                      <li><strong>Identity Governance:</strong> Authorized access to resources</li>
-                      <li><strong>Permissions Management (CIEM):</strong> Visibility/control across Azure, AWS, GCP</li>
-                      <li><strong>Workload ID:</strong> Identity for apps, APIs, scripts, containers</li>
-                    </ul>
-                  </div>
-                </details>
-
-                <details style="margin-bottom:10px;">
-                  <summary style="cursor:pointer;font-weight:bold;color:#1976d2;">🔄 Entra Connect (Hybrid Identity)</summary>
-                  <div style="margin-top:8px;padding-left:15px;">
-                    <p><strong>5 Capabilities:</strong></p>
-                    <ol>
-                      <li><strong>Password hash sync:</strong> Sync password hashes</li>
-                      <li><strong>Pass-through auth:</strong> Same password on-prem & cloud</li>
-                      <li><strong>Federation:</strong> SSO without re-entering passwords</li>
-                      <li><strong>Synchronization:</strong> On-prem ↔ Cloud sync</li>
-                      <li><strong>Health Monitoring:</strong> Entra Connect Health</li>
-                    </ol>
-                  </div>
-                </details>
-
-                <details style="margin-bottom:10px;">
-                  <summary style="cursor:pointer;font-weight:bold;color:#1976d2;">👥 Users & MFA</summary>
-                  <div style="margin-top:8px;padding-left:15px;">
-                    <p><strong>User Types:</strong> Organization user, Guest user</p>
-                    <p><strong>MFA Methods:</strong> Authenticator app, OATH hardware token, SMS, Voice call</p>
-                    <p><strong>Bulk Operations:</strong> Bulk create, invite, delete, restore, download</p>
-                    <p><strong>SSPR:</strong> Self-service password reset from any device, anytime, anywhere</p>
-                    <p><strong>Device Settings:</strong> Max devices per user (configurable)</p>
-                    <p><strong>Licensing:</strong> Assign to users/groups (per tenant, non-transferable)</p>
-                  </div>
-                </details>
-
-                <details style="margin-bottom:10px;">
-                  <summary style="cursor:pointer;font-weight:bold;color:#1976d2;">👫 Groups</summary>
-                  <div style="margin-top:8px;padding-left:15px;">
-                    <p><strong>Definition:</strong> Collection of users, devices, groups, service principals</p>
-                    <p><strong>⚠️ Groups do NOT have security credentials</strong></p>
-                    <p><strong>✅ Users can belong to multiple groups</strong></p>
-                    
-                    <p><strong>2 Group Types:</strong></p>
-                    <ul>
-                      <li><strong>Security:</strong> Members: users, devices, groups, service principals | Owners: users, service principals</li>
-                      <li><strong>Microsoft 365:</strong> Members: users only | Owners: users, service principals</li>
-                    </ul>
-                    
-                    <p><strong>3 Membership Types:</strong></p>
-                    <ul>
-                      <li><strong>Assigned:</strong> Manually add users</li>
-                      <li><strong>Dynamic user:</strong> Auto add/remove via dynamic rules</li>
-                      <li><strong>Dynamic device:</strong> Auto add/remove via device rules</li>
-                    </ul>
-                  </div>
-                </details>
-
-                <details style="margin-bottom:10px;">
-                  <summary style="cursor:pointer;font-weight:bold;color:#1976d2;">🔐 Roles & Administrative Units</summary>
-                  <div style="margin-top:8px;padding-left:15px;">
-                    <p><strong>2 Role Types:</strong></p>
-                    <ul>
-                      <li><strong>Built-in:</strong> Fixed permissions</li>
-                      <li><strong>Custom:</strong> Select from preset list (requires Premium P1/P2)</li>
-                    </ul>
-                    
-                    <p><strong>Administrative Units:</strong></p>
-                    <ul>
-                      <li>Container for other Entra resources</li>
-                      <li>Can only contain: <strong>Users and Groups</strong></li>
-                    </ul>
-                  </div>
-                </details>
-
-                <details style="margin-bottom:10px;">
-                  <summary style="cursor:pointer;font-weight:bold;color:#1976d2;">💻 Device Join Types (CRITICAL for AZ-104)</summary>
-                  <div style="margin-top:8px;padding-left:15px;">
-                    <table style="width:100%;border-collapse:collapse;font-size:13px;">
-                      <tr style="background:#1976d2;color:white;">
-                        <th style="border:1px solid #ddd;padding:8px;">Join Type</th>
-                        <th style="border:1px solid #ddd;padding:8px;">Ownership</th>
-                        <th style="border:1px solid #ddd;padding:8px;">Location</th>
-                        <th style="border:1px solid #ddd;padding:8px;">OS Support</th>
-                        <th style="border:1px solid #ddd;padding:8px;">Use Case</th>
-                      </tr>
-                      <tr>
-                        <td style="border:1px solid #ddd;padding:8px;"><strong>Registered</strong></td>
-                        <td style="border:1px solid #ddd;padding:8px;">Personal (BYOD)</td>
-                        <td style="border:1px solid #ddd;padding:8px;">Cloud only</td>
-                        <td style="border:1px solid #ddd;padding:8px;">Win10, macOS, iOS, Android</td>
-                        <td style="border:1px solid #ddd;padding:8px;">Personal devices with personal MS account</td>
-                      </tr>
-                      <tr style="background:#f5f5f5;">
-                        <td style="border:1px solid #ddd;padding:8px;"><strong>Joined</strong></td>
-                        <td style="border:1px solid #ddd;padding:8px;">Organization</td>
-                        <td style="border:1px solid #ddd;padding:8px;">Cloud only</td>
-                        <td style="border:1px solid #ddd;padding:8px;">Win10 (not Home), Server 2019 VMs</td>
-                        <td style="border:1px solid #ddd;padding:8px;">NO on-prem AD infrastructure</td>
-                      </tr>
-                      <tr>
-                        <td style="border:1px solid #ddd;padding:8px;"><strong>Hybrid Joined</strong></td>
-                        <td style="border:1px solid #ddd;padding:8px;">Organization</td>
-                        <td style="border:1px solid #ddd;padding:8px;">Cloud + On-prem</td>
-                        <td style="border:1px solid #ddd;padding:8px;">Win 7/8.1/10, Server 2008-2019</td>
-                        <td style="border:1px solid #ddd;padding:8px;">Existing on-prem AD + Entra benefits</td>
-                      </tr>
-                    </table>
-                    
-                    <p style="margin-top:10px;"><strong>Capabilities Comparison:</strong></p>
-                    <ul>
-                      <li><strong>Registered:</strong> SSO to cloud | Conditional access (Intune) | Phone sign-in (Authenticator)</li>
-                      <li><strong>Joined:</strong> (All Registered capabilities) + Enterprise features for cloud-only orgs</li>
-                      <li><strong>Hybrid:</strong> SSO to cloud + on-prem | Conditional access | SSPR on lock screen | Enterprise State Roaming</li>
-                    </ul>
-                    
-                    <p><strong>MDM (Mobile Device Management):</strong> Enforces encryption, password complexity, security updates</p>
-                  </div>
-                </details>
-
-                <details style="margin-bottom:10px;">
-                  <summary style="cursor:pointer;font-weight:bold;color:#1976d2;">📱 App Registration & Proxy</summary>
-                  <div style="margin-top:8px;padding-left:15px;">
-                    <p><strong>5 Benefits of App Registration:</strong></p>
-                    <ol>
-                      <li>Get identity recognized by Entra</li>
-                      <li>Get secrets/keys for authentication</li>
-                      <li>Create custom name & logo</li>
-                      <li>Apply Entra authorization (RBAC, OAuth)</li>
-                      <li>Declare necessary permissions</li>
-                    </ol>
-                    <p><strong>Application Proxy:</strong> SSO + remote access for on-prem web apps</p>
-                  </div>
-                </details>
-
-                <details style="margin-bottom:10px;">
-                  <summary style="cursor:pointer;font-weight:bold;color:#1976d2;">🛡️ Security Features (HIGH-PRIORITY for Exam)</summary>
-                  <div style="margin-top:8px;padding-left:15px;">
-                    <p><strong>Identity Protection:</strong> Detect vulnerabilities & suspicious actions</p>
-                    <p><strong>PIM (Privileged Identity Management):</strong> Manage, control, monitor access to significant resources</p>
-                    <p><strong>Security Defaults:</strong> Enable MFA for all users, protect against common identity attacks</p>
-                    <p><strong>Block Legacy Authentication:</strong> Use when legacy apps don't support modern auth</p>
-                    <p><strong>Identity Secure Score:</strong> Verify configs align with Microsoft best practices</p>
-                    <p><strong>Smart Lockout:</strong> Lockout intruders trying password guessing/brute-force</p>
-                    <p><strong>Conditional Access:</strong> Manage access to cloud apps based on conditions</p>
-                  </div>
-                </details>
-
-                <details style="margin-bottom:10px;">
-                  <summary style="cursor:pointer;font-weight:bold;color:#1976d2;">📊 Monitoring & Reports</summary>
-                  <div style="margin-top:8px;padding-left:15px;">
-                    <p><strong>Entra Reports:</strong> Monitor security and usage patterns</p>
-                    <p><strong>Entra Connect Health:</strong> View alerts, performance, usage analytics for on-prem AD + Entra</p>
-                  </div>
-                </details>
-
-                <p style="margin-top:15px;font-size:12px;color:#666;">
-                  💡 <strong>Study Tip:</strong> This cheat sheet covers the most frequently tested Entra ID concepts on AZ-104. 
-                  Also available as Anki flashcards: <code>Microsoft_Entra_ID_Cheat_Sheet.csv</code> (48 cards)
+                <p style="margin:0 0 10px 0;color:#333;">
+                  The comprehensive Entra ID cheat sheet (Tutorials Dojo) has been moved to the dedicated guide for easier access.
                 </p>
+                <a href="microsoft_entra_id_concepts_guide.html#entra-quick-reference" class="domain-action-btn primary" style="display:inline-flex;align-items:center;gap:6px;background:#1976d2;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;font-weight:600;">
+                  <i class="fas fa-external-link-alt"></i> Open Entra ID Quick Reference
+                </a>
               </div>
 
               <p><strong>Identities & Governance (57% Accuracy) 🟠 Next Focus</strong></p>

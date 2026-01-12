@@ -1,4 +1,25 @@
 (function() {
+  // Migration: Merge "App Service & Containers" scores into Compute (runs on every page)
+  (function migrateAppServiceToCompute() {
+    try {
+      const stored = localStorage.getItem('mergedQuizScores');
+      if (!stored) return;
+      const scores = JSON.parse(stored);
+      if (scores['App Service & Containers']) {
+        const appService = scores['App Service & Containers'];
+        const compute = scores['Compute'] || { correct: 0, total: 0 };
+        compute.correct = (compute.correct || 0) + (appService.correct || 0);
+        compute.total = (compute.total || 0) + (appService.total || 0);
+        scores['Compute'] = compute;
+        delete scores['App Service & Containers'];
+        localStorage.setItem('mergedQuizScores', JSON.stringify(scores));
+        console.log('Navbar: Migrated App Service & Containers scores into Compute');
+      }
+    } catch (e) {
+      console.warn('Navbar migration error:', e);
+    }
+  })();
+
   const guidePages = [
     { name: "ARM Templates", url: "arm_templates_guide.html", tags: "arm json deployment infrastructure", domain: "Compute" },
     { name: "Azure CLI & PowerShell", url: "azure_cli_ps_guide.html", tags: "cli powershell az commands", domain: null },
@@ -13,9 +34,9 @@
     { name: "Entra ID", url: "microsoft_entra_id_concepts_guide.html", tags: "entra id azure ad identity authentication rbac", domain: "Identities" },
     { name: "Disaster Recovery", url: "azure_disaster_recovery_comprehensive_guide.html", tags: "backup recovery vault dr asr", domain: "Monitoring" },
     { name: "Monitor Maintenance", url: "azure_monitor_maintenance_guide.html", tags: "monitoring logs alerts metrics", domain: "Monitoring" },
-    { name: "App Service", url: "azure_app_service_guide.html", tags: "webapp paas deployment app service", domain: "App Service & Containers" },
-    { name: "Container Instances", url: "azure_aci_container_groups_guide.html", tags: "aci containers docker", domain: "App Service & Containers" },
-    { name: "Docker Concepts", url: "azure_docker_concepts_guide.html", tags: "docker containers", domain: "App Service & Containers" },
+    { name: "App Service", url: "azure_app_service_guide.html", tags: "webapp paas deployment app service", domain: "Compute" },
+    { name: "Container Instances", url: "azure_aci_container_groups_guide.html", tags: "aci containers docker", domain: "Compute" },
+    { name: "Docker Concepts", url: "azure_docker_concepts_guide.html", tags: "docker containers", domain: "Compute" },
     { name: "VM CLI Lab", url: "az104_vm_cli_lab_guide.html", tags: "vm lab cli virtual machine", domain: "Compute" },
     { name: "VNet Peering Lab", url: "az104_vnet_peering_cli_lab_guide.html", tags: "vnet peering lab networking", domain: "Networking" },
     { name: "Compute Quiz", url: "azure_compute_vca_quiz.html", tags: "quiz compute vm scale sets", domain: "Compute" },

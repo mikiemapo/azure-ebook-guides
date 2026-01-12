@@ -88,12 +88,22 @@ Two deployment options available:
   - Mobile responsive (icons-only on small screens)
 
 ## Data Contracts (localStorage)
-- **mergedQuizScores**: Domain scores with capitalized keys (Identities, Storage, Compute, Networking, Monitoring, App Service & Containers) containing {correct, total}
+- **mergedQuizScores**: Domain scores with capitalized keys (Identities, Storage, Compute, Networking, Monitoring) containing {correct, total}
+  - Note: App Service & Containers was merged into Compute domain (AZ-104 exam structure)
+  - Migration runs automatically on page load to combine any legacy App Service scores into Compute
 - **domainScoreMetadata**: Per-domain metadata with {lastUpdated, source, quizName}
 - **mergedQuizHistory**: v2 versioned snapshots with {version, takenAt, source, merged, summary}
 - **sourceRotationData**: Per-domain tracking of lastStudy/lastTest sources and dates
 - **az104SyncUserId**: Cloud sync user ID (format: `user_[UUID]`) for cross-device synchronization
 - **studyWorkflowChecklist**: Array of completed step IDs [1-11] for the Study Workflow Loop
+
+## Domain Structure (5 Domains)
+AZ-104 exam domains mapped to study hub:
+1. **Identities** (15-20%): Manage Azure Identities and Governance
+2. **Storage** (15-20%): Implement and Manage Storage
+3. **Compute** (20-25%): Deploy and Manage Compute Resources (includes App Service & Containers)
+4. **Networking** (20-25%): Implement and Manage Virtual Networking
+5. **Monitoring** (10-15%): Monitor and Maintain Azure Resources
 
 ## Single Source of Truth Pattern
 - Personalized Review Guide (azure_personalized_review_guide.html) owns all score input and metadata
