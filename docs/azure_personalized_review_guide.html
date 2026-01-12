@@ -1986,10 +1986,50 @@
         statsEl.innerHTML = `<i class="fas ${statsIcon}" style="color:${statsColor};margin-right:6px;"></i> ${statsLabel}: ${conceptCount} concepts, ${refCount} guide references`;
         statsEl.style.display = 'block';
         
+        autoSaveExtraction(data, 'ai');
+        
       } catch (err) {
         loadingEl.style.display = 'none';
         statsEl.innerHTML = `<i class="fas fa-exclamation-circle" style="color:#dc3545;margin-right:6px;"></i> Connection error. Try Quick Extract instead.`;
         statsEl.style.display = 'block';
+      }
+    }
+    
+    function autoSaveExtraction(data, method) {
+      try {
+        const tracker = JSON.parse(localStorage.getItem('studyActivityTracker') || '{}');
+        
+        if (!tracker.extractions) tracker.extractions = {
+          totalCount: 0,
+          concepts: {},
+          lastExtraction: null
+        };
+        
+        tracker.extractions.totalCount++;
+        tracker.extractions.lastExtraction = new Date().toISOString();
+        
+        const concepts = data.concepts || data.local_concepts || [];
+        concepts.forEach(c => {
+          const name = (typeof c === 'string' ? c : c.name || '').toLowerCase().trim();
+          if (!name) return;
+          
+          if (!tracker.extractions.concepts[name]) {
+            tracker.extractions.concepts[name] = {
+              name: typeof c === 'string' ? c : c.name,
+              firstSeen: new Date().toISOString(),
+              lastSeen: new Date().toISOString(),
+              frequency: 1,
+              method: method
+            };
+          } else {
+            tracker.extractions.concepts[name].frequency++;
+            tracker.extractions.concepts[name].lastSeen = new Date().toISOString();
+          }
+        });
+        
+        localStorage.setItem('studyActivityTracker', JSON.stringify(tracker));
+      } catch (e) {
+        console.warn('Failed to auto-save extraction:', e);
       }
     }
     
@@ -2021,6 +2061,8 @@
             }
             statsEl.innerHTML = statsHtml;
             statsEl.style.display = 'block';
+            
+            autoSaveExtraction({ local_concepts: extracted.concepts || [] }, 'quick');
           }
         });
       }
@@ -2209,6 +2251,34 @@
   
   <script>
   (function() {
+    function autoSaveCPRSToLibrary(data, concept) {
+      try {
+        const conceptKey = (data.concept || concept).toLowerCase().trim();
+        const tracker = JSON.parse(localStorage.getItem('studyActivityTracker') || '{}');
+        
+        if (!tracker.cprsGenerations) tracker.cprsGenerations = {};
+        
+        if (!tracker.cprsGenerations[conceptKey]) {
+          tracker.cprsGenerations[conceptKey] = {
+            concept: data.concept || concept,
+            objective: data.objective || '',
+            firstGenerated: new Date().toISOString(),
+            lastGenerated: new Date().toISOString(),
+            frequency: 1,
+            questionCount: data.questions ? data.questions.length : 0
+          };
+        } else {
+          tracker.cprsGenerations[conceptKey].frequency++;
+          tracker.cprsGenerations[conceptKey].lastGenerated = new Date().toISOString();
+          tracker.cprsGenerations[conceptKey].questionCount += data.questions ? data.questions.length : 0;
+        }
+        
+        localStorage.setItem('studyActivityTracker', JSON.stringify(tracker));
+      } catch (e) {
+        console.warn('Failed to auto-save CPRS to tracker:', e);
+      }
+    }
+    
     async function generateCPRS(concept) {
       const loadingEl = document.getElementById('cprs-loading');
       const statsEl = document.getElementById('cprs-stats');
@@ -2314,6 +2384,8 @@
         
         statsEl.innerHTML = `<i class="fas fa-brain" style="color:#9c27b0;margin-right:6px;"></i> Generated ${data.questions.length} MCQs for "${data.concept}"`;
         statsEl.style.display = 'block';
+        
+        autoSaveCPRSToLibrary(data, concept);
         
       } catch (err) {
         loadingEl.style.display = 'none';

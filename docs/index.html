@@ -1436,29 +1436,21 @@
         });
 
         const categoryOrder = [
-          "Personalized Study Tools",
-          "Lab Reviews & Practical",
-          "Interactive Sorters",
-          "Azure Core & Governance",
-          "Azure CLI, PowerShell & ARM",
-          "Azure Storage",
-          "Azure Networking",
-          "Azure Compute & Containers",
-          "Azure Monitoring & Management",
-          "Quizzes"
+          "Study Tools",
+          "1. Identities & Governance (20-25%)",
+          "2. Storage (15-20%)",
+          "3. Compute (20-25%)",
+          "4. Networking (15-20%)",
+          "5. Monitoring (10-15%)"
         ];
 
         const categoryIcons = {
-          "Personalized Study Tools": "fas fa-bullseye",
-          "Lab Reviews & Practical": "fas fa-vial",
-          "Interactive Sorters": "fas fa-th-list",
-          "Azure Core & Governance": "fas fa-cloud",
-          "Azure CLI, PowerShell & ARM": "fas fa-tools",
-          "Azure Storage": "fas fa-database",
-          "Azure Networking": "fas fa-network-wired",
-          "Azure Compute & Containers": "fas fa-server",
-          "Azure Monitoring & Management": "fas fa-chart-bar",
-          "Quizzes": "fas fa-question-circle"
+          "Study Tools": "fas fa-bullseye",
+          "1. Identities & Governance (20-25%)": "fas fa-id-card",
+          "2. Storage (15-20%)": "fas fa-database",
+          "3. Compute (20-25%)": "fas fa-server",
+          "4. Networking (15-20%)": "fas fa-network-wired",
+          "5. Monitoring (10-15%)": "fas fa-chart-bar"
         };
 
         categoryOrder.forEach(catName => {
@@ -1577,17 +1569,70 @@
         return matches.slice(0, 3);
       }
 
+      function getFrequentlyVisited() {
+        try {
+          const tracker = JSON.parse(localStorage.getItem('studyActivityTracker') || '{}');
+          const items = [];
+          
+          if (tracker.cprsGenerations) {
+            Object.values(tracker.cprsGenerations).forEach(g => {
+              items.push({
+                name: g.concept,
+                frequency: g.frequency,
+                type: 'cprs',
+                lastVisited: g.lastGenerated
+              });
+            });
+          }
+          
+          if (tracker.extractions && tracker.extractions.concepts) {
+            Object.values(tracker.extractions.concepts).forEach(c => {
+              items.push({
+                name: c.name,
+                frequency: c.frequency,
+                type: 'extraction',
+                lastVisited: c.lastSeen
+              });
+            });
+          }
+          
+          items.sort((a, b) => b.frequency - a.frequency);
+          return items.slice(0, 8);
+        } catch (e) {
+          return [];
+        }
+      }
+      
       function renderStudyAssistant() {
         const contentEl = document.getElementById('study-assistant-content');
         if (!contentEl) return;
 
         const scores = getStoredScores();
+        const frequentlyVisited = getFrequentlyVisited();
+        
+        let out = '';
+        
+        if (frequentlyVisited.length > 0) {
+          out += '<div style="margin-bottom:16px;padding:12px;background:linear-gradient(135deg,#9c27b015,#00bcd415);border-radius:8px;border:1px solid var(--border-color);">';
+          out += '<div style="font-weight:600;margin-bottom:8px;font-size:0.9em;color:var(--text-primary);"><i class="fas fa-fire" style="color:#ff5722;margin-right:6px;"></i>Frequently Studied Topics</div>';
+          out += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+          frequentlyVisited.forEach(item => {
+            const typeIcon = item.type === 'cprs' ? 'fa-brain' : 'fa-search';
+            const typeColor = item.type === 'cprs' ? '#9c27b0' : '#dc3545';
+            out += `<span style="padding:4px 10px;background:var(--bg-secondary);border-radius:16px;font-size:0.8em;border:1px solid var(--border-color);display:inline-flex;align-items:center;gap:4px;">`;
+            out += `<i class="fas ${typeIcon}" style="color:${typeColor};font-size:0.75em;"></i>`;
+            out += `${item.name} <span style="color:var(--text-muted);font-size:0.85em;">(${item.frequency}x)</span>`;
+            out += `</span>`;
+          });
+          out += '</div></div>';
+        }
+        
         if (!scores || Object.keys(scores).length === 0) {
-          contentEl.innerHTML = '<p style="color: var(--text-muted);">No quiz performance data found. Update your scores in the <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue);">Personalized Review Guide</a> to see recommendations.</p>';
+          out += '<p style="color: var(--text-muted);">No quiz performance data found. Update your scores in the <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue);">Personalized Review Guide</a> to see recommendations.</p>';
+          contentEl.innerHTML = out;
           return;
         }
 
-        // Calculate weak domains
         const arr = Object.keys(scores).map(k => {
           const v = scores[k] || { correct: 0, total: 0 };
           const percent = v.total ? v.correct / v.total : 0;
@@ -1597,11 +1642,13 @@
         const weak = arr.slice(0, 5);
 
         if (!weak.length) {
-          contentEl.innerHTML = '<p style="color: var(--text-muted);">No domain scores available.</p>';
+          out += '<p style="color: var(--text-muted);">No domain scores available.</p>';
+          contentEl.innerHTML = out;
           return;
         }
 
-        let out = '<ol style="margin: 0 0 8px 18px; padding: 0; list-style: decimal;">';
+        out += '<div style="font-weight:600;margin-bottom:8px;font-size:0.9em;color:var(--text-primary);"><i class="fas fa-chart-line" style="color:#dc3545;margin-right:6px;"></i>Weak Domains (from Quiz Scores)</div>';
+        out += '<ol style="margin: 0 0 8px 18px; padding: 0; list-style: decimal;">';
         weak.forEach(w => {
           const ragClass = w.percent < 0.5 ? 'rag-red' : w.percent < 0.7 ? 'rag-amber' : 'rag-green';
           out += `<li style="margin-bottom: 12px; padding: 8px; background: var(--bg-primary); border-radius: var(--radius-sm);">`;
