@@ -65,3 +65,4 @@ __pycache__/
 
 # Only keep essential study guide files in docs/
 # Everything else should be ignored
+node_modules

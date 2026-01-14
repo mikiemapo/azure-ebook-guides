@@ -1,0 +1,7 @@
+/Users/mike1macbook/Documents/MY STUFF DOCS AND ALL/EBOOK/e_book_repo_for_gthb/MyFirstAzureWebApp/bin/Release/net9.0/publish/MyFirstAzureWebApp
+/Users/mike1macbook/Documents/MY STUFF DOCS AND ALL/EBOOK/e_book_repo_for_gthb/MyFirstAzureWebApp/bin/Release/net9.0/publish/appsettings.Development.json
+/Users/mike1macbook/Documents/MY STUFF DOCS AND ALL/EBOOK/e_book_repo_for_gthb/MyFirstAzureWebApp/bin/Release/net9.0/publish/appsettings.json
+/Users/mike1macbook/Documents/MY STUFF DOCS AND ALL/EBOOK/e_book_repo_for_gthb/MyFirstAzureWebApp/bin/Release/net9.0/publish/MyFirstAzureWebApp.dll
+/Users/mike1macbook/Documents/MY STUFF DOCS AND ALL/EBOOK/e_book_repo_for_gthb/MyFirstAzureWebApp/bin/Release/net9.0/publish/MyFirstAzureWebApp.deps.json
+/Users/mike1macbook/Documents/MY STUFF DOCS AND ALL/EBOOK/e_book_repo_for_gthb/MyFirstAzureWebApp/bin/Release/net9.0/publish/MyFirstAzureWebApp.runtimeconfig.json
+/Users/mike1macbook/Documents/MY STUFF DOCS AND ALL/EBOOK/e_book_repo_for_gthb/MyFirstAzureWebApp/bin/Release/net9.0/publish/MyFirstAzureWebApp.pdb

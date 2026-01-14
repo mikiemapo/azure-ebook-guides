@@ -230,19 +230,47 @@ Format your response as JSON with this structure:
 }
 
 Quiz review content:
+<<<<<<< HEAD
 ${rawText.slice(0, 4000)}`;
+=======
+${rawText.slice(0, 16000)}`;
+
+    // Generate specific cache key for this text content
+    const textHash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(rawText.slice(0, 1000))); // Hash first 1000 chars as proxy or hash all
+    const hashArray = Array.from(new Uint8Array(textHash));
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    const cacheKey = `concepts:text:${hashHex}`;
+
+    if (env.CPRS_CACHE) {
+      const cached = await env.CPRS_CACHE.get(cacheKey, { type: "json" });
+      if (cached) {
+        return new Response(JSON.stringify({ ...cached, cached: true }), { headers: corsHeaders(origin) });
+      }
+    }
+>>>>>>> 8018936 (feat(sync): Migrate to Firebase and fix Worker limits)
 
     const result = await callOpenAI(env.OPENAI_API_KEY, [
       { role: "system", content: "You are an Azure certification expert who provides accurate, authoritative Azure facts for the AZ-104 exam. Always be precise and factual." },
       { role: "user", content: prompt }
     ]);
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8018936 (feat(sync): Migrate to Firebase and fix Worker limits)
     const allConceptNames = result.concepts ? result.concepts.map(c => c.name) : [];
     allConceptNames.push(...localConcepts);
 
     result.guide_references = findGuideReferences(allConceptNames);
     result.local_concepts = localConcepts;
 
+<<<<<<< HEAD
+=======
+    if (env.CPRS_CACHE) {
+      await env.CPRS_CACHE.put(cacheKey, JSON.stringify(result), { expirationTtl: 60 * 60 * 24 * 7 }); // Cache for 7 days
+    }
+
+>>>>>>> 8018936 (feat(sync): Migrate to Firebase and fix Worker limits)
     return new Response(JSON.stringify(result), { headers: corsHeaders(origin) });
 
   } catch (e) {
