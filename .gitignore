@@ -1,68 +1,12 @@
-# Large binary files and personal documents
-*.pdf
-*.rdp
-*.zip
-*.jpg
-*.png
-*.sln
-
-# Personal/Private content (study/scratch folders)
-Quiz results/
-Conversations/
-Conversations */
-AZ-104-Study-Deck/
-e_book_repo_for_gthb/
-TERRAFORM 2/
-Create a container registry*/
-Deploying a container*/
-DNS Zn Json*/
-json whizlab*/
-json zin whizlab*/
-main whizlabs*/
-dns zone records*/
-quiz_mastery_app/
-
-# Backup but selectively track:
-# CSV files in AZ-104-Critical-Priorities-Study-Deck/ are tracked
-# APKG files in Anki-Decks/ are tracked
-!Anki-Decks/
-!Anki-Decks/**/*.apkg
-!AZ-104-Critical-Priorities-Study-Deck/
-!AZ-104-Critical-Priorities-Study-Deck/**/*.csv
-!AZ-104-Critical-Priorities-Study-Deck/**/*.py
-
-# Temporary files and commands
-command.sh.txt
-commands.sh
-audio_list.txt
-azuredeploy.json
-azuredeploy.json.
-main.tf
-template.zip
-vmTest*.rdp
-*.code-workspace
-
-# Media files
-*.wav
-*.m4a
-*.mp3
-*.mp4
-*.mov
-
-# Python virtual environment
-.venv/
-__pycache__/
-*.pyc
-
-# Local sync data (user scores)
-.sync_data/
-
-# System files
+node_modules/
 .DS_Store
-.vscode/
-*.swp
-*.tmp
-
-# Only keep essential study guide files in docs/
-# Everything else should be ignored
-node_modules
+*.dll
+*.pdb
+*.gz
+*.cache
+obj/
+bin/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
