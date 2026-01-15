@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AZ-104 Media Hub - Mark In/Out</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      background: #1a1a2e;
+      color: #eaeaea;
+      min-height: 100vh;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      max-width: 100%;
+    }
+
+    header {
+      background: #16213e;
+      padding: 12px 20px;
+      border-bottom: 1px solid #0f3460;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    header h1 {
+      font-size: 1.2rem;
+      color: #e94560;
+      white-space: nowrap;
+    }
+
+    .file-input-wrapper {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    .file-input-wrapper label {
+      background: #e94560;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: background 0.2s;
+    }
+
+    .file-input-wrapper label:hover {
+      background: #ff6b6b;
+    }
+
+    .file-input-wrapper input {
+      display: none;
+    }
+
+    .file-count {
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    .main-content {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: #16213e;
+      border-right: 1px solid #0f3460;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #0f3460;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #e94560;
+    }
+
+    .file-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .file-item {
+      padding: 10px 12px;
+      margin-bottom: 4px;
+      border-radius: 6px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background 0.2s;
+    }
+
+    .file-item:hover {
+      background: #0f3460;
+    }
+
+    .file-item.active {
+      background: #e94560;
+    }
+
+    .file-item .icon {
+      font-size: 1.2rem;
+    }
+
+    .file-item .name {
+      flex: 1;
+      font-size: 0.85rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .file-item .transcript-badge {
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: #0f3460;
+      color: #4ecca3;
+    }
+
+    .center-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .player-container {
+      background: #0f0f1a;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .player-container h2 {
+      font-size: 1rem;
+      margin-bottom: 12px;
+      color: #e94560;
+    }
+
+    .player-container audio,
+    .player-container video {
+      width: 100%;
+      max-height: 300px;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .no-file-message {
+      text-align: center;
+      color: #666;
+      padding: 40px;
+    }
+
+    .custom-controls {
+      margin-top: 16px;
+    }
+
+    .time-display {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: #aaa;
+      margin-bottom: 8px;
+    }
+
+    .scrubber-container {
+      width: 100%;
+      height: 40px;
+      background: #1a1a2e;
+      border-radius: 6px;
+      position: relative;
+      cursor: pointer;
+      touch-action: none;
+      margin-bottom: 12px;
+    }
+
+    .scrubber-track {
+      position: absolute;
+      top: 50%;
+      left: 8px;
+      right: 8px;
+      height: 6px;
+      background: #2d2d44;
+      border-radius: 3px;
+      transform: translateY(-50%);
+    }
+
+    .scrubber-progress {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background: #e94560;
+      border-radius: 3px;
+      width: 0%;
+    }
+
+    .scrubber-handle {
+      position: absolute;
+      top: 50%;
+      left: 0%;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .playback-controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .control-btn {
+      padding: 14px 18px;
+      /* Larger touch target */
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+      background: #2d2d44;
+      color: #eaeaea;
+      min-width: 60px;
+      touch-action: manipulation;
+    }
+
+    .control-btn.play {
+      background: #4ecca3;
+      color: #1a1a2e;
+      padding: 16px 32px;
+      /* Prominent play button */
+      font-size: 1.1rem;
+    }
+
+
+
+    .control-btn:hover {
+      filter: brightness(1.2);
+    }
+
+    .control-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .marker-controls {
+      display: flex;
+      gap: 12px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    .marker-btn {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 500;
+    }
+
+    .marker-btn.in {
+      background: #4ecca3;
+      color: #1a1a2e;
+    }
+
+    .marker-btn.out {
+      background: #e94560;
+      color: white;
+    }
+
+    .marker-btn.clear {
+      background: #2d2d44;
+      color: #aaa;
+    }
+
+    .marker-btn.export {
+      background: #ffd93d;
+      color: #1a1a2e;
+      margin-left: auto;
+      /* Push to right */
+    }
+
+    .marker-btn:hover {
+      transform: scale(1.02);
+      filter: brightness(1.1);
+    }
+
+    .marker-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .current-marker-info {
+      margin-top: 12px;
+      font-size: 0.85rem;
+      color: #aaa;
+    }
+
+    .right-panel {
+      width: 350px;
+      background: #16213e;
+      border-left: 1px solid #0f3460;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .right-panel-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #0f3460;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #e94560;
+    }
+
+    .segments-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px;
+    }
+
+    .segment-slot {
+      background: #0f0f1a;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+
+    .segment-slot-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    .segment-slot-label {
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .segment-slot-label.a {
+      color: #4ecca3;
+    }
+
+    .segment-slot-label.b {
+      color: #ffd93d;
+    }
+
+    .segment-slot-label.c {
+      color: #6c63ff;
+    }
+
+    .segment-time {
+      font-size: 0.75rem;
+      color: #888;
+    }
+
+    .segment-text {
+      background: #1a1a2e;
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 0.85rem;
+      line-height: 1.5;
+      max-height: 120px;
+      overflow-y: auto;
+      margin-bottom: 8px;
+      color: #ccc;
+    }
+
+    .segment-text.empty {
+      color: #666;
+      font-style: italic;
+    }
+
+    .segment-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .segment-actions button {
+      flex: 1;
+      padding: 6px 12px;
+      border: none;
+      border-radius: 4px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .copy-btn {
+      background: #4ecca3;
+      color: #1a1a2e;
+    }
+
+    .clear-slot-btn {
+      background: #2d2d44;
+      color: #aaa;
+    }
+
+    .segment-actions button:hover {
+      filter: brightness(1.1);
+    }
+
+    .segment-actions button:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #4ecca3;
+      color: #1a1a2e;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 1000;
+    }
+
+    .toast.show {
+      opacity: 1;
+    }
+
+    .live-transcript {
+      height: 150px;
+      overflow-y: auto;
+      background: #1a1a2e;
+      /* Darker background for contrast */
+      border: 1px solid #2d2d44;
+      padding: 12px;
+      margin-top: 16px;
+      font-size: 1rem;
+      line-height: 1.6;
+      border-radius: 8px;
+      scroll-behavior: smooth;
+      color: #888;
+      position: relative;
+      /* For snap-back indicator if needed */
+    }
+
+    .transcript-sent {
+      padding: 4px 6px;
+      border-radius: 4px;
+      display: inline;
+      /* Keep as flow text */
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    .transcript-sent:hover {
+      background: #2d2d44;
+      color: #bbb;
+    }
+
+    .transcript-sent.active {
+      color: #fff;
+      background: rgba(78, 204, 163, 0.25);
+      /* Green tint */
+      box-shadow: 0 0 0 2px rgba(78, 204, 163, 0.1);
+      font-weight: 500;
+    }
+
+    /* Snap back toast/indicator style */
+    .snap-indicator {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: #e94560;
+      color: white;
+      font-size: 0.7rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    @media (max-width: 900px) {
+      .main-content {
+        flex-direction: column;
+      }
+
+      .sidebar,
+      .right-panel {
+        width: 100%;
+        max-height: 200px;
+      }
+
+      .live-transcript {
+        height: 200px;
+        /* More space on mobile vertical layout */
+        font-size: 1.1rem;
+        /* Larger text for reading */
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <header>
+      <h1>AZ-104 Media Hub</h1>
+      <div class="file-input-wrapper">
+        <label for="fileInput">Select Folder</label>
+        <input type="file" id="fileInput" webkitdirectory directory multiple>
+        <span class="file-count" id="fileCount">No files loaded</span>
+      </div>
+    </header>
+
+    <div class="main-content">
+      <div class="sidebar">
+        <div class="sidebar-header">Media Library</div>
+        <div class="file-list" id="fileList">
+          <div class="no-file-message">Select a folder to begin</div>
+        </div>
+      </div>
+
+      <div class="center-panel">
+        <div class="player-container">
+          <h2 id="playerTitle">No file selected</h2>
+          <div id="playerArea">
+            <div class="no-file-message">Select a media file from the library</div>
+          </div>
+
+          <div class="custom-controls" id="customControls" style="display: none;">
+            <div class="time-display">
+              <span id="currentTime">00:00</span>
+              <span id="duration">00:00</span>
+            </div>
+
+            <div class="scrubber-container" id="scrubber">
+              <div class="scrubber-track">
+                <div class="scrubber-progress" id="scrubberProgress"></div>
+              </div>
+              <div class="scrubber-handle" id="scrubberHandle"></div>
+            </div>
+
+            <div class="playback-controls">
+              <button class="control-btn" id="skipBack10">-10s</button>
+              <button class="control-btn" id="skipBack5">-5s</button>
+              <button class="control-btn play" id="playPauseBtn">Play</button>
+              <button class="control-btn" id="skipFwd5">+5s</button>
+              <button class="control-btn" id="skipFwd10">+10s</button>
+            </div>
+
+            <!-- Live Transcript Container -->
+            <div id="liveTranscript" class="live-transcript">
+              <div class="no-file-message" style="padding: 20px;">Transcript will appear here...</div>
+              <div id="snapIndicator" class="snap-indicator">Auto-scroll Paused</div>
+            </div>
+          </div>
+
+          <div class="marker-controls">
+            <button class="marker-btn in" id="markInBtn" disabled>Mark IN</button>
+            <button class="marker-btn out" id="markOutBtn" disabled>Mark OUT</button>
+            <button class="marker-btn clear" id="clearMarkersBtn" disabled>Clear</button>
+            <button class="marker-btn export" id="exportBtn" disabled>💾 Export</button>
+          </div>
+          <div class="current-marker-info" id="markerInfo">Select a slot (A, B, C) then mark In/Out points</div>
+        </div>
+      </div>
+
+      <div class="right-panel">
+        <div class="right-panel-header">Marked Segments</div>
+        <div class="segments-list" id="segmentsList">
+          <div class="segment-slot" data-slot="a">
+            <div class="segment-slot-header">
+              <span class="segment-slot-label a">Marker A</span>
+              <span class="segment-time" id="timeA">--:-- to --:--</span>
+            </div>
+            <div class="segment-text empty" id="textA">Click to select this slot, then mark In/Out</div>
+            <div class="segment-actions">
+              <button class="copy-btn" id="copyA" disabled>Copy</button>
+              <button class="clear-slot-btn" id="clearA" disabled>Clear</button>
+            </div>
+          </div>
+
+          <div class="segment-slot" data-slot="b">
+            <div class="segment-slot-header">
+              <span class="segment-slot-label b">Marker B</span>
+              <span class="segment-time" id="timeB">--:-- to --:--</span>
+            </div>
+            <div class="segment-text empty" id="textB">Click to select this slot, then mark In/Out</div>
+            <div class="segment-actions">
+              <button class="copy-btn" id="copyB" disabled>Copy</button>
+              <button class="clear-slot-btn" id="clearB" disabled>Clear</button>
+            </div>
+          </div>
+
+          <div class="segment-slot" data-slot="c">
+            <div class="segment-slot-header">
+              <span class="segment-slot-label c">Marker C</span>
+              <span class="segment-time" id="timeC">--:-- to --:--</span>
+            </div>
+            <div class="segment-text empty" id="textC">Click to select this slot, then mark In/Out</div>
+            <div class="segment-actions">
+              <button class="copy-btn" id="copyC" disabled>Copy</button>
+              <button class="clear-slot-btn" id="clearC" disabled>Clear</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // State
+    let mediaFiles = [];
+    let transcripts = {};
+    let currentFile = null;
+    let currentMediaElement = null;
+    let activeSlot = 'a';
+    let markers = {
+      a: { inTime: null, outTime: null, text: '' },
+      b: { inTime: null, outTime: null, text: '' },
+      c: { inTime: null, outTime: null, text: '' }
+    };
+    let isDragging = false;
+
+    // DOM Elements
+    const fileInput = document.getElementById('fileInput');
+    const fileCount = document.getElementById('fileCount');
+    const fileList = document.getElementById('fileList');
+    const playerTitle = document.getElementById('playerTitle');
+    const playerArea = document.getElementById('playerArea');
+    const customControls = document.getElementById('customControls');
+    const markInBtn = document.getElementById('markInBtn');
+    const markOutBtn = document.getElementById('markOutBtn');
+    const clearMarkersBtn = document.getElementById('clearMarkersBtn');
+    const exportBtn = document.getElementById('exportBtn');
+    const markerInfo = document.getElementById('markerInfo');
+    const toast = document.getElementById('toast');
+    const liveTranscriptEl = document.getElementById('liveTranscript');
+    const snapIndicator = document.getElementById('snapIndicator');
+
+    // Playback controls
+    const playPauseBtn = document.getElementById('playPauseBtn');
+    const skipBack10 = document.getElementById('skipBack10');
+    const skipBack5 = document.getElementById('skipBack5');
+    const skipFwd5 = document.getElementById('skipFwd5');
+    const skipFwd10 = document.getElementById('skipFwd10');
+    const currentTimeEl = document.getElementById('currentTime');
+    const durationEl = document.getElementById('duration');
+    const scrubber = document.getElementById('scrubber');
+    const scrubberProgress = document.getElementById('scrubberProgress');
+    const scrubberHandle = document.getElementById('scrubberHandle');
+
+    // Transcript Sync State
+    let mappedSentences = [];
+    let allowAutoScroll = true;
+    let scrollTimeout = null;
+    let lastActiveIndex = -1;
+
+    // Utility Functions
+    function formatTime(seconds) {
+      if (seconds === null || isNaN(seconds)) return '--:--';
+      const mins = Math.floor(seconds / 60);
+      const secs = Math.floor(seconds % 60);
+      return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function getFileKey(file) {
+      const path = file.webkitRelativePath || file.name;
+      const filename = path.split('/').pop();
+      const lastDot = filename.lastIndexOf('.');
+      // Normalize: lowercase, trim, remove extension
+      let key = lastDot > 0 ? filename.substring(0, lastDot) : filename;
+
+      // Remove common suffixes like "(transcribed)"
+      key = key.replace(/\(transcribed\)$/i, '').trim();
+
+      // Also normalize spaces, underscores and common variations
+      key = key.toLowerCase().replace(/[_\s]+/g, ' ').trim();
+      return key;
+    }
+
+    function isMediaFile(filename) {
+      const ext = filename.toLowerCase();
+      return ext.match(/\.(mp3|wav|ogg|m4a|aac|flac|mp4|webm|mkv|avi|mov|m4v)$/);
+    }
+
+    function isTextFile(filename) {
+      return filename.toLowerCase().endsWith('.txt');
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000); // Longer duration for mobile
+    }
+
+    // --- Persistence (Auto-Save) ---
+    function saveMarkers() {
+      if (!currentFile) return;
+      try {
+        const key = `az104_markers_${currentFile.key}`;
+        localStorage.setItem(key, JSON.stringify(markers));
+      } catch (e) {
+        console.warn("Storage warning:", e);
+      }
+    }
+
+    function loadMarkers(fileKey) {
+      try {
+        const key = `az104_markers_${fileKey}`;
+        const saved = localStorage.getItem(key);
+        if (saved) {
+          markers = JSON.parse(saved);
+          console.log(`Loaded markers for ${fileKey}`);
+        } else {
+          resetAllMarkers();
+        }
+      } catch (e) {
+        console.warn("Storage reading error:", e);
+        resetAllMarkers();
+      }
+    }
+    // -------------------------------
+
+    // Sentence-based transcript extraction
+    function splitSentences(text) {
+      return text.match(/[^\.!\?]+[\.!\?]*/g) || [text];
+    }
+
+    function mapSentencesToTime(sentences, audioDuration) {
+      if (!audioDuration || isNaN(audioDuration)) audioDuration = 0;
+      const totalChars = sentences.reduce((s, x) => s + x.length, 0);
+
+      // Prevent division by zero
+      if (totalChars === 0) {
+        return sentences.map(sent => ({ text: sent.trim(), start: 0, end: 0 }));
+      }
+
+      let acc = 0;
+      return sentences.map(sent => {
+        const start = (acc / totalChars) * audioDuration;
+        acc += sent.length;
+        const end = (acc / totalChars) * audioDuration;
+        return { text: sent.trim(), start, end };
+      });
+    }
+
+    function extractBySentence(transcriptText, audioDuration, startSec, endSec) {
+      if (!transcriptText) return '';
+      // Default to 0 duration if missing prevents crashes, though logic will be off
+      if (!audioDuration) audioDuration = 0;
+
+      const sentences = splitSentences(transcriptText);
+      const mapped = mapSentencesToTime(sentences, audioDuration);
+      const hits = mapped.filter(s => s.end > startSec && s.start < endSec);
+      return hits.map(h => h.text).join(' ').trim();
+    }
+
+    // Store text file objects (don't read content upfront)
+    let textFileObjects = {};
+    let allMediaKeys = [];
+
+    // File handling - optimized for large folders
+    fileInput.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files);
+      mediaFiles = [];
+      transcripts = {};
+      textFileObjects = {};
+      allMediaKeys = [];
+
+      fileCount.textContent = 'Loading...';
+
+      // First pass: index ALL text files by their normalized key
+      for (const file of files) {
+        if (isTextFile(file.name)) {
+          const key = getFileKey(file);
+          textFileObjects[key] = file;
+        }
+      }
+
+      // Debug: log how many text files found
+      const txtCount = Object.keys(textFileObjects).length;
+      console.log(`Found ${txtCount} text files:`, Object.keys(textFileObjects));
+
+      // Second pass: index media files and check if transcript exists
+      for (const file of files) {
+        if (isMediaFile(file.name)) {
+          const key = getFileKey(file);
+          allMediaKeys.push(key);
+          const hasTranscript = !!textFileObjects[key];
+
+          // ONLY add media files that have matching transcripts
+          if (hasTranscript) {
+            mediaFiles.push({
+              file,
+              name: file.name,
+              key,
+              hasTranscript: true
+            });
+          }
+        }
+      }
+
+      console.log(`Found ${allMediaKeys.length} media files:`, allMediaKeys.slice(0, 20));
+      console.log(`Matched ${mediaFiles.length} media files with transcripts`);
+
+      // Sort by name
+      mediaFiles.sort((a, b) => a.name.localeCompare(b.name));
+
+      updateFileCount();
+      renderFileList();
+    });
+
+    function updateFileCount() {
+      const txtCount = Object.keys(textFileObjects).length;
+      if (mediaFiles.length === 0 && txtCount > 0) {
+        fileCount.textContent = `${txtCount} text files found, but no matching media files`;
+      } else if (mediaFiles.length === 0) {
+        fileCount.textContent = 'No matching files found';
+      } else {
+        fileCount.textContent = `${mediaFiles.length} media files with transcripts`;
+      }
+    }
+
+    function renderFileList() {
+      if (mediaFiles.length === 0) {
+        const txtKeys = Object.keys(textFileObjects);
+        const txtCount = txtKeys.length;
+        const mediaKeysFound = allMediaKeys || [];
+
+        let debugInfo = '';
+        if (txtCount > 0 || mediaKeysFound.length > 0) {
+          debugInfo = `<div style="text-align:left; font-size:0.75rem; margin-top:20px; padding:10px; background:#0f0f1a; border-radius:6px;">
+            <strong>Debug Info:</strong><br>
+            <br><strong>Text file keys (${txtCount}):</strong><br>
+            ${txtKeys.slice(0, 10).map(k => `"${k}"`).join('<br>') || 'None'}
+            ${txtCount > 10 ? `<br>... and ${txtCount - 10} more` : ''}
+            <br><br><strong>Media file keys (${mediaKeysFound.length}):</strong><br>
+            ${mediaKeysFound.slice(0, 10).map(k => `"${k}"`).join('<br>') || 'None'}
+            ${mediaKeysFound.length > 10 ? `<br>... and ${mediaKeysFound.length - 10} more` : ''}
+          </div>`;
+        }
+
+        if (txtCount > 0) {
+          fileList.innerHTML = `<div class="no-file-message">Found ${txtCount} text files but no matching media.<br><br>Make sure media files and .txt files have the same name (e.g., "Lecture1.mp4" and "Lecture1.txt")${debugInfo}</div>`;
+        } else {
+          fileList.innerHTML = `<div class="no-file-message">Select a folder with media and .txt files${debugInfo}</div>`;
+        }
+        return;
+      }
+
+      fileList.innerHTML = mediaFiles.map((f, idx) => `
+        <div class="file-item ${currentFile === f ? 'active' : ''}" data-index="${idx}">
+          <span class="icon">${f.file.type.startsWith('audio') ? '&#127925;' : '&#127916;'}</span>
+          <span class="name">${f.name}</span>
+          <span class="transcript-badge">TXT</span>
+        </div>
+      `).join('');
+
+      // Add click handlers
+      fileList.querySelectorAll('.file-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const idx = parseInt(item.dataset.index);
+          selectFile(mediaFiles[idx]);
+        });
+      });
+    }
+
+    async function selectFile(mediaFile) {
+      currentFile = mediaFile;
+      renderFileList();
+
+      playerTitle.textContent = mediaFile.name;
+
+      // Load saved markers
+      loadMarkers(mediaFile.key);
+      updateAllSlotDisplays();
+      updateMarkerInfo();
+      exportBtn.disabled = false;
+
+      // Load transcript on-demand if not already loaded
+      if (!transcripts[mediaFile.key]) {
+        try {
+          const txtFile = textFileObjects[mediaFile.key];
+          if (txtFile) {
+            transcripts[mediaFile.key] = await txtFile.text();
+            console.log(`Loaded transcript for ${mediaFile.key}, length: ${transcripts[mediaFile.key].length}`);
+          }
+        } catch (err) {
+          console.error("Error reading transcript:", err);
+          showToast("Error reading transcript file");
+        }
+      }
+
+      // Create media element
+      const url = URL.createObjectURL(mediaFile.file);
+      const isAudio = mediaFile.file.type.startsWith('audio') ||
+        mediaFile.name.match(/\.(mp3|wav|ogg|m4a|aac|flac)$/i);
+
+      if (currentMediaElement) {
+        currentMediaElement.pause();
+        URL.revokeObjectURL(currentMediaElement.src);
+      }
+
+      if (isAudio) {
+        playerArea.innerHTML = `<audio src="${url}"></audio>`;
+        currentMediaElement = playerArea.querySelector('audio');
+      } else {
+        playerArea.innerHTML = `<video src="${url}"></video>`;
+        currentMediaElement = playerArea.querySelector('video');
+        currentMediaElement.style.display = 'block';
+      }
+
+      // Show custom controls
+      customControls.style.display = 'block';
+
+      // Set up media element events
+      currentMediaElement.addEventListener('loadedmetadata', () => {
+        durationEl.textContent = formatTime(currentMediaElement.duration);
+        updateScrubber();
+
+        // Generate Live Transcript Map
+        if (transcripts[mediaFile.key]) {
+          mappedSentences = mapSentencesToTime(splitSentences(transcripts[mediaFile.key]), currentMediaElement.duration);
+          renderLiveTranscript();
+        } else {
+          liveTranscriptEl.innerHTML = '<div class="no-file-message" style="padding: 20px;">No transcript available for this file.</div>';
+          mappedSentences = [];
+        }
+      });
+
+      currentMediaElement.addEventListener('timeupdate', () => {
+        if (!isDragging) {
+          currentTimeEl.textContent = formatTime(currentMediaElement.currentTime);
+          updateScrubber();
+
+          // Live Transcript Sync
+          syncTranscript(currentMediaElement.currentTime);
+        }
+      });
+
+      currentMediaElement.addEventListener('play', () => {
+        playPauseBtn.textContent = 'Pause';
+      });
+
+      currentMediaElement.addEventListener('pause', () => {
+        playPauseBtn.textContent = 'Play';
+      });
+
+      // Enable marker buttons
+      markInBtn.disabled = false;
+      markOutBtn.disabled = false;
+      clearMarkersBtn.disabled = false;
+      // exportBtn.disabled = false; (Already enabled in selectFile)
+
+
+      // Clear markers for new file -> REMOVED because we loadMarkers() above
+      // resetAllMarkers();
+      // updateMarkerInfo();
+    }
+
+    function updateScrubber() {
+      if (!currentMediaElement || !currentMediaElement.duration) return;
+      const pct = (currentMediaElement.currentTime / currentMediaElement.duration) * 100;
+      scrubberProgress.style.width = pct + '%';
+      scrubberHandle.style.left = pct + '%';
+    }
+
+    function seekToPosition(clientX) {
+      if (!currentMediaElement || !currentMediaElement.duration) return;
+      const rect = scrubber.getBoundingClientRect();
+      const pct = Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+      currentMediaElement.currentTime = pct * currentMediaElement.duration;
+      currentTimeEl.textContent = formatTime(currentMediaElement.currentTime);
+      updateScrubber();
+    }
+
+    // Scrubber interactions
+    scrubber.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      seekToPosition(e.clientX);
+    });
+
+    scrubber.addEventListener('touchstart', (e) => {
+      isDragging = true;
+      seekToPosition(e.touches[0].clientX);
+    });
+
+    document.addEventListener('mousemove', (e) => {
+      if (isDragging) seekToPosition(e.clientX);
+    });
+
+    document.addEventListener('touchmove', (e) => {
+      if (isDragging) seekToPosition(e.touches[0].clientX);
+    });
+
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+
+    document.addEventListener('touchend', () => {
+      isDragging = false;
+    });
+
+    // Playback controls
+    playPauseBtn.addEventListener('click', () => {
+      if (!currentMediaElement) return;
+      if (currentMediaElement.paused) {
+        currentMediaElement.play().catch(e => {
+          console.error("Playback failed:", e);
+          showToast("Playback failed: " + e.message);
+        });
+      } else {
+        currentMediaElement.pause();
+      }
+    });
+
+    skipBack10.addEventListener('click', () => {
+      if (currentMediaElement) currentMediaElement.currentTime = Math.max(0, currentMediaElement.currentTime - 10);
+    });
+
+    skipBack5.addEventListener('click', () => {
+      if (currentMediaElement) currentMediaElement.currentTime = Math.max(0, currentMediaElement.currentTime - 5);
+    });
+
+    skipFwd5.addEventListener('click', () => {
+      if (currentMediaElement) currentMediaElement.currentTime = Math.min(currentMediaElement.duration, currentMediaElement.currentTime + 5);
+    });
+
+    skipFwd10.addEventListener('click', () => {
+      if (currentMediaElement) currentMediaElement.currentTime = Math.min(currentMediaElement.duration, currentMediaElement.currentTime + 10);
+    });
+
+    function resetAllMarkers() {
+      markers = {
+        a: { inTime: null, outTime: null, text: '' },
+        b: { inTime: null, outTime: null, text: '' },
+        c: { inTime: null, outTime: null, text: '' }
+      };
+      updateAllSlotDisplays();
+    }
+
+    function updateMarkerInfo() {
+      const m = markers[activeSlot];
+      if (m.inTime !== null && m.outTime !== null) {
+        markerInfo.textContent = `Slot ${activeSlot.toUpperCase()}: ${formatTime(m.inTime)} to ${formatTime(m.outTime)}`;
+      } else if (m.inTime !== null) {
+        markerInfo.textContent = `Slot ${activeSlot.toUpperCase()}: IN set at ${formatTime(m.inTime)} - now mark OUT`;
+      } else {
+        markerInfo.textContent = `Slot ${activeSlot.toUpperCase()} active - mark IN point`;
+      }
+    }
+
+    function updateSlotDisplay(slot) {
+      const m = markers[slot];
+      const timeEl = document.getElementById(`time${slot.toUpperCase()}`);
+      const textEl = document.getElementById(`text${slot.toUpperCase()}`);
+      const copyBtn = document.getElementById(`copy${slot.toUpperCase()}`);
+      const clearBtn = document.getElementById(`clear${slot.toUpperCase()}`);
+
+      if (m.inTime !== null && m.outTime !== null) {
+        timeEl.textContent = `${formatTime(m.inTime)} to ${formatTime(m.outTime)}`;
+        textEl.textContent = m.text || 'No transcript available';
+        textEl.classList.toggle('empty', !m.text);
+        copyBtn.disabled = !m.text;
+        clearBtn.disabled = false;
+      } else if (m.inTime !== null) {
+        timeEl.textContent = `${formatTime(m.inTime)} to --:--`;
+        textEl.textContent = 'Mark OUT to extract';
+        textEl.classList.add('empty');
+        copyBtn.disabled = true;
+        clearBtn.disabled = false;
+      } else {
+        timeEl.textContent = '--:-- to --:--';
+        textEl.textContent = 'Click to select this slot, then mark In/Out';
+        textEl.classList.add('empty');
+        copyBtn.disabled = true;
+        clearBtn.disabled = true;
+      }
+    }
+
+    function updateAllSlotDisplays() {
+      ['a', 'b', 'c'].forEach(updateSlotDisplay);
+    }
+
+    // Slot selection
+    document.querySelectorAll('.segment-slot').forEach(slot => {
+      slot.addEventListener('click', () => {
+        activeSlot = slot.dataset.slot;
+        document.querySelectorAll('.segment-slot').forEach(s => s.style.outline = 'none');
+        slot.style.outline = '2px solid #e94560';
+        updateMarkerInfo();
+      });
+    });
+
+    // Mark IN
+    markInBtn.addEventListener('click', () => {
+      if (!currentMediaElement) return;
+      markers[activeSlot].inTime = currentMediaElement.currentTime;
+      markers[activeSlot].outTime = null;
+      markers[activeSlot].text = '';
+      updateSlotDisplay(activeSlot);
+      updateMarkerInfo();
+      saveMarkers(); // Auto-save
+      showToast(`IN marked at ${formatTime(markers[activeSlot].inTime)}`);
+    });
+
+    // Mark OUT
+    markOutBtn.addEventListener('click', () => {
+      if (!currentMediaElement) return;
+      const m = markers[activeSlot];
+
+      if (m.inTime === null) {
+        showToast('Mark IN first');
+        return;
+      }
+
+      m.outTime = currentMediaElement.currentTime;
+
+      // Swap if needed
+      if (m.outTime < m.inTime) {
+        [m.inTime, m.outTime] = [m.outTime, m.inTime];
+      }
+
+      // Extract transcript
+      if (currentFile) {
+        const transcriptText = transcripts[currentFile.key];
+        const duration = currentMediaElement.duration;
+        m.text = extractBySentence(transcriptText, duration, m.inTime, m.outTime);
+      }
+
+      updateSlotDisplay(activeSlot);
+      updateMarkerInfo();
+      saveMarkers(); // Auto-save
+      showToast(`OUT marked at ${formatTime(m.outTime)}`);
+    });
+
+    // Clear current slot
+    clearMarkersBtn.addEventListener('click', () => {
+      markers[activeSlot] = { inTime: null, outTime: null, text: '' };
+      updateSlotDisplay(activeSlot);
+      updateMarkerInfo();
+      saveMarkers(); // Auto-save
+      showToast(`Slot ${activeSlot.toUpperCase()} cleared`);
+    });
+
+    // Export Functionality
+    exportBtn.addEventListener('click', () => {
+      if (!currentFile) return;
+
+      let content = `Notes for: ${currentFile.name}\nGenerated: ${new Date().toLocaleString()}\n\n`;
+
+      ['a', 'b', 'c'].forEach(slot => {
+        const m = markers[slot];
+        if (m.inTime !== null) {
+          content += `[Slot ${slot.toUpperCase()}] ${formatTime(m.inTime)} - ${formatTime(m.outTime || m.inTime)}\n`;
+          content += `${m.text || '(No transcript)'}\n\n`;
+        }
+      });
+
+      if (content.length < 100 && !Object.values(markers).some(m => m.inTime !== null)) {
+        showToast("Nothing to export!");
+        return;
+      }
+
+      const blob = new Blob([content], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${currentFile.key}_notes.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("Notes downloaded!");
+    });
+
+    // Copy buttons
+    ['A', 'B', 'C'].forEach(slot => {
+      document.getElementById(`copy${slot}`).addEventListener('click', (e) => {
+        e.stopPropagation();
+        const text = markers[slot.toLowerCase()].text;
+        if (text) {
+          navigator.clipboard.writeText(text).then(() => {
+            showToast('Copied to clipboard!');
+          }).catch(() => {
+            // Fallback for older browsers
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            showToast('Copied to clipboard!');
+          });
+        }
+      });
+
+      document.getElementById(`clear${slot}`).addEventListener('click', (e) => {
+        e.stopPropagation();
+        markers[slot.toLowerCase()] = { inTime: null, outTime: null, text: '' };
+        updateSlotDisplay(slot.toLowerCase());
+        saveMarkers(); // Auto-save
+        showToast(`Slot ${slot} cleared`);
+      });
+    });
+
+    // Select first slot by default
+    document.querySelector('.segment-slot[data-slot="a"]').style.outline = '2px solid #e94560';
+
+    // --- Live Transcript Logic ---
+    function renderLiveTranscript() {
+      if (mappedSentences.length === 0) return;
+
+      const html = mappedSentences.map((s, i) =>
+        `<span class="transcript-sent" id="sent-${i}" data-time="${s.start}">${s.text} </span>`
+      ).join('');
+
+      // Keep wrapper div content
+      liveTranscriptEl.innerHTML = html + '<div id="snapIndicator" class="snap-indicator">Auto-scroll Paused</div>';
+      // Re-query indicator since innerHTML replaced it
+      const newIndicator = document.getElementById('snapIndicator');
+      if (newIndicator) newIndicator.style.opacity = '0';
+
+      // Add click-to-seek
+      document.querySelectorAll('.transcript-sent').forEach(el => {
+        el.addEventListener('click', () => {
+          const time = parseFloat(el.dataset.time);
+          if (!isNaN(time) && currentMediaElement) {
+            currentMediaElement.currentTime = time;
+            currentMediaElement.play().catch(e => console.log(e));
+          }
+        });
+      });
+    }
+
+    function syncTranscript(time) {
+      if (mappedSentences.length === 0) return;
+
+      // Find active sentence
+      const index = mappedSentences.findIndex(s => time >= s.start && time < s.end);
+
+      if (index !== -1 && index !== lastActiveIndex) {
+        // Remove old active
+        if (lastActiveIndex !== -1) {
+          const oldEl = document.getElementById(`sent-${lastActiveIndex}`);
+          if (oldEl) oldEl.classList.remove('active');
+        }
+
+        // Add new active
+        const newEl = document.getElementById(`sent-${index}`);
+        if (newEl) {
+          newEl.classList.add('active');
+          if (allowAutoScroll) {
+            newEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }
+
+        lastActiveIndex = index;
+      }
+    }
+
+    // Scroll Logic (Snap-Back)
+    liveTranscriptEl.addEventListener('scroll', () => {
+      // Only trigger if we are mostly sure it's user interaction (event trust is tricky, but heuristic works)
+      // We can just assume any scroll event means user might be looking away
+
+      if (allowAutoScroll) {
+        // Detect if it was programmatic? scrollIntoView triggers scroll event.
+        // Simple debounce approach:
+        // If we receive scroll events, we pause. 
+        // But wait, scrollIntoView triggers this too. 
+        // We need to differentiate. 
+        // Actually, 'touchmove' or 'wheel' is better for user detection.
+      }
+    });
+
+    // Better User Scroll Detection
+    const userScrollEvents = ['mousedown', 'wheel', 'touchmove', 'touchstart'];
+    userScrollEvents.forEach(evt => {
+      liveTranscriptEl.addEventListener(evt, () => {
+        allowAutoScroll = false;
+        const indicator = document.getElementById('snapIndicator');
+        if (indicator) indicator.style.opacity = '1';
+
+        if (scrollTimeout) clearTimeout(scrollTimeout);
+
+        scrollTimeout = setTimeout(() => {
+          allowAutoScroll = true;
+          if (indicator) indicator.style.opacity = '0';
+
+          // Snap back immediately?
+          if (lastActiveIndex !== -1) {
+            const el = document.getElementById(`sent-${lastActiveIndex}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }
+        }, 3000); // 3 seconds snap-back
+      });
+    });
+
+  </script>
+</body>
+
+</html>
