@@ -39,8 +39,22 @@
 
     header h1 {
       font-size: 1.2rem;
-      color: #e94560;
       white-space: nowrap;
+    }
+
+    .controls-wrapper {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .sort-select {
+      background: #0f3460;
+      color: white;
+      border: 1px solid #e94560;
+      padding: 6px 12px;
+      border-radius: 4px;
+      font-size: 0.9rem;
     }
 
     .file-input-wrapper {
@@ -147,6 +161,8 @@
       flex-direction: column;
       padding: 20px;
       overflow: hidden;
+      position: relative;
+      /* For sticky child */
     }
 
     .player-container {
@@ -154,6 +170,11 @@
       border-radius: 8px;
       padding: 20px;
       margin-bottom: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid #2d2d44;
     }
 
     .player-container h2 {
@@ -544,6 +565,14 @@
         <input type="file" id="fileInput" webkitdirectory directory multiple>
         <span class="file-count" id="fileCount">No files loaded</span>
       </div>
+      <div class="controls-wrapper">
+        <select id="sortSelect" class="sort-select">
+          <option value="name">Name (A-Z)</option>
+          <option value="date-new">Date (Newest)</option>
+          <option value="date-old">Date (Oldest)</option>
+          <option value="size">Size (Large-Small)</option>
+        </select>
+      </div>
     </header>
 
     <div class="main-content">
@@ -593,7 +622,6 @@
             <button class="marker-btn in" id="markInBtn" disabled>Mark IN</button>
             <button class="marker-btn out" id="markOutBtn" disabled>Mark OUT</button>
             <button class="marker-btn clear" id="clearMarkersBtn" disabled>Clear</button>
-            <button class="marker-btn export" id="exportBtn" disabled>💾 Export</button>
           </div>
           <div class="current-marker-info" id="markerInfo">Select a slot (A, B, C) then mark In/Out points</div>
         </div>
@@ -668,7 +696,7 @@
     const markInBtn = document.getElementById('markInBtn');
     const markOutBtn = document.getElementById('markOutBtn');
     const clearMarkersBtn = document.getElementById('clearMarkersBtn');
-    const exportBtn = document.getElementById('exportBtn');
+    // Removed Export Btn
     const markerInfo = document.getElementById('markerInfo');
     const toast = document.getElementById('toast');
     const liveTranscriptEl = document.getElementById('liveTranscript');
@@ -822,87 +850,65 @@
       for (const file of files) {
         if (isMediaFile(file.name)) {
           const key = getFileKey(file);
+          mediaFiles.push({
+            key,
+            file,
+            name: file.name,
+            date: file.lastModified,
+            size: file.size
+          });
           allMediaKeys.push(key);
-          const hasTranscript = !!textFileObjects[key];
-
-          // ONLY add media files that have matching transcripts
-          if (hasTranscript) {
-            mediaFiles.push({
-              file,
-              name: file.name,
-              key,
-              hasTranscript: true
-            });
-          }
         }
       }
 
       console.log(`Found ${allMediaKeys.length} media files:`, allMediaKeys.slice(0, 20));
       console.log(`Matched ${mediaFiles.length} media files with transcripts`);
 
-      // Sort by name
-      mediaFiles.sort((a, b) => a.name.localeCompare(b.name));
-
-      updateFileCount();
-      renderFileList();
+      fileCount.textContent = `${mediaFiles.length} media files found`;
+      sortAndRenderFiles();
     });
 
-    function updateFileCount() {
-      const txtCount = Object.keys(textFileObjects).length;
-      if (mediaFiles.length === 0 && txtCount > 0) {
-        fileCount.textContent = `${txtCount} text files found, but no matching media files`;
-      } else if (mediaFiles.length === 0) {
-        fileCount.textContent = 'No matching files found';
-      } else {
-        fileCount.textContent = `${mediaFiles.length} media files with transcripts`;
-      }
+    sortSelect.addEventListener('change', sortAndRenderFiles);
+
+    function sortAndRenderFiles() {
+      const sortMode = sortSelect.value;
+
+      mediaFiles.sort((a, b) => {
+        if (sortMode === 'name') return a.name.localeCompare(b.name);
+        if (sortMode === 'date-new') return b.date - a.date;
+        if (sortMode === 'date-old') return a.date - b.date;
+        if (sortMode === 'size') return b.size - a.size;
+        return 0;
+      });
+
+      renderFileList();
     }
 
     function renderFileList() {
+      fileList.innerHTML = '';
       if (mediaFiles.length === 0) {
-        const txtKeys = Object.keys(textFileObjects);
-        const txtCount = txtKeys.length;
-        const mediaKeysFound = allMediaKeys || [];
-
-        let debugInfo = '';
-        if (txtCount > 0 || mediaKeysFound.length > 0) {
-          debugInfo = `<div style="text-align:left; font-size:0.75rem; margin-top:20px; padding:10px; background:#0f0f1a; border-radius:6px;">
-            <strong>Debug Info:</strong><br>
-            <br><strong>Text file keys (${txtCount}):</strong><br>
-            ${txtKeys.slice(0, 10).map(k => `"${k}"`).join('<br>') || 'None'}
-            ${txtCount > 10 ? `<br>... and ${txtCount - 10} more` : ''}
-            <br><br><strong>Media file keys (${mediaKeysFound.length}):</strong><br>
-            ${mediaKeysFound.slice(0, 10).map(k => `"${k}"`).join('<br>') || 'None'}
-            ${mediaKeysFound.length > 10 ? `<br>... and ${mediaKeysFound.length - 10} more` : ''}
-          </div>`;
-        }
-
-        if (txtCount > 0) {
-          fileList.innerHTML = `<div class="no-file-message">Found ${txtCount} text files but no matching media.<br><br>Make sure media files and .txt files have the same name (e.g., "Lecture1.mp4" and "Lecture1.txt")${debugInfo}</div>`;
-        } else {
-          fileList.innerHTML = `<div class="no-file-message">Select a folder with media and .txt files${debugInfo}</div>`;
-        }
+        fileList.innerHTML = '<div class="no-file-message">No media files found</div>';
         return;
       }
 
-      fileList.innerHTML = mediaFiles.map((f, idx) => `
-        <div class="file-item ${currentFile === f ? 'active' : ''}" data-index="${idx}">
-          <span class="icon">${f.file.type.startsWith('audio') ? '&#127925;' : '&#127916;'}</span>
-          <span class="name">${f.name}</span>
-          <span class="transcript-badge">TXT</span>
-        </div>
-      `).join('');
+      mediaFiles.forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = `file-item ${currentFile && currentFile.key === item.key ? 'active' : ''}`;
 
-      // Add click handlers
-      fileList.querySelectorAll('.file-item').forEach(item => {
-        item.addEventListener('click', () => {
-          const idx = parseInt(item.dataset.index);
-          selectFile(mediaFiles[idx]);
-        });
+        // Check if transcript exists
+        const hasTranscript = textFileObjects[item.key] || transcripts[item.key];
+
+        div.innerHTML = `
+          <div class="icon">🎵</div>
+          <div class="name">${item.name}</div>
+          ${hasTranscript ? '<span class="transcript-badge">TXT</span>' : ''}
+        `;
+        div.onclick = () => loadMedia(item);
+        fileList.appendChild(div);
       });
     }
 
-    async function selectFile(mediaFile) {
+    async function loadMedia(mediaFile) {
       currentFile = mediaFile;
       renderFileList();
 
@@ -912,7 +918,6 @@
       loadMarkers(mediaFile.key);
       updateAllSlotDisplays();
       updateMarkerInfo();
-      exportBtn.disabled = false;
 
       // Load transcript on-demand if not already loaded
       if (!transcripts[mediaFile.key]) {
@@ -939,15 +944,26 @@
       }
 
       if (isAudio) {
-        playerArea.innerHTML = `<audio src="${url}"></audio>`;
-        currentMediaElement = playerArea.querySelector('audio');
+        currentMediaElement = document.createElement('audio');
       } else {
-        playerArea.innerHTML = `<video src="${url}"></video>`;
-        currentMediaElement = playerArea.querySelector('video');
+        currentMediaElement = document.createElement('video');
         currentMediaElement.style.display = 'block';
       }
+      currentMediaElement.src = url;
 
-      // Show custom controls
+      // Auto-Next Logic
+      currentMediaElement.addEventListener('ended', () => {
+        const currentIndex = mediaFiles.findIndex(f => f.key === mediaFile.key);
+        if (currentIndex >= 0 && currentIndex < mediaFiles.length - 1) {
+          const nextFile = mediaFiles[currentIndex + 1];
+          showToast(`Auto-playing next: ${nextFile.name}`);
+          loadMedia(nextFile);
+        }
+      });
+
+      // Show/Hide controls
+      playerArea.innerHTML = '';
+      playerArea.appendChild(currentMediaElement);
       customControls.style.display = 'block';
 
       // Set up media element events
