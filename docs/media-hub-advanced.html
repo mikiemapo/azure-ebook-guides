@@ -846,18 +846,20 @@
       const txtCount = Object.keys(textFileObjects).length;
       console.log(`Found ${txtCount} text files:`, Object.keys(textFileObjects));
 
-      // Second pass: index media files and check if transcript exists
+      // Second pass: Filter media files (Must have transcript)
       for (const file of files) {
         if (isMediaFile(file.name)) {
           const key = getFileKey(file);
-          mediaFiles.push({
-            key,
-            file,
-            name: file.name,
-            date: file.lastModified,
-            size: file.size
-          });
-          allMediaKeys.push(key);
+          if (textFileObjects[key]) {
+            mediaFiles.push({
+              key,
+              file,
+              name: file.name,
+              date: file.lastModified,
+              size: file.size
+            });
+            allMediaKeys.push(key);
+          }
         }
       }
 
