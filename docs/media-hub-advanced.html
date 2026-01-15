@@ -564,6 +564,8 @@
         <label for="fileInput">Select Folder</label>
         <input type="file" id="fileInput" webkitdirectory directory multiple>
         <span class="file-count" id="fileCount">No files loaded</span>
+        <button id="clearLibraryBtn" class="marker-btn clear"
+          style="padding: 4px 8px; font-size: 0.8rem; margin-left:10px; display:none;">Clear Library</button>
       </div>
       <div class="controls-wrapper">
         <select id="sortSelect" class="sort-select">
@@ -690,6 +692,7 @@
     const fileInput = document.getElementById('fileInput');
     const fileCount = document.getElementById('fileCount');
     const fileList = document.getElementById('fileList');
+    const clearLibraryBtn = document.getElementById('clearLibraryBtn');
     const playerTitle = document.getElementById('playerTitle');
     const playerArea = document.getElementById('playerArea');
     const customControls = document.getElementById('customControls');
@@ -824,8 +827,128 @@
     let textFileObjects = {};
     let allMediaKeys = [];
 
+    // --- IndexedDB Persistence ---
+    const DB_NAME = 'AZ104_MediaHubDB';
+    const DB_VERSION = 1;
+    let db = null;
+
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onerror = (event) => {
+          console.error("IDB Error:", event.target.error);
+          reject(event.target.error);
+        };
+
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains('files')) {
+            db.createObjectStore('files', { keyPath: 'key' });
+          }
+        };
+
+        request.onsuccess = (event) => {
+          db = event.target.result;
+          resolve(db);
+        };
+      });
+    }
+
+    async function saveToLibrary(mediaFileObj, transcriptFileObj) {
+      if (!db) await initDB();
+
+      // Read transcript text
+      const text = await readFileAsText(transcriptFileObj);
+
+      const tx = db.transaction(['files'], 'readwrite');
+      const store = tx.objectStore('files');
+
+      const item = {
+        key: mediaFileObj.key,
+        name: mediaFileObj.name,
+        date: mediaFileObj.date,
+        size: mediaFileObj.size,
+        mediaBlob: mediaFileObj.file,
+        transcriptText: text
+      };
+
+      store.put(item);
+    }
+
+    async function loadLibrary() {
+      if (!db) await initDB();
+
+      return new Promise((resolve) => {
+        const tx = db.transaction(['files'], 'readonly');
+        const store = tx.objectStore('files');
+        const request = store.getAll();
+
+        request.onsuccess = () => {
+          const items = request.result;
+          if (items.length > 0) {
+            items.forEach(item => {
+              // Reconstruct objects
+              mediaFiles.push({
+                key: item.key,
+                file: item.mediaBlob, // It's a Blob/File stored in IDB
+                name: item.name,
+                date: item.date,
+                size: item.size
+              });
+              transcripts[item.key] = item.transcriptText;
+              allMediaKeys.push(item.key);
+            });
+
+            fileCount.textContent = `${items.length} files loaded from library`;
+            clearLibraryBtn.style.display = 'inline-block';
+            sortAndRenderFiles();
+            showToast(`Restored ${items.length} files from library`);
+          }
+          resolve();
+        };
+      });
+    }
+
+    async function clearLibrary() {
+      if (!db) await initDB();
+      const tx = db.transaction(['files'], 'readwrite');
+      tx.objectStore('files').clear();
+
+      tx.oncomplete = () => {
+        mediaFiles = [];
+        transcripts = {};
+        allMediaKeys = [];
+        currentFile = null;
+        renderFileList();
+        playerArea.innerHTML = '<div class="no-file-message">Library cleared</div>';
+        playerTitle.textContent = 'No file selected';
+        fileCount.textContent = 'Library cleared';
+        clearLibraryBtn.style.display = 'none';
+        showToast('Library cleared');
+      };
+    }
+
+    function readFileAsText(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsText(file);
+      });
+    }
+
+    // Auto-load on startup
+    window.addEventListener('DOMContentLoaded', loadLibrary);
+
+    clearLibraryBtn.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear the entire library? This cannot be undone.')) {
+        clearLibrary();
+      }
+    });
+
     // File handling - optimized for large folders
-    fileInput.addEventListener('change', (e) => {
+    fileInput.addEventListener('change', async (e) => {
       const files = Array.from(e.target.files);
       mediaFiles = [];
       transcripts = {};
@@ -861,6 +984,25 @@
             allMediaKeys.push(key);
           }
         }
+      }
+
+
+      // Save valid pairs to DB
+      let addedCount = 0;
+      for (const item of mediaFiles) {
+        // Check if we just added this (to avoid re-saving duplicate files if fileInput triggered multiple times on same set)
+        // Actually, we cleared mediaFiles at start of handler, but we might want to check against DB? 
+        // For now simplest is to overwrite.
+
+        if (textFileObjects[item.key]) {
+          await saveToLibrary(item, textFileObjects[item.key]);
+          addedCount++;
+        }
+      }
+
+      if (addedCount > 0) {
+        clearLibraryBtn.style.display = 'inline-block';
+        showToast(`Imported and saved ${addedCount} files`);
       }
 
       console.log(`Found ${allMediaKeys.length} media files:`, allMediaKeys.slice(0, 20));
