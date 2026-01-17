@@ -298,6 +298,17 @@
       font-size: 0.9em;
     }
 
+    .count-badge {
+      background: var(--azure-blue);
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.9em;
+      font-weight: 600;
+      margin-right: 6px;
+      display: inline-block;
+    }
+
     .deck-actions {
       display: flex;
       gap: 6px;
@@ -530,10 +541,13 @@
       return objId;
     }
 
-    // Extract topics from CPRS data
+    // Extract topics from CPRS data (Refined)
     function extractTopics(data) {
       const topics = new Set();
-      if (data.concept) topics.add(data.concept);
+      // Only include concept as a tag if it's short (keyword-like)
+      if (data.concept && data.concept.length < 30) {
+        topics.add(data.concept);
+      }
       if (data.questions) {
         data.questions.forEach(q => {
           if (q.type) topics.add(q.type);
@@ -541,6 +555,10 @@
       }
       return Array.from(topics).slice(0, 4);
     }
+
+    // ... (inside renderLibrary loop) ...
+
+
 
     // Get weak domains from quiz scores
     function getWeakDomains() {
@@ -684,11 +702,17 @@
           <div class="domain-content" id="domain-${d.key}">
             ${count === 0 ? '<div class="empty-domain">No decks yet - generate CPRS for this domain</div>' : ''}
             <div class="deck-list">
-              ${decks.map(deck => `
+              ${decks.map(deck => {
+          const fullConcept = deck.concept || deck.data?.concept || 'Untitled';
+          const truncatedName = fullConcept.length > 80 ? fullConcept.substring(0, 80) + '...' : fullConcept;
+          const questionCount = deck.data && deck.data.questions ? deck.data.questions.length : 0;
+
+          return `
                 <div class="deck-item">
                   <div class="deck-info">
-                    <div class="deck-name">${deck.concept || deck.data?.concept || 'Untitled'}</div>
+                    <div class="deck-name" title="${fullConcept.replace(/"/g, '&quot;')}">${truncatedName}</div>
                     <div class="deck-topics">
+                      <span class="count-badge">${questionCount} Qs</span>
                       ${extractTopics(deck.data || {}).map(t => `<span>${t}</span>`).join('')}
                     </div>
                   </div>
@@ -697,7 +721,7 @@
                     <button class="deck-btn delete" onclick="deleteDeck(${deck.id})" title="Delete"><i class="fas fa-trash"></i></button>
                   </div>
                 </div>
-              `).join('')}
+              `}).join('')}
             </div>
           </div>
         </div>`;
@@ -716,11 +740,17 @@
           </div>
           <div class="domain-content" id="domain-Uncategorized">
             <div class="deck-list">
-              ${decks.map(deck => `
+              ${decks.map(deck => {
+          const fullConcept = deck.concept || deck.data?.concept || 'Untitled';
+          const truncatedName = fullConcept.length > 80 ? fullConcept.substring(0, 80) + '...' : fullConcept;
+          const questionCount = deck.data && deck.data.questions ? deck.data.questions.length : 0;
+
+          return `
                 <div class="deck-item">
                   <div class="deck-info">
-                    <div class="deck-name">${deck.concept || deck.data?.concept || 'Untitled'}</div>
+                    <div class="deck-name" title="${fullConcept.replace(/"/g, '&quot;')}">${truncatedName}</div>
                     <div class="deck-topics">
+                      <span class="count-badge">${questionCount} Qs</span>
                       ${extractTopics(deck.data || {}).map(t => `<span>${t}</span>`).join('')}
                     </div>
                   </div>
@@ -729,7 +759,7 @@
                     <button class="deck-btn delete" onclick="deleteDeck(${deck.id})" title="Delete"><i class="fas fa-trash"></i></button>
                   </div>
                 </div>
-              `).join('')}
+              `}).join('')}
             </div>
           </div>
         </div>`;
