@@ -1152,7 +1152,8 @@
         ticking = false;
       }
 
-      window.addEventListener('scroll', function () {        if (!ticking) {
+      window.addEventListener('scroll', function () {
+        if (!ticking) {
           window.requestAnimationFrame(updateStickyMenu);
           ticking = true;
         }
@@ -1218,8 +1219,9 @@
     <script>
       // API Configuration - Set your Cloudflare Worker URL here
       window.AZ104_API_CONFIG = {
-        baseUrl: 'https://az104-study-api.YOUR_SUBDOMAIN.workers.dev'
+        baseUrl: 'https://az104-study-api.azure-hub.workers.dev'
       };
+      console.log('AZ104 Config Loaded:', window.AZ104_API_CONFIG.baseUrl);
 
       // Show exact load time to prove page is fresh
       document.getElementById('load-time').textContent = new Date().toLocaleTimeString();
@@ -1372,7 +1374,7 @@
           toggleBtn.addEventListener('click', function () {
             const isHidden = panel.style.display === 'none';
             panel.style.display = isHidden ? 'block' : 'none';
-            toggleBtn.innerHTML = isHidden              ? '<i class="fas fa-chevron-up"></i> Hide Details'
+            toggleBtn.innerHTML = isHidden ? '<i class="fas fa-chevron-up"></i> Hide Details'
               : '<i class="fas fa-chevron-down"></i> See Details';
           });
         }
@@ -1414,7 +1416,8 @@
 
     <script>
       // Study Workflow Checklist Logic
-      (function () {        const WORKFLOW_STEPS = [
+      (function () {
+        const WORKFLOW_STEPS = [
           { id: 1, text: 'Choose one hard topic and open your NotebookLM notebook for it', icon: 'fa-brain' },
           { id: 2, text: 'Take 2 section quizzes (Whizlabs + Tutorials Dojo)', icon: 'fa-clipboard-check' },
           { id: 3, text: 'Paste results → extract weak concepts & blind spots', icon: 'fa-search' },
@@ -1466,7 +1469,8 @@
             `;
 
             const checkbox = item.querySelector('input');
-            checkbox.addEventListener('change', function () {              const stepId = parseInt(this.dataset.stepId);
+            checkbox.addEventListener('change', function () {
+              const stepId = parseInt(this.dataset.stepId);
               let items = getCheckedItems();
               if (this.checked) {
                 if (!items.includes(stepId)) items.push(stepId);
@@ -1487,7 +1491,8 @@
         document.addEventListener('DOMContentLoaded', function () {
           const resetBtn = document.getElementById('workflow-reset-btn');
           if (resetBtn) {
-            resetBtn.addEventListener('click', function () {              if (confirm('Reset all checklist items? This starts a fresh loop.')) {
+            resetBtn.addEventListener('click', function () {
+              if (confirm('Reset all checklist items? This starts a fresh loop.')) {
                 saveCheckedItems([]);
                 renderChecklist();
               }
@@ -2601,28 +2606,52 @@
         function autoSaveCPRSToLibrary(data, concept) {
           try {
             const conceptKey = (data.concept || concept).toLowerCase().trim();
-            const tracker = JSON.parse(localStorage.getItem('studyActivityTracker') || '{}');
+            const timestamp = new Date().toISOString();
 
+            // 1. Save Stats to studyActivityTracker (Existing)
+            const tracker = JSON.parse(localStorage.getItem('studyActivityTracker') || '{}');
             if (!tracker.cprsGenerations) tracker.cprsGenerations = {};
 
             if (!tracker.cprsGenerations[conceptKey]) {
               tracker.cprsGenerations[conceptKey] = {
                 concept: data.concept || concept,
                 objective: data.objective || '',
-                firstGenerated: new Date().toISOString(),
-                lastGenerated: new Date().toISOString(),
+                firstGenerated: timestamp,
+                lastGenerated: timestamp,
                 frequency: 1,
                 questionCount: data.questions ? data.questions.length : 0
               };
             } else {
               tracker.cprsGenerations[conceptKey].frequency++;
-              tracker.cprsGenerations[conceptKey].lastGenerated = new Date().toISOString();
+              tracker.cprsGenerations[conceptKey].lastGenerated = timestamp;
               tracker.cprsGenerations[conceptKey].questionCount += data.questions ? data.questions.length : 0;
             }
-
             localStorage.setItem('studyActivityTracker', JSON.stringify(tracker));
+
+            // 2. Save Full Deck to cprsLibrary (New - for Library Page)
+            const library = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
+
+            // Avoid exact duplicates (same concept generated within last minute)
+            const isDuplicate = library.some(d =>
+              d.concept === (data.concept || concept) &&
+              (new Date(timestamp) - new Date(d.created)) < 60000
+            );
+
+            if (!isDuplicate) {
+              const newDeck = {
+                id: Date.now(),
+                created: timestamp,
+                concept: data.concept || concept,
+                objective: data.objective || 'Uncategorized',
+                data: data // Store full API response
+              };
+              library.unshift(newDeck); // Add to top
+              localStorage.setItem('cprsLibrary', JSON.stringify(library));
+              console.log('Saved to cprsLibrary:', newDeck);
+            }
+
           } catch (e) {
-            console.warn('Failed to auto-save CPRS to tracker:', e);
+            console.warn('Failed to auto-save CPRS:', e);
           }
         }
 
@@ -6966,7 +6995,7 @@
       const scenarioData = {
         global: [
           {
-            title: 'Incident: Unauthorized Storage Access Spike', steps: [              'Azure Monitor alert fires: anomalous reads on a storage account.',
+            title: 'Incident: Unauthorized Storage Access Spike', steps: ['Azure Monitor alert fires: anomalous reads on a storage account.',
               'Check recent RBAC changes (Identities domain).',
               'Validate firewall + private endpoint configuration (Networking + Storage).',
               'Run CLI to list active role assignments and narrow suspect principals.',
@@ -6974,7 +7003,7 @@
             ]
           },
           {
-            title: 'Scenario: VM Migration Performance Lag', steps: [              'During VM migration, performance degraded.',
+            title: 'Scenario: VM Migration Performance Lag', steps: ['During VM migration, performance degraded.',
               'Review Disk snapshot + encryption sequence (Compute).',
               'Check network forced tunneling route impact (Networking).',
               'Monitor CPU/memory metrics & set temporary alert (Monitoring).'

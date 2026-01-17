@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <title>Anki Deck Library - AZ-104 Study Hub</title>
@@ -18,6 +19,7 @@
       --warning-color: #d83b01;
       --purple: #9c27b0;
     }
+
     [data-theme="dark"] {
       --bg-primary: #1a1a1a;
       --bg-secondary: #2d2d2d;
@@ -25,7 +27,13 @@
       --text-secondary: #b0b0b0;
       --border-color: #444;
     }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Segoe UI', system-ui, sans-serif;
       background: var(--bg-primary);
@@ -33,42 +41,118 @@
       line-height: 1.6;
       padding: 20px;
     }
-    .container { max-width: 1000px; margin: 0 auto; }
-    h1 { color: var(--purple); margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
-    .subtitle { color: var(--text-secondary); margin-bottom: 24px; font-size: 1em; }
-    
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--purple);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      font-size: 1em;
+    }
+
     .insights-panel {
       background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
       color: #fff;
       padding: 24px;
       border-radius: 12px;
       margin-bottom: 24px;
-      box-shadow: 0 4px 16px rgba(156,39,176,0.3);
+      box-shadow: 0 4px 16px rgba(156, 39, 176, 0.3);
     }
-    .insights-panel h2 { margin: 0 0 16px 0; font-size: 1.2em; }
+
+    .insights-panel h2 {
+      margin: 0 0 16px 0;
+      font-size: 1.2em;
+    }
+
     .coverage-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
       gap: 8px;
       margin-bottom: 16px;
     }
+
     .coverage-item {
-      background: rgba(255,255,255,0.15);
+      background: rgba(255, 255, 255, 0.15);
       padding: 12px 8px;
       border-radius: 8px;
       text-align: center;
       font-size: 0.85em;
     }
+
     .coverage-item .count {
       font-size: 1.8em;
       font-weight: bold;
       display: block;
     }
-    .coverage-item .label { opacity: 0.9; font-size: 0.8em; }
-    .coverage-item.has-decks { background: rgba(76, 175, 80, 0.4); }
-    .coverage-item.no-decks { background: rgba(244, 67, 54, 0.3); }
+
+    .coverage-item .label {
+      opacity: 0.9;
+      font-size: 0.8em;
+    }
+
+    .coverage-item.has-decks {
+      background: rgba(76, 175, 80, 0.4);
+    }
+
+    .coverage-item.has-decks {
+      background: rgba(76, 175, 80, 0.4);
+    }
+
+    .coverage-item.no-decks {
+      background: rgba(244, 67, 54, 0.3);
+    }
+
+    .freq-topics-container {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .freq-topics-title {
+      font-size: 0.9em;
+      opacity: 0.9;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .freq-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .freq-tag {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 0.85em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .freq-count {
+      background: rgba(0, 0, 0, 0.2);
+      padding: 2px 6px;
+      border-radius: 8px;
+      font-size: 0.8em;
+    }
+
     .insight-message {
-      background: rgba(255,255,255,0.2);
+      background: rgba(255, 255, 255, 0.2);
       padding: 12px 16px;
       border-radius: 8px;
       font-size: 0.95em;
@@ -76,14 +160,18 @@
       align-items: center;
       gap: 10px;
     }
-    .insight-message i { font-size: 1.2em; }
-    
+
+    .insight-message i {
+      font-size: 1.2em;
+    }
+
     .action-bar {
       display: flex;
       gap: 12px;
       margin-bottom: 24px;
       flex-wrap: wrap;
     }
+
     .action-btn {
       display: inline-flex;
       align-items: center;
@@ -96,10 +184,22 @@
       border: none;
       cursor: pointer;
     }
-    .action-btn.primary { background: #9c27b0; color: #fff; }
-    .action-btn.secondary { background: var(--bg-secondary); color: var(--text-primary); border: 1px solid var(--border-color); }
-    .action-btn:hover { opacity: 0.9; }
-    
+
+    .action-btn.primary {
+      background: #9c27b0;
+      color: #fff;
+    }
+
+    .action-btn.secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .action-btn:hover {
+      opacity: 0.9;
+    }
+
     .domain-section {
       background: var(--bg-secondary);
       border: 1px solid var(--border-color);
@@ -107,6 +207,7 @@
       margin-bottom: 16px;
       overflow: hidden;
     }
+
     .domain-header {
       padding: 16px;
       display: flex;
@@ -116,14 +217,22 @@
       background: var(--bg-primary);
       border-bottom: 1px solid var(--border-color);
     }
-    .domain-header:hover { background: var(--border-color); }
+
+    .domain-header:hover {
+      background: var(--border-color);
+    }
+
     .domain-title {
       font-weight: 600;
       display: flex;
       align-items: center;
       gap: 10px;
     }
-    .domain-title .icon { font-size: 1.1em; }
+
+    .domain-title .icon {
+      font-size: 1.1em;
+    }
+
     .domain-count {
       background: var(--purple);
       color: #fff;
@@ -132,11 +241,27 @@
       font-size: 0.8em;
       font-weight: 600;
     }
-    .domain-count.empty { background: #6c757d; }
-    .domain-content { padding: 0; display: none; }
-    .domain-content.open { display: block; padding: 16px; }
-    
-    .deck-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .domain-count.empty {
+      background: #6c757d;
+    }
+
+    .domain-content {
+      padding: 0;
+      display: none;
+    }
+
+    .domain-content.open {
+      display: block;
+      padding: 16px;
+    }
+
+    .deck-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
     .deck-item {
       display: flex;
       justify-content: space-between;
@@ -146,9 +271,22 @@
       border-radius: 8px;
       border: 1px solid var(--border-color);
     }
-    .deck-info { flex: 1; }
-    .deck-name { font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
-    .deck-topics { font-size: 0.85em; color: var(--text-secondary); }
+
+    .deck-info {
+      flex: 1;
+    }
+
+    .deck-name {
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .deck-topics {
+      font-size: 0.85em;
+      color: var(--text-secondary);
+    }
+
     .deck-topics span {
       display: inline-block;
       background: var(--bg-secondary);
@@ -159,7 +297,12 @@
       border: 1px solid var(--border-color);
       font-size: 0.9em;
     }
-    .deck-actions { display: flex; gap: 6px; }
+
+    .deck-actions {
+      display: flex;
+      gap: 6px;
+    }
+
     .deck-btn {
       padding: 6px 10px;
       border: none;
@@ -167,16 +310,24 @@
       cursor: pointer;
       font-size: 0.8em;
     }
-    .deck-btn.copy { background: #ff9800; color: #fff; }
-    .deck-btn.delete { background: #dc3545; color: #fff; }
-    
+
+    .deck-btn.copy {
+      background: #ff9800;
+      color: #fff;
+    }
+
+    .deck-btn.delete {
+      background: #dc3545;
+      color: #fff;
+    }
+
     .empty-domain {
       color: var(--text-secondary);
       font-style: italic;
       padding: 12px;
       text-align: center;
     }
-    
+
     .empty-state {
       background: var(--bg-secondary);
       border: 2px dashed var(--border-color);
@@ -185,10 +336,24 @@
       text-align: center;
       margin: 30px 0;
     }
-    .empty-state i { font-size: 48px; color: var(--text-secondary); margin-bottom: 16px; }
-    .empty-state h3 { color: var(--text-primary); margin-bottom: 8px; }
-    .empty-state p { color: var(--text-secondary); max-width: 400px; margin: 0 auto; }
-    
+
+    .empty-state i {
+      font-size: 48px;
+      color: var(--text-secondary);
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .empty-state p {
+      color: var(--text-secondary);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
     .theme-toggle {
       position: fixed;
       top: 20px;
@@ -204,18 +369,30 @@
       gap: 6px;
       color: var(--text-primary);
     }
-    
+
     @media (max-width: 600px) {
-      .coverage-grid { grid-template-columns: repeat(3, 1fr); }
-      .deck-item { flex-direction: column; align-items: flex-start; gap: 10px; }
-      .deck-actions { width: 100%; justify-content: flex-end; }
+      .coverage-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .deck-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+
+      .deck-actions {
+        width: 100%;
+        justify-content: flex-end;
+      }
     }
   </style>
   <script src="shared-navbar.js"></script>
 </head>
+
 <body>
   <button class="theme-toggle" id="theme-toggle"><i class="fas fa-moon"></i> Dark</button>
-  
+
   <div class="container">
     <h1><i class="fas fa-layer-group"></i> Anki Deck Library</h1>
     <p class="subtitle">Track your CPRS study coverage across all AZ-104 domains</p>
@@ -224,6 +401,11 @@
       <h2><i class="fas fa-chart-pie"></i> Domain Coverage</h2>
       <div class="coverage-grid" id="coverage-grid">
         <!-- Coverage stats rendered here -->
+      </div>
+
+      <div class="freq-topics-container" id="freq-topics-container" style="display:none;">
+        <div class="freq-topics-title"><i class="fas fa-history"></i> Most Revisited Topics</div>
+        <div class="freq-list" id="freq-list"></div>
       </div>
       <div class="insight-message" id="insight-message">
         <i class="fas fa-lightbulb"></i>
@@ -271,31 +453,41 @@
 
     // AZ-104 Domain configuration (Official Exam Objectives - April 2025)
     const DOMAINS = [
-      { key: 'Identities', name: 'Identities & Governance', icon: 'fa-id-card', color: '#0078d4', weight: '20-25%', objectives: [
-        { id: '1.1', name: 'Manage Microsoft Entra users and groups' },
-        { id: '1.2', name: 'Manage access to Azure resources' },
-        { id: '1.3', name: 'Manage Azure subscriptions and governance' }
-      ]},
-      { key: 'Storage', name: 'Storage', icon: 'fa-database', color: '#107c10', weight: '15-20%', objectives: [
-        { id: '2.1', name: 'Configure access to storage' },
-        { id: '2.2', name: 'Configure and manage storage accounts' },
-        { id: '2.3', name: 'Configure Azure Files and Azure Blob Storage' }
-      ]},
-      { key: 'Compute', name: 'Compute', icon: 'fa-server', color: '#ff9800', weight: '20-25%', objectives: [
-        { id: '3.1', name: 'Automate deployment with ARM/Bicep' },
-        { id: '3.2', name: 'Create and configure virtual machines' },
-        { id: '3.3', name: 'Provision and manage containers' },
-        { id: '3.4', name: 'Create and configure Azure App Service' }
-      ]},
-      { key: 'Networking', name: 'Networking', icon: 'fa-network-wired', color: '#9c27b0', weight: '15-20%', objectives: [
-        { id: '4.1', name: 'Configure and manage virtual networks' },
-        { id: '4.2', name: 'Configure secure access to virtual networks' },
-        { id: '4.3', name: 'Configure name resolution and load balancing' }
-      ]},
-      { key: 'Monitoring', name: 'Monitoring', icon: 'fa-chart-bar', color: '#d83b01', weight: '10-15%', objectives: [
-        { id: '5.1', name: 'Monitor resources by using Azure Monitor' },
-        { id: '5.2', name: 'Implement backup and recovery' }
-      ]}
+      {
+        key: 'Identities', name: 'Identities & Governance', icon: 'fa-id-card', color: '#0078d4', weight: '20-25%', objectives: [
+          { id: '1.1', name: 'Manage Microsoft Entra users and groups' },
+          { id: '1.2', name: 'Manage access to Azure resources' },
+          { id: '1.3', name: 'Manage Azure subscriptions and governance' }
+        ]
+      },
+      {
+        key: 'Storage', name: 'Storage', icon: 'fa-database', color: '#107c10', weight: '15-20%', objectives: [
+          { id: '2.1', name: 'Configure access to storage' },
+          { id: '2.2', name: 'Configure and manage storage accounts' },
+          { id: '2.3', name: 'Configure Azure Files and Azure Blob Storage' }
+        ]
+      },
+      {
+        key: 'Compute', name: 'Compute', icon: 'fa-server', color: '#ff9800', weight: '20-25%', objectives: [
+          { id: '3.1', name: 'Automate deployment with ARM/Bicep' },
+          { id: '3.2', name: 'Create and configure virtual machines' },
+          { id: '3.3', name: 'Provision and manage containers' },
+          { id: '3.4', name: 'Create and configure Azure App Service' }
+        ]
+      },
+      {
+        key: 'Networking', name: 'Networking', icon: 'fa-network-wired', color: '#9c27b0', weight: '15-20%', objectives: [
+          { id: '4.1', name: 'Configure and manage virtual networks' },
+          { id: '4.2', name: 'Configure secure access to virtual networks' },
+          { id: '4.3', name: 'Configure name resolution and load balancing' }
+        ]
+      },
+      {
+        key: 'Monitoring', name: 'Monitoring', icon: 'fa-chart-bar', color: '#d83b01', weight: '10-15%', objectives: [
+          { id: '5.1', name: 'Monitor resources by using Azure Monitor' },
+          { id: '5.2', name: 'Implement backup and recovery' }
+        ]
+      }
     ];
 
     // Map objective code to domain
@@ -305,7 +497,7 @@
       const mapping = { '1': 'Identities', '2': 'Storage', '3': 'Compute', '4': 'Networking', '5': 'Monitoring' };
       return mapping[code] || 'Uncategorized';
     }
-    
+
     // Get objective name by ID
     function getObjectiveName(objId) {
       for (const domain of DOMAINS) {
@@ -394,6 +586,32 @@
         </div>`;
       });
       coverageGrid.innerHTML = coverageHtml;
+
+      // Render Frequent Topics
+      const topicCounts = {};
+      library.forEach(deck => {
+        const concept = (deck.concept || deck.data?.concept || 'Unknown').trim();
+        topicCounts[concept] = (topicCounts[concept] || 0) + 1;
+      });
+
+      const sortedTopics = Object.entries(topicCounts)
+        .sort((a, b) => b[1] - a[1]) // Sort by count desc
+        .slice(0, 5); // Top 5
+
+      const freqContainer = document.getElementById('freq-topics-container');
+      const freqList = document.getElementById('freq-list');
+
+      if (sortedTopics.length > 0) {
+        freqContainer.style.display = 'block';
+        freqList.innerHTML = sortedTopics.map(([topic, count]) => `
+              <div class="freq-tag">
+                  ${topic}
+                  <span class="freq-count">${count}</span>
+              </div>
+          `).join('');
+      } else {
+        freqContainer.style.display = 'none';
+      }
 
       // Generate insight message
       const totalDecks = library.length;
@@ -533,4 +751,5 @@
     document.addEventListener('DOMContentLoaded', renderLibrary);
   </script>
 </body>
+
 </html>
