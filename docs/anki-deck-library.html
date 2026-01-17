@@ -588,7 +588,15 @@
       decksByDomain['Uncategorized'] = [];
 
       library.forEach(deck => {
-        const domain = objectiveToDomain(deck.objective || deck.data?.objective);
+        // Prioritize classifying based on the Concept text (User Input) rather than the AI-generated numeric Objective
+        // This fixes cases where AI hallucinates a wrong code (e.g. 4.3 for an Identity question)
+        let domain = objectiveToDomain(deck.concept || deck.data?.concept);
+
+        // Fallback: If concept text was vague, try the AI's objective code
+        if (domain === 'Uncategorized') {
+          domain = objectiveToDomain(deck.objective || deck.data?.objective);
+        }
+
         if (decksByDomain[domain]) {
           decksByDomain[domain].push(deck);
         } else {
