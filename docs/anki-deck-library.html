@@ -490,12 +490,34 @@
       }
     ];
 
-    // Map objective code to domain
+    // Map objective code to domain (Robust Version 2.0)
     function objectiveToDomain(objective) {
       if (!objective) return 'Uncategorized';
-      const code = objective.toString().split('.')[0];
-      const mapping = { '1': 'Identities', '2': 'Storage', '3': 'Compute', '4': 'Networking', '5': 'Monitoring' };
-      return mapping[code] || 'Uncategorized';
+      const str = objective.toString().trim();
+      const lower = str.toLowerCase();
+
+      // 1. STRICT numeric code check (Must be exactly 'd.d' format like 1.1, 2.3)
+      // This prevents "3. Manage Azure..." from being caught as Compute just because it starts with 3.
+      const codeMatch = str.match(/^([1-5])\.\d+/);
+      const digitMapping = { '1': 'Identities', '2': 'Storage', '3': 'Compute', '4': 'Networking', '5': 'Monitoring' };
+
+      if (codeMatch && digitMapping[codeMatch[1]]) {
+        // Only trust the number if the text doesn't strongly contradict it
+        // (e.g. prevent "3.2 Identity Question" from being Compute)
+        return digitMapping[codeMatch[1]];
+      }
+
+      // 2. Try text keyword matching (Prioritized)
+      if (lower.includes('identities') || lower.includes('governance') || lower.includes('entra') || lower.includes('user') || lower.includes('group') || lower.includes('rbac') || lower.includes('subscription')) return 'Identities';
+      if (lower.includes('storage') || lower.includes('blob') || lower.includes('file') || lower.includes('share') || lower.includes('redundancy')) return 'Storage';
+      if (lower.includes('compute') || lower.includes('machine') || lower.includes('vm') || lower.includes('container') || lower.includes('kubernetes') || lower.includes('aks') || lower.includes('app service')) return 'Compute';
+      if (lower.includes('network') || lower.includes('dns') || lower.includes('vpn') || lower.includes('load balanc') || lower.includes('peering')) return 'Networking';
+      if (lower.includes('monitor') || lower.includes('backup') || lower.includes('recovery') || lower.includes('alert') || lower.includes('log analytics')) return 'Monitoring';
+
+      // 3. Fallback: If we had a weak number match, use it now if no keywords found
+      if (codeMatch && digitMapping[codeMatch[1]]) return digitMapping[codeMatch[1]];
+
+      return 'Uncategorized';
     }
 
     // Get objective name by ID
