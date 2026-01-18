@@ -1819,6 +1819,18 @@
         `;
       }
 
+      // Add Sync Buttons (User Requested)
+      html += `
+        <div style="margin-top:16px; border-top:1px solid var(--border-color); padding-top:12px; display:flex; gap:8px; justify-content:center;">
+          <button class="domain-action-btn secondary btn-pull-action" onclick="window.syncPull && window.syncPull()" style="flex:1; font-size:0.85em;">
+            <i class="fas fa-download"></i> Pull
+          </button>
+          <button class="domain-action-btn primary btn-push-action" onclick="window.syncPush && window.syncPush()" style="flex:1; font-size:0.85em;">
+            <i class="fas fa-upload"></i> Push
+          </button>
+        </div>
+      `;
+
       itemsEl.innerHTML = html;
 
       // Bind Events
@@ -1847,7 +1859,7 @@
     }
 
     // --- Cloud Sync Logic (Tasks) ---
-    async function initTaskSync() {
+    async function initTaskSyncOLD() {
       const statusText = document.getElementById('sync-status-text');
       const syncIcon = document.getElementById('sync-icon');
       const btnPush = document.getElementById('btn-push-cloud');
@@ -1997,6 +2009,116 @@
         renderWorkflowSummary();
       }
     });
+
+    // --- New Global Sync Logic ---
+    async function initTaskSync() {
+      const statusText = document.getElementById('sync-status-text');
+      const syncIcon = document.getElementById('sync-icon');
+      const btnPush = document.getElementById('btn-push-cloud');
+      const btnPull = document.getElementById('btn-pull-cloud');
+
+      const userId = localStorage.getItem('az104SyncUserId');
+
+      if (!userId) {
+        if (statusText) statusText.innerHTML = 'Sync: <strong style="color:red">Not Connected</strong> (Link in Review Guide)';
+        if (btnPush) btnPush.disabled = true;
+        if (btnPull) btnPull.disabled = true;
+        if (btnPush) btnPush.style.opacity = '0.5';
+        if (btnPull) btnPull.style.opacity = '0.5';
+        return;
+      }
+
+      if (statusText) statusText.innerHTML = `Sync: <strong style="color:green">Connected</strong> (${userId.substring(0, 8)}...)`;
+      if (syncIcon) syncIcon.style.color = '#107c10';
+
+      // --- Define Global Functions ---
+      window.syncPush = async () => {
+        if (!confirm('Overwrite cloud tasks with your local status?')) return;
+
+        // Update all buttons to loading state
+        const allPushBtns = document.querySelectorAll('.btn-push-action');
+        allPushBtns.forEach(b => b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pushing...');
+
+        try {
+          const { doc, setDoc, serverTimestamp } = window._firestoreOps;
+          const db = window._firebaseDB;
+          if (!db) throw new Error('Firebase not initialized');
+
+          const taskData = {};
+          studyTopics.forEach(topic => {
+            taskData[topic.id] = localStorage.getItem(topic.id) === 'true';
+          });
+          const workflowData = JSON.parse(localStorage.getItem('studyWorkflowChecklist') || '[]');
+
+          const p1 = setDoc(doc(db, 'users', userId, 'tasks', 'main'), {
+            tasks: taskData,
+            lastUpdated: serverTimestamp(),
+            device: 'Macbook/Web'
+          });
+          const p2 = setDoc(doc(db, 'users', userId, 'workflow', 'main'), {
+            checklist: workflowData,
+            lastUpdated: serverTimestamp(),
+            device: 'Macbook/Web'
+          });
+          await Promise.all([p1, p2]);
+          alert('✅ All Tasks & Workflow pushed to cloud!');
+        } catch (e) {
+          console.error(e);
+          alert('❌ Push failed: ' + e.message);
+        } finally {
+          allPushBtns.forEach(b => b.innerHTML = '<i class="fas fa-upload"></i> Push');
+        }
+      };
+
+      window.syncPull = async () => {
+        if (!confirm('Merge cloud tasks? (Cloud status wins)')) return;
+
+        const allPullBtns = document.querySelectorAll('.btn-pull-action');
+        allPullBtns.forEach(b => b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pulling...');
+
+        try {
+          const { doc, getDoc } = window._firestoreOps;
+          const db = window._firebaseDB;
+          if (!db) throw new Error('Firebase not initialized');
+
+          const [snapTasks, snapWorkflow] = await Promise.all([
+            getDoc(doc(db, 'users', userId, 'tasks', 'main')),
+            getDoc(doc(db, 'users', userId, 'workflow', 'main'))
+          ]);
+
+          let updateCount = 0;
+          if (snapTasks.exists()) {
+            const remote = snapTasks.data().tasks || {};
+            Object.keys(remote).forEach(id => { localStorage.setItem(id, remote[id]); updateCount++; });
+          }
+          if (snapWorkflow.exists()) {
+            const remote = snapWorkflow.data().checklist || [];
+            localStorage.setItem('studyWorkflowChecklist', JSON.stringify(remote));
+            updateCount += remote.length;
+          }
+
+          renderStudyTopics();
+          updateProgressSummary();
+          renderWorkflowSummary();
+          alert(`✅ Sync Complete! Updated data.`);
+        } catch (e) {
+          console.error(e);
+          alert('❌ Pull failed: ' + e.message);
+        } finally {
+          allPullBtns.forEach(b => b.innerHTML = '<i class="fas fa-download"></i> Pull');
+        }
+      };
+
+      // Attach to main buttons
+      if (btnPush) {
+        btnPush.classList.add('btn-push-action');
+        btnPush.addEventListener('click', window.syncPush);
+      }
+      if (btnPull) {
+        btnPull.classList.add('btn-pull-action');
+        btnPull.addEventListener('click', window.syncPull);
+      }
+    }
   </script>
 </body>
 
