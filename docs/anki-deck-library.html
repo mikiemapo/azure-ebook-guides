@@ -264,22 +264,58 @@
 
     .deck-item {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
       padding: 12px 16px;
       background: var(--bg-primary);
       border-radius: 8px;
       border: 1px solid var(--border-color);
     }
 
-    .deck-info {
+    .deck-item.mastered {
+      opacity: 0.5;
+      background: #f9f9f9;
+      filter: grayscale(100%);
+    }
+
+    .deck-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      cursor: pointer;
+    }
+
+    .deck-title-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
       flex: 1;
     }
 
     .deck-name {
-      font-weight: 600;
+      white-space: normal;
+      overflow: visible;
+      font-weight: 700;
+      font-size: 1.05em;
       color: var(--text-primary);
-      margin-bottom: 4px;
+    }
+
+    .deck-meta {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .deck-summary {
+      margin-top: 8px;
+      font-size: 0.95em;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+    }
+
+    .deck-info {
+      flex: 1;
     }
 
     .deck-topics {
@@ -398,7 +434,7 @@
       }
     }
 
-    /* Library 2.0 CSS */
+    /* Library 2.1 CSS */
     .filter-bar {
       display: flex;
       gap: 12px;
@@ -408,6 +444,20 @@
       border-radius: 12px;
       border: 1px solid var(--border-color);
       flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .filter-label {
+      font-size: 0.75em;
+      color: var(--text-secondary);
+      font-weight: 600;
+      text-transform: uppercase;
     }
 
     .filter-select {
@@ -417,21 +467,119 @@
       background: var(--bg-primary);
       color: var(--text-primary);
       font-size: 0.9em;
-      min-width: 150px;
+      min-width: 140px;
+      transition: all 0.2s;
     }
 
-    .deck-item.mastered {
-      opacity: 0.6;
-      background: #f0f0f0;
+    .filter-select.active-filter {
+      border-color: var(--azure-blue);
+      background: rgba(0, 120, 212, 0.05);
+      color: var(--azure-blue);
+      font-weight: 600;
     }
 
+    .result-count {
+      width: 100%;
+      font-size: 0.85em;
+      color: var(--text-secondary);
+      margin-top: 8px;
+      padding-left: 4px;
+    }
+
+    /* Global Toggle */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .toggle-label {
+      font-size: 0.9em;
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 40px;
+      height: 22px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #ccc;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: var(--azure-blue);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(18px);
+    }
+
+    /* Card Layers */
     .deck-layer-1 {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .deck-layer-2 {
+      font-size: 0.95em;
+      color: var(--text-primary);
+      background: rgba(0, 120, 212, 0.05);
+      padding: 8px 12px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      border-left: 3px solid var(--azure-blue);
+      display: block;
+      /* Default visible */
+    }
+
+    .deck-layer-2.hidden {
+      display: none;
+    }
+
+    .deck-layer-3 {
+      display: none;
+      padding-top: 12px;
+      margin-top: 8px;
+      border-top: 1px dashed var(--border-color);
       font-size: 0.9em;
       color: var(--text-secondary);
-      margin-top: 4px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+    }
+
+    .deck-layer-3.open {
+      display: block;
     }
 
     .mistake-icon {
@@ -446,13 +594,6 @@
 
     .deck-body {
       display: none;
-      padding-top: 12px;
-      margin-top: 12px;
-      border-top: 1px solid var(--border-color);
-    }
-
-    .deck-body.open {
-      display: block;
     }
   </style>
   <script src="shared-navbar.js"></script>
@@ -480,30 +621,60 @@
       </div>
     </div>
 
-    <!-- Library 2.0 Filter Bar -->
+    <!-- Library 2.1 Filter Bar -->
     <div class="filter-bar">
-      <select id="filter-domain" class="filter-select" onchange="renderLibrary()">
-        <option value="all">All Domains</option>
-        <option value="Identities">Identities</option>
-        <option value="Storage">Storage</option>
-        <option value="Compute">Compute</option>
-        <option value="Networking">Networking</option>
-        <option value="Monitoring">Monitoring</option>
-      </select>
+      <div class="filter-group">
+        <span class="filter-label">Domain</span>
+        <select id="filter-domain" class="filter-select" onchange="renderLibrary()">
+          <option value="all">All Domains</option>
+          <option value="Identities">Identities</option>
+          <option value="Storage">Storage</option>
+          <option value="Compute">Compute</option>
+          <option value="Networking">Networking</option>
+          <option value="Monitoring">Monitoring</option>
+        </select>
+      </div>
 
-      <select id="filter-status" class="filter-select" onchange="renderLibrary()">
-        <option value="active">Active (To Review)</option>
-        <option value="mastered">Mastered (Done)</option>
-        <option value="all">All Status</option>
-      </select>
+      <div class="filter-group">
+        <span class="filter-label">Status</span>
+        <select id="filter-status" class="filter-select" onchange="renderLibrary()">
+          <option value="active">Active (To Review)</option>
+          <option value="mastered">Mastered (Done)</option>
+          <option value="all">All Status</option>
+        </select>
+      </div>
 
-      <select id="filter-type" class="filter-select" onchange="renderLibrary()">
-        <option value="all">All Weakness Types</option>
-        <option value="Foundation">Foundation</option>
-        <option value="Definition">Definition</option>
-        <option value="Scenario">Scenario</option>
-        <option value="Compression">Compression</option>
-      </select>
+      <div class="filter-group">
+        <span class="filter-label">Weakness Type</span>
+        <select id="filter-type" class="filter-select" onchange="renderLibrary()">
+          <option value="all">All Weakness Types</option>
+          <option value="Foundation">Foundation</option>
+          <option value="Definition">Definition</option>
+          <option value="Scenario">Scenario</option>
+          <option value="Compression">Compression</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <span class="filter-label">Source</span>
+        <select id="filter-source" class="filter-select" onchange="renderLibrary()">
+          <option value="all">All Sources</option>
+          <option value="Whizlabs">Whizlabs</option>
+          <option value="Tutorials Dojo">Tutorials Dojo</option>
+          <option value="MS Learn">MS Learn</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="toggle-container">
+        <span class="toggle-label">DISTILLED VIEW</span>
+        <label class="switch">
+          <input type="checkbox" id="global-distilled-toggle" onchange="renderLibrary()" checked>
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="result-count" id="result-count">Showing items...</div>
     </div>
 
     <div class="action-bar">
@@ -638,10 +809,6 @@
       return Array.from(topics).slice(0, 4);
     }
 
-    // ... (inside renderLibrary loop) ...
-
-
-
     // Get weak domains from quiz scores
     function getWeakDomains() {
       try {
@@ -679,14 +846,21 @@
       // Prevent toggling if checking a box or clicking a button
       if (event && (event.target.tagName === 'BUTTON' || event.target.tagName === 'I')) return;
 
-      const body = document.getElementById(`deck-body-${id}`);
+      const layer2 = document.getElementById(`layer2-${id}`);
+      const layer3 = document.getElementById(`deck-layer-3-${id}`);
       const icon = document.getElementById(`chevron-${id}`);
-      if (body) {
-        body.classList.toggle('open');
-        if (body.classList.contains('open')) {
-          icon.className = 'fas fa-chevron-up';
+
+      // If Global Toggle is Distilled (Layer 2 visible, Layer 3 hidden)
+      // We want to toggle Layer 3 visibility on click?
+      // Or if Toggle is Full (Layer 3 visible), toggle collapse?
+      // Let's implement: "Chevron click ALWAYS toggles Layer 3 visibility"
+      if (layer3) {
+        layer3.classList.toggle('open');
+        if (layer3.classList.contains('open')) {
+          if (icon) icon.className = 'fas fa-chevron-up';
+          // optional: hide layer 2 when expanded? No, keep context.
         } else {
-          icon.className = 'fas fa-chevron-down';
+          if (icon) icon.className = 'fas fa-chevron-down';
         }
       }
     }
@@ -703,19 +877,37 @@
       }
     }
 
-    // Render the library (Version 2.0)
+    // Render the library (Version 2.1)
     function renderLibrary() {
       const library = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
       const domainSections = document.getElementById('domain-sections');
       const emptyState = document.getElementById('empty-state');
       const coverageGrid = document.getElementById('coverage-grid');
+      const resultCount = document.getElementById('result-count');
+
+      // Filter Element Objects
+      const elDomain = document.getElementById('filter-domain');
+      const elStatus = document.getElementById('filter-status');
+      const elType = document.getElementById('filter-type');
+      const elSource = document.getElementById('filter-source');
 
       // Filter Values
-      const filterDomain = document.getElementById('filter-domain').value;
-      const filterStatus = document.getElementById('filter-status').value;
-      const filterType = document.getElementById('filter-type').value;
+      const filterDomain = elDomain ? elDomain.value : 'all';
+      const filterStatus = elStatus ? elStatus.value : 'all';
+      const filterType = elType ? elType.value : 'all';
+      const filterSource = elSource ? elSource.value : 'all';
 
-      // 1. Calculate Statistics (Based on ALL active/mastered decks, ignoring display filters)
+      // Global Distilled View Toggle
+      const toggleEl = document.getElementById('global-distilled-toggle');
+      const isDistilledMode = toggleEl ? toggleEl.checked : true;
+
+      // Update Active Filter Styling
+      [elDomain, elStatus, elType, elSource].forEach(el => {
+        if (el && el.value !== 'all') el.classList.add('active-filter');
+        else if (el) el.classList.remove('active-filter');
+      });
+
+      // 1. Calculate Statistics (Based on ALL active/mastered decks)
       const statsByDomain = {};
       DOMAINS.forEach(d => statsByDomain[d.key] = 0);
 
@@ -725,11 +917,10 @@
         if (statsByDomain[domain] !== undefined) statsByDomain[domain]++;
       });
 
-      // Render coverage grid using global stats
+      // Render coverage grid
       let coverageHtml = '';
       DOMAINS.forEach(d => {
         const count = statsByDomain[d.key];
-        // Only gray out if truly 0 in library, not just filter hidden
         const hasDecks = count > 0;
         coverageHtml += `<div class="coverage-item ${hasDecks ? 'has-decks' : 'no-decks'}">
           <span class="count">${count}</span>
@@ -738,14 +929,15 @@
       });
       coverageGrid.innerHTML = coverageHtml;
 
-
-      // 2. Filter Decks (For Display Only)
+      // 2. Filter Decks (For Display)
       const decksByDomain = {};
       DOMAINS.forEach(d => decksByDomain[d.key] = []);
       decksByDomain['Uncategorized'] = [];
 
+      let visibleCount = 0;
+
       library.forEach(deck => {
-        // Filter by Status
+        // Status Filter
         const status = deck.status || 'active';
         if (filterStatus !== 'all' && status !== filterStatus) return;
 
@@ -755,29 +947,39 @@
           domain = objectiveToDomain(deck.objective || deck.data?.objective);
         }
 
-        // Filter by Domain (for the list view only)
+        // Domain Filter
         if (filterDomain !== 'all' && domain !== filterDomain) return;
 
-        // Filter by Type
+        // Type Filter
         if (filterType !== 'all') {
-          const hasType = deck.data?.questions?.some(q => q.type === filterType);
-          if (!hasType) return;
+          const firstQ = deck.data?.questions?.[0];
+          const type = firstQ?.type || 'General';
+          if (type !== filterType && deck.type !== filterType) return;
         }
 
+        // Source Filter (New)
+        if (filterSource !== 'all') {
+          const source = deck.source || 'Other';
+          const s = source.toLowerCase();
+          const f = filterSource.toLowerCase();
+          if (s !== f && !(f === 'other' && (!source || source === 'Unknown'))) return;
+        }
+
+        // Add to grouped list
         if (decksByDomain[domain]) {
           decksByDomain[domain].push(deck);
         } else {
           decksByDomain['Uncategorized'].push(deck);
         }
+        visibleCount++;
       });
 
-      // Render coverage grid (Always based on ALL active decks, ignoring current filters for context?)
-      // Actually, let's keep it simple and just render coverage based on total library stats?
-      // For now, let's stick to the filtered view
-      let totalVisible = 0;
-      Object.values(decksByDomain).forEach(arr => totalVisible += arr.length);
+      // Update Result Count
+      if (resultCount) {
+        resultCount.textContent = `Showing ${visibleCount} item${visibleCount !== 1 ? 's' : ''}`;
+      }
 
-      if (totalVisible === 0) {
+      if (visibleCount === 0) {
         domainSections.innerHTML = '';
         emptyState.style.display = 'block';
         if (library.length > 0) {
@@ -788,10 +990,76 @@
       }
       emptyState.style.display = 'none';
 
+      // Render HTML Helper
+      const renderDecks = (decks) => {
+        return decks.map(deck => {
+          const fullConcept = deck.concept || deck.data?.concept || 'Untitled';
+          const truncatedName = fullConcept.length > 80 ? fullConcept.substring(0, 80) + '...' : fullConcept;
+          const isMastered = deck.status === 'mastered';
+
+          let weakType = "Concept";
+          if (deck.data?.questions?.[0]?.type) weakType = deck.data.questions[0].type;
+
+          let borderColor = "#e0e0e0";
+          if (weakType === 'Foundation') borderColor = '#2196f3'; // Blue
+          else if (weakType === 'Scenario') borderColor = '#9c27b0'; // Purple
+          else if (weakType === 'Definition') borderColor = '#00bcd4'; // Cyan
+
+          // Layer 2: Distilled Takeaway
+          let distilledText = "No summary available.";
+          if (deck.data?.concepts?.[0]?.compression && deck.data.concepts[0].compression.hook) {
+            distilledText = deck.data.concepts[0].compression.hook;
+          } else if (deck.takeaway) {
+            distilledText = deck.takeaway;
+          } else if (deck.data?.questions?.[0]?.explanation) {
+            distilledText = deck.data.questions[0].explanation.split('.')[0] + '.';
+          }
+
+          // Layer 3: Details
+          const questionsHtml = formatQuestionsHtml(deck);
+
+          return `
+          <div class="deck-item ${isMastered ? 'mastered' : ''}" style="border-left: 4px solid ${borderColor};">
+             <!-- Layer 1: Header -->
+             <div class="deck-header" onclick="toggleDeck('${deck.id}', event)">
+                <div class="deck-layer-1" style="flex:1;">
+                   <div class="deck-name">${truncatedName}</div>
+                   <div class="deck-meta">
+                     <span class="badge" style="font-size:0.8em; padding:2px 6px; background:#eee; border-radius:4px;">${weakType}</span>
+                     ${isMastered ? '<i class="fas fa-check-circle" style="color:var(--success-color)"></i>' : ''}
+                   </div>
+                </div>
+                <!-- Action Icon -->
+                <div class="deck-actions">
+                  <i class="fas fa-chevron-${isDistilledMode ? 'down' : 'up'}" id="chevron-${deck.id}"></i>
+                </div>
+             </div>
+
+             <!-- Layer 2: Distilled Takeaway -->
+             <div class="deck-layer-2 ${isDistilledMode ? '' : 'hidden'}" id="layer2-${deck.id}">
+                <i class="fas fa-lightbulb" style="color:#ffc107; margin-right:6px;"></i>
+                <span style="font-style:italic;">"${distilledText}"</span>
+             </div>
+
+             <!-- Layer 3: Full Details -->
+             <div class="deck-layer-3 ${!isDistilledMode ? 'open' : ''}" id="deck-layer-3-${deck.id}">
+               <div class="deck-actions-bar" style="margin-bottom:12px; display:flex; gap:8px;">
+                 <button class="deck-btn ${isMastered ? 'primary' : 'secondary'}" onclick="toggleMastered('${deck.id}')">
+                   <i class="fas fa-check"></i> ${isMastered ? 'Mark Active' : 'Mark Mastered'}
+                 </button>
+                 <button class="deck-btn copy" onclick="copyDeck('${deck.id}')"><i class="fas fa-copy"></i> CSV</button>
+                 <button class="deck-btn delete" onclick="deleteDeck('${deck.id}')"><i class="fas fa-trash"></i> Delete</button>
+               </div>
+               ${questionsHtml}
+             </div>
+          </div>`;
+        }).join('')
+      };
+
       let sectionsHtml = '';
       DOMAINS.forEach(d => {
         const decks = decksByDomain[d.key];
-        if (decks.length === 0) return; // Hide empty sections in filtered view
+        if (decks.length === 0) return;
 
         sectionsHtml += `<div class="domain-section">
           <div class="domain-header" onclick="toggleDomain('${d.key}')">
@@ -803,91 +1071,44 @@
           </div>
           <div class="domain-content open" id="domain-${d.key}">
             <div class="deck-list">
-              ${decks.map(deck => {
-          const fullConcept = deck.concept || deck.data?.concept || 'Untitled';
-          const truncatedName = fullConcept.length > 80 ? fullConcept.substring(0, 80) + '...' : fullConcept;
-          const questionCount = deck.data && deck.data.questions ? deck.data.questions.length : 0;
-          const isMastered = deck.status === 'mastered';
-
-          // Layer 1: Extract Core Mistake / Rule
-          let layer1Text = "Click to review detailed breakdown.";
-          let weakType = "Concept";
-
-          if (deck.data?.questions && deck.data.questions.length > 0) {
-            const firstQ = deck.data.questions[0];
-            weakType = firstQ.type || "General";
-            if (firstQ.explanation) {
-              // Try to grab the first sentence of explanation
-              layer1Text = firstQ.explanation.split('.')[0] + '.';
-            }
-          } else if (deck.data?.concepts && deck.data.concepts.length > 0) {
-            // It's an Extractor Deck
-            const firstC = deck.data.concepts[0];
-            weakType = "Analysis";
-            layer1Text = firstC.correct_fact || firstC.foundation || "Review fact analysis.";
-          }
-
-          // Visual Cue Color
-          const typeColors = {
-            'Foundation': '#0078d4', 'Definition': '#4caf50',
-            'Differentiation': '#ff9800', 'Scenario': '#9c27b0',
-            'Anti-Confusion': '#dc3545', 'Compression': '#00bcd4'
-          };
-          const borderColor = typeColors[weakType] || '#ccc';
-
-          return `
-                <div class="deck-item ${isMastered ? 'mastered' : ''}" style="border-left: 4px solid ${borderColor}">
-                  <div class="deck-header" onclick="toggleDeck(${deck.id}, event)" style="width:100%; cursor:pointer;">
-                      <div class="deck-info">
-                        <div class="deck-name" title="${fullConcept.replace(/"/g, '&quot;')}">
-                            ${isMastered ? '<i class="fas fa-check-circle" style="color:var(--success-color)"></i> ' : ''}
-                            ${truncatedName}
-                        </div>
-                        <div class="deck-layer-1">
-                          <span class="count-badge" style="background:${borderColor}">${weakType}</span>
-                          ${questionCount > 0 ? `<span class="count-badge" style="background:#666">${questionCount} Qs</span>` : ''}
-                          <span class="mistake-text"><i class="fas fa-info-circle"></i> ${layer1Text}</span>
-                        </div>
-                      </div>
-                      <div class="deck-actions">
-                         <button class="deck-btn" onclick="toggleDeck(${deck.id}, event)"><i class="fas fa-chevron-down" id="chevron-${deck.id}"></i></button>
-                      </div>
-                  </div>
-                  
-                  <div class="deck-body" id="deck-body-${deck.id}">
-                    <!-- Toolbar -->
-                    <div style="margin-bottom:12px; display:flex; gap:8px;">
-                        <button class="deck-btn ${isMastered ? 'primary' : 'secondary'}" onclick="toggleMastered(${deck.id})">
-                            <i class="fas fa-check"></i> ${isMastered ? 'Mark Active' : 'Mark Mastered'}
-                        </button>
-                        <button class="deck-btn copy" onclick="copyDeck(${deck.id})"><i class="fas fa-copy"></i> Copy CSV</button>
-                        <button class="deck-btn delete" onclick="deleteDeck(${deck.id})"><i class="fas fa-trash"></i> Delete</button>
-                    </div>
-
-                    <!-- Detailed Content -->
-                    <div class="deck-topics">
-                       ${extractTopics(deck.data || {}).map(t => `<span>${t}</span>`).join('')}
-                    </div>
-                  </div>
-                </div>
-              `}).join('')}
+              ${renderDecks(decks)}
             </div>
           </div>
         </div>`;
       });
 
-      // Uncategorized Section
+      // Handle Uncategorized
       if (decksByDomain['Uncategorized'].length > 0) {
-        // ... Similar logic could be applied here, but for brevity sticking to main domains first
-        // Or just include them in the loop above by adding 'Uncategorized' to DOMAINS list temporarily?
-        // For now, let's just append them simply
         const decks = decksByDomain['Uncategorized'];
-        sectionsHtml += `<div class="domain-section"><div class="domain-header">Uncategorized <span class="domain-count">${decks.length}</span></div><div class="domain-content open"><div class="deck-list">
-            ${decks.map(d => `<div class="deck-item"><div class="deck-name">${d.concept}</div></div>`).join('')}
-          </div></div></div>`;
+        sectionsHtml += `<div class="domain-section">
+           <div class="domain-header" onclick="toggleDomain('Uncategorized')">
+             <div class="domain-title"><i class="fas fa-question-circle icon"></i> Uncategorized</div>
+             <span class="domain-count">${decks.length}</span>
+           </div>
+           <div class="domain-content open" id="domain-Uncategorized"><div class="deck-list">${renderDecks(decks)}</div></div>
+         </div>`;
       }
 
-      domainSections.innerHTML = sectionsHtml;
+      domainSections.innerHTML = sectionsHtml || '';
+    }
+
+    // Helper to format questions
+    function formatQuestionsHtml(deck) {
+      if (!deck.data || !deck.data.questions) return '<p>No questions data.</p>';
+      return deck.data.questions.map((q, i) => `
+             <div class="question-block" style="margin-bottom:16px;">
+               <div class="q-text" style="font-weight:600; margin-bottom:6px;">Q${i + 1}: ${q.question}</div>
+               <div class="q-opt" style="font-size:0.9em; margin-left:12px;">
+                 <div class="${q.correct === 'A' ? 'correct-opt' : ''}">A) ${q.options?.A || ''}</div>
+                 <div class="${q.correct === 'B' ? 'correct-opt' : ''}">B) ${q.options?.B || ''}</div>
+                 <div class="${q.correct === 'C' ? 'correct-opt' : ''}">C) ${q.options?.C || ''}</div>
+                 <div class="${q.correct === 'D' ? 'correct-opt' : ''}">D) ${q.options?.D || ''}</div>
+               </div>
+               <div class="q-exp" style="margin-top:8px; font-size:0.9em; color:#555; background:#f9f9f9; padding:8px;">
+                 <strong>Explanation:</strong> ${q.explanation}
+               </div>
+             </div>
+        `).join('');
     }
 
     function toggleDomain(key) {
