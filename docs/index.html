@@ -1,1174 +1,1257 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>My Dynamic AZ-104 Study Hub</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-    <style>
-      :root {
-        --bg-primary: #f0f4f8;
-        --bg-secondary: #ffffff;
-        --bg-card: #ffffff;
-        --text-primary: #1a1a2e;
-        --text-secondary: #4a4a6a;
-        --text-muted: #6b7280;
-        --border-color: #e5e7eb;
-        --azure-blue: #0078d4;
-        --azure-blue-dark: #005a9e;
-        --success-color: #10b981;
-        --warning-color: #f59e0b;
-        --danger-color: #ef4444;
-        --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
-        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.1);
-        --radius-sm: 6px;
-        --radius-md: 12px;
-        --radius-lg: 16px;
-        --transition: all 0.2s ease;
-      }
 
-      [data-theme="dark"] {
-        --bg-primary: #0f172a;
-        --bg-secondary: #1e293b;
-        --bg-card: #1e293b;
-        --text-primary: #f1f5f9;
-        --text-secondary: #cbd5e1;
-        --text-muted: #94a3b8;
-        --border-color: #334155;
-        --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
-        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.4);
-        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.5);
-      }
+<head>
+  <meta charset="UTF-8" />
+  <title>My Dynamic AZ-104 Study Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    :root {
+      --bg-primary: #f0f4f8;
+      --bg-secondary: #ffffff;
+      --bg-card: #ffffff;
+      --text-primary: #1a1a2e;
+      --text-secondary: #4a4a6a;
+      --text-muted: #6b7280;
+      --border-color: #e5e7eb;
+      --azure-blue: #0078d4;
+      --azure-blue-dark: #005a9e;
+      --success-color: #10b981;
+      --warning-color: #f59e0b;
+      --danger-color: #ef4444;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      --radius-sm: 6px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --transition: all 0.2s ease;
+    }
 
-      * {
-        box-sizing: border-box;
-      }
+    [data-theme="dark"] {
+      --bg-primary: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+    }
 
-      body {
-        font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
-        margin: 0;
-        padding: 20px;
-        background-color: var(--bg-primary);
-        color: var(--text-primary);
-        transition: var(--transition);
-        line-height: 1.6;
-      }
+    * {
+      box-sizing: border-box;
+    }
 
-      .container {
-        max-width: 1100px;
-        margin: auto;
-      }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      transition: var(--transition);
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: auto;
+    }
 
 
-      /* Primary Focus Widget */
-      .primary-focus-widget {
-        background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
-        border-radius: var(--radius-md);
-        padding: 20px 24px;
-        margin-bottom: 24px;
-        color: white;
+    /* Primary Focus Widget */
+    .primary-focus-widget {
+      background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      margin-bottom: 24px;
+      color: white;
+      box-shadow: var(--shadow-lg);
+      animation: pulse-glow 3s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+
+      0%,
+      100% {
         box-shadow: var(--shadow-lg);
-        animation: pulse-glow 3s ease-in-out infinite;
       }
 
-      @keyframes pulse-glow {
-        0%, 100% { box-shadow: var(--shadow-lg); }
-        50% { box-shadow: 0 10px 25px -3px rgba(220,38,38,0.4); }
+      50% {
+        box-shadow: 0 10px 25px -3px rgba(220, 38, 38, 0.4);
       }
+    }
 
-      .primary-focus-widget h2 {
-        margin: 0 0 12px 0;
-        font-size: 1.3em;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
+    .primary-focus-widget h2 {
+      margin: 0 0 12px 0;
+      font-size: 1.3em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-      .primary-focus-widget .focus-domain {
-        font-size: 1.5em;
-        font-weight: 700;
-        margin: 8px 0;
-      }
+    .primary-focus-widget .focus-domain {
+      font-size: 1.5em;
+      font-weight: 700;
+      margin: 8px 0;
+    }
 
-      .primary-focus-widget .focus-score {
-        font-size: 2em;
-        font-weight: 800;
-      }
+    .primary-focus-widget .focus-score {
+      font-size: 2em;
+      font-weight: 800;
+    }
 
-      .primary-focus-widget .focus-action {
-        display: inline-block;
-        margin-top: 12px;
-        padding: 10px 20px;
-        background: rgba(255,255,255,0.2);
-        border-radius: var(--radius-sm);
-        color: white;
-        text-decoration: none;
-        font-weight: 600;
-        transition: var(--transition);
-      }
+    .primary-focus-widget .focus-action {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 20px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: var(--radius-sm);
+      color: white;
+      text-decoration: none;
+      font-weight: 600;
+      transition: var(--transition);
+    }
 
-      .primary-focus-widget .focus-action:hover {
-        background: rgba(255,255,255,0.3);
-        transform: translateY(-2px);
-      }
+    .primary-focus-widget .focus-action:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
 
-      /* Domain Cards Grid */
+    /* Domain Cards Grid */
+    .domain-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+
+    .domain-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .domain-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .domain-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .domain-card-details {
+      display: none;
+      padding-top: 12px;
+      border-top: 1px solid var(--border-color);
+      margin-top: 12px;
+    }
+
+    .domain-card.expanded .domain-card-details {
+      display: block;
+    }
+
+    .domain-card .expand-icon {
+      margin-left: 8px;
+      font-size: 0.8em;
+      color: var(--text-muted);
+      transition: transform 0.2s;
+    }
+
+    .domain-card.expanded .expand-icon {
+      transform: rotate(180deg);
+    }
+
+    .expand-icon.rotated {
+      transform: rotate(180deg);
+    }
+
+    .domain-card-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 1.1em;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .domain-card-title i {
+      font-size: 1.2em;
+      color: var(--azure-blue);
+    }
+
+    .domain-mastery {
+      font-size: 1.6em;
+      font-weight: 700;
+    }
+
+    .domain-mastery.rag-red {
+      color: var(--danger-color);
+    }
+
+    .domain-mastery.rag-amber {
+      color: var(--warning-color);
+    }
+
+    .domain-mastery.rag-green {
+      color: var(--success-color);
+    }
+
+    /* Progress Bar */
+    .progress-bar-container {
+      height: 8px;
+      background: var(--border-color);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 16px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.5s ease;
+    }
+
+    .progress-bar.rag-red {
+      background: linear-gradient(90deg, #ef4444, #dc2626);
+    }
+
+    .progress-bar.rag-amber {
+      background: linear-gradient(90deg, #f59e0b, #d97706);
+    }
+
+    .progress-bar.rag-green {
+      background: linear-gradient(90deg, #10b981, #059669);
+    }
+
+    /* Score Editor Row */
+    .score-editor-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+      padding: 12px;
+      background: var(--bg-primary);
+      border-radius: var(--radius-sm);
+    }
+
+    .score-editor-row label {
+      font-size: 0.85em;
+      color: var(--text-muted);
+      min-width: 60px;
+    }
+
+    .score-input {
+      width: 60px;
+      padding: 6px 8px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 0.9em;
+      text-align: center;
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .score-input:focus {
+      outline: none;
+      border-color: var(--azure-blue);
+      box-shadow: 0 0 0 3px rgba(0, 120, 212, 0.1);
+    }
+
+    /* Confidence Slider */
+    .confidence-slider-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .confidence-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--border-color);
+      outline: none;
+    }
+
+    .confidence-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--azure-blue);
+      cursor: pointer;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+      transition: var(--transition);
+    }
+
+    .confidence-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.1);
+    }
+
+    .confidence-value {
+      font-size: 0.85em;
+      font-weight: 600;
+      min-width: 35px;
+      text-align: right;
+      color: var(--text-secondary);
+    }
+
+    /* Quick Actions */
+    .domain-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-top: 12px;
+    }
+
+    .domain-action-btn {
+      padding: 6px 12px;
+      font-size: 0.8em;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .domain-action-btn.primary {
+      background: var(--azure-blue);
+      color: white;
+    }
+
+    .domain-action-btn.primary:hover {
+      background: var(--azure-blue-dark);
+    }
+
+    .domain-action-btn.secondary {
+      background: var(--bg-primary);
+      color: var(--text-secondary);
+      border: 1px solid var(--border-color);
+    }
+
+    .domain-action-btn.secondary:hover {
+      background: var(--border-color);
+    }
+
+    /* Section Cards */
+    .section-card {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 16px 20px;
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .section-header:hover {
+      background: var(--border-color);
+    }
+
+    .section-title {
+      font-size: 1.15em;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-primary);
+    }
+
+    .section-title i {
+      color: var(--azure-blue);
+    }
+
+    .section-toggle {
+      font-size: 1.2em;
+      color: var(--text-muted);
+      transition: transform 0.3s ease;
+    }
+
+    .section-content {
+      padding: 20px;
+      display: none;
+    }
+
+    .section-card.open .section-content {
+      display: block;
+    }
+
+    .section-card.open .section-toggle {
+      transform: rotate(180deg);
+    }
+
+    /* Topic List */
+    .topic-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .topic-list li {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      background: var(--bg-primary);
+      border-radius: var(--radius-sm);
+      border-left: 4px solid var(--azure-blue);
+      transition: var(--transition);
+    }
+
+    .topic-list li:hover {
+      transform: translateX(4px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .topic-list li.reviewed {
+      border-left-color: var(--success-color);
+      opacity: 0.7;
+    }
+
+    .topic-list li.reviewed:hover {
+      opacity: 1;
+    }
+
+    .topic-list input[type="checkbox"] {
+      margin-right: 12px;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      accent-color: var(--azure-blue);
+    }
+
+    .topic-list a {
+      flex: 1;
+      text-decoration: none;
+      color: var(--text-primary);
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .topic-list a i {
+      color: var(--azure-blue);
+    }
+
+    .topic-list li.reviewed a {
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+
+    /* Critical Priority Styling */
+    .topic-list li.critical {
+      border-left-color: var(--danger-color);
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(185, 28, 28, 0.05) 100%);
+    }
+
+    .topic-list li.critical a {
+      color: var(--danger-color);
+      font-weight: 600;
+    }
+
+    /* Quiz/Sorter badges */
+    .topic-badge {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.7em;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .topic-badge.quiz {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--success-color);
+    }
+
+    .topic-badge.sorter {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--warning-color);
+    }
+
+    .topic-badge.tool {
+      background: rgba(139, 92, 246, 0.15);
+      color: #8b5cf6;
+    }
+
+    /* Progress Summary */
+    .progress-summary {
+      text-align: center;
+      padding: 16px;
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      margin-top: 24px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .progress-summary .progress-text {
+      font-size: 1.1em;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .progress-summary i {
+      color: var(--azure-blue);
+      margin-right: 8px;
+    }
+
+    /* Blend Controls Panel */
+    .controls-panel {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .controls-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .controls-panel-title {
+      font-size: 1em;
+      font-weight: 600;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .control-group label {
+      font-size: 0.85em;
+      color: var(--text-muted);
+    }
+
+    .control-group select {
+      padding: 8px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      font-size: 0.9em;
+      cursor: pointer;
+    }
+
+    .control-group select:focus {
+      outline: none;
+      border-color: var(--azure-blue);
+    }
+
+    /* Debug Panel */
+    .debug-panel {
+      margin-top: 16px;
+      padding: 12px;
+      background: var(--bg-primary);
+      border-radius: var(--radius-sm);
+      font-family: monospace;
+      font-size: 0.8em;
+      max-height: 200px;
+      overflow: auto;
+      display: none;
+    }
+
+    .debug-panel.show {
+      display: block;
+    }
+
+    .debug-toggle-btn {
+      padding: 6px 12px;
+      font-size: 0.8em;
+      background: var(--bg-primary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: var(--transition);
+    }
+
+    .debug-toggle-btn:hover {
+      background: var(--border-color);
+    }
+
+    /* Next Steps Tracker */
+    .next-steps-tracker {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 24px;
+      border: 2px solid #f59e0b;
+    }
+
+    [data-theme="dark"] .next-steps-tracker {
+      background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
+      border-color: #d97706;
+    }
+
+    .next-steps-tracker h3 {
+      margin: 0 0 12px 0;
+      color: #92400e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    [data-theme="dark"] .next-steps-tracker h3 {
+      color: #fbbf24;
+    }
+
+    .next-steps-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .next-steps-list li {
+      padding: 8px 12px;
+      margin-bottom: 8px;
+      background: rgba(255, 255, 255, 0.7);
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    [data-theme="dark"] .next-steps-list li {
+      background: rgba(0, 0, 0, 0.3);
+      color: #fef3c7;
+    }
+
+    .next-steps-list li a {
+      color: #92400e;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    [data-theme="dark"] .next-steps-list li a {
+      color: #fbbf24;
+    }
+
+    /* Retention Trends */
+    .retention-trends {
+      background: var(--bg-card);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-md);
+      border: 1px solid var(--border-color);
+    }
+
+    .retention-trends h3 {
+      margin: 0 0 16px 0;
+      font-size: 1.1em;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .trend-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px dashed var(--border-color);
+    }
+
+    .trend-row:last-child {
+      border-bottom: none;
+    }
+
+    .trend-domain {
+      font-weight: 600;
+      color: var(--text-primary);
+      text-transform: capitalize;
+    }
+
+    .trend-stats {
+      font-size: 0.9em;
+      color: var(--text-muted);
+    }
+
+    .trend-sparkline svg {
+      display: block;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
       .domain-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-        gap: 20px;
-        margin-bottom: 32px;
+        grid-template-columns: 1fr;
       }
 
-      .domain-card {
-        background: var(--bg-card);
-        border-radius: var(--radius-md);
-        padding: 16px;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
-        transition: var(--transition);
-        cursor: pointer;
-      }
-
-      .domain-card:hover {
-        box-shadow: var(--shadow-lg);
-      }
-
-      .domain-card-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 8px;
-      }
-
-      .domain-card-details {
-        display: none;
-        padding-top: 12px;
-        border-top: 1px solid var(--border-color);
-        margin-top: 12px;
-      }
-
-      .domain-card.expanded .domain-card-details {
-        display: block;
-      }
-
-      .domain-card .expand-icon {
-        margin-left: 8px;
-        font-size: 0.8em;
-        color: var(--text-muted);
-        transition: transform 0.2s;
-      }
-
-      .domain-card.expanded .expand-icon {
-        transform: rotate(180deg);
-      }
-
-      .expand-icon.rotated {
-        transform: rotate(180deg);
-      }
-
-      .domain-card-title {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        font-size: 1.1em;
-        font-weight: 600;
-        color: var(--text-primary);
-      }
-
-      .domain-card-title i {
-        font-size: 1.2em;
-        color: var(--azure-blue);
-      }
-
-      .domain-mastery {
-        font-size: 1.6em;
-        font-weight: 700;
-      }
-
-      .domain-mastery.rag-red { color: var(--danger-color); }
-      .domain-mastery.rag-amber { color: var(--warning-color); }
-      .domain-mastery.rag-green { color: var(--success-color); }
-
-      /* Progress Bar */
-      .progress-bar-container {
-        height: 8px;
-        background: var(--border-color);
-        border-radius: 4px;
-        overflow: hidden;
-        margin-bottom: 16px;
-      }
-
-      .progress-bar {
-        height: 100%;
-        border-radius: 4px;
-        transition: width 0.5s ease;
-      }
-
-      .progress-bar.rag-red { background: linear-gradient(90deg, #ef4444, #dc2626); }
-      .progress-bar.rag-amber { background: linear-gradient(90deg, #f59e0b, #d97706); }
-      .progress-bar.rag-green { background: linear-gradient(90deg, #10b981, #059669); }
-
-      /* Score Editor Row */
       .score-editor-row {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 12px;
-        padding: 12px;
-        background: var(--bg-primary);
-        border-radius: var(--radius-sm);
-      }
-
-      .score-editor-row label {
-        font-size: 0.85em;
-        color: var(--text-muted);
-        min-width: 60px;
-      }
-
-      .score-input {
-        width: 60px;
-        padding: 6px 8px;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        font-size: 0.9em;
-        text-align: center;
-        background: var(--bg-secondary);
-        color: var(--text-primary);
-      }
-
-      .score-input:focus {
-        outline: none;
-        border-color: var(--azure-blue);
-        box-shadow: 0 0 0 3px rgba(0,120,212,0.1);
-      }
-
-      /* Confidence Slider */
-      .confidence-slider-container {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .confidence-slider {
-        flex: 1;
-        -webkit-appearance: none;
-        height: 6px;
-        border-radius: 3px;
-        background: var(--border-color);
-        outline: none;
-      }
-
-      .confidence-slider::-webkit-slider-thumb {
-        -webkit-appearance: none;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background: var(--azure-blue);
-        cursor: pointer;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        transition: var(--transition);
-      }
-
-      .confidence-slider::-webkit-slider-thumb:hover {
-        transform: scale(1.1);
-      }
-
-      .confidence-value {
-        font-size: 0.85em;
-        font-weight: 600;
-        min-width: 35px;
-        text-align: right;
-        color: var(--text-secondary);
-      }
-
-      /* Quick Actions */
-      .domain-actions {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-        margin-top: 12px;
-      }
-
-      .domain-action-btn {
-        padding: 6px 12px;
-        font-size: 0.8em;
-        border: none;
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        text-decoration: none;
-        transition: var(--transition);
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-      }
-
-      .domain-action-btn.primary {
-        background: var(--azure-blue);
-        color: white;
-      }
-
-      .domain-action-btn.primary:hover {
-        background: var(--azure-blue-dark);
-      }
-
-      .domain-action-btn.secondary {
-        background: var(--bg-primary);
-        color: var(--text-secondary);
-        border: 1px solid var(--border-color);
-      }
-
-      .domain-action-btn.secondary:hover {
-        background: var(--border-color);
-      }
-
-      /* Section Cards */
-      .section-card {
-        background: var(--bg-card);
-        border-radius: var(--radius-md);
-        margin-bottom: 24px;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
-        overflow: hidden;
-      }
-
-      .section-header {
-        padding: 16px 20px;
-        background: var(--bg-primary);
-        border-bottom: 1px solid var(--border-color);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        cursor: pointer;
-        transition: var(--transition);
-      }
-
-      .section-header:hover {
-        background: var(--border-color);
-      }
-
-      .section-title {
-        font-size: 1.15em;
-        font-weight: 600;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: var(--text-primary);
-      }
-
-      .section-title i {
-        color: var(--azure-blue);
-      }
-
-      .section-toggle {
-        font-size: 1.2em;
-        color: var(--text-muted);
-        transition: transform 0.3s ease;
-      }
-
-      .section-content {
-        padding: 20px;
-        display: none;
-      }
-
-      .section-card.open .section-content {
-        display: block;
-      }
-
-      .section-card.open .section-toggle {
-        transform: rotate(180deg);
-      }
-
-      /* Topic List */
-      .topic-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .topic-list li {
-        display: flex;
-        align-items: center;
-        padding: 12px 16px;
-        margin-bottom: 8px;
-        background: var(--bg-primary);
-        border-radius: var(--radius-sm);
-        border-left: 4px solid var(--azure-blue);
-        transition: var(--transition);
-      }
-
-      .topic-list li:hover {
-        transform: translateX(4px);
-        box-shadow: var(--shadow-sm);
-      }
-
-      .topic-list li.reviewed {
-        border-left-color: var(--success-color);
-        opacity: 0.7;
-      }
-
-      .topic-list li.reviewed:hover {
-        opacity: 1;
-      }
-
-      .topic-list input[type="checkbox"] {
-        margin-right: 12px;
-        width: 18px;
-        height: 18px;
-        cursor: pointer;
-        accent-color: var(--azure-blue);
-      }
-
-      .topic-list a {
-        flex: 1;
-        text-decoration: none;
-        color: var(--text-primary);
-        font-weight: 500;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      .topic-list a i {
-        color: var(--azure-blue);
-      }
-
-      .topic-list li.reviewed a {
-        color: var(--text-muted);
-        text-decoration: line-through;
-      }
-
-      /* Critical Priority Styling */
-      .topic-list li.critical {
-        border-left-color: var(--danger-color);
-        background: linear-gradient(135deg, rgba(239,68,68,0.1) 0%, rgba(185,28,28,0.05) 100%);
-      }
-
-      .topic-list li.critical a {
-        color: var(--danger-color);
-        font-weight: 600;
-      }
-
-      /* Quiz/Sorter badges */
-      .topic-badge {
-        padding: 3px 8px;
-        border-radius: 4px;
-        font-size: 0.7em;
-        font-weight: 600;
-        text-transform: uppercase;
-      }
-
-      .topic-badge.quiz {
-        background: rgba(16,185,129,0.15);
-        color: var(--success-color);
-      }
-
-      .topic-badge.sorter {
-        background: rgba(245,158,11,0.15);
-        color: var(--warning-color);
-      }
-
-      .topic-badge.tool {
-        background: rgba(139,92,246,0.15);
-        color: #8b5cf6;
-      }
-
-      /* Progress Summary */
-      .progress-summary {
-        text-align: center;
-        padding: 16px;
-        background: var(--bg-card);
-        border-radius: var(--radius-md);
-        margin-top: 24px;
-        box-shadow: var(--shadow-sm);
-        border: 1px solid var(--border-color);
-      }
-
-      .progress-summary .progress-text {
-        font-size: 1.1em;
-        font-weight: 600;
-        color: var(--text-primary);
-      }
-
-      .progress-summary i {
-        color: var(--azure-blue);
-        margin-right: 8px;
-      }
-
-      /* Blend Controls Panel */
-      .controls-panel {
-        background: var(--bg-card);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        margin-bottom: 24px;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
-      }
-
-      .controls-panel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-      }
-
-      .controls-panel-title {
-        font-size: 1em;
-        font-weight: 600;
-        color: var(--text-primary);
-        display: flex;
-        align-items: center;
-        gap: 8px;
+        flex-direction: column;
+        align-items: stretch;
       }
 
       .controls-row {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        align-items: center;
+        flex-direction: column;
+        align-items: stretch;
       }
+    }
+  </style>
+  <!-- Firebase SDK and Config -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-      .control-group {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
+    // --- FIREBASE CONFIGURATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBaF307QmgjW0GY08a7kdxsYMZ_tIrGIM",
+      authDomain: "cloud-sync-mikiemapo.firebaseapp.com",
+      projectId: "cloud-sync-mikiemapo",
+      storageBucket: "cloud-sync-mikiemapo.firebasestorage.app",
+      messagingSenderId: "1073459104014",
+      appId: "1:1073459104014:web:fcbf1b5bdf7e1ea4966f5f",
+      measurementId: "G-H0HLS543TL"
+    };
 
-      .control-group label {
-        font-size: 0.85em;
-        color: var(--text-muted);
-      }
+    // Initialize Firebase
+    let db;
+    try {
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      console.log("Firebase initialized");
+    } catch (e) {
+      console.error("Firebase init error (did you update config?):", e);
+    }
 
-      .control-group select {
-        padding: 8px 12px;
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        background: var(--bg-secondary);
-        color: var(--text-primary);
-        font-size: 0.9em;
-        cursor: pointer;
-      }
-
-      .control-group select:focus {
-        outline: none;
-        border-color: var(--azure-blue);
-      }
-
-      /* Debug Panel */
-      .debug-panel {
-        margin-top: 16px;
-        padding: 12px;
-        background: var(--bg-primary);
-        border-radius: var(--radius-sm);
-        font-family: monospace;
-        font-size: 0.8em;
-        max-height: 200px;
-        overflow: auto;
-        display: none;
-      }
-
-      .debug-panel.show {
-        display: block;
-      }
-
-      .debug-toggle-btn {
-        padding: 6px 12px;
-        font-size: 0.8em;
-        background: var(--bg-primary);
-        border: 1px solid var(--border-color);
-        border-radius: var(--radius-sm);
-        cursor: pointer;
-        color: var(--text-muted);
-        transition: var(--transition);
-      }
-
-      .debug-toggle-btn:hover {
-        background: var(--border-color);
-      }
-
-      /* Next Steps Tracker */
-      .next-steps-tracker {
-        background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        margin-bottom: 24px;
-        border: 2px solid #f59e0b;
-      }
-
-      [data-theme="dark"] .next-steps-tracker {
-        background: linear-gradient(135deg, #451a03 0%, #78350f 100%);
-        border-color: #d97706;
-      }
-
-      .next-steps-tracker h3 {
-        margin: 0 0 12px 0;
-        color: #92400e;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      [data-theme="dark"] .next-steps-tracker h3 {
-        color: #fbbf24;
-      }
-
-      .next-steps-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-      }
-
-      .next-steps-list li {
-        padding: 8px 12px;
-        margin-bottom: 8px;
-        background: rgba(255,255,255,0.7);
-        border-radius: var(--radius-sm);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-
-      [data-theme="dark"] .next-steps-list li {
-        background: rgba(0,0,0,0.3);
-        color: #fef3c7;
-      }
-
-      .next-steps-list li a {
-        color: #92400e;
-        text-decoration: none;
-        font-weight: 500;
-      }
-
-      [data-theme="dark"] .next-steps-list li a {
-        color: #fbbf24;
-      }
-
-      /* Retention Trends */
-      .retention-trends {
-        background: var(--bg-card);
-        border-radius: var(--radius-md);
-        padding: 20px;
-        margin-bottom: 24px;
-        box-shadow: var(--shadow-md);
-        border: 1px solid var(--border-color);
-      }
-
-      .retention-trends h3 {
-        margin: 0 0 16px 0;
-        font-size: 1.1em;
-        color: var(--text-primary);
-        display: flex;
-        align-items: center;
-        gap: 8px;
-      }
-
-      .trend-row {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 10px 0;
-        border-bottom: 1px dashed var(--border-color);
-      }
-
-      .trend-row:last-child {
-        border-bottom: none;
-      }
-
-      .trend-domain {
-        font-weight: 600;
-        color: var(--text-primary);
-        text-transform: capitalize;
-      }
-
-      .trend-stats {
-        font-size: 0.9em;
-        color: var(--text-muted);
-      }
-
-      .trend-sparkline svg {
-        display: block;
-      }
-
-      /* Responsive */
-      @media (max-width: 768px) {
-        .domain-grid {
-          grid-template-columns: 1fr;
-        }
-
-        .score-editor-row {
-          flex-direction: column;
-          align-items: stretch;
-        }
-
-        .controls-row {
-          flex-direction: column;
-          align-items: stretch;
-        }
-      }
-    </style>
+    // Attach DB to window
+    window._firebaseDB = db;
+    window._firestoreOps = { doc, getDoc, setDoc, serverTimestamp };
+  </script>
   <script src="shared-navbar.js"></script>
 </head>
-  <body>
-    <div class="container">
 
-      <!-- Primary Focus Widget -->
-      <div class="primary-focus-widget" id="primary-focus">
-        <h2><i class="fas fa-bullseye"></i> Primary Focus Area</h2>
-        <div class="focus-domain" id="focus-domain-name">Loading...</div>
-        <div class="focus-score" id="focus-domain-score">--</div>
-        <a href="#" class="focus-action" id="focus-action-link">
-          <i class="fas fa-arrow-right"></i> Start Studying
-        </a>
+<body>
+  <div class="container">
+
+    <!-- Cloud Sync Status Bar -->
+    <div class="sync-status-bar"
+      style="background:var(--bg-card); border:1px solid var(--border-color); padding:12px 20px; border-radius:var(--radius-md); margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; box-shadow:var(--shadow-sm);">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <i class="fas fa-cloud" id="sync-icon" style="color:var(--text-muted);"></i>
+        <span id="sync-status-text" style="font-size:0.9em; color:var(--text-primary);">Sync: <strong>Not
+            Connected</strong></span>
       </div>
-
-      <!-- Critical Study Priorities Section -->
-      <div class="section-card" style="margin-bottom: 24px;">
-        <div class="section-header" style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border: 2px solid #d32f2f;">
-          <div class="section-title" style="color: #d32f2f;">
-            <i class="fas fa-exclamation-triangle"></i>
-            Critical Study Priorities
-          </div>
-          <i class="fas fa-chevron-down section-toggle" style="color: #d32f2f;"></i>
-        </div>
-        <div class="section-content" style="display: block; padding: 20px;">
-          <!-- Storage RTO/RPO Domain -->
-          <div style="background: white; border-radius: 8px; padding: 15px; margin: 15px 0; border-left: 5px solid #d32f2f; box-shadow: var(--shadow-sm);">
-            <h4 style="color: #d32f2f; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
-              <i class="fas fa-database"></i> CRITICAL: Storage RTO/RPO Replication Strategy
-            </h4>
-            <p style="margin: 8px 0; color: var(--text-muted); font-size: 0.9em;">
-              Major Weak Spot - 43% accuracy. Essential for mapping business requirements to Azure storage tiers.
-            </p>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-              <a href="azure_storage_replication_rto_rpo_guide.html" class="domain-action-btn primary">
-                <i class="fas fa-chart-bar"></i> Complete RTO/RPO Guide
-              </a>
-            </div>
-          </div>
-
-          <!-- Compute Domain (includes App Service & Containers) -->
-          <div style="background: white; border-radius: 8px; padding: 15px; margin: 15px 0; border-left: 5px solid #ff9800; box-shadow: var(--shadow-sm);">
-            <h4 style="color: #ff9800; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
-              <i class="fas fa-server"></i> Compute (incl. App Service & Containers)
-            </h4>
-            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
-              <a href="azure_app_service_guide.html#appservice-container-security-toggle" class="domain-action-btn" style="background: #ff5722; color: white;">
-                <i class="fas fa-lock"></i> Container Security
-              </a>
-              <a href="azure_app_service_guide.html#deployment-slots" class="domain-action-btn" style="background: #ff9800; color: white;">
-                <i class="fas fa-bolt"></i> Auto-Swap Deployment
-              </a>
-              <a href="azure_vms_deep_dive_guide.html#container-apps-toggle" class="domain-action-btn" style="background: #2e8b57; color: white;">
-                <i class="fas fa-box"></i> Container Apps
-              </a>
-              <a href="azure_vms_deep_dive_guide.html#pillar4-vmss-scaling-toggle" class="domain-action-btn" style="background: #673ab7; color: white;">
-                <i class="fas fa-layer-group"></i> VMSS Orchestration
-              </a>
-              <a href="azure_personalized_review_guide.html#compute-focused-card" class="domain-action-btn" style="background: #4caf50; color: white;">
-                <i class="fas fa-book"></i> Flashcards & CLI
-              </a>
-            </div>
-          </div>
-
-          <!-- Overall Progress Summary -->
-          <div style="background: #e3f2fd; padding: 12px; border-radius: 6px; text-align: center; margin-top: 15px;">
-            <strong style="color: #0d47a1;">
-              <i class="fas fa-chart-line"></i> Overall Progress: Based on 5 AZ-104 Domains
-            </strong>
-            <br>
-            <span style="color: #1976d2; font-size: 0.9em;">Focus on your weakest domains first to reach 75%+ across all</span>
-          </div>
-        </div>
-      </div>
-
-      <!-- Domain Tracker Cards -->
-      <div class="domain-grid" id="domain-grid">
-        <!-- Domains will be rendered here by JavaScript -->
-      </div>
-
-      <!-- Controls Panel (Simplified - Score editing in Personalized Review) -->
-      <div class="controls-panel">
-        <div class="controls-panel-header">
-          <div class="controls-panel-title">
-            <i class="fas fa-info-circle"></i> Data Source
-          </div>
-          <button class="debug-toggle-btn" id="debug-toggle">
-            <i class="fas fa-bug"></i> Debug
-          </button>
-        </div>
-        <div class="controls-row">
-          <div class="control-group" style="flex: 1;">
-            <p style="margin: 0; color: var(--text-secondary); font-size: 0.9em;">
-              <i class="fas fa-sync-alt" style="color: var(--azure-blue);"></i>
-              Scores sync automatically from <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue); font-weight: 600;">Personalized Review Guide</a>
-            </p>
-          </div>
-          <div class="control-group">
-            <a href="azure_personalized_review_guide.html" class="domain-action-btn primary">
-              <i class="fas fa-edit"></i> Update Scores
-            </a>
-          </div>
-        </div>
-        <div class="debug-panel" id="debug-panel">
-          <strong>Debug Info:</strong>
-          <pre id="debug-content">Loading...</pre>
-        </div>
-      </div>
-
-      <!-- Next Steps Tracker -->
-      <div class="next-steps-tracker" id="next-steps-tracker">
-        <h3><i class="fas fa-tasks"></i> Next Steps Tracker</h3>
-        <ul class="next-steps-list" id="next-steps-list">
-          <li><i class="fas fa-spinner fa-spin"></i> Calculating recommendations...</li>
-        </ul>
-      </div>
-
-      <!-- Study Workflow Summary (shows only remaining items) -->
-      <div class="section-card" id="workflow-summary" style="margin-bottom: 24px;">
-        <div class="section-header" style="cursor:pointer;" onclick="document.getElementById('workflow-summary-content').style.display = document.getElementById('workflow-summary-content').style.display === 'none' ? 'block' : 'none'; this.querySelector('.expand-icon').classList.toggle('rotated');">
-          <div class="section-title">
-            <i class="fas fa-list-check" style="color:#9c27b0;"></i>
-            Study Workflow Loop
-            <i class="fas fa-chevron-down expand-icon" style="font-size:0.8em;margin-left:8px;transition:transform 0.2s;"></i>
-          </div>
-          <span id="workflow-summary-count" style="font-size:0.9em;color:var(--text-muted);">Loading...</span>
-        </div>
-        <div id="workflow-summary-content" class="section-content" style="display: none; padding: 16px;">
-          <div id="workflow-summary-items" style="display:flex;flex-direction:column;gap:6px;">
-            Loading workflow...
-          </div>
-          <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-color);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
-            <a href="azure_personalized_review_guide.html#workflow-checklist" class="domain-action-btn primary" style="font-size:0.85em;">
-              <i class="fas fa-edit"></i> Edit Checklist
-            </a>
-            <a href="https://www.canva.com/design/DAG9I5NXsAc/YyLqtxeRar5QXHyVjpoUWg/edit" target="_blank" class="domain-action-btn" style="background:#00c4cc;color:#fff;font-size:0.85em;">
-              <i class="fab fa-figma"></i> Open in Canva
-            </a>
-          </div>
-        </div>
-      </div>
-
-      <!-- Retention Trends -->
-      <div class="retention-trends" id="retention-trends">
-        <h3><i class="fas fa-chart-line"></i> Retention Trends</h3>
-        <div id="retention-content">Loading history...</div>
-      </div>
-
-      <!-- Study Assistant -->
-      <div class="section-card" id="study-assistant" style="margin-bottom: 24px;">
-        <div class="section-header">
-          <div class="section-title">
-            <i class="fas fa-robot"></i>
-            Study Assistant
-          </div>
-          <button class="domain-action-btn secondary" id="study-assistant-refresh" style="padding: 4px 10px; font-size: 0.8em;">
-            <i class="fas fa-sync-alt"></i> Refresh
-          </button>
-        </div>
-        <div class="section-content" style="display: block; padding: 16px;">
-          <p style="color: var(--text-muted); font-size: 0.9em; margin-bottom: 12px;">
-            Based on your quiz performance, here are your weakest domains with recommended study guides:
-          </p>
-          <div id="study-assistant-content">
-            <p style="color: var(--text-muted);">Loading recommendations...</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- Study Topics by Category -->
-      <div id="study-topics-container"></div>
-
-      <!-- Progress Summary -->
-      <div class="progress-summary" id="progress-summary">
-        <span class="progress-text">
-          <i class="fas fa-check-double"></i> Progress: 0 of 0 topics reviewed.
-        </span>
+      <div class="sync-actions" style="display:flex; gap:8px;">
+        <button class="domain-action-btn secondary" id="btn-pull-cloud"><i class="fas fa-download"></i> Pull
+          Tasks</button>
+        <button class="domain-action-btn primary" id="btn-push-cloud"><i class="fas fa-upload"></i> Push Tasks</button>
       </div>
     </div>
 
-    <script>
-      // ===== DOMAIN CONFIGURATION =====
-      // Domain keys must match the keys used in mergedQuizScores from Personalized Review Guide
-      // Note: App Service & Containers is now part of Compute domain (AZ-104 exam structure)
-      // Official AZ-104 Exam Objectives (April 2025)
-      const domainConfig = [
-        { 
-          key: 'Identities', 
-          name: 'Identities & Governance', 
-          icon: 'fas fa-id-card', 
-          guideLink: 'microsoft_entra_id_concepts_guide.html',
-          weight: '20-25%',
-          objectives: [
-            { id: '1.1', name: 'Manage Microsoft Entra users and groups' },
-            { id: '1.2', name: 'Manage access to Azure resources' },
-            { id: '1.3', name: 'Manage Azure subscriptions and governance' }
-          ]
-        },
-        { 
-          key: 'Storage', 
-          name: 'Storage', 
-          icon: 'fas fa-database', 
-          guideLink: 'azure_storage_replication_rto_rpo_guide.html',
-          weight: '15-20%',
-          objectives: [
-            { id: '2.1', name: 'Configure access to storage' },
-            { id: '2.2', name: 'Configure and manage storage accounts' },
-            { id: '2.3', name: 'Configure Azure Files and Azure Blob Storage' }
-          ]
-        },
-        { 
-          key: 'Compute', 
-          name: 'Compute (incl. App Service)', 
-          icon: 'fas fa-server', 
-          guideLink: 'azure_vms_deep_dive_guide.html',
-          weight: '20-25%',
-          objectives: [
-            { id: '3.1', name: 'Automate deployment with ARM/Bicep' },
-            { id: '3.2', name: 'Create and configure virtual machines' },
-            { id: '3.3', name: 'Provision and manage containers' },
-            { id: '3.4', name: 'Create and configure Azure App Service' }
-          ]
-        },
-        { 
-          key: 'Networking', 
-          name: 'Networking', 
-          icon: 'fas fa-network-wired', 
-          guideLink: 'azure_vnet_deep_dive_guide.html',
-          weight: '15-20%',
-          objectives: [
-            { id: '4.1', name: 'Configure and manage virtual networks' },
-            { id: '4.2', name: 'Configure secure access to virtual networks' },
-            { id: '4.3', name: 'Configure name resolution and load balancing' }
-          ]
-        },
-        { 
-          key: 'Monitoring', 
-          name: 'Monitoring & Backup', 
-          icon: 'fas fa-chart-bar', 
-          guideLink: 'azure_monitor_maintenance_guide.html',
-          weight: '10-15%',
-          objectives: [
-            { id: '5.1', name: 'Monitor resources by using Azure Monitor' },
-            { id: '5.2', name: 'Implement backup and recovery' }
-          ]
+    <!-- Primary Focus Widget -->
+    <div class="primary-focus-widget" id="primary-focus">
+      <h2><i class="fas fa-bullseye"></i> Primary Focus Area</h2>
+      <div class="focus-domain" id="focus-domain-name">Loading...</div>
+      <div class="focus-score" id="focus-domain-score">--</div>
+      <a href="#" class="focus-action" id="focus-action-link">
+        <i class="fas fa-arrow-right"></i> Start Studying
+      </a>
+    </div>
+
+    <!-- Critical Study Priorities Section -->
+    <div class="section-card" style="margin-bottom: 24px;">
+      <div class="section-header"
+        style="background: linear-gradient(135deg, #ffebee 0%, #ffcdd2 100%); border: 2px solid #d32f2f;">
+        <div class="section-title" style="color: #d32f2f;">
+          <i class="fas fa-exclamation-triangle"></i>
+          Critical Study Priorities
+        </div>
+        <i class="fas fa-chevron-down section-toggle" style="color: #d32f2f;"></i>
+      </div>
+      <div class="section-content" style="display: block; padding: 20px;">
+        <!-- Storage RTO/RPO Domain -->
+        <div
+          style="background: white; border-radius: 8px; padding: 15px; margin: 15px 0; border-left: 5px solid #d32f2f; box-shadow: var(--shadow-sm);">
+          <h4 style="color: #d32f2f; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-database"></i> CRITICAL: Storage RTO/RPO Replication Strategy
+          </h4>
+          <p style="margin: 8px 0; color: var(--text-muted); font-size: 0.9em;">
+            Major Weak Spot - 43% accuracy. Essential for mapping business requirements to Azure storage tiers.
+          </p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+            <a href="azure_storage_replication_rto_rpo_guide.html" class="domain-action-btn primary">
+              <i class="fas fa-chart-bar"></i> Complete RTO/RPO Guide
+            </a>
+          </div>
+        </div>
+
+        <!-- Compute Domain (includes App Service & Containers) -->
+        <div
+          style="background: white; border-radius: 8px; padding: 15px; margin: 15px 0; border-left: 5px solid #ff9800; box-shadow: var(--shadow-sm);">
+          <h4 style="color: #ff9800; margin: 0 0 10px 0; display: flex; align-items: center; gap: 8px;">
+            <i class="fas fa-server"></i> Compute (incl. App Service & Containers)
+          </h4>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px;">
+            <a href="azure_app_service_guide.html#appservice-container-security-toggle" class="domain-action-btn"
+              style="background: #ff5722; color: white;">
+              <i class="fas fa-lock"></i> Container Security
+            </a>
+            <a href="azure_app_service_guide.html#deployment-slots" class="domain-action-btn"
+              style="background: #ff9800; color: white;">
+              <i class="fas fa-bolt"></i> Auto-Swap Deployment
+            </a>
+            <a href="azure_vms_deep_dive_guide.html#container-apps-toggle" class="domain-action-btn"
+              style="background: #2e8b57; color: white;">
+              <i class="fas fa-box"></i> Container Apps
+            </a>
+            <a href="azure_vms_deep_dive_guide.html#pillar4-vmss-scaling-toggle" class="domain-action-btn"
+              style="background: #673ab7; color: white;">
+              <i class="fas fa-layer-group"></i> VMSS Orchestration
+            </a>
+            <a href="azure_personalized_review_guide.html#compute-focused-card" class="domain-action-btn"
+              style="background: #4caf50; color: white;">
+              <i class="fas fa-book"></i> Flashcards & CLI
+            </a>
+          </div>
+        </div>
+
+        <!-- Overall Progress Summary -->
+        <div style="background: #e3f2fd; padding: 12px; border-radius: 6px; text-align: center; margin-top: 15px;">
+          <strong style="color: #0d47a1;">
+            <i class="fas fa-chart-line"></i> Overall Progress: Based on 5 AZ-104 Domains
+          </strong>
+          <br>
+          <span style="color: #1976d2; font-size: 0.9em;">Focus on your weakest domains first to reach 75%+ across
+            all</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Domain Tracker Cards -->
+    <div class="domain-grid" id="domain-grid">
+      <!-- Domains will be rendered here by JavaScript -->
+    </div>
+
+    <!-- Controls Panel (Simplified - Score editing in Personalized Review) -->
+    <div class="controls-panel">
+      <div class="controls-panel-header">
+        <div class="controls-panel-title">
+          <i class="fas fa-info-circle"></i> Data Source
+        </div>
+        <button class="debug-toggle-btn" id="debug-toggle">
+          <i class="fas fa-bug"></i> Debug
+        </button>
+      </div>
+      <div class="controls-row">
+        <div class="control-group" style="flex: 1;">
+          <p style="margin: 0; color: var(--text-secondary); font-size: 0.9em;">
+            <i class="fas fa-sync-alt" style="color: var(--azure-blue);"></i>
+            Scores sync automatically from <a href="azure_personalized_review_guide.html"
+              style="color: var(--azure-blue); font-weight: 600;">Personalized Review Guide</a>
+          </p>
+        </div>
+        <div class="control-group">
+          <a href="azure_personalized_review_guide.html" class="domain-action-btn primary">
+            <i class="fas fa-edit"></i> Update Scores
+          </a>
+        </div>
+      </div>
+      <div class="debug-panel" id="debug-panel">
+        <strong>Debug Info:</strong>
+        <pre id="debug-content">Loading...</pre>
+      </div>
+    </div>
+
+    <!-- Next Steps Tracker -->
+    <div class="next-steps-tracker" id="next-steps-tracker">
+      <h3><i class="fas fa-tasks"></i> Next Steps Tracker</h3>
+      <ul class="next-steps-list" id="next-steps-list">
+        <li><i class="fas fa-spinner fa-spin"></i> Calculating recommendations...</li>
+      </ul>
+    </div>
+
+    <!-- Study Workflow Summary (shows only remaining items) -->
+    <div class="section-card" id="workflow-summary" style="margin-bottom: 24px;">
+      <div class="section-header" style="cursor:pointer;"
+        onclick="document.getElementById('workflow-summary-content').style.display = document.getElementById('workflow-summary-content').style.display === 'none' ? 'block' : 'none'; this.querySelector('.expand-icon').classList.toggle('rotated');">
+        <div class="section-title">
+          <i class="fas fa-list-check" style="color:#9c27b0;"></i>
+          Study Workflow Loop
+          <i class="fas fa-chevron-down expand-icon"
+            style="font-size:0.8em;margin-left:8px;transition:transform 0.2s;"></i>
+        </div>
+        <span id="workflow-summary-count" style="font-size:0.9em;color:var(--text-muted);">Loading...</span>
+      </div>
+      <div id="workflow-summary-content" class="section-content" style="display: none; padding: 16px;">
+        <div id="workflow-summary-items" style="display:flex;flex-direction:column;gap:6px;">
+          Loading workflow...
+        </div>
+        <div
+          style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border-color);display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;">
+          <a href="azure_personalized_review_guide.html#workflow-checklist" class="domain-action-btn primary"
+            style="font-size:0.85em;">
+            <i class="fas fa-edit"></i> Edit Checklist
+          </a>
+          <a href="https://www.canva.com/design/DAG9I5NXsAc/YyLqtxeRar5QXHyVjpoUWg/edit" target="_blank"
+            class="domain-action-btn" style="background:#00c4cc;color:#fff;font-size:0.85em;">
+            <i class="fab fa-figma"></i> Open in Canva
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Retention Trends -->
+    <div class="retention-trends" id="retention-trends">
+      <h3><i class="fas fa-chart-line"></i> Retention Trends</h3>
+      <div id="retention-content">Loading history...</div>
+    </div>
+
+    <!-- Study Assistant -->
+    <div class="section-card" id="study-assistant" style="margin-bottom: 24px;">
+      <div class="section-header">
+        <div class="section-title">
+          <i class="fas fa-robot"></i>
+          Study Assistant
+        </div>
+        <button class="domain-action-btn secondary" id="study-assistant-refresh"
+          style="padding: 4px 10px; font-size: 0.8em;">
+          <i class="fas fa-sync-alt"></i> Refresh
+        </button>
+      </div>
+      <div class="section-content" style="display: block; padding: 16px;">
+        <p style="color: var(--text-muted); font-size: 0.9em; margin-bottom: 12px;">
+          Based on your quiz performance, here are your weakest domains with recommended study guides:
+        </p>
+        <div id="study-assistant-content">
+          <p style="color: var(--text-muted);">Loading recommendations...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Study Topics by Category -->
+    <div id="study-topics-container"></div>
+
+    <!-- Progress Summary -->
+    <div class="progress-summary" id="progress-summary">
+      <span class="progress-text">
+        <i class="fas fa-check-double"></i> Progress: 0 of 0 topics reviewed.
+      </span>
+    </div>
+  </div>
+
+  <script>
+    // ===== DOMAIN CONFIGURATION =====
+    // Domain keys must match the keys used in mergedQuizScores from Personalized Review Guide
+    // Note: App Service & Containers is now part of Compute domain (AZ-104 exam structure)
+    // Official AZ-104 Exam Objectives (April 2025)
+    const domainConfig = [
+      {
+        key: 'Identities',
+        name: 'Identities & Governance',
+        icon: 'fas fa-id-card',
+        guideLink: 'microsoft_entra_id_concepts_guide.html',
+        weight: '20-25%',
+        objectives: [
+          { id: '1.1', name: 'Manage Microsoft Entra users and groups' },
+          { id: '1.2', name: 'Manage access to Azure resources' },
+          { id: '1.3', name: 'Manage Azure subscriptions and governance' }
+        ]
+      },
+      {
+        key: 'Storage',
+        name: 'Storage',
+        icon: 'fas fa-database',
+        guideLink: 'azure_storage_replication_rto_rpo_guide.html',
+        weight: '15-20%',
+        objectives: [
+          { id: '2.1', name: 'Configure access to storage' },
+          { id: '2.2', name: 'Configure and manage storage accounts' },
+          { id: '2.3', name: 'Configure Azure Files and Azure Blob Storage' }
+        ]
+      },
+      {
+        key: 'Compute',
+        name: 'Compute (incl. App Service)',
+        icon: 'fas fa-server',
+        guideLink: 'azure_vms_deep_dive_guide.html',
+        weight: '20-25%',
+        objectives: [
+          { id: '3.1', name: 'Automate deployment with ARM/Bicep' },
+          { id: '3.2', name: 'Create and configure virtual machines' },
+          { id: '3.3', name: 'Provision and manage containers' },
+          { id: '3.4', name: 'Create and configure Azure App Service' }
+        ]
+      },
+      {
+        key: 'Networking',
+        name: 'Networking',
+        icon: 'fas fa-network-wired',
+        guideLink: 'azure_vnet_deep_dive_guide.html',
+        weight: '15-20%',
+        objectives: [
+          { id: '4.1', name: 'Configure and manage virtual networks' },
+          { id: '4.2', name: 'Configure secure access to virtual networks' },
+          { id: '4.3', name: 'Configure name resolution and load balancing' }
+        ]
+      },
+      {
+        key: 'Monitoring',
+        name: 'Monitoring & Backup',
+        icon: 'fas fa-chart-bar',
+        guideLink: 'azure_monitor_maintenance_guide.html',
+        weight: '10-15%',
+        objectives: [
+          { id: '5.1', name: 'Monitor resources by using Azure Monitor' },
+          { id: '5.2', name: 'Implement backup and recovery' }
+        ]
+      }
+    ];
+
+    // Migration: Merge "App Service & Containers" scores into Compute
+    (function migrateAppServiceToCompute() {
+      try {
+        const stored = localStorage.getItem('mergedQuizScores');
+        if (!stored) return;
+        const scores = JSON.parse(stored);
+        if (scores['App Service & Containers']) {
+          const appService = scores['App Service & Containers'];
+          const compute = scores['Compute'] || { correct: 0, total: 0 };
+          // Merge scores
+          compute.correct = (compute.correct || 0) + (appService.correct || 0);
+          compute.total = (compute.total || 0) + (appService.total || 0);
+          scores['Compute'] = compute;
+          delete scores['App Service & Containers'];
+          localStorage.setItem('mergedQuizScores', JSON.stringify(scores));
+          console.log('Migrated App Service & Containers scores into Compute:', scores);
         }
-      ];
-      
-      // Migration: Merge "App Service & Containers" scores into Compute
-      (function migrateAppServiceToCompute() {
-        try {
-          const stored = localStorage.getItem('mergedQuizScores');
-          if (!stored) return;
-          const scores = JSON.parse(stored);
-          if (scores['App Service & Containers']) {
-            const appService = scores['App Service & Containers'];
-            const compute = scores['Compute'] || { correct: 0, total: 0 };
-            // Merge scores
-            compute.correct = (compute.correct || 0) + (appService.correct || 0);
-            compute.total = (compute.total || 0) + (appService.total || 0);
-            scores['Compute'] = compute;
-            delete scores['App Service & Containers'];
-            localStorage.setItem('mergedQuizScores', JSON.stringify(scores));
-            console.log('Migrated App Service & Containers scores into Compute:', scores);
-          }
-        } catch (e) {
-          console.warn('Migration error:', e);
+      } catch (e) {
+        console.warn('Migration error:', e);
+      }
+    })();
+
+    // ===== STUDY TOPICS DATA =====
+    // Organized by official AZ-104 exam domains
+    const studyTopics = [
+      // === Study Tools ===
+      { id: "guide-personalized-review", title: "Personalized Review: Weak Spot Focus", filename: "azure_personalized_review_guide.html", category: "Study Tools", icon: "fas fa-bullseye", type: "guide" },
+      { id: "tool-anki-deck-builder", title: "Anki Deck Builder", filename: "anki-deck-builder.html", category: "Study Tools", icon: "fas fa-magic", type: "guide" },
+      { id: "tool-anki-deck-library", title: "Anki Deck Library", filename: "anki-deck-library.html", category: "Study Tools", icon: "fas fa-layer-group", type: "guide" },
+
+      // === Domain 1: Identities & Governance (20-25%) ===
+      { id: "guide-entra-id-concepts", title: "Microsoft Entra ID Core Concepts", filename: "microsoft_entra_id_concepts_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-id-card", type: "guide" },
+      { id: "guide-policy", title: "Azure Policy Guide", filename: "azure_policy_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-balance-scale", type: "guide" },
+      { id: "guide-policy-gov", title: "Azure Policy: Governance & Compliance", filename: "Azure Policy- Governance and Compliance Management.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-balance-scale-left", type: "guide" },
+      { id: "guide-keyvault", title: "Azure Key Vault Guide", filename: "Azure-key_vault_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-key", type: "guide" },
+      { id: "guide-shared-responsibility-sorter", title: "Shared Responsibility Sorter", filename: "shared_responsibility_sorter.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-people-arrows", type: "sorter" },
+      { id: "shared-responsibility_guide", title: "Shared Responsibility Guide", filename: "AZ-104_shared_responsibility_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-handshake", type: "guide" },
+
+      // === Domain 2: Storage (15-20%) ===
+      { id: "guide-storage-overview", title: "Storage Account Overview", filename: "Study Guide Azure Storage Account Overview.html", category: "2. Storage (15-20%)", icon: "fas fa-server", type: "guide" },
+      { id: "guide-storage-options", title: "Storage Options & Architecture", filename: "Study Guide Azure Storage Options and Architecture.html", category: "2. Storage (15-20%)", icon: "fas fa-cubes", type: "guide" },
+      { id: "guide-storage-arch", title: "Storage Architecture Guide", filename: "azure_storage_architecture_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-building", type: "guide" },
+      { id: "guide-storage-flashcards", title: "Storage Redundancy Flashcards", filename: "azure_storage_flashcards.html", category: "2. Storage (15-20%)", icon: "fas fa-clone", type: "guide" },
+      { id: "guide-redundancy", title: "Storage Redundancy Guide", filename: "redundancy_study_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-sync-alt", type: "guide" },
+      { id: "guide-lifecycle-tiers", title: "Blob Lifecycle & Tiers Guide", filename: "Azure_storage_lifecycle_tiers_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-recycle", type: "guide" },
+      { id: "guide-versioning-lifecycle", title: "Blob Versioning & Lifecycle", filename: "blob_versioning_lifecycle_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-project-diagram", type: "guide" },
+      { id: "guide-immutable", title: "Immutable Storage Guide", filename: "immutable_storage_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-lock", type: "guide" },
+      { id: "guide-blob-concepts", title: "Blob Storage Concepts", filename: "azure study guide Blob Storage Concepts.html", category: "2. Storage (15-20%)", icon: "fas fa-file-invoice", type: "guide" },
+      { id: "guide-azcopy", title: "AzCopy v10 Guide", filename: "AzCopy v10.html", category: "2. Storage (15-20%)", icon: "fas fa-terminal", type: "guide" },
+      { id: "flashcard-event-grid-storage", title: "Flashcard: Event Grid Subscription to Blob Storage", filename: "flashcard_event_grid_storage.html", category: "2. Storage (15-20%)", icon: "fas fa-bolt", type: "guide" },
+      { id: "guide-storage-replication-rto-rpo", title: "CRITICAL: RTO/RPO Storage Replication Strategy", filename: "azure_storage_replication_rto_rpo_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-exclamation-triangle", type: "guide", priority: "critical" },
+      { id: "quiz-storage-aks-arm", title: "Storage, AKS & ARM Quiz", filename: "azure_storage_aks_arm_quiz.html", category: "2. Storage (15-20%)", icon: "fas fa-tasks", type: "quiz" },
+      { id: "quiz-redundancy-arm-aks", title: "Redundancy, ARM & AKS Quiz", filename: "azure_redundancy_arm_aks_quiz.html", category: "2. Storage (15-20%)", icon: "fas fa-sync-alt", type: "quiz" },
+
+      // === Domain 3: Compute (20-25%) ===
+      { id: "guide-cli-ps", title: "Azure CLI & PowerShell Guide", filename: "azure_cli_ps_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-laptop-code", type: "guide" },
+      { id: "guide-arm", title: "ARM Templates Guide", filename: "arm_template_concise_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-file-code", type: "guide" },
+      { id: "guide-terraform-basics", title: "Terraform Basics for Azure", filename: "azure_terraform_basics_guide.html", category: "3. Compute (20-25%)", icon: "fab fa-terraform", type: "guide" },
+      { id: "guide-vms-deep-dive-main", title: "Azure VMs Deep Dive (Incl. Disks & ADE)", filename: "azure_vms_deep_dive_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-server", type: "guide" },
+      { id: "guide-vmss", title: "Azure Virtual Machine Scale Sets (VMSS) Guide", filename: "azure_vmss_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-layer-group", type: "guide" },
+      { id: "guide-trusted-launch", title: "Azure Trusted Launch for Gen2 VMs Guide", filename: "azure_trusted_launch_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-user-shield", type: "guide" },
+      { id: "guide-aks-intro", title: "AKS Introduction Guide", filename: "Azure Kuberenets Serv aks_intro_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-dharmachakra", type: "guide" },
+      { id: "guide-docker-concepts", title: "Docker Concepts & Role in Azure", filename: "azure_docker_concepts_guide.html", category: "3. Compute (20-25%)", icon: "fab fa-docker", type: "guide" },
+      { id: "guide-compute-options", title: "Comparing Azure Compute Options Guide", filename: "azure_compute_options_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-cogs", type: "guide" },
+      { id: "guide-aci-container-groups", title: "Azure Containers: ACI & Container Groups Guide", filename: "azure_aci_container_groups_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-boxes", type: "guide" },
+      { id: "guide-app-service", title: "Azure App Service: Web Apps & Scaling Guide", filename: "azure_app_service_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-rocket", type: "guide" },
+      { id: "guide-lab-webapp-up-cli", title: "Lab: Deploy Static HTML with `az webapp up`", filename: "az104_webapp_up_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-cloud-upload-alt", type: "guide" },
+      { id: "guide-lab-vm-cli", title: "Lab Review: VM CLI & Networking", filename: "az104_vm_cli_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-vial", type: "guide" },
+      { id: "guide-lab-linux-disk-ade", title: "Lab: Linux VM Disk Prep & Conceptual ADE", filename: "az104_linux_vm_add_disk_ade_guide.html", category: "3. Compute (20-25%)", icon: "fab fa-linux", type: "guide" },
+      { id: "guide-lab-windows-vm-image", title: "Lab Review: Windows VM, Web Server & Image Capture", filename: "az104_windows_vm_image_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-flask", type: "guide" },
+      { id: "guide-lab-vm-resize-cli", title: "Lab: Resizing an Azure VM (CLI)", filename: "az104_vm_resize_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-arrows-alt-v", type: "guide" },
+      { id: "sorter-compute-scenarios", title: "Azure Compute - Scenario Sorter", filename: "azure_compute_scenario_sorter.html", category: "3. Compute (20-25%)", icon: "fas fa-random", type: "sorter" },
+      { id: "quiz-compute-vca", title: "Compute Quiz: VMs, Containers & App Services", filename: "azure_compute_vca_quiz.html", category: "3. Compute (20-25%)", icon: "fas fa-laptop-code", type: "quiz" },
+      { id: "quiz-app-service-detailed", title: "Detailed Azure App Service Quiz", filename: "azure_app_service_detailed_quiz.html", category: "3. Compute (20-25%)", icon: "fas fa-rocket", type: "quiz" },
+
+      // === Domain 4: Networking (15-20%) ===
+      { id: "guide-vnet-deep-dive", title: "Azure Virtual Networks (VNets) Deep Dive", filename: "azure_vnet_deep_dive_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-network-wired", type: "guide" },
+      { id: "guide-networking-components", title: "Networking Components Guide", filename: "azure_networking_components_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-sitemap", type: "guide" },
+      { id: "guide-nsg", title: "Network Security Groups (NSGs) Explained", filename: "azure_network_security_groups_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-user-shield", type: "guide" },
+      { id: "guide-network-security-tools", title: "Network Security Tools Guide", filename: "azure_network_security_tools_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-shield-alt", type: "guide" },
+      { id: "guide-azure-firewall", title: "Azure Firewall Deep Dive", filename: "azure_firewall_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-fire-alt", type: "guide" },
+      { id: "guide-load-balancing", title: "Azure Load Balancing Services Explained", filename: "azure_load_balancing_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-balance-scale-right", type: "guide" },
+      { id: "guide-gateway-lb", title: "Azure Gateway Load Balancer Deep Dive", filename: "azure_gateway_load_balancer_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-route", type: "guide" },
+      { id: "guide-app-gateway", title: "Azure Application Gateway Deep Dive", filename: "azure_application_gateway_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-globe", type: "guide" },
+      { id: "guide-azure-dns", title: "Azure DNS Services Explained", filename: "azure_dns_services_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-globe-americas", type: "guide" },
+      { id: "guide-vpn-gateway", title: "Azure VPN Gateway Explained", filename: "azure_vpn_gateway_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-dungeon", type: "guide" },
+      { id: "guide-expressroute", title: "Azure ExpressRoute Explained", filename: "azure_expressroute_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-globe", type: "guide" },
+      { id: "guide-network-topologies", title: "Azure Network Topologies: Mesh vs. Hub-Spoke", filename: "azure_network_topologies_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-project-diagram", type: "guide" },
+      { id: "guide-lab-vnet-peering-cli", title: "Lab Review: VNet Peering with Azure CLI", filename: "az104_vnet_peering_cli_lab_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-link", type: "guide" },
+      { id: "guide-lb-troubleshooting", title: "Lab Review: Azure Load Balancer Troubleshooting", filename: "azure_load_balancer_troubleshooting_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-exclamation-triangle", type: "guide" },
+      { id: "sorter-network-components", title: "Azure Networking - Purpose Sorter", filename: "azure_network_components_sorter.html", category: "4. Networking (15-20%)", icon: "fas fa-project-diagram", type: "sorter" },
+      { id: "sorter-nat-vs-firewall", title: "NAT Gateway vs. Azure Firewall Sorter", filename: "azure_nat_vs_firewall_sorter.html", category: "4. Networking (15-20%)", icon: "fas fa-exchange-alt", type: "sorter" },
+      { id: "sorter-load-balancing", title: "Load Balancing Options Sorter", filename: "azure_load_balancing_sorter.html", category: "4. Networking (15-20%)", icon: "fas fa-balance-scale-right", type: "sorter" },
+      { id: "quiz-networking-components", title: "Azure Networking Components Quiz", filename: "azure_networking_quiz.html", category: "4. Networking (15-20%)", icon: "fas fa-project-diagram", type: "quiz" },
+      { id: "quiz-dns-concepts", title: "Azure DNS Concepts Quiz", filename: "azure_dns_quiz.html", category: "4. Networking (15-20%)", icon: "fas fa-globe-americas", type: "quiz" },
+
+      // === Domain 5: Monitoring (10-15%) ===
+      { id: "guide-monitor-maintenance", title: "Azure Monitor & Maintenance Guide", filename: "azure_monitor_maintenance_guide.html", category: "5. Monitoring (10-15%)", icon: "fas fa-desktop", type: "guide" },
+    ];
+
+    // Deduplicate topics
+    (function dedupeStudyTopics() {
+      const seen = new Set();
+      const deduped = [];
+      studyTopics.forEach((t) => {
+        if (!t || !t.id) return;
+        if (!seen.has(t.id)) {
+          deduped.push(t);
+          seen.add(t.id);
         }
-      })();
+      });
+      studyTopics.length = 0;
+      deduped.forEach((t) => studyTopics.push(t));
+    })();
 
-      // ===== STUDY TOPICS DATA =====
-      // Organized by official AZ-104 exam domains
-      const studyTopics = [
-        // === Study Tools ===
-        { id: "guide-personalized-review", title: "Personalized Review: Weak Spot Focus", filename: "azure_personalized_review_guide.html", category: "Study Tools", icon: "fas fa-bullseye", type: "guide" },
-        { id: "tool-anki-deck-builder", title: "Anki Deck Builder", filename: "anki-deck-builder.html", category: "Study Tools", icon: "fas fa-magic", type: "guide" },
-        { id: "tool-anki-deck-library", title: "Anki Deck Library", filename: "anki-deck-library.html", category: "Study Tools", icon: "fas fa-layer-group", type: "guide" },
-        
-        // === Domain 1: Identities & Governance (20-25%) ===
-        { id: "guide-entra-id-concepts", title: "Microsoft Entra ID Core Concepts", filename: "microsoft_entra_id_concepts_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-id-card", type: "guide" },
-        { id: "guide-policy", title: "Azure Policy Guide", filename: "azure_policy_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-balance-scale", type: "guide" },
-        { id: "guide-policy-gov", title: "Azure Policy: Governance & Compliance", filename: "Azure Policy- Governance and Compliance Management.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-balance-scale-left", type: "guide" },
-        { id: "guide-keyvault", title: "Azure Key Vault Guide", filename: "Azure-key_vault_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-key", type: "guide" },
-        { id: "guide-shared-responsibility-sorter", title: "Shared Responsibility Sorter", filename: "shared_responsibility_sorter.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-people-arrows", type: "sorter" },
-        { id: "shared-responsibility_guide", title: "Shared Responsibility Guide", filename: "AZ-104_shared_responsibility_guide.html", category: "1. Identities & Governance (20-25%)", icon: "fas fa-handshake", type: "guide" },
-        
-        // === Domain 2: Storage (15-20%) ===
-        { id: "guide-storage-overview", title: "Storage Account Overview", filename: "Study Guide Azure Storage Account Overview.html", category: "2. Storage (15-20%)", icon: "fas fa-server", type: "guide" },
-        { id: "guide-storage-options", title: "Storage Options & Architecture", filename: "Study Guide Azure Storage Options and Architecture.html", category: "2. Storage (15-20%)", icon: "fas fa-cubes", type: "guide" },
-        { id: "guide-storage-arch", title: "Storage Architecture Guide", filename: "azure_storage_architecture_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-building", type: "guide" },
-        { id: "guide-storage-flashcards", title: "Storage Redundancy Flashcards", filename: "azure_storage_flashcards.html", category: "2. Storage (15-20%)", icon: "fas fa-clone", type: "guide" },
-        { id: "guide-redundancy", title: "Storage Redundancy Guide", filename: "redundancy_study_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-sync-alt", type: "guide" },
-        { id: "guide-lifecycle-tiers", title: "Blob Lifecycle & Tiers Guide", filename: "Azure_storage_lifecycle_tiers_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-recycle", type: "guide" },
-        { id: "guide-versioning-lifecycle", title: "Blob Versioning & Lifecycle", filename: "blob_versioning_lifecycle_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-project-diagram", type: "guide" },
-        { id: "guide-immutable", title: "Immutable Storage Guide", filename: "immutable_storage_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-lock", type: "guide" },
-        { id: "guide-blob-concepts", title: "Blob Storage Concepts", filename: "azure study guide Blob Storage Concepts.html", category: "2. Storage (15-20%)", icon: "fas fa-file-invoice", type: "guide" },
-        { id: "guide-azcopy", title: "AzCopy v10 Guide", filename: "AzCopy v10.html", category: "2. Storage (15-20%)", icon: "fas fa-terminal", type: "guide" },
-        { id: "flashcard-event-grid-storage", title: "Flashcard: Event Grid Subscription to Blob Storage", filename: "flashcard_event_grid_storage.html", category: "2. Storage (15-20%)", icon: "fas fa-bolt", type: "guide" },
-        { id: "guide-storage-replication-rto-rpo", title: "CRITICAL: RTO/RPO Storage Replication Strategy", filename: "azure_storage_replication_rto_rpo_guide.html", category: "2. Storage (15-20%)", icon: "fas fa-exclamation-triangle", type: "guide", priority: "critical" },
-        { id: "quiz-storage-aks-arm", title: "Storage, AKS & ARM Quiz", filename: "azure_storage_aks_arm_quiz.html", category: "2. Storage (15-20%)", icon: "fas fa-tasks", type: "quiz" },
-        { id: "quiz-redundancy-arm-aks", title: "Redundancy, ARM & AKS Quiz", filename: "azure_redundancy_arm_aks_quiz.html", category: "2. Storage (15-20%)", icon: "fas fa-sync-alt", type: "quiz" },
-        
-        // === Domain 3: Compute (20-25%) ===
-        { id: "guide-cli-ps", title: "Azure CLI & PowerShell Guide", filename: "azure_cli_ps_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-laptop-code", type: "guide" },
-        { id: "guide-arm", title: "ARM Templates Guide", filename: "arm_template_concise_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-file-code", type: "guide" },
-        { id: "guide-terraform-basics", title: "Terraform Basics for Azure", filename: "azure_terraform_basics_guide.html", category: "3. Compute (20-25%)", icon: "fab fa-terraform", type: "guide" },
-        { id: "guide-vms-deep-dive-main", title: "Azure VMs Deep Dive (Incl. Disks & ADE)", filename: "azure_vms_deep_dive_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-server", type: "guide" },
-        { id: "guide-vmss", title: "Azure Virtual Machine Scale Sets (VMSS) Guide", filename: "azure_vmss_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-layer-group", type: "guide" },
-        { id: "guide-trusted-launch", title: "Azure Trusted Launch for Gen2 VMs Guide", filename: "azure_trusted_launch_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-user-shield", type: "guide" },
-        { id: "guide-aks-intro", title: "AKS Introduction Guide", filename: "Azure Kuberenets Serv aks_intro_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-dharmachakra", type: "guide" },
-        { id: "guide-docker-concepts", title: "Docker Concepts & Role in Azure", filename: "azure_docker_concepts_guide.html", category: "3. Compute (20-25%)", icon: "fab fa-docker", type: "guide" },
-        { id: "guide-compute-options", title: "Comparing Azure Compute Options Guide", filename: "azure_compute_options_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-cogs", type: "guide" },
-        { id: "guide-aci-container-groups", title: "Azure Containers: ACI & Container Groups Guide", filename: "azure_aci_container_groups_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-boxes", type: "guide" },
-        { id: "guide-app-service", title: "Azure App Service: Web Apps & Scaling Guide", filename: "azure_app_service_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-rocket", type: "guide" },
-        { id: "guide-lab-webapp-up-cli", title: "Lab: Deploy Static HTML with `az webapp up`", filename: "az104_webapp_up_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-cloud-upload-alt", type: "guide" },
-        { id: "guide-lab-vm-cli", title: "Lab Review: VM CLI & Networking", filename: "az104_vm_cli_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-vial", type: "guide" },
-        { id: "guide-lab-linux-disk-ade", title: "Lab: Linux VM Disk Prep & Conceptual ADE", filename: "az104_linux_vm_add_disk_ade_guide.html", category: "3. Compute (20-25%)", icon: "fab fa-linux", type: "guide" },
-        { id: "guide-lab-windows-vm-image", title: "Lab Review: Windows VM, Web Server & Image Capture", filename: "az104_windows_vm_image_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-flask", type: "guide" },
-        { id: "guide-lab-vm-resize-cli", title: "Lab: Resizing an Azure VM (CLI)", filename: "az104_vm_resize_lab_guide.html", category: "3. Compute (20-25%)", icon: "fas fa-arrows-alt-v", type: "guide" },
-        { id: "sorter-compute-scenarios", title: "Azure Compute - Scenario Sorter", filename: "azure_compute_scenario_sorter.html", category: "3. Compute (20-25%)", icon: "fas fa-random", type: "sorter" },
-        { id: "quiz-compute-vca", title: "Compute Quiz: VMs, Containers & App Services", filename: "azure_compute_vca_quiz.html", category: "3. Compute (20-25%)", icon: "fas fa-laptop-code", type: "quiz" },
-        { id: "quiz-app-service-detailed", title: "Detailed Azure App Service Quiz", filename: "azure_app_service_detailed_quiz.html", category: "3. Compute (20-25%)", icon: "fas fa-rocket", type: "quiz" },
-        
-        // === Domain 4: Networking (15-20%) ===
-        { id: "guide-vnet-deep-dive", title: "Azure Virtual Networks (VNets) Deep Dive", filename: "azure_vnet_deep_dive_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-network-wired", type: "guide" },
-        { id: "guide-networking-components", title: "Networking Components Guide", filename: "azure_networking_components_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-sitemap", type: "guide" },
-        { id: "guide-nsg", title: "Network Security Groups (NSGs) Explained", filename: "azure_network_security_groups_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-user-shield", type: "guide" },
-        { id: "guide-network-security-tools", title: "Network Security Tools Guide", filename: "azure_network_security_tools_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-shield-alt", type: "guide" },
-        { id: "guide-azure-firewall", title: "Azure Firewall Deep Dive", filename: "azure_firewall_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-fire-alt", type: "guide" },
-        { id: "guide-load-balancing", title: "Azure Load Balancing Services Explained", filename: "azure_load_balancing_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-balance-scale-right", type: "guide" },
-        { id: "guide-gateway-lb", title: "Azure Gateway Load Balancer Deep Dive", filename: "azure_gateway_load_balancer_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-route", type: "guide" },
-        { id: "guide-app-gateway", title: "Azure Application Gateway Deep Dive", filename: "azure_application_gateway_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-globe", type: "guide" },
-        { id: "guide-azure-dns", title: "Azure DNS Services Explained", filename: "azure_dns_services_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-globe-americas", type: "guide" },
-        { id: "guide-vpn-gateway", title: "Azure VPN Gateway Explained", filename: "azure_vpn_gateway_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-dungeon", type: "guide" },
-        { id: "guide-expressroute", title: "Azure ExpressRoute Explained", filename: "azure_expressroute_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-globe", type: "guide" },
-        { id: "guide-network-topologies", title: "Azure Network Topologies: Mesh vs. Hub-Spoke", filename: "azure_network_topologies_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-project-diagram", type: "guide" },
-        { id: "guide-lab-vnet-peering-cli", title: "Lab Review: VNet Peering with Azure CLI", filename: "az104_vnet_peering_cli_lab_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-link", type: "guide" },
-        { id: "guide-lb-troubleshooting", title: "Lab Review: Azure Load Balancer Troubleshooting", filename: "azure_load_balancer_troubleshooting_guide.html", category: "4. Networking (15-20%)", icon: "fas fa-exclamation-triangle", type: "guide" },
-        { id: "sorter-network-components", title: "Azure Networking - Purpose Sorter", filename: "azure_network_components_sorter.html", category: "4. Networking (15-20%)", icon: "fas fa-project-diagram", type: "sorter" },
-        { id: "sorter-nat-vs-firewall", title: "NAT Gateway vs. Azure Firewall Sorter", filename: "azure_nat_vs_firewall_sorter.html", category: "4. Networking (15-20%)", icon: "fas fa-exchange-alt", type: "sorter" },
-        { id: "sorter-load-balancing", title: "Load Balancing Options Sorter", filename: "azure_load_balancing_sorter.html", category: "4. Networking (15-20%)", icon: "fas fa-balance-scale-right", type: "sorter" },
-        { id: "quiz-networking-components", title: "Azure Networking Components Quiz", filename: "azure_networking_quiz.html", category: "4. Networking (15-20%)", icon: "fas fa-project-diagram", type: "quiz" },
-        { id: "quiz-dns-concepts", title: "Azure DNS Concepts Quiz", filename: "azure_dns_quiz.html", category: "4. Networking (15-20%)", icon: "fas fa-globe-americas", type: "quiz" },
-        
-        // === Domain 5: Monitoring (10-15%) ===
-        { id: "guide-monitor-maintenance", title: "Azure Monitor & Maintenance Guide", filename: "azure_monitor_maintenance_guide.html", category: "5. Monitoring (10-15%)", icon: "fas fa-desktop", type: "guide" },
-      ];
+    // ===== LOCAL STORAGE HELPERS =====
+    function getStoredScores() {
+      try {
+        const raw = localStorage.getItem('mergedQuizScores');
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) { return {}; }
+    }
 
-      // Deduplicate topics
-      (function dedupeStudyTopics() {
-        const seen = new Set();
-        const deduped = [];
-        studyTopics.forEach((t) => {
-          if (!t || !t.id) return;
-          if (!seen.has(t.id)) {
-            deduped.push(t);
-            seen.add(t.id);
-          }
-        });
-        studyTopics.length = 0;
-        deduped.forEach((t) => studyTopics.push(t));
-      })();
+    // Score editing removed - all input happens in Personalized Review Guide
+    // Hub is read-only and syncs from localStorage
 
-      // ===== LOCAL STORAGE HELPERS =====
-      function getStoredScores() {
-        try {
-          const raw = localStorage.getItem('mergedQuizScores');
-          return raw ? JSON.parse(raw) : {};
-        } catch (e) { return {}; }
+    function getTheme() {
+      try {
+        return localStorage.getItem('hubTheme') || 'light';
+      } catch (e) { return 'light'; }
+    }
+
+    function setTheme(theme) {
+      try {
+        localStorage.setItem('hubTheme', theme);
+      } catch (e) { }
+    }
+
+    // ===== RAG COLOR HELPERS (Matches Personalized Review Guide thresholds) =====
+    function getRagClass(percent) {
+      if (percent >= 76) return 'rag-green';
+      if (percent >= 50) return 'rag-amber';
+      return 'rag-red';
+    }
+
+    // ===== DOMAIN METADATA HELPERS (Last updated, source, stale warning) =====
+    const DOMAIN_META_KEY = 'domainScoreMetadata';
+    const STALE_DAYS_THRESHOLD = 14;
+
+    function getDomainMetadata() {
+      try {
+        const raw = localStorage.getItem(DOMAIN_META_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (e) { return {}; }
+    }
+
+    function getDaysAgo(isoDate) {
+      if (!isoDate) return null;
+      const then = new Date(isoDate);
+      const now = new Date();
+      return Math.floor((now - then) / (1000 * 60 * 60 * 24));
+    }
+
+    function formatLastUpdatedShort(isoDate) {
+      if (!isoDate) return 'Never updated';
+      const days = getDaysAgo(isoDate);
+      if (days === 0) return 'Today';
+      if (days === 1) return 'Yesterday';
+      return `${days} days ago`;
+    }
+
+    function getDomainLastUpdatedHtml(domainKey) {
+      const meta = getDomainMetadata();
+      const domainMeta = meta[domainKey] || {};
+
+      if (!domainMeta.lastUpdated) {
+        return '<span class="stale-badge" style="background:#e74c3c;color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75em;">NEW</span> <span style="color:#e74c3c;">Never updated</span>';
       }
 
-      // Score editing removed - all input happens in Personalized Review Guide
-      // Hub is read-only and syncs from localStorage
+      const days = getDaysAgo(domainMeta.lastUpdated);
+      const isStale = days >= STALE_DAYS_THRESHOLD;
+      let html = '';
 
-      function getTheme() {
-        try {
-          return localStorage.getItem('hubTheme') || 'light';
-        } catch (e) { return 'light'; }
+      if (isStale) {
+        html += '<span class="stale-badge" style="background:#f39c12;color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75em;margin-right:4px;">STALE</span> ';
       }
 
-      function setTheme(theme) {
-        try {
-          localStorage.setItem('hubTheme', theme);
-        } catch (e) {}
-      }
+      html += `<i class="fas fa-clock" style="opacity:0.6;margin-right:4px;"></i>${formatLastUpdatedShort(domainMeta.lastUpdated)}`;
+      if (domainMeta.source) html += ` | ${domainMeta.source}`;
 
-      // ===== RAG COLOR HELPERS (Matches Personalized Review Guide thresholds) =====
-      function getRagClass(percent) {
-        if (percent >= 76) return 'rag-green';
-        if (percent >= 50) return 'rag-amber';
-        return 'rag-red';
-      }
+      return html;
+    }
 
-      // ===== DOMAIN METADATA HELPERS (Last updated, source, stale warning) =====
-      const DOMAIN_META_KEY = 'domainScoreMetadata';
-      const STALE_DAYS_THRESHOLD = 14;
+    // Mastery calculation removed - Hub now uses simple quiz percentages from Personalized Review
 
-      function getDomainMetadata() {
-        try {
-          const raw = localStorage.getItem(DOMAIN_META_KEY);
-          return raw ? JSON.parse(raw) : {};
-        } catch(e) { return {}; }
-      }
+    // ===== RENDER DOMAIN CARDS (Read-Only - Collapsed by default) =====
+    function renderDomainCards() {
+      const grid = document.getElementById('domain-grid');
+      const scores = getStoredScores();
 
-      function getDaysAgo(isoDate) {
-        if (!isoDate) return null;
-        const then = new Date(isoDate);
-        const now = new Date();
-        return Math.floor((now - then) / (1000 * 60 * 60 * 24));
-      }
+      grid.innerHTML = '';
 
-      function formatLastUpdatedShort(isoDate) {
-        if (!isoDate) return 'Never updated';
-        const days = getDaysAgo(isoDate);
-        if (days === 0) return 'Today';
-        if (days === 1) return 'Yesterday';
-        return `${days} days ago`;
-      }
+      domainConfig.forEach(domain => {
+        const score = scores[domain.key] || { correct: 0, total: 0 };
+        const percent = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
+        const ragClass = getRagClass(percent);
 
-      function getDomainLastUpdatedHtml(domainKey) {
-        const meta = getDomainMetadata();
-        const domainMeta = meta[domainKey] || {};
-
-        if (!domainMeta.lastUpdated) {
-          return '<span class="stale-badge" style="background:#e74c3c;color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75em;">NEW</span> <span style="color:#e74c3c;">Never updated</span>';
-        }
-
-        const days = getDaysAgo(domainMeta.lastUpdated);
-        const isStale = days >= STALE_DAYS_THRESHOLD;
-        let html = '';
-
-        if (isStale) {
-          html += '<span class="stale-badge" style="background:#f39c12;color:#fff;padding:2px 6px;border-radius:3px;font-size:0.75em;margin-right:4px;">STALE</span> ';
-        }
-
-        html += `<i class="fas fa-clock" style="opacity:0.6;margin-right:4px;"></i>${formatLastUpdatedShort(domainMeta.lastUpdated)}`;
-        if (domainMeta.source) html += ` | ${domainMeta.source}`;
-
-        return html;
-      }
-
-      // Mastery calculation removed - Hub now uses simple quiz percentages from Personalized Review
-
-      // ===== RENDER DOMAIN CARDS (Read-Only - Collapsed by default) =====
-      function renderDomainCards() {
-        const grid = document.getElementById('domain-grid');
-        const scores = getStoredScores();
-
-        grid.innerHTML = '';
-
-        domainConfig.forEach(domain => {
-          const score = scores[domain.key] || { correct: 0, total: 0 };
-          const percent = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
-          const ragClass = getRagClass(percent);
-
-          const card = document.createElement('div');
-          card.className = 'domain-card';
-          card.innerHTML = `
+        const card = document.createElement('div');
+        card.className = 'domain-card';
+        card.innerHTML = `
             <div class="domain-card-header">
               <div class="domain-card-title">
                 <i class="${domain.icon}"></i>
@@ -1209,167 +1292,167 @@
               </div>
             </div>
           `;
-          
-          card.addEventListener('click', function(e) {
-            if (e.target.tagName === 'A' || e.target.closest('a')) return;
-            this.classList.toggle('expanded');
+
+        card.addEventListener('click', function (e) {
+          if (e.target.tagName === 'A' || e.target.closest('a')) return;
+          this.classList.toggle('expanded');
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    // Score editing removed - all score input happens in Personalized Review Guide
+
+    // ===== PRIMARY FOCUS (Uses quiz data from Personalized Review) =====
+    function updatePrimaryFocus() {
+      const scores = getStoredScores();
+      let weakest = null;
+      let lowestPercent = 101;
+
+      domainConfig.forEach(domain => {
+        const score = scores[domain.key] || { correct: 0, total: 0 };
+        const percent = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
+        if (percent < lowestPercent) {
+          lowestPercent = percent;
+          weakest = { ...domain, correct: score.correct, total: score.total };
+        }
+      });
+
+      const widget = document.getElementById('primary-focus');
+      const nameEl = document.getElementById('focus-domain-name');
+      const scoreEl = document.getElementById('focus-domain-score');
+      const linkEl = document.getElementById('focus-action-link');
+
+      if (weakest) {
+        nameEl.textContent = weakest.name;
+        scoreEl.textContent = `${lowestPercent}% (${weakest.correct}/${weakest.total})`;
+        linkEl.href = weakest.guideLink;
+
+        // Update widget color based on RAG thresholds
+        if (lowestPercent < 50) {
+          widget.style.background = 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)';
+        } else if (lowestPercent < 76) {
+          widget.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
+        } else {
+          widget.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
+        }
+      }
+    }
+
+    // ===== NEXT STEPS TRACKER (Uses quiz data from Personalized Review) =====
+    function updateNextSteps() {
+      const list = document.getElementById('next-steps-list');
+      const scores = getStoredScores();
+      const steps = [];
+
+      // Find weakest domains by quiz percentage
+      const domainScores = domainConfig.map(d => {
+        const score = scores[d.key] || { correct: 0, total: 0 };
+        const percent = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
+        return { ...d, percent, correct: score.correct, total: score.total };
+      }).sort((a, b) => a.percent - b.percent);
+
+      const weakest = domainScores.slice(0, 3);
+
+      weakest.forEach(domain => {
+        if (domain.percent < 50) {
+          steps.push({
+            icon: 'fas fa-exclamation-circle',
+            text: `Critical: Review ${domain.name} flashcards (${domain.percent}%)`,
+            link: `azure_personalized_review_guide.html#${domain.key}-focused-card`,
+            color: '#ef4444'
           });
-          
-          grid.appendChild(card);
+        } else if (domain.percent < 76) {
+          steps.push({
+            icon: 'fas fa-book',
+            text: `Practice: ${domain.name} study guide (${domain.percent}%)`,
+            link: domain.guideLink,
+            color: '#f59e0b'
+          });
+        }
+      });
+
+      // Add Anki recommendation
+      if (steps.length > 0) {
+        steps.push({
+          icon: 'fas fa-clone',
+          text: 'Import latest Anki deck for spaced repetition',
+          link: '../Anki-Decks/AZ-104-Master-Study-Deck.apkg',
+          color: '#8b5cf6'
         });
       }
 
-      // Score editing removed - all score input happens in Personalized Review Guide
-
-      // ===== PRIMARY FOCUS (Uses quiz data from Personalized Review) =====
-      function updatePrimaryFocus() {
-        const scores = getStoredScores();
-        let weakest = null;
-        let lowestPercent = 101;
-
-        domainConfig.forEach(domain => {
-          const score = scores[domain.key] || { correct: 0, total: 0 };
-          const percent = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
-          if (percent < lowestPercent) {
-            lowestPercent = percent;
-            weakest = { ...domain, correct: score.correct, total: score.total };
-          }
+      // Add lab recommendation for domains near 76%
+      const nearTarget = domainScores.find(d => d.percent >= 60 && d.percent < 76);
+      if (nearTarget) {
+        steps.push({
+          icon: 'fas fa-flask',
+          text: `Hands-on: Complete ${nearTarget.name} lab exercises`,
+          link: 'az104_vm_cli_lab_guide.html',
+          color: '#10b981'
         });
-
-        const widget = document.getElementById('primary-focus');
-        const nameEl = document.getElementById('focus-domain-name');
-        const scoreEl = document.getElementById('focus-domain-score');
-        const linkEl = document.getElementById('focus-action-link');
-
-        if (weakest) {
-          nameEl.textContent = weakest.name;
-          scoreEl.textContent = `${lowestPercent}% (${weakest.correct}/${weakest.total})`;
-          linkEl.href = weakest.guideLink;
-
-          // Update widget color based on RAG thresholds
-          if (lowestPercent < 50) {
-            widget.style.background = 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)';
-          } else if (lowestPercent < 76) {
-            widget.style.background = 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)';
-          } else {
-            widget.style.background = 'linear-gradient(135deg, #10b981 0%, #059669 100%)';
-          }
-        }
       }
 
-      // ===== NEXT STEPS TRACKER (Uses quiz data from Personalized Review) =====
-      function updateNextSteps() {
-        const list = document.getElementById('next-steps-list');
-        const scores = getStoredScores();
-        const steps = [];
-
-        // Find weakest domains by quiz percentage
-        const domainScores = domainConfig.map(d => {
-          const score = scores[d.key] || { correct: 0, total: 0 };
-          const percent = score.total > 0 ? Math.round((score.correct / score.total) * 100) : 0;
-          return { ...d, percent, correct: score.correct, total: score.total };
-        }).sort((a, b) => a.percent - b.percent);
-
-        const weakest = domainScores.slice(0, 3);
-
-        weakest.forEach(domain => {
-          if (domain.percent < 50) {
-            steps.push({
-              icon: 'fas fa-exclamation-circle',
-              text: `Critical: Review ${domain.name} flashcards (${domain.percent}%)`,
-              link: `azure_personalized_review_guide.html#${domain.key}-focused-card`,
-              color: '#ef4444'
-            });
-          } else if (domain.percent < 76) {
-            steps.push({
-              icon: 'fas fa-book',
-              text: `Practice: ${domain.name} study guide (${domain.percent}%)`,
-              link: domain.guideLink,
-              color: '#f59e0b'
-            });
-          }
+      if (steps.length === 0) {
+        steps.push({
+          icon: 'fas fa-trophy',
+          text: 'Great job! All domains above 76%. Keep reviewing!',
+          link: '#',
+          color: '#10b981'
         });
+      }
 
-        // Add Anki recommendation
-        if (steps.length > 0) {
-          steps.push({
-            icon: 'fas fa-clone',
-            text: 'Import latest Anki deck for spaced repetition',
-            link: '../Anki-Decks/AZ-104-Master-Study-Deck.apkg',
-            color: '#8b5cf6'
-          });
-        }
-
-        // Add lab recommendation for domains near 76%
-        const nearTarget = domainScores.find(d => d.percent >= 60 && d.percent < 76);
-        if (nearTarget) {
-          steps.push({
-            icon: 'fas fa-flask',
-            text: `Hands-on: Complete ${nearTarget.name} lab exercises`,
-            link: 'az104_vm_cli_lab_guide.html',
-            color: '#10b981'
-          });
-        }
-
-        if (steps.length === 0) {
-          steps.push({
-            icon: 'fas fa-trophy',
-            text: 'Great job! All domains above 76%. Keep reviewing!',
-            link: '#',
-            color: '#10b981'
-          });
-        }
-
-        list.innerHTML = steps.map(step => `
+      list.innerHTML = steps.map(step => `
           <li>
             <i class="${step.icon}" style="color: ${step.color}"></i>
             <a href="${step.link}">${step.text}</a>
           </li>
         `).join('');
+    }
+
+    // ===== RETENTION TRENDS =====
+    function getPercentFromSnapshot(snap, domainKey) {
+      if (snap.merged && snap.merged[domainKey]) {
+        const d = snap.merged[domainKey];
+        return typeof d.percent === 'number' ? d.percent : (d.total ? Math.round((d.correct / d.total) * 100) : 0);
       }
-
-      // ===== RETENTION TRENDS =====
-      function getPercentFromSnapshot(snap, domainKey) {
-        if (snap.merged && snap.merged[domainKey]) {
-          const d = snap.merged[domainKey];
-          return typeof d.percent === 'number' ? d.percent : (d.total ? Math.round((d.correct / d.total) * 100) : 0);
-        }
-        if (snap.domainPercents && typeof snap.domainPercents[domainKey] === 'number') {
-          return snap.domainPercents[domainKey];
-        }
-        return null;
+      if (snap.domainPercents && typeof snap.domainPercents[domainKey] === 'number') {
+        return snap.domainPercents[domainKey];
       }
+      return null;
+    }
 
-      function renderRetentionTrends() {
-        const container = document.getElementById('retention-content');
+    function renderRetentionTrends() {
+      const container = document.getElementById('retention-content');
 
-        try {
-          const raw = localStorage.getItem('mergedQuizHistory');
-          const history = raw ? JSON.parse(raw) : [];
+      try {
+        const raw = localStorage.getItem('mergedQuizHistory');
+        const history = raw ? JSON.parse(raw) : [];
 
-          if (!history.length) {
-            container.innerHTML = '<p style="color: var(--text-muted)">No retention history yet. Save scores in the <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue);">Personalized Review Guide</a> to track progress over time.</p>';
-            return;
-          }
+        if (!history.length) {
+          container.innerHTML = '<p style="color: var(--text-muted)">No retention history yet. Save scores in the <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue);">Personalized Review Guide</a> to track progress over time.</p>';
+          return;
+        }
 
-          let html = '';
-          domainConfig.forEach(domain => {
-            const series = history.map(snap => {
-              const pct = getPercentFromSnapshot(snap, domain.key);
-              return pct !== null ? pct / 100 : null;
-            }).filter(v => v !== null);
+        let html = '';
+        domainConfig.forEach(domain => {
+          const series = history.map(snap => {
+            const pct = getPercentFromSnapshot(snap, domain.key);
+            return pct !== null ? pct / 100 : null;
+          }).filter(v => v !== null);
 
-            if (!series.length) return;
+          if (!series.length) return;
 
-            const lastPct = series[series.length - 1] || 0;
-            const prevPct = series.length > 1 ? series[series.length - 2] : null;
-            const delta = prevPct !== null ? ((lastPct - prevPct) * 100).toFixed(1) : null;
-            const deltaText = delta !== null ? `${delta >= 0 ? '+' : ''}${delta}%` : '';
-            const deltaColor = delta && delta >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
+          const lastPct = series[series.length - 1] || 0;
+          const prevPct = series.length > 1 ? series[series.length - 2] : null;
+          const delta = prevPct !== null ? ((lastPct - prevPct) * 100).toFixed(1) : null;
+          const deltaText = delta !== null ? `${delta >= 0 ? '+' : ''}${delta}%` : '';
+          const deltaColor = delta && delta >= 0 ? 'var(--success-color)' : 'var(--danger-color)';
 
-            const sparkline = makeSparklineSvg(series);
+          const sparkline = makeSparklineSvg(series);
 
-            html += `
+          html += `
               <div class="trend-row">
                 <div>
                   <div class="trend-domain">${domain.name}</div>
@@ -1378,87 +1461,87 @@
                 <div class="trend-sparkline">${sparkline}</div>
               </div>
             `;
-          });
-
-          container.innerHTML = html || '<p style="color: var(--text-muted)">No retention data for configured domains.</p>';
-        } catch (e) {
-          container.innerHTML = '<p style="color: var(--text-muted)">Error loading retention data.</p>';
-        }
-      }
-
-      function makeSparklineSvg(values) {
-        const w = 100, h = 24, pad = 2;
-        const cleaned = values.map(v => v == null ? 0 : v);
-        const min = Math.min(...cleaned);
-        const max = Math.max(...cleaned);
-        const range = Math.max(0.01, max - min);
-
-        const pts = cleaned.map((v, i) => {
-          const x = (i / Math.max(1, cleaned.length - 1)) * (w - pad * 2) + pad;
-          const y = h - pad - ((v - min) / range) * (h - pad * 2);
-          return `${x},${y}`;
-        }).join(' ');
-
-        return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline fill="none" stroke="var(--azure-blue)" stroke-width="2" points="${pts}" /></svg>`;
-      }
-
-
-      // ===== DEBUG PANEL =====
-      function updateDebugPanel() {
-        const panel = document.getElementById('debug-panel');
-        const content = document.getElementById('debug-content');
-
-        const data = {
-          mergedQuizScores: getStoredScores(),
-          hubTheme: getTheme(),
-          dataSource: 'Personalized Review Guide (localStorage)'
-        };
-
-        content.textContent = JSON.stringify(data, null, 2);
-      }
-
-      function toggleDebugPanel() {
-        const panel = document.getElementById('debug-panel');
-        panel.classList.toggle('show');
-        if (panel.classList.contains('show')) {
-          updateDebugPanel();
-        }
-      }
-
-      // ===== RENDER STUDY TOPICS =====
-      function renderStudyTopics() {
-        const container = document.getElementById('study-topics-container');
-        const categories = {};
-
-        studyTopics.forEach(topic => {
-          if (!categories[topic.category]) categories[topic.category] = [];
-          categories[topic.category].push(topic);
         });
 
-        const categoryOrder = [
-          "Study Tools",
-          "1. Identities & Governance (20-25%)",
-          "2. Storage (15-20%)",
-          "3. Compute (20-25%)",
-          "4. Networking (15-20%)",
-          "5. Monitoring (10-15%)"
-        ];
+        container.innerHTML = html || '<p style="color: var(--text-muted)">No retention data for configured domains.</p>';
+      } catch (e) {
+        container.innerHTML = '<p style="color: var(--text-muted)">Error loading retention data.</p>';
+      }
+    }
 
-        const categoryIcons = {
-          "Study Tools": "fas fa-bullseye",
-          "1. Identities & Governance (20-25%)": "fas fa-id-card",
-          "2. Storage (15-20%)": "fas fa-database",
-          "3. Compute (20-25%)": "fas fa-server",
-          "4. Networking (15-20%)": "fas fa-network-wired",
-          "5. Monitoring (10-15%)": "fas fa-chart-bar"
-        };
+    function makeSparklineSvg(values) {
+      const w = 100, h = 24, pad = 2;
+      const cleaned = values.map(v => v == null ? 0 : v);
+      const min = Math.min(...cleaned);
+      const max = Math.max(...cleaned);
+      const range = Math.max(0.01, max - min);
 
-        categoryOrder.forEach(catName => {
-          if (!categories[catName]) return;
+      const pts = cleaned.map((v, i) => {
+        const x = (i / Math.max(1, cleaned.length - 1)) * (w - pad * 2) + pad;
+        const y = h - pad - ((v - min) / range) * (h - pad * 2);
+        return `${x},${y}`;
+      }).join(' ');
 
-          const section = document.createElement('div');
-          section.className = 'section-card';
-          section.innerHTML = `
+      return `<svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}"><polyline fill="none" stroke="var(--azure-blue)" stroke-width="2" points="${pts}" /></svg>`;
+    }
+
+
+    // ===== DEBUG PANEL =====
+    function updateDebugPanel() {
+      const panel = document.getElementById('debug-panel');
+      const content = document.getElementById('debug-content');
+
+      const data = {
+        mergedQuizScores: getStoredScores(),
+        hubTheme: getTheme(),
+        dataSource: 'Personalized Review Guide (localStorage)'
+      };
+
+      content.textContent = JSON.stringify(data, null, 2);
+    }
+
+    function toggleDebugPanel() {
+      const panel = document.getElementById('debug-panel');
+      panel.classList.toggle('show');
+      if (panel.classList.contains('show')) {
+        updateDebugPanel();
+      }
+    }
+
+    // ===== RENDER STUDY TOPICS =====
+    function renderStudyTopics() {
+      const container = document.getElementById('study-topics-container');
+      const categories = {};
+
+      studyTopics.forEach(topic => {
+        if (!categories[topic.category]) categories[topic.category] = [];
+        categories[topic.category].push(topic);
+      });
+
+      const categoryOrder = [
+        "Study Tools",
+        "1. Identities & Governance (20-25%)",
+        "2. Storage (15-20%)",
+        "3. Compute (20-25%)",
+        "4. Networking (15-20%)",
+        "5. Monitoring (10-15%)"
+      ];
+
+      const categoryIcons = {
+        "Study Tools": "fas fa-bullseye",
+        "1. Identities & Governance (20-25%)": "fas fa-id-card",
+        "2. Storage (15-20%)": "fas fa-database",
+        "3. Compute (20-25%)": "fas fa-server",
+        "4. Networking (15-20%)": "fas fa-network-wired",
+        "5. Monitoring (10-15%)": "fas fa-chart-bar"
+      };
+
+      categoryOrder.forEach(catName => {
+        if (!categories[catName]) return;
+
+        const section = document.createElement('div');
+        section.className = 'section-card';
+        section.innerHTML = `
             <div class="section-header">
               <div class="section-title">
                 <i class="${categoryIcons[catName] || 'fas fa-folder'}"></i>
@@ -1472,24 +1555,24 @@
             </div>
           `;
 
-          const list = section.querySelector('.topic-list');
-          categories[catName].forEach(topic => {
-            const li = document.createElement('li');
-            if (topic.priority === 'critical') li.classList.add('critical');
+        const list = section.querySelector('.topic-list');
+        categories[catName].forEach(topic => {
+          const li = document.createElement('li');
+          if (topic.priority === 'critical') li.classList.add('critical');
 
-            const savedState = localStorage.getItem(topic.id) === 'true';
-            if (savedState) li.classList.add('reviewed');
+          const savedState = localStorage.getItem(topic.id) === 'true';
+          if (savedState) li.classList.add('reviewed');
 
-            let badge = '';
-            if (topic.type === 'quiz') badge = '<span class="topic-badge quiz">Quiz</span>';
-            else if (topic.type === 'sorter') badge = '<span class="topic-badge sorter">Sorter</span>';
-            else if (topic.type === 'tool') badge = '<span class="topic-badge tool">Tool</span>';
+          let badge = '';
+          if (topic.type === 'quiz') badge = '<span class="topic-badge quiz">Quiz</span>';
+          else if (topic.type === 'sorter') badge = '<span class="topic-badge sorter">Sorter</span>';
+          else if (topic.type === 'tool') badge = '<span class="topic-badge tool">Tool</span>';
 
-            const linkUrl = topic.externalUrl || topic.filename;
-            const externalAttrs = topic.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
-            const externalIcon = topic.externalUrl ? ' <i class="fas fa-external-link-alt" style="font-size: 0.7em; opacity: 0.6;"></i>' : '';
+          const linkUrl = topic.externalUrl || topic.filename;
+          const externalAttrs = topic.externalUrl ? 'target="_blank" rel="noopener noreferrer"' : '';
+          const externalIcon = topic.externalUrl ? ' <i class="fas fa-external-link-alt" style="font-size: 0.7em; opacity: 0.6;"></i>' : '';
 
-            li.innerHTML = `
+          li.innerHTML = `
               <input type="checkbox" id="${topic.id}" ${savedState ? 'checked' : ''}>
               <a href="${linkUrl}" ${externalAttrs}>
                 <i class="${topic.icon}"></i>
@@ -1498,266 +1581,362 @@
               </a>
             `;
 
-            const checkbox = li.querySelector('input');
-            checkbox.addEventListener('change', () => {
-              localStorage.setItem(topic.id, checkbox.checked);
-              li.classList.toggle('reviewed', checkbox.checked);
-              updateProgressSummary();
-            });
-
-            list.appendChild(li);
+          const checkbox = li.querySelector('input');
+          checkbox.addEventListener('change', () => {
+            localStorage.setItem(topic.id, checkbox.checked);
+            li.classList.toggle('reviewed', checkbox.checked);
+            updateProgressSummary();
           });
 
-          // Toggle section
-          const header = section.querySelector('.section-header');
-          header.addEventListener('click', () => {
-            section.classList.toggle('open');
-          });
-
-          container.appendChild(section);
+          list.appendChild(li);
         });
 
-        // Open first section by default
-        const firstSection = container.querySelector('.section-card');
-        if (firstSection) firstSection.classList.add('open');
-      }
+        // Toggle section
+        const header = section.querySelector('.section-header');
+        header.addEventListener('click', () => {
+          section.classList.toggle('open');
+        });
 
-      function updateProgressSummary() {
-        const allCheckboxes = document.querySelectorAll('#study-topics-container input[type="checkbox"]');
-        let completed = 0;
-        allCheckboxes.forEach(cb => { if (cb.checked) completed++; });
+        container.appendChild(section);
+      });
 
-        const summary = document.getElementById('progress-summary');
-        summary.innerHTML = `
+      // Open first section by default
+      const firstSection = container.querySelector('.section-card');
+      if (firstSection) firstSection.classList.add('open');
+    }
+
+    function updateProgressSummary() {
+      const allCheckboxes = document.querySelectorAll('#study-topics-container input[type="checkbox"]');
+      let completed = 0;
+      allCheckboxes.forEach(cb => { if (cb.checked) completed++; });
+
+      const summary = document.getElementById('progress-summary');
+      summary.innerHTML = `
           <span class="progress-text">
             <i class="fas fa-check-double"></i> Progress: ${completed} of ${allCheckboxes.length} topics reviewed.
           </span>
         `;
-      }
+    }
 
-      // ===== DEBUG TOGGLE =====
-      function initControlButtons() {
-        const debugToggle = document.getElementById('debug-toggle');
-        if (debugToggle) {
-          debugToggle.addEventListener('click', toggleDebugPanel);
+    // ===== DEBUG TOGGLE =====
+    function initControlButtons() {
+      const debugToggle = document.getElementById('debug-toggle');
+      if (debugToggle) {
+        debugToggle.addEventListener('click', toggleDebugPanel);
+      }
+    }
+
+    // ===== STUDY ASSISTANT =====
+    const domainToTopicMap = {
+      storage: ["guide-storage-flashcards", "guide-storage-arch", "guide-redundancy"],
+      networking: ["guide-networking-components", "guide-vnet-deep-dive", "guide-lb-troubleshooting"],
+      compute: ["guide-vms-deep-dive-main", "guide-app-service", "guide-aci-container-groups"],
+      identities: ["guide-entra-id-concepts", "guide-policy", "guide-keyvault"],
+      monitoring: ["guide-monitor-maintenance", "guide-storage-replication-rto-rpo"],
+      'app-service': ["guide-app-service", "guide-aci-container-groups", "guide-docker-concepts"]
+    };
+
+    function findTopicsForDomain(domainKey) {
+      const key = domainKey.toLowerCase().replace(/\s+/g, '-');
+      for (const mapKey of Object.keys(domainToTopicMap)) {
+        if (key.includes(mapKey) || mapKey.includes(key)) {
+          const ids = domainToTopicMap[mapKey];
+          const mapped = ids.map(id => studyTopics.find(t => t.id === id)).filter(Boolean);
+          if (mapped.length) return mapped.slice(0, 3);
         }
       }
+      const matches = studyTopics.filter(t =>
+        (t.id && t.id.toLowerCase().includes(key)) ||
+        (t.title && t.title.toLowerCase().includes(key))
+      );
+      return matches.slice(0, 3);
+    }
 
-      // ===== STUDY ASSISTANT =====
-      const domainToTopicMap = {
-        storage: ["guide-storage-flashcards", "guide-storage-arch", "guide-redundancy"],
-        networking: ["guide-networking-components", "guide-vnet-deep-dive", "guide-lb-troubleshooting"],
-        compute: ["guide-vms-deep-dive-main", "guide-app-service", "guide-aci-container-groups"],
-        identities: ["guide-entra-id-concepts", "guide-policy", "guide-keyvault"],
-        monitoring: ["guide-monitor-maintenance", "guide-storage-replication-rto-rpo"],
-        'app-service': ["guide-app-service", "guide-aci-container-groups", "guide-docker-concepts"]
-      };
+    function getFrequentlyVisited() {
+      try {
+        const tracker = JSON.parse(localStorage.getItem('studyActivityTracker') || '{}');
+        const items = [];
 
-      function findTopicsForDomain(domainKey) {
-        const key = domainKey.toLowerCase().replace(/\s+/g, '-');
-        for (const mapKey of Object.keys(domainToTopicMap)) {
-          if (key.includes(mapKey) || mapKey.includes(key)) {
-            const ids = domainToTopicMap[mapKey];
-            const mapped = ids.map(id => studyTopics.find(t => t.id === id)).filter(Boolean);
-            if (mapped.length) return mapped.slice(0, 3);
-          }
-        }
-        const matches = studyTopics.filter(t =>
-          (t.id && t.id.toLowerCase().includes(key)) ||
-          (t.title && t.title.toLowerCase().includes(key))
-        );
-        return matches.slice(0, 3);
-      }
-
-      function getFrequentlyVisited() {
-        try {
-          const tracker = JSON.parse(localStorage.getItem('studyActivityTracker') || '{}');
-          const items = [];
-          
-          if (tracker.cprsGenerations) {
-            Object.values(tracker.cprsGenerations).forEach(g => {
-              items.push({
-                name: g.concept,
-                frequency: g.frequency,
-                type: 'cprs',
-                lastVisited: g.lastGenerated
-              });
+        if (tracker.cprsGenerations) {
+          Object.values(tracker.cprsGenerations).forEach(g => {
+            items.push({
+              name: g.concept,
+              frequency: g.frequency,
+              type: 'cprs',
+              lastVisited: g.lastGenerated
             });
-          }
-          
-          if (tracker.extractions && tracker.extractions.concepts) {
-            Object.values(tracker.extractions.concepts).forEach(c => {
-              items.push({
-                name: c.name,
-                frequency: c.frequency,
-                type: 'extraction',
-                lastVisited: c.lastSeen
-              });
-            });
-          }
-          
-          items.sort((a, b) => b.frequency - a.frequency);
-          return items.slice(0, 8);
-        } catch (e) {
-          return [];
-        }
-      }
-      
-      function renderStudyAssistant() {
-        const contentEl = document.getElementById('study-assistant-content');
-        if (!contentEl) return;
-
-        const scores = getStoredScores();
-        const frequentlyVisited = getFrequentlyVisited();
-        
-        let out = '';
-        
-        if (frequentlyVisited.length > 0) {
-          out += '<div style="margin-bottom:16px;padding:12px;background:linear-gradient(135deg,#9c27b015,#00bcd415);border-radius:8px;border:1px solid var(--border-color);">';
-          out += '<div style="font-weight:600;margin-bottom:8px;font-size:0.9em;color:var(--text-primary);"><i class="fas fa-fire" style="color:#ff5722;margin-right:6px;"></i>Frequently Studied Topics</div>';
-          out += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
-          frequentlyVisited.forEach(item => {
-            const typeIcon = item.type === 'cprs' ? 'fa-brain' : 'fa-search';
-            const typeColor = item.type === 'cprs' ? '#9c27b0' : '#dc3545';
-            out += `<span style="padding:4px 10px;background:var(--bg-secondary);border-radius:16px;font-size:0.8em;border:1px solid var(--border-color);display:inline-flex;align-items:center;gap:4px;">`;
-            out += `<i class="fas ${typeIcon}" style="color:${typeColor};font-size:0.75em;"></i>`;
-            out += `${item.name} <span style="color:var(--text-muted);font-size:0.85em;">(${item.frequency}x)</span>`;
-            out += `</span>`;
           });
-          out += '</div></div>';
-        }
-        
-        if (!scores || Object.keys(scores).length === 0) {
-          out += '<p style="color: var(--text-muted);">No quiz performance data found. Update your scores in the <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue);">Personalized Review Guide</a> to see recommendations.</p>';
-          contentEl.innerHTML = out;
-          return;
         }
 
-        const arr = Object.keys(scores).map(k => {
-          const v = scores[k] || { correct: 0, total: 0 };
-          const percent = v.total ? v.correct / v.total : 0;
-          return { domain: k, percent, correct: v.correct, total: v.total };
-        });
-        arr.sort((a, b) => a.percent - b.percent);
-        const weak = arr.slice(0, 5);
-
-        if (!weak.length) {
-          out += '<p style="color: var(--text-muted);">No domain scores available.</p>';
-          contentEl.innerHTML = out;
-          return;
-        }
-
-        out += '<div style="font-weight:600;margin-bottom:8px;font-size:0.9em;color:var(--text-primary);"><i class="fas fa-chart-line" style="color:#dc3545;margin-right:6px;"></i>Weak Domains (from Quiz Scores)</div>';
-        out += '<ol style="margin: 0 0 8px 18px; padding: 0; list-style: decimal;">';
-        weak.forEach(w => {
-          const ragClass = w.percent < 0.5 ? 'rag-red' : w.percent < 0.7 ? 'rag-amber' : 'rag-green';
-          out += `<li style="margin-bottom: 12px; padding: 8px; background: var(--bg-primary); border-radius: var(--radius-sm);">`;
-          out += `<strong style="text-transform: capitalize;">${w.domain.replace(/-/g, ' ')}</strong>`;
-          out += ` <span class="domain-mastery ${ragClass}" style="font-size: 0.9em;">${Math.round(w.percent * 100)}%</span>`;
-          out += ` <span style="color: var(--text-muted); font-size: 0.85em;">(${w.correct}/${w.total})</span>`;
-          
-          const topics = findTopicsForDomain(w.domain);
-          if (topics && topics.length) {
-            out += '<div style="font-size: 0.85em; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">Recommended: ';
-            topics.forEach(t => {
-              out += `<a href="${t.filename}" class="domain-action-btn secondary" style="padding: 4px 8px; font-size: 0.8em;">${t.title}</a>`;
+        if (tracker.extractions && tracker.extractions.concepts) {
+          Object.values(tracker.extractions.concepts).forEach(c => {
+            items.push({
+              name: c.name,
+              frequency: c.frequency,
+              type: 'extraction',
+              lastVisited: c.lastSeen
             });
-            out += '</div>';
-          }
-          out += '</li>';
+          });
+        }
+
+        items.sort((a, b) => b.frequency - a.frequency);
+        return items.slice(0, 8);
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function renderStudyAssistant() {
+      const contentEl = document.getElementById('study-assistant-content');
+      if (!contentEl) return;
+
+      const scores = getStoredScores();
+      const frequentlyVisited = getFrequentlyVisited();
+
+      let out = '';
+
+      if (frequentlyVisited.length > 0) {
+        out += '<div style="margin-bottom:16px;padding:12px;background:linear-gradient(135deg,#9c27b015,#00bcd415);border-radius:8px;border:1px solid var(--border-color);">';
+        out += '<div style="font-weight:600;margin-bottom:8px;font-size:0.9em;color:var(--text-primary);"><i class="fas fa-fire" style="color:#ff5722;margin-right:6px;"></i>Frequently Studied Topics</div>';
+        out += '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+        frequentlyVisited.forEach(item => {
+          const typeIcon = item.type === 'cprs' ? 'fa-brain' : 'fa-search';
+          const typeColor = item.type === 'cprs' ? '#9c27b0' : '#dc3545';
+          out += `<span style="padding:4px 10px;background:var(--bg-secondary);border-radius:16px;font-size:0.8em;border:1px solid var(--border-color);display:inline-flex;align-items:center;gap:4px;">`;
+          out += `<i class="fas ${typeIcon}" style="color:${typeColor};font-size:0.75em;"></i>`;
+          out += `${item.name} <span style="color:var(--text-muted);font-size:0.85em;">(${item.frequency}x)</span>`;
+          out += `</span>`;
         });
-        out += '</ol>';
-        contentEl.innerHTML = out;
+        out += '</div></div>';
       }
 
-      // ===== WORKFLOW SUMMARY (Only unchecked items) =====
-      const WORKFLOW_STEPS = [
-        { id: 1, text: 'Choose one hard topic and open NotebookLM', icon: 'fa-brain' },
-        { id: 2, text: 'Take 2 section quizzes (Whizlabs + Tutorials Dojo)', icon: 'fa-clipboard-check' },
-        { id: 3, text: 'Extract weak concepts & blind spots', icon: 'fa-search' },
-        { id: 4, text: 'Create a specific notebook for the domain', icon: 'fa-folder-plus' },
-        { id: 5, text: 'Generate audio lesson in NotebookLM (critique mode)', icon: 'fa-microphone' },
-        { id: 6, text: 'Listen repeatedly until the idea clicks', icon: 'fa-headphones' },
-        { id: 7, text: 'Convert audio → text for review', icon: 'fa-file-alt' },
-        { id: 8, text: 'Create 6 Anki MCQ flashcards', icon: 'fa-layer-group' },
-        { id: 9, text: 'Rotate sources (Whizlabs ↔ Tutorials Dojo)', icon: 'fa-exchange-alt' },
-        { id: 10, text: 'Tag cards with AZ-104 objective IDs', icon: 'fa-tags' },
-        { id: 11, text: 'Repeat loop for next topic', icon: 'fa-redo' }
-      ];
+      if (!scores || Object.keys(scores).length === 0) {
+        out += '<p style="color: var(--text-muted);">No quiz performance data found. Update your scores in the <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue);">Personalized Review Guide</a> to see recommendations.</p>';
+        contentEl.innerHTML = out;
+        return;
+      }
 
-      function renderWorkflowSummary() {
-        const countEl = document.getElementById('workflow-summary-count');
-        const itemsEl = document.getElementById('workflow-summary-items');
-        if (!countEl || !itemsEl) return;
-        
-        let checked = [];
-        try {
-          checked = JSON.parse(localStorage.getItem('studyWorkflowChecklist')) || [];
-        } catch (e) { checked = []; }
-        
-        const remaining = WORKFLOW_STEPS.filter(s => !checked.includes(s.id));
-        const completed = WORKFLOW_STEPS.length - remaining.length;
-        
-        countEl.textContent = remaining.length === 0 
-          ? '✓ All done!' 
-          : `${remaining.length} remaining`;
-        countEl.style.color = remaining.length === 0 ? 'var(--success-color)' : 'var(--text-muted)';
-        
-        if (remaining.length === 0) {
-          itemsEl.innerHTML = `
+      const arr = Object.keys(scores).map(k => {
+        const v = scores[k] || { correct: 0, total: 0 };
+        const percent = v.total ? v.correct / v.total : 0;
+        return { domain: k, percent, correct: v.correct, total: v.total };
+      });
+      arr.sort((a, b) => a.percent - b.percent);
+      const weak = arr.slice(0, 5);
+
+      if (!weak.length) {
+        out += '<p style="color: var(--text-muted);">No domain scores available.</p>';
+        contentEl.innerHTML = out;
+        return;
+      }
+
+      out += '<div style="font-weight:600;margin-bottom:8px;font-size:0.9em;color:var(--text-primary);"><i class="fas fa-chart-line" style="color:#dc3545;margin-right:6px;"></i>Weak Domains (from Quiz Scores)</div>';
+      out += '<ol style="margin: 0 0 8px 18px; padding: 0; list-style: decimal;">';
+      weak.forEach(w => {
+        const ragClass = w.percent < 0.5 ? 'rag-red' : w.percent < 0.7 ? 'rag-amber' : 'rag-green';
+        out += `<li style="margin-bottom: 12px; padding: 8px; background: var(--bg-primary); border-radius: var(--radius-sm);">`;
+        out += `<strong style="text-transform: capitalize;">${w.domain.replace(/-/g, ' ')}</strong>`;
+        out += ` <span class="domain-mastery ${ragClass}" style="font-size: 0.9em;">${Math.round(w.percent * 100)}%</span>`;
+        out += ` <span style="color: var(--text-muted); font-size: 0.85em;">(${w.correct}/${w.total})</span>`;
+
+        const topics = findTopicsForDomain(w.domain);
+        if (topics && topics.length) {
+          out += '<div style="font-size: 0.85em; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">Recommended: ';
+          topics.forEach(t => {
+            out += `<a href="${t.filename}" class="domain-action-btn secondary" style="padding: 4px 8px; font-size: 0.8em;">${t.title}</a>`;
+          });
+          out += '</div>';
+        }
+        out += '</li>';
+      });
+      out += '</ol>';
+      contentEl.innerHTML = out;
+    }
+
+    // ===== WORKFLOW SUMMARY (Only unchecked items) =====
+    const WORKFLOW_STEPS = [
+      { id: 1, text: 'Choose one hard topic and open NotebookLM', icon: 'fa-brain' },
+      { id: 2, text: 'Take 2 section quizzes (Whizlabs + Tutorials Dojo)', icon: 'fa-clipboard-check' },
+      { id: 3, text: 'Extract weak concepts & blind spots', icon: 'fa-search' },
+      { id: 4, text: 'Create a specific notebook for the domain', icon: 'fa-folder-plus' },
+      { id: 5, text: 'Generate audio lesson in NotebookLM (critique mode)', icon: 'fa-microphone' },
+      { id: 6, text: 'Listen repeatedly until the idea clicks', icon: 'fa-headphones' },
+      { id: 7, text: 'Convert audio → text for review', icon: 'fa-file-alt' },
+      { id: 8, text: 'Create 6 Anki MCQ flashcards', icon: 'fa-layer-group' },
+      { id: 9, text: 'Rotate sources (Whizlabs ↔ Tutorials Dojo)', icon: 'fa-exchange-alt' },
+      { id: 10, text: 'Tag cards with AZ-104 objective IDs', icon: 'fa-tags' },
+      { id: 11, text: 'Repeat loop for next topic', icon: 'fa-redo' }
+    ];
+
+    function renderWorkflowSummary() {
+      const countEl = document.getElementById('workflow-summary-count');
+      const itemsEl = document.getElementById('workflow-summary-items');
+      if (!countEl || !itemsEl) return;
+
+      let checked = [];
+      try {
+        checked = JSON.parse(localStorage.getItem('studyWorkflowChecklist')) || [];
+      } catch (e) { checked = []; }
+
+      const remaining = WORKFLOW_STEPS.filter(s => !checked.includes(s.id));
+      const completed = WORKFLOW_STEPS.length - remaining.length;
+
+      countEl.textContent = remaining.length === 0
+        ? '✓ All done!'
+        : `${remaining.length} remaining`;
+      countEl.style.color = remaining.length === 0 ? 'var(--success-color)' : 'var(--text-muted)';
+
+      if (remaining.length === 0) {
+        itemsEl.innerHTML = `
             <div style="text-align:center;padding:20px;color:var(--success-color);">
               <i class="fas fa-check-circle" style="font-size:2em;margin-bottom:8px;"></i>
               <p style="margin:0;">All steps completed! Ready to start a new topic loop.</p>
             </div>
           `;
-        } else {
-          let html = '';
-          remaining.forEach(step => {
-            html += `
+      } else {
+        let html = '';
+        remaining.forEach(step => {
+          html += `
               <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg-primary);border-radius:6px;font-size:0.9em;">
                 <i class="fas ${step.icon}" style="color:#9c27b0;width:18px;text-align:center;"></i>
                 <span style="flex:1;">${step.text}</span>
                 <span style="color:var(--text-muted);font-size:0.8em;">#${step.id}</span>
               </div>
             `;
-          });
-          itemsEl.innerHTML = html;
-        }
+        });
+        itemsEl.innerHTML = html;
+      }
+    }
+
+    // --- Cloud Sync Logic (Tasks) ---
+    async function initTaskSync() {
+      const statusText = document.getElementById('sync-status-text');
+      const syncIcon = document.getElementById('sync-icon');
+      const btnPush = document.getElementById('btn-push-cloud');
+      const btnPull = document.getElementById('btn-pull-cloud');
+
+      const userId = localStorage.getItem('az104SyncUserId');
+
+      if (!userId) {
+        if (statusText) statusText.innerHTML = 'Sync: <strong style="color:red">Not Connected</strong> (Link in Review Guide)';
+        if (btnPush) btnPush.disabled = true;
+        if (btnPull) btnPull.disabled = true;
+        if (btnPush) btnPush.style.opacity = '0.5';
+        if (btnPull) btnPull.style.opacity = '0.5';
+        return;
       }
 
-      // ===== INIT =====
-      document.addEventListener('DOMContentLoaded', () => {
+      if (statusText) statusText.innerHTML = `Sync: <strong style="color:green">Connected</strong> (${userId.substring(0, 8)}...)`;
+      if (syncIcon) syncIcon.style.color = '#107c10';
+
+      // Push Handler
+      if (btnPush) {
+        btnPush.addEventListener('click', async () => {
+          if (!confirm('Overwrite cloud tasks with your local status?')) return;
+
+          btnPush.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pushing...';
+          try {
+            const { doc, setDoc, serverTimestamp } = window._firestoreOps;
+            const db = window._firebaseDB;
+            if (!db) throw new Error('Firebase not initialized');
+
+            // Gather all checked states
+            const taskData = {};
+            studyTopics.forEach(topic => {
+              taskData[topic.id] = localStorage.getItem(topic.id) === 'true';
+            });
+
+            await setDoc(doc(db, 'users', userId, 'tasks', 'main'), {
+              tasks: taskData,
+              lastUpdated: serverTimestamp(),
+              device: 'Macbook/Web'
+            });
+
+            alert('✅ Tasks pushed to cloud successfully!');
+          } catch (e) {
+            console.error(e);
+            alert('❌ Push failed: ' + e.message);
+          } finally {
+            btnPush.innerHTML = '<i class="fas fa-upload"></i> Push Tasks';
+          }
+        });
+      }
+
+      // Pull Handler
+      if (btnPull) {
+        btnPull.addEventListener('click', async () => {
+          if (!confirm('Merge cloud tasks? (Cloud status wins)')) return;
+
+          btnPull.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pulling...';
+          try {
+            const { doc, getDoc } = window._firestoreOps;
+            const db = window._firebaseDB;
+            if (!db) throw new Error('Firebase not initialized');
+
+            const snap = await getDoc(doc(db, 'users', userId, 'tasks', 'main'));
+            if (!snap.exists()) {
+              alert('No tasks found in cloud.');
+              return;
+            }
+
+            const remoteData = snap.data();
+            const remoteTasks = remoteData.tasks || {};
+
+            // Update LocalStorage
+            let updateCount = 0;
+            Object.keys(remoteTasks).forEach(taskId => {
+              localStorage.setItem(taskId, remoteTasks[taskId]);
+              updateCount++;
+            });
+
+            renderStudyTopics();
+            updateProgressSummary();
+            alert(`✅ Sync Complete! Updated ${updateCount} tasks.`);
+          } catch (e) {
+            console.error(e);
+            alert('❌ Pull failed: ' + e.message);
+          } finally {
+            btnPull.innerHTML = '<i class="fas fa-download"></i> Pull Tasks';
+          }
+        });
+      }
+    }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      renderDomainCards();
+      updatePrimaryFocus();
+      updateNextSteps();
+      renderRetentionTrends();
+      renderStudyAssistant();
+      renderWorkflowSummary();
+      renderStudyTopics();
+      updateProgressSummary();
+      initControlButtons();
+      initTaskSync(); // Start Sync
+
+      // Study Assistant refresh button
+      const saRefreshBtn = document.getElementById('study-assistant-refresh');
+      if (saRefreshBtn) {
+        saRefreshBtn.addEventListener('click', renderStudyAssistant);
+      }
+    });
+
+    // Listen for localStorage changes from other windows
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'mergedQuizScores' || e.key === 'mergedQuizHistory') {
         renderDomainCards();
         updatePrimaryFocus();
         updateNextSteps();
         renderRetentionTrends();
         renderStudyAssistant();
+        updateDebugPanel();
+      }
+      if (e.key === 'studyWorkflowChecklist') {
         renderWorkflowSummary();
-        renderStudyTopics();
-        updateProgressSummary();
-        initControlButtons();
+      }
+    });
+  </script>
+</body>
 
-        // Study Assistant refresh button
-        const saRefreshBtn = document.getElementById('study-assistant-refresh');
-        if (saRefreshBtn) {
-          saRefreshBtn.addEventListener('click', renderStudyAssistant);
-        }
-      });
-
-      // Listen for localStorage changes from other windows
-      window.addEventListener('storage', (e) => {
-        if (e.key === 'mergedQuizScores' || e.key === 'mergedQuizHistory') {
-          renderDomainCards();
-          updatePrimaryFocus();
-          updateNextSteps();
-          renderRetentionTrends();
-          renderStudyAssistant();
-          updateDebugPanel();
-        }
-        if (e.key === 'studyWorkflowChecklist') {
-          renderWorkflowSummary();
-        }
-      });
-    </script>
-  </body>
 </html>
