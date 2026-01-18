@@ -763,6 +763,7 @@
     window._firestoreOps = { doc, getDoc, setDoc, serverTimestamp };
   </script>
   <script src="shared-navbar.js"></script>
+  <script src="js/exam_objectives.js"></script>
 </head>
 
 <body>
@@ -936,9 +937,23 @@
     </div>
 
     <!-- Retention Trends -->
-    <div class="retention-trends" id="retention-trends">
-      <h3><i class="fas fa-chart-line"></i> Retention Trends</h3>
-      <div id="retention-content">Loading history...</div>
+    <div class="card" id="retention-trends-widget">
+      <div class="section-header">
+        <h2><i class="fas fa-chart-line"></i> Retention Trends (Last 7 Days)</h2>
+      </div>
+      <div class="retention-grid" id="retention-content">
+        <!-- Sparklines injected here -->
+      </div>
+    </div>
+
+    <!-- Exam Objective Breakdown -->
+    <div class="card" id="exam-objective-widget">
+      <div class="section-header">
+        <h2><i class="fas fa-list-alt"></i> Exam Objective Readiness</h2>
+      </div>
+      <div id="exam-objective-content">
+        <p style="color:var(--text-muted);">Loading official objectives...</p>
+      </div>
     </div>
 
     <!-- Study Assistant -->
@@ -2010,6 +2025,97 @@
       }
     });
 
+    // --- Exam Objective Breakdown Logic ---
+    function renderExamObjectiveBreakdown() {
+      const container = document.getElementById('exam-objective-content');
+      if (!container) return;
+
+      const objectives = window.AZ104_OBJECTIVES;
+      if (!objectives) {
+        container.innerHTML = '<p style="color:var(--text-muted)">Objective data not loaded.</p>';
+        return;
+      }
+
+      // 1. Get Scores
+      const scores = JSON.parse(localStorage.getItem('mergedQuizScores') || '{}');
+
+      // 2. Map internal keys to Objective IDs
+      // id, gov -> 1
+      // storage -> 2
+      // compute -> 3
+      // vnet -> 4
+      // monitor -> 5
+      const map = {
+        '1': ['id', 'gov'],
+        '2': ['storage'],
+        '3': ['compute'],
+        '4': ['vnet'],
+        '5': ['monitor']
+      };
+
+      let html = `
+        <table style="width:100%; border-collapse:collapse; font-size:0.9em;">
+          <thead>
+            <tr style="text-align:left; border-bottom:1px solid var(--border-color);">
+              <th style="padding:8px;">Objective</th>
+              <th style="padding:8px;">Weight</th>
+              <th style="padding:8px;">Your Score</th>
+              <th style="padding:8px;">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      objectives.domains.forEach(dom => {
+        const keys = map[dom.id] || [];
+        let total = 0;
+        let correct = 0;
+        let hasData = false;
+
+        keys.forEach(k => {
+          if (scores[k]) {
+            total += (scores[k].total || 0);
+            correct += (scores[k].correct || 0);
+            if (scores[k].total > 0) hasData = true;
+          }
+        });
+
+        const percent = hasData && total > 0 ? Math.round((correct / total) * 100) : 0;
+        const color = percent >= 76 ? 'var(--success-color)' : (percent >= 50 ? '#f59e0b' : '#ef4444');
+        const statusIcon = percent >= 76 ? 'fa-check-circle' : (percent >= 50 ? 'fa-exclamation-triangle' : 'fa-times-circle');
+        const displayScore = hasData ? `${percent}%` : '--';
+
+        html += `
+          <tr style="border-bottom:1px solid var(--border-color-subtle);">
+            <td style="padding:10px 8px;">
+              <div style="font-weight:600; color:var(--text-primary);">${dom.id} ${dom.name}</div>
+              <div style="font-size:0.85em; color:var(--text-muted); margin-top:2px;">
+                ${dom.objectives.length} sub-objectives (e.g., ${dom.objectives[0].id})
+              </div>
+            </td>
+            <td style="padding:10px 8px; color:var(--text-muted);">${dom.weight}</td>
+            <td style="padding:10px 8px; font-weight:bold; color:${hasData ? color : 'var(--text-muted)'};">
+              ${displayScore}
+            </td>
+            <td style="padding:10px 8px;">
+              ${hasData ? `<i class="fas ${statusIcon}" style="color:${color}"></i>` : '<span style="color:var(--text-muted)">-</span>'}
+            </td>
+          </tr>
+        `;
+      });
+
+      html += '</tbody></table>';
+
+      // Add "Sort Logs" button context
+      html += `
+        <div style="margin-top:12px; font-size:0.85em; color:var(--text-muted); text-align:center;">
+          <i class="fas fa-info-circle"></i> Quiz logs are automatically grouped into these 5 domains.
+        </div>
+      `;
+
+      container.innerHTML = html;
+    }
+
     // --- New Global Sync Logic ---
     async function initTaskSync() {
       const statusText = document.getElementById('sync-status-text');
@@ -2035,7 +2141,6 @@
       window.syncPush = async () => {
         if (!confirm('Overwrite cloud tasks with your local status?')) return;
 
-        // Update all buttons to loading state
         const allPushBtns = document.querySelectorAll('.btn-push-action');
         allPushBtns.forEach(b => b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pushing...');
 
@@ -2098,8 +2203,8 @@
           }
 
           renderStudyTopics();
-          updateProgressSummary();
           renderWorkflowSummary();
+          updateProgressSummary(); // Ensure stats update
           alert(`✅ Sync Complete! Updated data.`);
         } catch (e) {
           console.error(e);
@@ -2119,6 +2224,42 @@
         btnPull.addEventListener('click', window.syncPull);
       }
     }
+
+    // ===== INIT =====
+    document.addEventListener('DOMContentLoaded', () => {
+      renderDomainCards();
+      updatePrimaryFocus();
+      updateNextSteps();
+      renderRetentionTrends();
+      renderStudyAssistant();
+      renderWorkflowSummary();
+      renderStudyTopics();
+      updateProgressSummary();
+      initControlButtons();
+      renderExamObjectiveBreakdown(); // NEW
+      initTaskSync();
+
+      const saRefreshBtn = document.getElementById('study-assistant-refresh');
+      if (saRefreshBtn) {
+        saRefreshBtn.addEventListener('click', renderStudyAssistant);
+      }
+    });
+
+    // Listen for localStorage changes
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'mergedQuizScores' || e.key === 'mergedQuizHistory') {
+        renderDomainCards();
+        updatePrimaryFocus();
+        updateNextSteps();
+        renderRetentionTrends();
+        renderStudyAssistant();
+        renderExamObjectiveBreakdown(); // NEW
+        updateDebugPanel();
+      }
+      if (e.key === 'studyWorkflowChecklist') {
+        renderWorkflowSummary();
+      }
+    });
   </script>
 </body>
 
