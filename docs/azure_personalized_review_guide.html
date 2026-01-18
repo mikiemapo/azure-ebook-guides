@@ -2233,14 +2233,8 @@
             }
 
             let brief = "";
-            if (data.fallback) {
-              brief = "=== FOCUS BRIEF FOR NOTEBOOKLM (Fallback Mode) ===\n\n";
-              brief += "Note: AI analysis unavailable - using keyword extraction instead.\n";
-              brief += "To enable AI analysis, check your OpenAI API key has credits.\n\n";
-            } else {
-              brief = "=== AI-POWERED FOCUS BRIEF FOR NOTEBOOKLM ===\n\n";
-              brief += "These Azure facts are verified and accurate for the AZ-104 exam:\n\n";
-            }
+            // User requested exact format: "These Azure facts..." (No "=== AI-POWERED..." header)
+            brief = "These Azure facts are verified and accurate for the AZ-104 exam:\n\n";
 
             if (data.concepts && data.concepts.length > 0) {
               brief += `--- CPRS ANALYSIS (${data.concepts.length} concepts) ---\n\n`;
@@ -2261,24 +2255,13 @@
               brief += "--- SUMMARY ---\n" + data.summary + "\n\n";
             }
 
-            if (data.local_concepts && data.local_concepts.length > 0 && data.fallback) {
-              brief += `--- DETECTED CONCEPTS (${data.local_concepts.length} found) ---\n`;
-              brief += data.local_concepts.join(', ') + '\n\n';
-            }
-
-            if (data.guide_references && data.guide_references.length > 0) {
-              brief += "--- STUDY GUIDE REFERENCES ---\n";
-              data.guide_references.forEach(ref => {
-                brief += `• ${ref.concept}: See ${ref.section} (${ref.guide})\n`;
-              });
-              brief += "\n";
-            }
+            // Exclude Study Guide References as per user template
 
             brief += "--- REQUEST ---\n";
             brief += "Please create a critique audio that:\n";
             brief += "1. Explains WHY each of my answers was wrong\n";
             brief += "2. Uses mnemonics or patterns to help me remember\n";
-            brief += "3. Quizzes me at the end to confirm understanding\n";
+            // Point 3 removed to match user request
 
             content.textContent = brief;
             output.style.display = 'block';
