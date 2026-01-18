@@ -1219,8 +1219,12 @@
           // Group decks by domain
           const domainMap = {};
           library.forEach(deck => {
-            // Derive domain using existing logic or default 'Uncategorized'
-            const domain = objectiveToDomain(deck.objective || deck.concept || '');
+            // Derive domain matching renderLibrary logic
+            let domain = objectiveToDomain(deck.concept || deck.data?.concept);
+            if (domain === 'Uncategorized') {
+              domain = objectiveToDomain(deck.objective || deck.data?.objective);
+            }
+
             if (!domainMap[domain]) domainMap[domain] = [];
             domainMap[domain].push(deck);
           });
