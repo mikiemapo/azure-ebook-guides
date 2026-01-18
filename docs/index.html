@@ -1778,33 +1778,71 @@
         checked = JSON.parse(localStorage.getItem('studyWorkflowChecklist')) || [];
       } catch (e) { checked = []; }
 
-      const remaining = WORKFLOW_STEPS.filter(s => !checked.includes(s.id));
-      const completed = WORKFLOW_STEPS.length - remaining.length;
+      // Show counts
+      const total = WORKFLOW_STEPS.length;
+      const doneCount = checked.length;
+      const remainingCount = total - doneCount;
 
-      countEl.textContent = remaining.length === 0
+      countEl.textContent = remainingCount === 0
         ? '✓ All done!'
-        : `${remaining.length} remaining`;
-      countEl.style.color = remaining.length === 0 ? 'var(--success-color)' : 'var(--text-muted)';
+        : `${remainingCount} remaining`;
+      countEl.style.color = remainingCount === 0 ? 'var(--success-color)' : 'var(--text-muted)';
 
-      if (remaining.length === 0) {
-        itemsEl.innerHTML = `
-            <div style="text-align:center;padding:20px;color:var(--success-color);">
-              <i class="fas fa-check-circle" style="font-size:2em;margin-bottom:8px;"></i>
-              <p style="margin:0;">All steps completed! Ready to start a new topic loop.</p>
-            </div>
-          `;
-      } else {
-        let html = '';
-        remaining.forEach(step => {
-          html += `
-              <div style="display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--bg-primary);border-radius:6px;font-size:0.9em;">
-                <i class="fas ${step.icon}" style="color:#9c27b0;width:18px;text-align:center;"></i>
-                <span style="flex:1;">${step.text}</span>
-                <span style="color:var(--text-muted);font-size:0.8em;">#${step.id}</span>
-              </div>
-            `;
+      // Render Checkboxes for ALL steps
+      let html = '<div style="display:flex; flex-direction:column; gap:8px;">';
+
+      WORKFLOW_STEPS.forEach(step => {
+        const isDone = checked.includes(step.id);
+        const styleBg = isDone ? 'rgba(16,185,129,0.1)' : 'var(--bg-primary)';
+        const styleText = isDone ? 'text-decoration:line-through; color:var(--text-muted);' : '';
+        const iconColor = isDone ? 'var(--success-color)' : '#9c27b0';
+
+        html += `
+          <label style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:${styleBg}; border-radius:6px; font-size:0.9em; cursor:pointer; transition:all 0.2s;">
+            <input type="checkbox" class="workflow-checkbox" value="${step.id}" ${isDone ? 'checked' : ''} style="accent-color:var(--azure-blue); width:16px; height:16px;">
+            <i class="fas ${step.icon}" style="color:${iconColor}; width:18px; text-align:center;"></i>
+            <span style="flex:1; ${styleText}">${step.text}</span>
+            <span style="color:var(--text-muted); font-size:0.8em;">#${step.id}</span>
+          </label>
+        `;
+      });
+      html += '</div>';
+
+      // Add reset button if all done
+      if (doneCount === total) {
+        html += `
+          <div style="text-align:center; margin-top:12px;">
+            <button id="reset-workflow-btn" style="background:var(--bg-secondary); border:1px solid var(--border-color); padding:6px 12px; border-radius:4px; cursor:pointer;">
+              <i class="fas fa-redo"></i> Reset Loop
+            </button>
+          </div>
+        `;
+      }
+
+      itemsEl.innerHTML = html;
+
+      // Bind Events
+      itemsEl.querySelectorAll('.workflow-checkbox').forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          const id = parseInt(e.target.value);
+          if (e.target.checked) {
+            if (!checked.includes(id)) checked.push(id);
+          } else {
+            checked = checked.filter(c => c !== id);
+          }
+          localStorage.setItem('studyWorkflowChecklist', JSON.stringify(checked));
+          renderWorkflowSummary();
         });
-        itemsEl.innerHTML = html;
+      });
+
+      const resetBtn = document.getElementById('reset-workflow-btn');
+      if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+          if (confirm('Start fresh loop? This clears checks.')) {
+            localStorage.setItem('studyWorkflowChecklist', '[]');
+            renderWorkflowSummary();
+          }
+        });
       }
     }
 
@@ -1840,19 +1878,31 @@
             const db = window._firebaseDB;
             if (!db) throw new Error('Firebase not initialized');
 
-            // Gather all checked states
+            // 1. Gather Study Topics
             const taskData = {};
             studyTopics.forEach(topic => {
               taskData[topic.id] = localStorage.getItem(topic.id) === 'true';
             });
 
-            await setDoc(doc(db, 'users', userId, 'tasks', 'main'), {
+            // 2. Gather Workflow Checklist
+            const workflowData = JSON.parse(localStorage.getItem('studyWorkflowChecklist') || '[]');
+
+            // Parallel Upload
+            const p1 = setDoc(doc(db, 'users', userId, 'tasks', 'main'), {
               tasks: taskData,
               lastUpdated: serverTimestamp(),
               device: 'Macbook/Web'
             });
 
-            alert('✅ Tasks pushed to cloud successfully!');
+            const p2 = setDoc(doc(db, 'users', userId, 'workflow', 'main'), {
+              checklist: workflowData,
+              lastUpdated: serverTimestamp(),
+              device: 'Macbook/Web'
+            });
+
+            await Promise.all([p1, p2]);
+
+            alert('✅ All Tasks & Workflow pushed to cloud!');
           } catch (e) {
             console.error(e);
             alert('❌ Push failed: ' + e.message);
@@ -1873,25 +1923,34 @@
             const db = window._firebaseDB;
             if (!db) throw new Error('Firebase not initialized');
 
-            const snap = await getDoc(doc(db, 'users', userId, 'tasks', 'main'));
-            if (!snap.exists()) {
-              alert('No tasks found in cloud.');
-              return;
+            const p1 = getDoc(doc(db, 'users', userId, 'tasks', 'main'));
+            const p2 = getDoc(doc(db, 'users', userId, 'workflow', 'main'));
+
+            const [snapTasks, snapWorkflow] = await Promise.all([p1, p2]);
+
+            let updateCount = 0;
+
+            // 1. Restore Study Topics
+            if (snapTasks.exists()) {
+              const remoteTasks = snapTasks.data().tasks || {};
+              Object.keys(remoteTasks).forEach(taskId => {
+                localStorage.setItem(taskId, remoteTasks[taskId]);
+                updateCount++;
+              });
             }
 
-            const remoteData = snap.data();
-            const remoteTasks = remoteData.tasks || {};
-
-            // Update LocalStorage
-            let updateCount = 0;
-            Object.keys(remoteTasks).forEach(taskId => {
-              localStorage.setItem(taskId, remoteTasks[taskId]);
-              updateCount++;
-            });
+            // 2. Restore Workflow
+            if (snapWorkflow.exists()) {
+              const remoteWorkflow = snapWorkflow.data().checklist || [];
+              localStorage.setItem('studyWorkflowChecklist', JSON.stringify(remoteWorkflow));
+              updateCount += remoteWorkflow.length;
+            }
 
             renderStudyTopics();
             updateProgressSummary();
-            alert(`✅ Sync Complete! Updated ${updateCount} tasks.`);
+            renderWorkflowSummary(); // Re-render workflow
+
+            alert(`✅ Sync Complete! Updated data.`);
           } catch (e) {
             console.error(e);
             alert('❌ Pull failed: ' + e.message);
@@ -1901,6 +1960,8 @@
         });
       }
     }
+
+
 
     // ===== INIT =====
     document.addEventListener('DOMContentLoaded', () => {
