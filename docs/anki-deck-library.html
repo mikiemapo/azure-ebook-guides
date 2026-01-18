@@ -597,6 +597,36 @@
     }
   </style>
   <script src="shared-navbar.js"></script>
+  <!-- Firebase SDK and Config -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, doc, getDoc, setDoc, deleteDoc, collection, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // --- FIREBASE CONFIGURATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyDBaF307QmgjW0GY08a7kdxsYMZ_tIrGIM",
+      authDomain: "cloud-sync-mikiemapo.firebaseapp.com",
+      projectId: "cloud-sync-mikiemapo",
+      storageBucket: "cloud-sync-mikiemapo.firebasestorage.app",
+      messagingSenderId: "1073459104014",
+      appId: "1:1073459104014:web:fcbf1b5bdf7e1ea4966f5f",
+      measurementId: "G-H0HLS543TL"
+    };
+
+    // Initialize Firebase
+    let db;
+    try {
+      const app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+      console.log("Firebase initialized");
+    } catch (e) {
+      console.error("Firebase init error (did you update config?):", e);
+    }
+
+    // Attach DB to window for the legacy script to access
+    window._firebaseDB = db;
+    window._firestoreOps = { doc, getDoc, setDoc, deleteDoc, collection, getDocs, serverTimestamp };
+  </script>
 </head>
 
 <body>
@@ -605,6 +635,22 @@
   <div class="container">
     <h1><i class="fas fa-layer-group"></i> Anki Deck Library</h1>
     <p class="subtitle">Track your CPRS study coverage across all AZ-104 domains</p>
+
+    <!-- Cloud Sync Status Bar -->
+    <div class="sync-status-bar"
+      style="background:var(--bg-secondary); border:1px solid var(--border-color); padding:10px 16px; border-radius:8px; margin-bottom:20px; display:flex; justify-content:space-between; align-items:center;">
+      <div style="display:flex; align-items:center; gap:10px;">
+        <i class="fas fa-cloud" id="sync-icon" style="color:var(--text-secondary);"></i>
+        <span id="sync-status-text" style="font-size:0.9em; color:var(--text-primary);">Sync: <strong>Not
+            Connected</strong></span>
+      </div>
+      <div class="sync-actions" style="display:flex; gap:8px;">
+        <button class="deck-btn" id="btn-pull-cloud" style="background:#f0f0f0; border:1px solid #ccc; color:#333;"><i
+            class="fas fa-download"></i> Pull</button>
+        <button class="deck-btn" id="btn-push-cloud" style="background:#0078d4; color:#fff;"><i
+            class="fas fa-upload"></i> Push</button>
+      </div>
+    </div>
 
     <div class="insights-panel" id="insights-panel">
       <!-- Insights content preserved -->
@@ -1137,13 +1183,131 @@
       renderLibrary();
     }
 
+    // --- Cloud Sync Logic (Split-by-Domain) ---
+    async function initLibrarySync() {
+      const statusText = document.getElementById('sync-status-text');
+      const syncIcon = document.getElementById('sync-icon');
+      const btnPush = document.getElementById('btn-push-cloud');
+      const btnPull = document.getElementById('btn-pull-cloud');
+
+      const userId = localStorage.getItem('az104SyncUserId');
+
+      if (!userId) {
+        statusText.innerHTML = 'Sync: <strong style="color:red">Not Connected</strong> (Link account in Review Guide)';
+        btnPush.disabled = true;
+        btnPull.disabled = true;
+        btnPush.style.opacity = '0.5';
+        btnPull.style.opacity = '0.5';
+        return;
+      }
+
+      statusText.innerHTML = `Sync: <strong style="color:green">Connected</strong> (${userId.substring(0, 8)}...)`;
+      if (syncIcon) syncIcon.style.color = '#107c10';
+
+      // Push Handler (Split by Domain)
+      btnPush.addEventListener('click', async () => {
+        if (!confirm('Overwrite cloud backup with this local library?')) return;
+        const library = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
+        if (library.length === 0) { alert('Local library is empty.'); return; }
+
+        btnPush.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pushing...';
+        try {
+          const { doc, setDoc, deleteDoc, serverTimestamp } = window._firestoreOps;
+          const db = window._firebaseDB;
+          if (!db) throw new Error('Firebase not initialized');
+
+          // Group decks by domain
+          const domainMap = {};
+          library.forEach(deck => {
+            // Derive domain using existing logic or default 'Uncategorized'
+            const domain = objectiveToDomain(deck.objective || deck.concept || '');
+            if (!domainMap[domain]) domainMap[domain] = [];
+            domainMap[domain].push(deck);
+          });
+
+          // Upload each domain as a separate document
+          const uploadPromises = Object.keys(domainMap).map(domain => {
+            // Remove spaces/special chars from document ID
+            const safeDocId = domain.replace(/[^a-zA-Z0-9]/g, '_');
+            return setDoc(doc(db, 'users', userId, 'library', safeDocId), {
+              decks: domainMap[domain],
+              lastUpdated: serverTimestamp(),
+              domainName: domain,
+              device: 'Macbook/Web'
+            });
+          });
+
+          await Promise.all(uploadPromises);
+
+          // Optional: Clean up legacy "main" file if it exists to avoid confusion
+          try { await deleteDoc(doc(db, 'users', userId, 'library', 'main')); } catch (e) { }
+
+          alert(`✅ Library pushed! Split into ${Object.keys(domainMap).length} domain files.`);
+        } catch (e) {
+          console.error(e);
+          alert('❌ Push failed: ' + e.message);
+        } finally {
+          btnPush.innerHTML = '<i class="fas fa-upload"></i> Push';
+        }
+      });
+
+      // Pull Handler (Fetch Collection)
+      btnPull.addEventListener('click', async () => {
+        if (!confirm('Merge cloud decks into local library? (Existing decks will be updated)')) return;
+
+        btnPull.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pulling...';
+        try {
+          const { collection, getDocs } = window._firestoreOps;
+          const db = window._firebaseDB;
+          if (!db) throw new Error('Firebase not initialized');
+
+          // Fetch ALL documents in the 'library' subcollection
+          const querySnapshot = await getDocs(collection(db, 'users', userId, 'library'));
+
+          if (querySnapshot.empty) {
+            alert('No library found in cloud for this user.');
+            return;
+          }
+
+          let remoteDecks = [];
+          querySnapshot.forEach(docSnap => {
+            const data = docSnap.data();
+            if (data.decks && Array.isArray(data.decks)) {
+              remoteDecks = remoteDecks.concat(data.decks);
+            }
+          });
+
+          // Merge Strategy: Union by ID
+          let localLibrary = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
+          const deckMap = new Map();
+
+          localLibrary.forEach(d => deckMap.set(d.id, d));
+          remoteDecks.forEach(d => deckMap.set(d.id, d));
+
+          const merged = Array.from(deckMap.values());
+          localStorage.setItem('cprsLibrary', JSON.stringify(merged));
+          renderLibrary();
+
+          alert(`✅ Sync Complete! Merged ${remoteDecks.length} cloud decks. Total: ${merged.length}.`);
+        } catch (e) {
+          console.error(e);
+          alert('❌ Pull failed: ' + e.message);
+        } finally {
+          btnPull.innerHTML = '<i class="fas fa-download"></i> Pull';
+        }
+      });
+    }
+
     document.getElementById('clear-all-btn').addEventListener('click', () => {
       if (!confirm('Delete ALL saved decks? This cannot be undone.')) return;
       localStorage.removeItem('cprsLibrary');
       renderLibrary();
     });
 
-    document.addEventListener('DOMContentLoaded', renderLibrary);
+    document.addEventListener('DOMContentLoaded', () => {
+      renderLibrary();
+      initLibrarySync();
+    });
   </script>
 </body>
 
