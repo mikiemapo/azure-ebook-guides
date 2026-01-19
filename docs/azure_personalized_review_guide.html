@@ -1404,6 +1404,18 @@
           </button>
         </div>
       </div>
+      <!-- Static Sync Buttons -->
+      <div
+        style="margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border-color); display:flex; gap:8px; justify-content:center;">
+        <button class="domain-action-btn secondary btn-pull-action" onclick="window.syncPull && window.syncPull()"
+          style="flex:1; padding:6px; font-size:0.85em; background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:6px; cursor:pointer;">
+          <i class="fas fa-download"></i> Pull
+        </button>
+        <button class="domain-action-btn primary btn-push-action" onclick="window.syncPush && window.syncPush()"
+          style="flex:1; padding:6px; font-size:0.85em; background:var(--azure-blue); color:white; border:none; border-radius:6px; cursor:pointer;">
+          <i class="fas fa-upload"></i> Push
+        </button>
+      </div>
       <div id="workflow-items" style="display:flex;flex-direction:column;gap:8px;">
         <!-- Items rendered by JS -->
       </div>
@@ -1499,6 +1511,7 @@
             });
           }
           renderChecklist();
+          window.renderWorkflowChecklist = renderChecklist; // Expose for Sync
         });
       })();
     </script>
@@ -7296,3 +7309,76 @@
 </body>
 
 </html>
+<script>
+  // --- CLOUD SYNC LOGIC (Injected for Workflow Persistence) ---
+  window.syncPush = async function() {
+      if (!window._firebaseDB || !window._firestoreOps) {
+          alert("Firebase not initialized! Check your connection.");
+          return;
+      }
+      const { doc, setDoc, serverTimestamp } = window._firestoreOps;
+      const userId = localStorage.getItem('az104SyncUserId');
+      if (!userId) {
+          alert("Please set a User ID in the Sync Settings on the main dashboard first, then come back here.");
+          return;
+      }
+
+      try {
+          const workflowData = JSON.parse(localStorage.getItem('studyWorkflowChecklist')) || [];
+          const btn = document.querySelector('.btn-push-action');
+          if(btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pushing...';
+          
+          await setDoc(doc(window._firebaseDB, 'users', userId, 'workflow', 'main'), {
+              checked: workflowData,
+              lastUpdated: serverTimestamp()
+          });
+          
+          if(btn) btn.innerHTML = '<i class="fas fa-check"></i> Saved!';
+          setTimeout(() => { if(btn) btn.innerHTML = '<i class="fas fa-upload"></i> Push'; }, 2000);
+          console.log("Workflow pushed to cloud for user:", userId);
+      } catch (e) {
+          console.error("Push failed", e);
+          alert("Push failed: " + e.message);
+          const btn = document.querySelector('.btn-push-action');
+          if(btn) btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+      }
+  };
+
+  window.syncPull = async function() {
+       if (!window._firebaseDB || !window._firestoreOps) {
+          alert("Firebase not initialized!");
+          return;
+      }
+      const { doc, getDoc } = window._firestoreOps;
+      const userId = localStorage.getItem('az104SyncUserId');
+       if (!userId) {
+          alert("Please set a User ID in the Sync Settings first.");
+          return;
+      }
+
+      try {
+          const btn = document.querySelector('.btn-pull-action');
+          if(btn) btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pulling...';
+
+          const snap = await getDoc(doc(window._firebaseDB, 'users', userId, 'workflow', 'main'));
+          if (snap.exists()) {
+              const data = snap.data();
+              if (data.checked) {
+                  localStorage.setItem('studyWorkflowChecklist', JSON.stringify(data.checked));
+                  if (window.renderWorkflowChecklist) window.renderWorkflowChecklist();
+                  
+                  if(btn) btn.innerHTML = '<i class="fas fa-check"></i> Updated!';
+                  setTimeout(() => { if(btn) btn.innerHTML = '<i class="fas fa-download"></i> Pull'; }, 2000);
+              }
+          } else {
+              alert("No cloud data found for this user.");
+              if(btn) btn.innerHTML = '<i class="fas fa-download"></i> Pull';
+          }
+      } catch (e) {
+          console.error("Pull failed", e);
+          alert("Pull failed: " + e.message);
+          const btn = document.querySelector('.btn-pull-action');
+          if(btn) btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+      }
+  }
+</script>
