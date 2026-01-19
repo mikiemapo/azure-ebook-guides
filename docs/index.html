@@ -919,6 +919,19 @@
         <span id="workflow-summary-count" style="font-size:0.9em;color:var(--text-muted);">Loading...</span>
       </div>
       <div id="workflow-summary-content" class="section-content" style="display: none; padding: 16px;">
+        <!-- Static Sync Buttons (Force Visibility) -->
+        <div
+          style="margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border-color); display:flex; gap:8px; justify-content:center;">
+          <button class="domain-action-btn secondary btn-pull-action" onclick="window.syncPull && window.syncPull()"
+            style="flex:1; font-size:0.85em;">
+            <i class="fas fa-download"></i> Pull
+          </button>
+          <button class="domain-action-btn primary btn-push-action" onclick="window.syncPush && window.syncPush()"
+            style="flex:1; font-size:0.85em;">
+            <i class="fas fa-upload"></i> Push
+          </button>
+        </div>
+
         <div id="workflow-summary-items" style="display:flex;flex-direction:column;gap:6px;">
           Loading workflow...
         </div>
@@ -1798,27 +1811,11 @@
       const doneCount = checked.length;
       const remainingCount = total - doneCount;
 
-      countEl.textContent = remainingCount === 0
-        ? '✓ All done!'
-        : `${remainingCount} remaining`;
+      countEl.innerHTML = `${doneCount}/${total} completed`;
       countEl.style.color = remainingCount === 0 ? 'var(--success-color)' : 'var(--text-muted)';
 
       // Render Checkboxes for ALL steps
       let html = '';
-
-      // Add Sync Buttons (Moved to Top for Visibility)
-      html += `
-        <div style="margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border-color); display:flex; gap:8px; justify-content:center;">
-          <button class="domain-action-btn secondary btn-pull-action" onclick="window.syncPull && window.syncPull()" style="flex:1; font-size:0.85em;">
-            <i class="fas fa-download"></i> Pull
-          </button>
-          <button class="domain-action-btn primary btn-push-action" onclick="window.syncPush && window.syncPush()" style="flex:1; font-size:0.85em;">
-            <i class="fas fa-upload"></i> Push
-          </button>
-        </div>
-        <div style="display:flex; flex-direction:column; gap:8px;">
-      `;
-
       WORKFLOW_STEPS.forEach(step => {
         const isDone = checked.includes(step.id);
         const styleBg = isDone ? 'rgba(16,185,129,0.1)' : 'var(--bg-primary)';
@@ -1834,19 +1831,6 @@
           </label>
         `;
       });
-      html += '</div>';
-
-      // Add reset button if all done
-      if (doneCount === total) {
-        html += `
-          <div style="text-align:center; margin-top:12px;">
-            <button id="reset-workflow-btn" style="background:var(--bg-secondary); border:1px solid var(--border-color); padding:6px 12px; border-radius:4px; cursor:pointer;">
-              <i class="fas fa-redo"></i> Reset Loop
-            </button>
-          </div>
-        `;
-      }
-
       itemsEl.innerHTML = html;
 
       // Bind Events
