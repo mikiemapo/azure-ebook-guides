@@ -2124,7 +2124,7 @@
 
       // --- Define Global Functions ---
       window.syncPush = async () => {
-        if (!confirm('Overwrite cloud tasks with your local status?')) return;
+        if (!confirm('Overwrite cloud checklist with your local status?')) return;
 
         const allPushBtns = document.querySelectorAll('.btn-push-action');
         allPushBtns.forEach(b => b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pushing...');
@@ -2134,24 +2134,15 @@
           const db = window._firebaseDB;
           if (!db) throw new Error('Firebase not initialized');
 
-          const taskData = {};
-          studyTopics.forEach(topic => {
-            taskData[topic.id] = localStorage.getItem(topic.id) === 'true';
-          });
           const workflowData = JSON.parse(localStorage.getItem('studyWorkflowChecklist') || '[]');
 
-          const p1 = setDoc(doc(db, 'users', userId, 'tasks', 'main'), {
-            tasks: taskData,
-            lastUpdated: serverTimestamp(),
-            device: 'Macbook/Web'
-          });
-          const p2 = setDoc(doc(db, 'users', userId, 'workflow', 'main'), {
+          await setDoc(doc(db, 'users', userId, 'workflow', 'main'), {
             checklist: workflowData,
             lastUpdated: serverTimestamp(),
             device: 'Macbook/Web'
           });
-          await Promise.all([p1, p2]);
-          alert('✅ All Tasks & Workflow pushed to cloud!');
+
+          alert('✅ Workflow loop pushed to cloud!');
         } catch (e) {
           console.error(e);
           alert('❌ Push failed: ' + e.message);
@@ -2161,7 +2152,7 @@
       };
 
       window.syncPull = async () => {
-        if (!confirm('Merge cloud tasks? (Cloud status wins)')) return;
+        if (!confirm('Merge cloud checklist? (Cloud status wins)')) return;
 
         const allPullBtns = document.querySelectorAll('.btn-pull-action');
         allPullBtns.forEach(b => b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pulling...');
@@ -2171,26 +2162,16 @@
           const db = window._firebaseDB;
           if (!db) throw new Error('Firebase not initialized');
 
-          const [snapTasks, snapWorkflow] = await Promise.all([
-            getDoc(doc(db, 'users', userId, 'tasks', 'main')),
-            getDoc(doc(db, 'users', userId, 'workflow', 'main'))
-          ]);
+          const snapWorkflow = await getDoc(doc(db, 'users', userId, 'workflow', 'main'));
 
-          let updateCount = 0;
-          if (snapTasks.exists()) {
-            const remote = snapTasks.data().tasks || {};
-            Object.keys(remote).forEach(id => { localStorage.setItem(id, remote[id]); updateCount++; });
-          }
           if (snapWorkflow.exists()) {
             const remote = snapWorkflow.data().checklist || [];
             localStorage.setItem('studyWorkflowChecklist', JSON.stringify(remote));
-            updateCount += remote.length;
+            renderWorkflowSummary();
+            alert(`✅ Sync Complete! Workflow updated.`);
+          } else {
+            alert('⚠️ No cloud workflow found.');
           }
-
-          renderStudyTopics();
-          renderWorkflowSummary();
-          updateProgressSummary(); // Ensure stats update
-          alert(`✅ Sync Complete! Updated data.`);
         } catch (e) {
           console.error(e);
           alert('❌ Pull failed: ' + e.message);
