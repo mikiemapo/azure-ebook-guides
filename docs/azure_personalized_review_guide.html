@@ -1226,6 +1226,7 @@
       // Show exact load time to prove page is fresh
       document.getElementById('load-time').textContent = new Date().toLocaleTimeString();
     </script>
+    <script src="cleanup_tasks.js"></script>
 
     <h1>
       <i class="fas fa-bullseye"></i>Personalized Review: Weak Spot Focus
@@ -1415,6 +1416,11 @@
           style="flex:1; padding:6px; font-size:0.85em; background:var(--azure-blue); color:white; border:none; border-radius:6px; cursor:pointer;">
           <i class="fas fa-upload"></i> Push
         </button>
+      </div>
+      <div style="text-align:center; margin-bottom:12px;">
+        <button onclick="window.cleanupObsoleteTasks && window.cleanupObsoleteTasks()"
+          style="font-size:11px; color:var(--text-muted); background:none; border:none; text-decoration:underline; cursor:pointer;">(Cleanup
+          Old "Tasks" Data)</button>
       </div>
       <div id="workflow-items" style="display:flex;flex-direction:column;gap:8px;">
         <!-- Items rendered by JS -->
