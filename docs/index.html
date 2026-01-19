@@ -919,16 +919,12 @@
         <span id="workflow-summary-count" style="font-size:0.9em;color:var(--text-muted);">Loading...</span>
       </div>
       <div id="workflow-summary-content" class="section-content" style="display: none; padding: 16px;">
-        <!-- Static Sync Buttons (Force Visibility) -->
+        <!-- Static Sync Buttons (Pull Only - Push moved to Review Guide) -->
         <div
           style="margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border-color); display:flex; gap:8px; justify-content:center;">
           <button class="domain-action-btn secondary btn-pull-action" onclick="window.syncPull && window.syncPull()"
             style="flex:1; font-size:0.85em;">
             <i class="fas fa-download"></i> Pull
-          </button>
-          <button class="domain-action-btn primary btn-push-action" onclick="window.syncPush && window.syncPush()"
-            style="flex:1; font-size:0.85em;">
-            <i class="fas fa-upload"></i> Push
           </button>
         </div>
 
@@ -2123,32 +2119,9 @@
       if (syncIcon) syncIcon.style.color = '#107c10';
 
       // --- Define Global Functions ---
+      // --- Define Global Functions ---
       window.syncPush = async () => {
-        if (!confirm('Overwrite cloud checklist with your local status?')) return;
-
-        const allPushBtns = document.querySelectorAll('.btn-push-action');
-        allPushBtns.forEach(b => b.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Pushing...');
-
-        try {
-          const { doc, setDoc, serverTimestamp } = window._firestoreOps;
-          const db = window._firebaseDB;
-          if (!db) throw new Error('Firebase not initialized');
-
-          const workflowData = JSON.parse(localStorage.getItem('studyWorkflowChecklist') || '[]');
-
-          await setDoc(doc(db, 'users', userId, 'workflow', 'main'), {
-            checklist: workflowData,
-            lastUpdated: serverTimestamp(),
-            device: 'Macbook/Web'
-          });
-
-          alert('✅ Workflow loop pushed to cloud!');
-        } catch (e) {
-          console.error(e);
-          alert('❌ Push failed: ' + e.message);
-        } finally {
-          allPushBtns.forEach(b => b.innerHTML = '<i class="fas fa-upload"></i> Push');
-        }
+        alert('ℹ️ Please use the "Personalized Review Guide" to update/push your workflow progress. The dashboard is for viewing/pulling only.');
       };
 
       window.syncPull = async () => {
