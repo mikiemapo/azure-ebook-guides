@@ -1804,7 +1804,20 @@
       countEl.style.color = remainingCount === 0 ? 'var(--success-color)' : 'var(--text-muted)';
 
       // Render Checkboxes for ALL steps
-      let html = '<div style="display:flex; flex-direction:column; gap:8px;">';
+      let html = '';
+
+      // Add Sync Buttons (Moved to Top for Visibility)
+      html += `
+        <div style="margin-bottom:12px; padding-bottom:12px; border-bottom:1px solid var(--border-color); display:flex; gap:8px; justify-content:center;">
+          <button class="domain-action-btn secondary btn-pull-action" onclick="window.syncPull && window.syncPull()" style="flex:1; font-size:0.85em;">
+            <i class="fas fa-download"></i> Pull
+          </button>
+          <button class="domain-action-btn primary btn-push-action" onclick="window.syncPush && window.syncPush()" style="flex:1; font-size:0.85em;">
+            <i class="fas fa-upload"></i> Push
+          </button>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+      `;
 
       WORKFLOW_STEPS.forEach(step => {
         const isDone = checked.includes(step.id);
@@ -1833,18 +1846,6 @@
           </div>
         `;
       }
-
-      // Add Sync Buttons (User Requested - Force Update)
-      html += `
-        <div style="margin-top:16px; border-top:1px solid var(--border-color); padding-top:12px; display:flex; gap:8px; justify-content:center;">
-          <button class="domain-action-btn secondary btn-pull-action" onclick="window.syncPull && window.syncPull()" style="flex:1; font-size:0.85em;">
-            <i class="fas fa-download"></i> Pull
-          </button>
-          <button class="domain-action-btn primary btn-push-action" onclick="window.syncPush && window.syncPush()" style="flex:1; font-size:0.85em;">
-            <i class="fas fa-upload"></i> Push
-          </button>
-        </div>
-      `;
 
       itemsEl.innerHTML = html;
 
