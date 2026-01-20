@@ -780,7 +780,7 @@
       <div class="sync-actions" style="display:flex; gap:8px;">
         <button class="domain-action-btn secondary" id="btn-pull-cloud"><i class="fas fa-download"></i> Pull
           Tasks</button>
-        <button class="domain-action-btn primary" id="btn-push-cloud"><i class="fas fa-upload"></i> Push Tasks</button>
+
       </div>
     </div>
 
@@ -1858,7 +1858,7 @@
     async function initTaskSyncOLD() {
       const statusText = document.getElementById('sync-status-text');
       const syncIcon = document.getElementById('sync-icon');
-      const btnPush = document.getElementById('btn-push-cloud');
+      // const btnPush = document.getElementById('btn-push-cloud');
       const btnPull = document.getElementById('btn-pull-cloud');
 
       const userId = localStorage.getItem('az104SyncUserId');
@@ -2101,7 +2101,7 @@
     async function initTaskSync() {
       const statusText = document.getElementById('sync-status-text');
       const syncIcon = document.getElementById('sync-icon');
-      const btnPush = document.getElementById('btn-push-cloud');
+      // const btnPush = document.getElementById('btn-push-cloud');
       const btnPull = document.getElementById('btn-pull-cloud');
 
       const userId = localStorage.getItem('az104SyncUserId');
