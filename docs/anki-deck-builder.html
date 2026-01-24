@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,8 +22,8 @@
       --accent-green: #22c55e;
       --accent-red: #ef4444;
       --accent-orange: #f97316;
-      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
       --radius: 8px;
     }
 
@@ -35,8 +36,12 @@
       --border-color: #334155;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: var(--bg-primary);
@@ -74,7 +79,10 @@
       font-weight: 500;
       transition: all 0.2s;
     }
-    .back-btn:hover { background: var(--bg-tertiary); }
+
+    .back-btn:hover {
+      background: var(--bg-tertiary);
+    }
 
     .theme-toggle {
       padding: 10px 16px;
@@ -94,18 +102,27 @@
       border-radius: 12px;
       margin-bottom: 32px;
     }
+
     .hero-badge {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(255,255,255,0.15);
+      background: rgba(255, 255, 255, 0.15);
       padding: 6px 12px;
       border-radius: 20px;
       font-size: 12px;
       margin-bottom: 16px;
     }
-    .hero h1 { font-size: 2.5rem; margin-bottom: 12px; }
-    .hero p { opacity: 0.9; max-width: 600px; }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 12px;
+    }
+
+    .hero p {
+      opacity: 0.9;
+      max-width: 600px;
+    }
 
     /* Grid Layout */
     .main-grid {
@@ -113,8 +130,11 @@
       grid-template-columns: 380px 1fr;
       gap: 24px;
     }
+
     @media (max-width: 900px) {
-      .main-grid { grid-template-columns: 1fr; }
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     /* Cards */
@@ -125,15 +145,29 @@
       padding: 20px;
       margin-bottom: 20px;
     }
+
     .card-header {
       display: flex;
       align-items: center;
       gap: 10px;
       margin-bottom: 16px;
     }
-    .card-header i { color: var(--accent-blue); font-size: 18px; }
-    .card-title { font-size: 16px; font-weight: 600; }
-    .card-desc { font-size: 13px; color: var(--text-secondary); margin-top: 4px; }
+
+    .card-header i {
+      color: var(--accent-blue);
+      font-size: 18px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .card-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
 
     /* File Upload */
     .upload-zone {
@@ -144,13 +178,27 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .upload-zone:hover, .upload-zone.dragover {
+
+    .upload-zone:hover,
+    .upload-zone.dragover {
       border-color: var(--accent-blue);
-      background: rgba(59,130,246,0.05);
+      background: rgba(59, 130, 246, 0.05);
     }
-    .upload-zone i { font-size: 32px; color: var(--text-secondary); margin-bottom: 12px; }
-    .upload-zone p { color: var(--text-secondary); font-size: 14px; }
-    .upload-zone input[type="file"] { display: none; }
+
+    .upload-zone i {
+      font-size: 32px;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+    }
+
+    .upload-zone p {
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
+    .upload-zone input[type="file"] {
+      display: none;
+    }
 
     .file-info {
       display: flex;
@@ -161,7 +209,11 @@
       border-radius: var(--radius);
       margin-top: 12px;
     }
-    .file-info .name { font-weight: 500; }
+
+    .file-info .name {
+      font-weight: 500;
+    }
+
     .file-info .clear-btn {
       background: none;
       border: none;
@@ -176,6 +228,7 @@
       gap: 8px;
       flex-wrap: wrap;
     }
+
     .template-btn {
       flex: 1;
       min-width: 120px;
@@ -192,17 +245,27 @@
       gap: 6px;
       transition: all 0.2s;
     }
-    .template-btn:hover { background: var(--accent-blue); color: white; border-color: var(--accent-blue); }
+
+    .template-btn:hover {
+      background: var(--accent-blue);
+      color: white;
+      border-color: var(--accent-blue);
+    }
 
     /* Form Fields */
-    .form-group { margin-bottom: 16px; }
+    .form-group {
+      margin-bottom: 16px;
+    }
+
     .form-group label {
       display: block;
       font-size: 13px;
       font-weight: 500;
       margin-bottom: 6px;
     }
-    .form-group input, .form-group textarea {
+
+    .form-group input,
+    .form-group textarea {
       width: 100%;
       padding: 10px 12px;
       border: 1px solid var(--border-color);
@@ -211,7 +274,11 @@
       color: var(--text-primary);
       font-size: 14px;
     }
-    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+    }
 
     /* Toggle Switch */
     .toggle-row {
@@ -223,14 +290,30 @@
       border-radius: var(--radius);
       margin-bottom: 16px;
     }
-    .toggle-label { display: flex; align-items: center; gap: 8px; font-size: 14px; }
-    .toggle-label i { color: var(--accent-blue); }
+
+    .toggle-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .toggle-label i {
+      color: var(--accent-blue);
+    }
+
     .toggle-switch {
       position: relative;
       width: 48px;
       height: 26px;
     }
-    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
     .toggle-slider {
       position: absolute;
       cursor: pointer;
@@ -239,6 +322,7 @@
       border-radius: 26px;
       transition: 0.3s;
     }
+
     .toggle-slider:before {
       content: "";
       position: absolute;
@@ -250,8 +334,14 @@
       border-radius: 50%;
       transition: 0.3s;
     }
-    .toggle-switch input:checked + .toggle-slider { background: var(--accent-blue); }
-    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(22px); }
+
+    .toggle-switch input:checked+.toggle-slider {
+      background: var(--accent-blue);
+    }
+
+    .toggle-switch input:checked+.toggle-slider:before {
+      transform: translateX(22px);
+    }
 
     /* Export Button */
     .export-btn {
@@ -270,8 +360,15 @@
       gap: 8px;
       transition: all 0.2s;
     }
-    .export-btn:hover:not(:disabled) { background: #2563eb; }
-    .export-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .export-btn:hover:not(:disabled) {
+      background: #2563eb;
+    }
+
+    .export-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
     .export-status {
       text-align: center;
@@ -289,6 +386,7 @@
       border-radius: var(--radius);
       margin-bottom: 16px;
     }
+
     .tab-btn {
       flex: 1;
       padding: 10px 16px;
@@ -301,10 +399,20 @@
       color: var(--text-secondary);
       transition: all 0.2s;
     }
-    .tab-btn.active { background: var(--bg-secondary); color: var(--text-primary); box-shadow: var(--shadow-sm); }
 
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    .tab-btn.active {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
 
     /* Data Table */
     .table-container {
@@ -314,16 +422,20 @@
       border: 1px solid var(--border-color);
       border-radius: var(--radius);
     }
+
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 13px;
     }
-    th, td {
+
+    th,
+    td {
       padding: 10px 12px;
       text-align: left;
       border-bottom: 1px solid var(--border-color);
     }
+
     th {
       background: var(--bg-tertiary);
       font-weight: 600;
@@ -331,9 +443,15 @@
       top: 0;
       z-index: 10;
     }
-    tr:hover { background: var(--bg-tertiary); }
-    tr.invalid { background: rgba(239,68,68,0.1); }
-    
+
+    tr:hover {
+      background: var(--bg-tertiary);
+    }
+
+    tr.invalid {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
     .status-icon {
       width: 28px;
       height: 28px;
@@ -343,8 +461,16 @@
       justify-content: center;
       font-size: 12px;
     }
-    .status-valid { background: rgba(34,197,94,0.15); color: var(--accent-green); }
-    .status-invalid { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+
+    .status-valid {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--accent-green);
+    }
+
+    .status-invalid {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+    }
 
     .badge {
       display: inline-flex;
@@ -355,8 +481,16 @@
       font-size: 11px;
       font-weight: 500;
     }
-    .badge-green { background: rgba(34,197,94,0.15); color: var(--accent-green); }
-    .badge-red { background: rgba(239,68,68,0.15); color: var(--accent-red); }
+
+    .badge-green {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--accent-green);
+    }
+
+    .badge-red {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--accent-red);
+    }
 
     .tag {
       display: inline-block;
@@ -373,8 +507,18 @@
       padding: 60px 20px;
       color: var(--text-secondary);
     }
-    .empty-state i { font-size: 48px; opacity: 0.3; margin-bottom: 16px; }
-    .empty-state h3 { font-size: 16px; margin-bottom: 8px; color: var(--text-primary); }
+
+    .empty-state i {
+      font-size: 48px;
+      opacity: 0.3;
+      margin-bottom: 16px;
+    }
+
+    .empty-state h3 {
+      font-size: 16px;
+      margin-bottom: 8px;
+      color: var(--text-primary);
+    }
 
     /* Card Preview */
     .card-preview-container {
@@ -385,6 +529,7 @@
       overflow-y: auto;
       padding: 4px;
     }
+
     .preview-card-item {
       padding: 16px;
       background: var(--bg-tertiary);
@@ -393,12 +538,17 @@
       cursor: pointer;
       transition: all 0.2s;
     }
-    .preview-card-item:hover { border-color: var(--accent-blue); }
+
+    .preview-card-item:hover {
+      border-color: var(--accent-blue);
+    }
+
     .preview-card-item h4 {
       font-size: 14px;
       margin-bottom: 8px;
       display: -webkit-box;
       -webkit-line-clamp: 2;
+      line-clamp: 2;
       -webkit-box-orient: vertical;
       overflow: hidden;
     }
@@ -410,7 +560,12 @@
       padding: 24px;
       color: #e5e7eb;
     }
-    .anki-preview .question { font-size: 18px; margin-bottom: 16px; }
+
+    .anki-preview .question {
+      font-size: 18px;
+      margin-bottom: 16px;
+    }
+
     .anki-preview .choice {
       background: #ffffff;
       color: #0f172a;
@@ -419,10 +574,12 @@
       padding: 12px 14px;
       margin: 8px 0;
     }
+
     .anki-preview .choice.correct {
       background: #2ecc71;
       border-color: #27ae60;
     }
+
     .anki-preview .explanation {
       background: #2ecc71;
       color: #000;
@@ -430,7 +587,11 @@
       padding: 14px;
       margin-top: 16px;
     }
-    .anki-preview .explanation strong { display: block; margin-bottom: 6px; }
+
+    .anki-preview .explanation strong {
+      display: block;
+      margin-bottom: 6px;
+    }
 
     .preview-back-btn {
       margin-bottom: 16px;
@@ -457,7 +618,11 @@
       max-height: 200px;
       overflow-y: auto;
     }
-    .code-section h4 { font-size: 14px; margin-bottom: 8px; }
+
+    .code-section h4 {
+      font-size: 14px;
+      margin-bottom: 8px;
+    }
 
     /* Toast */
     .toast {
@@ -473,15 +638,45 @@
       display: none;
       max-width: 350px;
     }
-    .toast.show { display: block; animation: slideIn 0.3s ease; }
-    .toast.success { border-left: 4px solid var(--accent-green); }
-    .toast.error { border-left: 4px solid var(--accent-red); }
-    .toast-title { font-weight: 600; margin-bottom: 4px; }
-    .toast-message { font-size: 13px; color: var(--text-secondary); }
-    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+    .toast.show {
+      display: block;
+      animation: slideIn 0.3s ease;
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--accent-green);
+    }
+
+    .toast.error {
+      border-left: 4px solid var(--accent-red);
+    }
+
+    .toast-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .toast-message {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    @keyframes slideIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
   </style>
-<script src="shared-navbar.js"></script>
+  <script src="shared-navbar.js"></script>
 </head>
+
 <body>
   <div class="container">
     <!-- Header -->
@@ -500,7 +695,8 @@
         <i class="fas fa-sparkles"></i> Anki Deck Generator
       </div>
       <h1>CSV to Anki .apkg</h1>
-      <p>Convert your spreadsheet data into high-quality Anki flashcards with deterministic IDs and professional styling. All processing happens in your browser.</p>
+      <p>Convert your spreadsheet data into high-quality Anki flashcards with deterministic IDs and professional
+        styling. All processing happens in your browser.</p>
     </div>
 
     <!-- Main Grid -->
@@ -522,7 +718,7 @@
             <p>Drop CSV file here or click to browse</p>
             <input type="file" id="fileInput" accept=".csv" onchange="handleFileUpload(event)">
           </div>
-          
+
           <div class="file-info" id="fileInfo" style="display:none;">
             <span class="name" id="fileName"></span>
             <button class="clear-btn" onclick="resetData()"><i class="fas fa-times"></i> Clear</button>
@@ -579,15 +775,18 @@
         </div>
 
         <!-- Pre-built Decks Link -->
-        <div class="card" style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; border: none;">
+        <div class="card"
+          style="background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%); color: white; border: none;">
           <div class="card-header" style="margin-bottom: 8px;">
             <i class="fas fa-layer-group" style="color: white;"></i>
             <div>
               <div class="card-title">Pre-Built Decks Available</div>
             </div>
           </div>
-          <p style="font-size: 13px; opacity: 0.9; margin-bottom: 12px;">Download ready-made AZ-104 flashcard decks covering all exam domains.</p>
-          <a href="anki-deck-library.html" style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: white; color: #1e40af; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px;">
+          <p style="font-size: 13px; opacity: 0.9; margin-bottom: 12px;">Download ready-made AZ-104 flashcard decks
+            covering all exam domains.</p>
+          <a href="anki-deck-library.html"
+            style="display: inline-flex; align-items: center; gap: 6px; padding: 10px 16px; background: white; color: #1e40af; border-radius: 6px; text-decoration: none; font-weight: 500; font-size: 14px;">
             <i class="fas fa-arrow-right"></i> View Deck Library
           </a>
         </div>
@@ -618,10 +817,11 @@
               </div>
               <div style="display: flex; gap: 8px;">
                 <span class="badge badge-green" id="validCount"><i class="fas fa-check"></i> 0 Valid</span>
-                <span class="badge badge-red" id="invalidCount" style="display:none;"><i class="fas fa-exclamation-triangle"></i> 0 Invalid</span>
+                <span class="badge badge-red" id="invalidCount" style="display:none;"><i
+                    class="fas fa-exclamation-triangle"></i> 0 Invalid</span>
               </div>
             </div>
-            
+
             <div id="dataPreview">
               <div class="empty-state">
                 <i class="fas fa-database"></i>
@@ -691,7 +891,8 @@
 }</pre>
             </div>
 
-            <div style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: var(--radius); padding: 16px;">
+            <div
+              style="background: rgba(59,130,246,0.1); border: 1px solid rgba(59,130,246,0.3); border-radius: var(--radius); padding: 16px;">
               <p style="font-weight: 600; margin-bottom: 8px;">Model Information</p>
               <div style="font-family: monospace; font-size: 12px; color: var(--text-secondary);">
                 <p>Model ID: 1607392310</p>
@@ -785,14 +986,14 @@
       Papa.parse(file, {
         header: true,
         skipEmptyLines: true,
-        complete: function(results) {
+        complete: function (results) {
           cards = processData(results.data);
           document.getElementById('fileName').textContent = file.name;
           document.getElementById('fileInfo').style.display = 'flex';
           updateUI();
           showToast('success', 'File Loaded', `Parsed ${cards.length} cards from ${file.name}`);
         },
-        error: function(err) {
+        error: function (err) {
           showToast('error', 'Parse Error', err.message);
         }
       });
@@ -808,36 +1009,60 @@
 
     // ============ Data Processing ============
     function processData(data) {
-      return data.map(row => {
+      return data.map(rawRow => {
+        // 1. Clean Keys (Strip BOM, Trim)
+        const row = {};
+        Object.keys(rawRow).forEach(k => {
+          const cleanKey = k.trim().replace(/^\ufeff/, '');
+          row[cleanKey] = rawRow[k];
+          // Also keep lowercase version for fuzzy matching
+          row[cleanKey.toLowerCase()] = rawRow[k];
+        });
+
         const getValue = (keys) => {
           for (const key of keys) {
             if (row[key] !== undefined) return row[key];
-            const rowKey = Object.keys(row).find(k => k.toLowerCase() === key.toLowerCase());
-            if (rowKey && row[rowKey] !== undefined) return row[rowKey];
+            if (row[key.toLowerCase()] !== undefined) return row[key.toLowerCase()];
           }
           return "";
         };
 
-        const A = getValue(["Option_A", "ChoiceA", "A"]);
-        const B = getValue(["Option_B", "ChoiceB", "B"]);
-        const C = getValue(["Option_C", "ChoiceC", "C"]);
-        const D = getValue(["Option_D", "ChoiceD", "D"]);
-        const Question = getValue(["Question"]);
-        const CorrectRaw = getValue(["Correct_Answer", "Correct"]);
-        const Explanation = getValue(["Explanation"]);
+        let Question = getValue(["Question", "Front", "Q"]);
+        let A = getValue(["Option_A", "Option A", "ChoiceA", "Choice A", "A"]);
+        let B = getValue(["Option_B", "Option B", "ChoiceB", "Choice B", "B"]);
+        let C = getValue(["Option_C", "Option C", "ChoiceC", "Choice C", "C"]);
+        let D = getValue(["Option_D", "Option D", "ChoiceD", "Choice D", "D"]);
+        let CorrectRaw = getValue(["Correct_Answer", "Correct Answer", "Correct"]);
+        let Explanation = getValue(["Explanation", "Back", "Answer"]);
         const Tags = getValue(["Tags"]);
         const Source = getValue(["Source"]);
         const Batch = getValue(["Batch"]);
+        const Type = getValue(["Type"]); // Check for 'Flip' or 'Basic'
 
         const errors = [];
         if (!Question.trim()) errors.push("Missing Question");
+
+        // --- Intelligence: Handle "Flip" or "Basic" cards (No Options) ---
+        // If it looks like a Basic card (Back/Explanation exists, but no Options), convert to Flip-style MCQ
+        const isFlip = Type.toLowerCase().includes('flip') || (!A && !B && Explanation);
+
+        if (isFlip) {
+          // Auto-fill options for Flip card structure
+          if (!A) A = "Flip card (See Answer)";
+          if (!B) B = ".";
+          if (!C) C = ".";
+          if (!D) D = ".";
+          if (!CorrectRaw) CorrectRaw = "A"; // Default to A being correct (though it's just a flip)
+
+          // If we mapped Back -> Explanation, ensure we keep it there.
+        }
+
         if (!A.trim()) errors.push("Missing choice A");
         if (!B.trim()) errors.push("Missing choice B");
-        if (!C.trim()) errors.push("Missing choice C");
-        if (!D.trim()) errors.push("Missing choice D");
+        // C/D can be optional if it's a True/False
         if (!CorrectRaw.trim()) errors.push("Missing Correct");
-        if (!Explanation.trim()) errors.push("Missing Explanation");
-        
+        // Explanation is optional but good to have
+
         const correct = (CorrectRaw || "").trim().toUpperCase();
         if (correct && !["A", "B", "C", "D"].includes(correct)) {
           errors.push(`Invalid Correct: ${correct}`);
@@ -856,7 +1081,8 @@
           isCorrectC: correct === "C" ? "1" : "",
           isCorrectD: correct === "D" ? "1" : "",
           isValid: errors.length === 0,
-          errors
+          errors,
+          originalType: Type
         };
       });
     }
@@ -912,7 +1138,7 @@
       }
 
       document.getElementById('exportBtn').disabled = validCount === 0;
-      document.getElementById('exportStatus').textContent = validCount > 0 
+      document.getElementById('exportStatus').textContent = validCount > 0
         ? `Ready to export ${validCount} valid card${validCount !== 1 ? 's' : ''}`
         : '';
 
@@ -945,17 +1171,17 @@
               </tr>
             </thead>
             <tbody>`;
-      
+
       cards.forEach(card => {
         const statusClass = card.isValid ? 'status-valid' : 'status-invalid';
         const statusIcon = card.isValid ? 'fa-check' : 'fa-exclamation-triangle';
         const rowClass = card.isValid ? '' : 'invalid';
         const tags = (card.Tags || '').split(/[,;]/).filter(Boolean).map(t => `<span class="tag">${t.trim()}</span>`).join('');
-        
+
         html += `
           <tr class="${rowClass}">
             <td><div class="status-icon ${statusClass}"><i class="fas ${statusIcon}"></i></div></td>
-            <td style="font-family:monospace; font-size:11px; color:var(--text-secondary);">${card.id.substring(0,8)}...</td>
+            <td style="font-family:monospace; font-size:11px; color:var(--text-secondary);">${card.id.substring(0, 8)}...</td>
             <td>
               <div style="font-weight:500; font-size:13px;">${escapeHtml(card.Question.substring(0, 80))}${card.Question.length > 80 ? '...' : ''}</div>
               ${!card.isValid ? `<div style="color:var(--accent-red); font-size:11px; margin-top:4px;">${card.errors[0]}</div>` : ''}
@@ -1036,7 +1262,7 @@
 "Which Azure service provides fully managed MySQL databases?","Azure SQL Database","Azure Cosmos DB","Azure Database for MySQL","Azure Synapse Analytics",C,"Azure Database for MySQL is a fully managed database service for MySQL, offering high availability and security.",Database;MySQL,Microsoft Learn,AZ-104`;
         filename = 'anki_mcq_example.csv';
       }
-      
+
       const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
@@ -1065,10 +1291,10 @@
       try {
         const shouldShuffle = document.getElementById('shuffleToggle').checked;
         const cardsToExport = shouldShuffle ? validCards.map(shuffleCard) : validCards;
-        
+
         const blob = await generateAnkiPackage(deckName, cardsToExport);
         const filename = `${deckName.replace(/\s+/g, '_')}.apkg`;
-        
+
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = filename;
@@ -1112,10 +1338,10 @@
       };
 
       const decks = {};
-      decks[MCQ_MODEL.DECK_ID] = { id: MCQ_MODEL.DECK_ID, mod: now, name: deckName, usn: -1, lrnToday: [0,0], revToday: [0,0], newToday: [0,0], timeToday: [0,0], collapsed: false, browserCollapsed: false, desc: "", dyn: 0, conf: 1, extendNew: 10, extendRev: 50 };
-      decks[1] = { id: 1, mod: now, name: "Default", usn: 0, lrnToday: [0,0], revToday: [0,0], newToday: [0,0], timeToday: [0,0], collapsed: false, browserCollapsed: false, desc: "", dyn: 0, conf: 1, extendNew: 10, extendRev: 50 };
+      decks[MCQ_MODEL.DECK_ID] = { id: MCQ_MODEL.DECK_ID, mod: now, name: deckName, usn: -1, lrnToday: [0, 0], revToday: [0, 0], newToday: [0, 0], timeToday: [0, 0], collapsed: false, browserCollapsed: false, desc: "", dyn: 0, conf: 1, extendNew: 10, extendRev: 50 };
+      decks[1] = { id: 1, mod: now, name: "Default", usn: 0, lrnToday: [0, 0], revToday: [0, 0], newToday: [0, 0], timeToday: [0, 0], collapsed: false, browserCollapsed: false, desc: "", dyn: 0, conf: 1, extendNew: 10, extendRev: 50 };
 
-      const dconf = { 1: { id: 1, mod: now, name: "Default", usn: 0, maxTaken: 60, autoplay: true, timer: 0, replayq: true, new: { bury: false, delays: [1,10], initialFactor: 2500, ints: [1,4,7], order: 1, perDay: 20 }, rev: { bury: false, ease4: 1.3, ivlFct: 1, maxIvl: 36500, perDay: 200, hardFactor: 1.2 }, lapse: { delays: [10], leechAction: 0, leechFails: 8, minInt: 1, mult: 0 } } };
+      const dconf = { 1: { id: 1, mod: now, name: "Default", usn: 0, maxTaken: 60, autoplay: true, timer: 0, replayq: true, new: { bury: false, delays: [1, 10], initialFactor: 2500, ints: [1, 4, 7], order: 1, perDay: 20 }, rev: { bury: false, ease4: 1.3, ivlFct: 1, maxIvl: 36500, perDay: 200, hardFactor: 1.2 }, lapse: { delays: [10], leechAction: 0, leechFails: 8, minInt: 1, mult: 0 } } };
       const conf = { nextPos: 1, estTimes: true, activeDecks: [1], sortType: "noteFld", timeLim: 0, sortBackwards: false, addToCur: true, curDeck: 1, newBury: true, newSpread: 0, dueCounts: true, curModel: now, collapseTime: 1200 };
 
       db.run(`INSERT INTO col VALUES(1, ${now}, ${nowMs}, ${nowMs}, 11, 0, 0, 0, '${JSON.stringify(conf).replace(/'/g, "''")}', '${JSON.stringify(models).replace(/'/g, "''")}', '${JSON.stringify(decks).replace(/'/g, "''")}', '${JSON.stringify(dconf).replace(/'/g, "''")}', '{}')`);
@@ -1162,4 +1388,5 @@
     }
   </script>
 </body>
+
 </html>
