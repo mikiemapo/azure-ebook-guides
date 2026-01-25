@@ -1726,10 +1726,31 @@
         frequentlyVisited.forEach(item => {
           const typeIcon = item.type === 'cprs' ? 'fa-brain' : 'fa-search';
           const typeColor = item.type === 'cprs' ? '#9c27b0' : '#dc3545';
-          out += `<span style="padding:4px 10px;background:var(--bg-secondary);border-radius:16px;font-size:0.8em;border:1px solid var(--border-color);display:inline-flex;align-items:center;gap:4px;">`;
-          out += `<i class="fas ${typeIcon}" style="color:${typeColor};font-size:0.75em;"></i>`;
-          out += `${item.name} <span style="color:var(--text-muted);font-size:0.85em;">(${item.frequency}x)</span>`;
-          out += `</span>`;
+          if (item.name.length > 100) {
+            // Long content: Render as collapsible card
+            let title = item.name.substring(0, 80) + "...";
+            const ruleMatch = item.name.match(/(Rule:.*?)(\.|$)/);
+            if (ruleMatch) {
+              title = ruleMatch[1];
+            }
+
+            out += `<details style="width:100%;margin-bottom:8px;background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:8px;overflow:hidden;">`;
+            out += `<summary style="padding:10px 14px;cursor:pointer;font-weight:600;font-size:0.9em;display:flex;align-items:center;gap:8px;background:var(--bg-primary);">`;
+            out += `<i class="fas ${typeIcon}" style="color:${typeColor};"></i>`;
+            out += `<span>${title}</span>`;
+            out += `<span style="margin-left:auto;font-size:0.8em;color:var(--text-muted);">(${item.frequency}x) <i class="fas fa-chevron-down"></i></span>`;
+            out += `</summary>`;
+            out += `<div style="padding:12px 14px;font-size:0.9em;color:var(--text-secondary);border-top:1px solid var(--border-color);line-height:1.5;">`;
+            out += `${item.name}`;
+            out += `</div>`;
+            out += `</details>`;
+          } else {
+            // Short content: Render as pill
+            out += `<span style="padding:4px 10px;background:var(--bg-secondary);border-radius:16px;font-size:0.8em;border:1px solid var(--border-color);display:inline-flex;align-items:center;gap:4px;">`;
+            out += `<i class="fas ${typeIcon}" style="color:${typeColor};font-size:0.75em;"></i>`;
+            out += `${item.name} <span style="color:var(--text-muted);font-size:0.85em;">(${item.frequency}x)</span>`;
+            out += `</span>`;
+          }
         });
         out += '</div></div>';
       }
