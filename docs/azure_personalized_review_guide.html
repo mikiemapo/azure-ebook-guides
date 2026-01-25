@@ -2414,6 +2414,39 @@
                 statsEl.style.display = 'block';
 
                 autoSaveExtraction({ local_concepts: extracted.concepts || [] }, 'quick');
+
+                // --- INTEGRATION: Save Payload for Anki Library Diagnostic Engine ---
+                if (extracted.wrongAnswers && extracted.wrongAnswers.length > 0) {
+
+                  // Aggressive Classifier Logic (Technical Spec Phase 2)
+                  const classifyError = (q, w, c) => {
+                    const text = (q + " " + w + " " + c).toLowerCase();
+                    // Tag A: Scope Error (The 'Nuclear' Check)
+                    if (/(owner|access administrator|user access admin)/.test(w) && /(contributor|reader)/.test(c)) return 'Scope Error';
+                    if (text.includes('subscription') && text.includes('resource group') && text.includes('scope')) return 'Scope Error';
+
+                    // Tag B: Verb Mismatch (The 'Three-Part' Check)
+                    if (/(deploy|create|provision)/.test(q.toLowerCase()) && /(operator|monitor|reader)/.test(w)) return 'Verb Mismatch';
+
+                    // Tag C: Technical Gap (The 'Fact' Check)
+                    if (text.includes('vmss') || text.includes('orchestration') || text.includes('sku') || text.includes('tier')) return 'Technical Gap';
+
+                    return 'General Concept Gap';
+                  };
+
+                  const diagnosticPayload = {
+                    domain: 'Detected from Weak Point Extractor', // Placeholder
+                    errors: extracted.wrongAnswers.map((wa, idx) => ({
+                      question_id: `wp-${Date.now()}-${idx}`,
+                      topic: 'Weak Point Extraction',
+                      user_logic: wa.wrong || "Implied from wrong answer",
+                      correct_logic: wa.correct || "See Explanation",
+                      error_tag: classifyError(wa.q || '', wa.wrong || '', wa.correct || '')
+                    }))
+                  };
+                  localStorage.setItem('diagnosticPayload', JSON.stringify(diagnosticPayload));
+                  console.log('Saved diagnosticPayload with TAGS for Anki Library:', diagnosticPayload);
+                }
               }
             });
           }
@@ -3642,6 +3675,98 @@
           console.log('Domain progress rendering complete. Container innerHTML length:', container.innerHTML.length);
           try { renderRetentionTrends(); } catch (e) { }
           try { updateStrategicPlanScores(); } catch (e) { }
+          try { optimizeReviewUI(); } catch (e) { console.error('UI Optimization failed', e); }
+        }
+
+        // --- Personalized Review UI Optimization (Phase 3) ---
+        function optimizeReviewUI() {
+          // 1. Sort Domain Cards by Score ASC (Lowest = Top)
+          const container = document.getElementById('domain-cards-container');
+          if (!container) return;
+
+          const domains = Object.keys(mergedQuizScores);
+          const cards = [];
+
+          domains.forEach(d => {
+            const cardId = domainCardIdMap[d];
+            const card = document.getElementById(cardId);
+            if (card) {
+              const data = mergedQuizScores[d] || { correct: 0, total: 0 };
+              const percent = data.total ? Math.round((data.correct / data.total) * 100) : 0;
+              cards.push({ element: card, score: percent, domain: d });
+            }
+          });
+
+          // Sort: ASC Score
+          cards.sort((a, b) => a.score - b.score);
+
+          // Reorder DOM
+          cards.forEach(c => container.appendChild(c.element));
+
+          // 2. Auto-Collapse & Expansion Logic & 3. Maintenance Mode
+          cards.forEach((c, index) => {
+            if (c.score > 60) {
+              // 1. Maintenance Mode
+              if (c.domain === 'Identities') {
+                const header = c.element.querySelector('h3') || c.element.querySelector('.card-header-title') || c.element.querySelector('label h2');
+                if (header) {
+                  header.innerHTML = `🟢 Maintenance: Identities (${c.score}%)`;
+                  header.style.color = '#2e7d32'; // Green
+                }
+
+                // Inject Maintenance Link if not present
+                const summary = c.element.querySelector('.quiz-focus-summary');
+                if (summary && (!summary.nextElementSibling || !summary.nextElementSibling.classList.contains('rbac-maintenance-link'))) {
+                  const rbacHtml = `
+                        <div class="rbac-maintenance-link" style="margin-bottom:15px; padding:10px; background:#e8f5e9; border-left:4px solid #2e7d32; border-radius:4px;">
+                            <a href="#" onclick="event.preventDefault(); alert('RBAC REF:\\n\\nCreate/Deploy -> Contributor\\nMaintain/Manage -> Operator\\nGrant/assign -> User Access Admin/Owner')" style="color:#2e7d32; font-weight:bold; text-decoration:none; display:flex; align-items:center; gap:8px;">
+                                <i class="fas fa-tools"></i> Maintenance Mode: The RBAC Verb Heuristic
+                            </a>
+                        </div>
+                    `;
+                  summary.insertAdjacentHTML('afterend', rbacHtml);
+                }
+
+                // Hide Static Entrance Reference (Global effect but triggered here)
+                const staticRef = document.getElementById('entra-static-ref');
+                if (staticRef) staticRef.style.display = 'none';
+              }
+              // Auto-Collapse
+              if (c.element.classList.contains('open')) c.element.classList.remove('open');
+              const content = c.element.querySelector('.card-content');
+              if (content) content.style.display = 'none'; // Safer collapse
+              const checkbox = c.element.querySelector('input[type="checkbox"]');
+              if (checkbox) checkbox.checked = false;
+
+            } else {
+              // Hero Mode (Low Score)
+              if (index === 0) { // Top most Element
+                // Ensure Expanded
+                c.element.classList.add('open');
+                const content = c.element.querySelector('.card-content');
+                if (content) content.style.display = 'block';
+                const checkbox = c.element.querySelector('input[type="checkbox"]');
+                if (checkbox) checkbox.checked = true;
+
+                if (c.domain === 'Compute') {
+                  // Inject Hero Links
+                  const actions = c.element.querySelector('.card-actions') || c.element.querySelector('.domain-links');
+                  if (actions && !actions.querySelector('.hero-link')) {
+                    const heroHtml = `
+                        <div style="margin-top:8px; padding:8px; background:#fff3cd; border-left:3px solid #ff9800; font-size:12px;">
+                            <strong>⚠️ Critical Fixes:</strong>
+                            <ul style="margin:4px 0 0 16px;">
+                                <li><a href="#" class="hero-link" onclick="alert('Fix: VMSS Flexible allows patch orchestration. Uniform does not.')">Fix VMSS Orchestration (Flexible vs Uniform)</a></li>
+                                <li><a href="#" class="hero-link" onclick="alert('Fix: ACI is for serverless containers. AKS is for orchestration.')">Fix Container Security vs. ACI</a></li>
+                            </ul>
+                        </div>
+                      `;
+                    actions.insertAdjacentHTML('afterbegin', heroHtml);
+                  }
+                }
+              }
+            }
+          });
         }
 
         // --- Load inline lab-module map (single-file mode) ---
@@ -5307,7 +5432,7 @@
     </script>
     <!-- End consolidated script -->
 
-    <div class="card-container">
+    <div class="card-container" id="domain-cards-container">
       <!-- Card 1: Current Performance Snapshot -->
       <div class="card" id="performance-section">
         <input type="checkbox" id="performance-snapshot-toggle" class="card-toggle" checked />
@@ -5333,7 +5458,8 @@
             <h4><i class="fas fa-lightbulb"></i>Personalized Review: Weak Spot Focus</h4>
 
             <!-- Link to Entra ID Quick Reference (moved to dedicated guide) -->
-            <div style="background:#e3f2fd;border-left:4px solid #2196f3;padding:15px;margin:15px 0;border-radius:4px;">
+            <div id="entra-static-ref"
+              style="background:#e3f2fd;border-left:4px solid #2196f3;padding:15px;margin:15px 0;border-radius:4px;">
               <h4 style="color:#1976d2;margin:0 0 10px 0;">
                 <i class="fas fa-graduation-cap"></i> Microsoft Entra ID Quick Reference
               </h4>

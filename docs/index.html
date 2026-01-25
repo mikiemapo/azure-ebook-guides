@@ -1398,11 +1398,19 @@
       });
 
       // Add Anki recommendation
-      if (steps.length > 0) {
+      if (weakest.length > 0) {
+        const topWeak = weakest[0];
         steps.push({
           icon: 'fas fa-clone',
-          text: 'Import latest Anki deck for spaced repetition',
-          link: '../Anki-Decks/AZ-104-Master-Study-Deck.apkg',
+          text: `Build: Anki Deck for ${topWeak.name}`,
+          link: `anki-deck-builder.html?domain=${topWeak.key}`, // Dynamic link
+          color: '#8b5cf6'
+        });
+      } else {
+        steps.push({
+          icon: 'fas fa-clone',
+          text: 'Open Anki Deck Builder',
+          link: 'anki-deck-builder.html',
           color: '#8b5cf6'
         });
       }
@@ -1642,12 +1650,163 @@
         `;
     }
 
-    // ===== DEBUG TOGGLE =====
+    // ===== DEBUG TOGGLE & GLOBAL STATE =====
     function initControlButtons() {
       const debugToggle = document.getElementById('debug-toggle');
       if (debugToggle) {
         debugToggle.addEventListener('click', toggleDebugPanel);
       }
+      // Initialize study assistant rotation index
+      window.saIndex = 0;
+    }
+
+    // ===== RETENTION TRENDS (SNAPSHOT LOGIC) =====
+    function saveDailySnapshot() {
+      try {
+        const history = JSON.parse(localStorage.getItem('quizScoreHistory') || '[]');
+        const scores = JSON.parse(localStorage.getItem('mergedQuizScores') || '{}');
+        const today = new Date().toISOString().split('T')[0];
+
+        // Ensure we handle empty scores gracefully
+        if (Object.keys(scores).length === 0) return;
+
+        // Check if today already exists
+        const existingIndex = history.findIndex(h => h.date === today);
+        if (existingIndex >= 0) {
+          history[existingIndex].scores = scores; // Update today's entry
+        } else {
+          history.push({ date: today, scores: scores });
+        }
+
+        // Prune entries older than 30 days
+        const cutoff = new Date();
+        cutoff.setDate(cutoff.getDate() - 30);
+        const pruned = history.filter(h => new Date(h.date) >= cutoff);
+
+        localStorage.setItem('quizScoreHistory', JSON.stringify(pruned));
+      } catch (e) {
+        console.error('Snapshot failed', e);
+      }
+    }
+
+    // Calculate Trend vs 7 days ago
+    function getTrendForDomain(domainKey, currentPercent) {
+      try {
+        const history = JSON.parse(localStorage.getItem('quizScoreHistory') || '[]');
+        if (history.length < 2) return { value: 0, isStagnant: false }; // Not enough data
+
+        const today = new Date();
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() - 7);
+        const targetStr = targetDate.toISOString().split('T')[0];
+
+        // Find closest entry to 7 days ago (or oldest if less than 7 days)
+        let refEntry = history.find(h => h.date === targetStr);
+        let daysDiff = 7;
+
+        if (!refEntry) {
+          // If exact match not found, find closest one older than today
+          refEntry = history.find(h => h.date < new Date().toISOString().split('T')[0]);
+          if (refEntry) {
+            const refDate = new Date(refEntry.date);
+            daysDiff = Math.floor((today - refDate) / (1000 * 60 * 60 * 24));
+          }
+        }
+
+        if (!refEntry || !refEntry.scores || !refEntry.scores[domainKey]) return { value: 0, isStagnant: false };
+
+        const refData = refEntry.scores[domainKey];
+        const refPercent = refData.total ? refData.correct / refData.total : 0;
+        const change = (currentPercent - refPercent) * 100;
+
+        // Stagnant if data exists > 7 days and change is essentially 0
+        const isStagnant = (Math.abs(change) < 0.1) && (daysDiff >= 7);
+
+        return { value: change, isStagnant };
+      } catch (e) {
+        return { value: 0, isStagnant: false };
+      }
+    }
+
+    function renderRetentionTrends() {
+      const container = document.getElementById('retention-trends-container');
+      if (!container) return;
+
+      const scores = JSON.parse(localStorage.getItem('mergedQuizScores') || '{}');
+
+      // Calculate overall average
+      let totalCorrect = 0;
+      let totalQuestions = 0;
+      Object.values(scores).forEach(s => {
+        totalCorrect += s.correct || 0;
+        totalQuestions += s.total || 0;
+      });
+      const overallAvg = totalQuestions ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+
+      // Update the main "Avg Retention" display
+      const trendValueEl = document.querySelector('.trend-value');
+      if (trendValueEl) {
+        trendValueEl.textContent = `${overallAvg}%`;
+        // Color code overall average
+        trendValueEl.style.color = overallAvg >= 75 ? 'var(--success-color)' : (overallAvg >= 50 ? '#f59e0b' : '#ef4444');
+      }
+
+      // Map domains
+      const trendMap = {
+        'Storage': 'storage',
+        'Compute': 'compute',
+        'Networking': 'vnet',
+        'Monitoring': 'monitor',
+        'Identities': 'id,gov' // logic to pick one?
+      };
+
+      let html = '';
+      Object.keys(trendMap).forEach(label => {
+        const key = trendMap[label];
+        // Handle composite key like id,gov
+        let currentP = 0;
+        if (key.includes(',')) {
+          const keys = key.split(',');
+          // simple avg for display
+          let sumP = 0; let count = 0;
+          keys.forEach(k => {
+            const s = scores[k];
+            if (s && s.total) { sumP += (s.correct / s.total); count++; }
+          });
+          currentP = count ? sumP / count : 0;
+        } else {
+          const s = scores[key];
+          currentP = (s && s.total) ? s.correct / s.total : 0;
+        }
+
+        // Calculate Trend
+        const primaryKey = key.split(',')[0];
+        const trendData = getTrendForDomain(primaryKey, currentP);
+        const trendVal = trendData.value;
+
+        let trendClass = trendVal > 0 ? 'trend-up' : (trendVal < 0 ? 'trend-down' : 'trend-neutral');
+        let icon = trendVal > 0 ? 'fa-arrow-up' : (trendVal < 0 ? 'fa-arrow-down' : 'fa-minus');
+        let style = '';
+
+        if (trendData.isStagnant) {
+          trendClass = 'trend-stagnant'; // Visual highlight
+          icon = 'fa-exclamation-triangle';
+          style = 'color: #ef4444; font-weight: bold;'; // Explicit red for stagnant
+        }
+
+        const trendSign = trendVal > 0 ? '+' : '';
+
+        html += `
+          <div class="trend-item">
+            <span class="trend-label">${label}</span>
+            <span class="trend-change ${trendClass}" style="${style}">
+              <i class="fas ${icon}"></i> ${trendSign}${trendVal.toFixed(1)}%
+            </span>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
     }
 
     // ===== STUDY ASSISTANT =====
@@ -1716,9 +1875,63 @@
 
       const scores = getStoredScores();
       const frequentlyVisited = getFrequentlyVisited();
-
       let out = '';
 
+      // 1. Calculate Weakest Domain for Priority Recommendation
+      // 1. Calculate Weakest Domain for Priority Recommendation (Cycle through bottom 3)
+      let priorityRec = null;
+      if (scores && Object.keys(scores).length > 0) {
+        const arr = Object.keys(scores).map(k => {
+          const v = scores[k] || { correct: 0, total: 0 };
+          const percent = v.total ? v.correct / v.total : 0;
+          return { domain: k, percent, correct: v.correct, total: v.total, key: k };
+        });
+        // Sort lowest score first
+        arr.sort((a, b) => a.percent - b.percent);
+
+        // Take bottom 3 (or less if not enough data)
+        const candidates = arr.slice(0, 3);
+        const idx = (window.saIndex || 0) % candidates.length;
+        const target = candidates[idx]; // Cycle logic
+
+        if (target && target.percent < 0.76) {
+          const topics = findTopicsForDomain(target.domain);
+          if (topics && topics.length > 0) {
+            priorityRec = {
+              domain: target.domain,
+              key: target.key,
+              percent: Math.round(target.percent * 100),
+              topic: topics[0] // Best fit guide
+            };
+          }
+        }
+      }
+
+      // 2. Render Priority Recommendation (If any)
+      if (priorityRec) {
+        out += `<div style="margin-bottom:16px;padding:12px;background:linear-gradient(135deg,rgba(239, 68, 68, 0.15),rgba(245, 158, 11, 0.15));border-radius:8px;border:1px solid rgba(239, 68, 68, 0.3);">`;
+        out += `<div style="font-weight:700;margin-bottom:8px;font-size:0.95em;color:var(--text-primary);display:flex;align-items:center;">`;
+        out += `<i class="fas fa-exclamation-circle" style="color:#ef4444;margin-right:8px;"></i>`;
+        out += `Priority Focus: <span style="text-transform:capitalize;margin-left:4px;">${priorityRec.domain.replace(/-/g, ' ')}</span>`;
+        out += `<span style="margin-left:auto;font-size:0.85em;background:#ef4444;color:white;padding:2px 8px;border-radius:12px;">${priorityRec.percent}% Score</span>`;
+        out += `</div>`;
+
+        out += `<div style="color:var(--text-secondary);font-size:0.9em;margin-bottom:12px;">Based on your recent quiz performance, we recommend:</div>`;
+
+        // Action 1: Read Guide
+        out += `<a href="${priorityRec.topic.filename}" class="domain-action-btn primary" style="width:100%;text-align:center;justify-content:center;margin-bottom:8px;">`;
+        out += `<i class="${priorityRec.topic.icon}"></i> Read Guide: ${priorityRec.topic.title}`;
+        out += `</a>`;
+
+        // Action 2: Rescue Deck
+        out += `<a href="anki-deck-builder.html?domain=${priorityRec.key}&mode=rescue" class="domain-action-btn secondary" style="width:100%;text-align:center;justify-content:center;background:rgba(239, 68, 68, 0.1);color:#ef4444;border:1px solid rgba(239, 68, 68, 0.3);">`;
+        out += `<i class="fas fa-layer-group"></i> Build Rescue Deck (Missed Questions)`;
+        out += `</a>`;
+
+        out += `</div>`;
+      }
+
+      // 3. Render Frequently Studied (Now Secondary)
       if (frequentlyVisited.length > 0) {
         out += '<div style="margin-bottom:16px;padding:12px;background:linear-gradient(135deg,#9c27b015,#00bcd415);border-radius:8px;border:1px solid var(--border-color);">';
         out += '<div style="font-weight:600;margin-bottom:8px;font-size:0.9em;color:var(--text-primary);"><i class="fas fa-fire" style="color:#ff5722;margin-right:6px;"></i>Frequently Studied Topics</div>';
@@ -1755,10 +1968,13 @@
         out += '</div></div>';
       }
 
+      // 4. Render Weak Domains List (Existing Table Layout)
       if (!scores || Object.keys(scores).length === 0) {
-        out += '<p style="color: var(--text-muted);">No quiz performance data found. Update your scores in the <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue);">Personalized Review Guide</a> to see recommendations.</p>';
-        contentEl.innerHTML = out;
-        return;
+        if (!priorityRec && frequentlyVisited.length === 0) {
+          out += '<p style="color: var(--text-muted);">No quiz performance data found. Update your scores in the <a href="azure_personalized_review_guide.html" style="color: var(--azure-blue);">Personalized Review Guide</a> to see recommendations.</p>';
+          contentEl.innerHTML = out;
+          return;
+        }
       }
 
       const arr = Object.keys(scores).map(k => {
@@ -1769,34 +1985,32 @@
       arr.sort((a, b) => a.percent - b.percent);
       const weak = arr.slice(0, 5);
 
-      if (!weak.length) {
-        out += '<p style="color: var(--text-muted);">No domain scores available.</p>';
-        contentEl.innerHTML = out;
-        return;
+      if (weak.length > 0) {
+        out += '<div style="font-weight:600;margin-bottom:8px;font-size:0.9em;color:var(--text-primary);"><i class="fas fa-chart-line" style="color:#dc3545;margin-right:6px;"></i>Full Domain Breakdown</div>';
+        out += '<ol style="margin: 0 0 8px 18px; padding: 0; list-style: decimal;">';
+
+        weak.forEach(w => {
+          const ragClass = w.percent < 0.5 ? 'rag-red' : w.percent < 0.7 ? 'rag-amber' : 'rag-green';
+          out += `<li style="margin-bottom: 12px; padding: 8px; background: var(--bg-primary); border-radius: var(--radius-sm);">`;
+          out += `<strong style="text-transform: capitalize;">${w.domain.replace(/-/g, ' ')}</strong>`;
+          out += ` <span class="domain-mastery ${ragClass}" style="font-size: 0.9em;">${Math.round(w.percent * 100)}%</span>`;
+          out += ` <span style="color: var(--text-muted); font-size: 0.85em;">(${w.correct}/${w.total})</span>`;
+
+          const topics = findTopicsForDomain(w.domain);
+          if (topics && topics.length) {
+            out += '<div style="font-size: 0.85em; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">Recommended: ';
+            topics.forEach(t => {
+              out += `<a href="${t.filename}" class="domain-action-btn secondary" style="padding: 4px 8px; font-size: 0.8em;">${t.title}</a>`;
+            });
+            out += '</div>';
+          }
+          out += '</li>';
+        });
+        out += '</ol>';
       }
-
-      out += '<div style="font-weight:600;margin-bottom:8px;font-size:0.9em;color:var(--text-primary);"><i class="fas fa-chart-line" style="color:#dc3545;margin-right:6px;"></i>Weak Domains (from Quiz Scores)</div>';
-      out += '<ol style="margin: 0 0 8px 18px; padding: 0; list-style: decimal;">';
-      weak.forEach(w => {
-        const ragClass = w.percent < 0.5 ? 'rag-red' : w.percent < 0.7 ? 'rag-amber' : 'rag-green';
-        out += `<li style="margin-bottom: 12px; padding: 8px; background: var(--bg-primary); border-radius: var(--radius-sm);">`;
-        out += `<strong style="text-transform: capitalize;">${w.domain.replace(/-/g, ' ')}</strong>`;
-        out += ` <span class="domain-mastery ${ragClass}" style="font-size: 0.9em;">${Math.round(w.percent * 100)}%</span>`;
-        out += ` <span style="color: var(--text-muted); font-size: 0.85em;">(${w.correct}/${w.total})</span>`;
-
-        const topics = findTopicsForDomain(w.domain);
-        if (topics && topics.length) {
-          out += '<div style="font-size: 0.85em; margin-top: 6px; display: flex; flex-wrap: wrap; gap: 6px;">Recommended: ';
-          topics.forEach(t => {
-            out += `<a href="${t.filename}" class="domain-action-btn secondary" style="padding: 4px 8px; font-size: 0.8em;">${t.title}</a>`;
-          });
-          out += '</div>';
-        }
-        out += '</li>';
-      });
-      out += '</ol>';
       contentEl.innerHTML = out;
     }
+
 
     // ===== WORKFLOW SUMMARY (Only unchecked items) =====
     const WORKFLOW_STEPS = [
@@ -2008,7 +2222,10 @@
       // Study Assistant refresh button
       const saRefreshBtn = document.getElementById('study-assistant-refresh');
       if (saRefreshBtn) {
-        saRefreshBtn.addEventListener('click', renderStudyAssistant);
+        saRefreshBtn.addEventListener('click', () => {
+          window.saIndex = (window.saIndex || 0) + 1;
+          renderStudyAssistant();
+        });
       }
     });
 
@@ -2042,11 +2259,6 @@
       const scores = JSON.parse(localStorage.getItem('mergedQuizScores') || '{}');
 
       // 2. Map internal keys to Objective IDs
-      // id, gov -> 1
-      // storage -> 2
-      // compute -> 3
-      // vnet -> 4
-      // monitor -> 5
       const map = {
         '1': ['id', 'gov'],
         '2': ['storage'],
@@ -2087,13 +2299,11 @@
         const statusIcon = percent >= 76 ? 'fa-check-circle' : (percent >= 50 ? 'fa-exclamation-triangle' : 'fa-times-circle');
         const displayScore = hasData ? `${percent}%` : '--';
 
+        // Parent Row
         html += `
-          <tr style="border-bottom:1px solid var(--border-color-subtle);">
+          <tr style="border-bottom:1px solid var(--border-color-subtle); background: var(--bg-secondary);">
             <td style="padding:10px 8px;">
               <div style="font-weight:600; color:var(--text-primary);">${dom.id} ${dom.name}</div>
-              <div style="font-size:0.85em; color:var(--text-muted); margin-top:2px;">
-                ${dom.objectives.length} sub-objectives (e.g., ${dom.objectives[0].id})
-              </div>
             </td>
             <td style="padding:10px 8px; color:var(--text-muted);">${dom.weight}</td>
             <td style="padding:10px 8px; font-weight:bold; color:${hasData ? color : 'var(--text-muted)'};">
@@ -2104,6 +2314,39 @@
             </td>
           </tr>
         `;
+
+        // Sub-objectives
+        if (dom.objectives && dom.objectives.length > 0) {
+          dom.objectives.forEach(sub => {
+            // Check if specific sub-objective score exists
+            const subScore = scores[sub.id];
+            let subPercent = 0;
+            let subHasData = false;
+
+            if (subScore && subScore.total > 0) {
+              subPercent = Math.round((subScore.correct / subScore.total) * 100);
+              subHasData = true;
+            }
+
+            const subColor = subPercent >= 76 ? 'var(--success-color)' : (subPercent >= 50 ? '#f59e0b' : '#ef4444');
+
+            html += `
+                  <tr style="border-bottom:1px solid var(--border-color-subtle); font-size: 0.85em;">
+                    <td style="padding:6px 8px 6px 24px; color:var(--text-secondary);">
+                      <i class="fas fa-angle-right" style="margin-right:6px; font-size:0.8em; color:var(--text-muted);"></i>
+                      ${sub.id} ${sub.name}
+                    </td>
+                    <td style="padding:6px 8px; color:var(--text-muted);">-</td>
+                    <td style="padding:6px 8px; color:${subHasData ? subColor : 'var(--text-muted)'};">
+                      ${subHasData ? subPercent + '%' : '--'}
+                    </td>
+                    <td style="padding:6px 8px;">
+                       ${subHasData ? '' : ''} 
+                    </td>
+                  </tr>
+                `;
+          });
+        }
       });
 
       html += '</tbody></table>';
@@ -2111,7 +2354,7 @@
       // Add "Sort Logs" button context
       html += `
         <div style="margin-top:12px; font-size:0.85em; color:var(--text-muted); text-align:center;">
-          <i class="fas fa-info-circle"></i> Quiz logs are automatically grouped into these 5 domains.
+          <i class="fas fa-info-circle"></i> Granular data requires tagging quizzes with specific sub-objective IDs (e.g., "3.1").
         </div>
       `;
 

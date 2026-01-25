@@ -1316,9 +1316,281 @@
       renderLibrary();
     });
 
+    // AI TRAINER INSIGHTS (Simulated 'Root Cause' Engine)
+    const TRAINER_INSIGHTS = {
+      'Storage': {
+        header: 'Confusion of Scope: Availability Zones vs. Regions',
+        synthesis: 'You are consistently confusing Zonal redundancy (ZRS) with Regional redundancy (GRS). ZRS replicates *within* a region (protecting against datacenter failure), while GRS pairs two *different* regions (protecting against total regional outage).',
+        rule: 'IF requirement = "Datacenter Failure", THEN Answer = ZRS. IF requirement = "Region Failure", THEN Answer = GRS.'
+      },
+      'Compute': {
+        header: 'Orchestration Logic Error: Flexible vs. Uniform',
+        synthesis: 'Your results show a misunderstanding of VM Scale Set orchestration modes. You are selecting "Uniform" mode for scenarios requiring high availability with manual control, but "Flexible" mode is required when you need to mix different VM types or manage instances individually.',
+        rule: 'IF requirement = "Fast Scaling + Identical VMs", THEN Answer = Uniform. IF requirement = "High Availability + Custom VMs", THEN Answer = Flexible.'
+      },
+      'Networking': {
+        header: 'Connectivity Misconception: Peering vs. VPN',
+        synthesis: 'You are defaulting to VPN Gateways for connecting VNets in the same region. This adds unnecessary latency and cost. VNet Peering is the preferred, low-latency method for backbone connectivity.',
+        rule: 'IF connecting VNets (same or different region), THEN Answer = Peering. IF connecting On-Prem to Azure, THEN Answer = VPN or ExpressRoute.'
+      },
+      'Identities': {
+        header: 'RBAC Scope Failure: Role Assignment vs. Definition',
+        synthesis: 'You often mistake "Role Definitions" (what permissions exist) for "Role Assignments" (who gets them). You cannot give access by just creating a definition; you must assign it to a principal at a specific scope.',
+        rule: 'IF modifying "What can be done", THEN Answer = Custom Role Definition. IF modifying "Who can do it", THEN Answer = Role Assignment.'
+      },
+      'Monitoring': {
+        header: 'Alert Logic Error: Metric vs. Log Alerts',
+        synthesis: 'You are confusing real-time numerical thresholds (Metric Alerts) with complex pattern matching (Log Alerts). Metric alerts are for simple values like CPU > 80%, while Log alerts query historical text data.',
+        rule: 'IF trigger = "CPU/Memory Limit", THEN Answer = Metric Alert. IF trigger = "Specific Error Message", THEN Answer = Log Alert.'
+      }
+    };
+
+    // --- API INTEGRATION (PHASE 2) ---
+    // Technical Spec 3.1 & 3.2: Payload Logic
+    async function fetchDiagnosticInsight(domain) {
+      // 0. API Key Check
+      const apiKey = localStorage.getItem('az104ApiKey');
+      if (!apiKey && !localStorage.getItem('diagnosticPayload')) {
+        console.warn("[DiagnosticEngine] No API Key found. Using simulated trainer.");
+        // In a real app, we might prompt: alert("Please configure your API Key in Settings.");
+      }
+
+      // 1. Construct Payload
+      // Priority: Use live data from Weak Point Extractor if available
+      // 1. Construct Payload
+      // Priority: Use live data from Weak Point Extractor if available
+      let payload = null;
+      const storedPayload = localStorage.getItem('diagnosticPayload');
+
+      // 1.1 Load Historical Context (Bolstering Diagnostic Context)
+      const historyDecks = JSON.parse(localStorage.getItem('cprsLibrary') || '[]');
+      const historyScores = JSON.parse(localStorage.getItem('mergedQuizScores') || '{}');
+
+      const domainDecks = historyDecks.filter(d => d.domain === domain || (d.tags && d.tags.includes(domain)));
+      const contextSummary = {
+        total_decks_generated: historyDecks.length,
+        domain_specific_decks: domainDecks.length,
+        current_domain_score: historyScores[domain] || historyScores['2'] || 'N/A' // Approx mapping
+      };
+
+      if (storedPayload) {
+        try {
+          const parsed = JSON.parse(storedPayload);
+          payload = parsed;
+          // Merge historical context
+          payload.learning_history = contextSummary;
+          console.log("[DiagnosticEngine] Using live payload + Historical Context:", payload);
+        } catch (e) {
+          console.error("Failed to parse stored payload", e);
+        }
+      }
+
+      if (!payload) {
+        // Fallback: Construct synthetic payload from Domain intent
+        payload = {
+          domain: domain,
+          learning_history: contextSummary,
+          sub_topics: DOMAINS.find(d => d.key === domain)?.objectives.map(o => o.name) || [],
+          errors: [
+            {
+              question_id: 101, // Mock
+              topic: domain + " Core Concept",
+              user_logic: "User selection implies scope confusion",
+              correct_logic: "Requires specific SKU or Tier"
+            }
+          ]
+        };
+        console.log(`[DiagnosticEngine] Generated Synthetic Payload for ${domain}:`, payload);
+      }
+
+      // 2. Mock API Call & Heuristic Generation (Aggressive Logic)
+      return new Promise(resolve => {
+        setTimeout(() => {
+          // Detect Dominant Tag
+          // Detect Dominant Tag
+          const tags = payload.errors?.map(e => e.error_tag) || [];
+          const dominantTag = tags.sort((a, b) => tags.filter(v => v === a).length - tags.filter(v => v === b).length).pop();
+
+          let dynamicInsight = TRAINER_INSIGHTS[domain] || TRAINER_INSIGHTS['Storage'];
+
+          // --- AGGRESSIVE DETECTOR CHAIN (Prioritized) ---
+          const errors = payload.errors || [];
+          const findPattern = (fn) => errors.some(fn);
+
+          // 1. SCOPE BLINDNESS DETECTOR (Security Critical)
+          // Logic: Correct Role, Wrong Boundary (Subscription vs Resource Group)
+          if (findPattern(e => e.error_tag === 'Scope Failure' || e.topic?.includes('Scope') || (e.user_logic?.includes('Subscription') && e.correct_logic?.includes('Resource Group')))) {
+            dynamicInsight = {
+              header: 'DIAGNOSIS: SCOPE BLINDNESS',
+              synthesis: 'You are ignoring Resource Group boundaries. You selected the correct role but applied it at the Subscription level, violating Least Privilege.',
+              rule: 'IF target is "Specific Resource", THEN Answer = Resource Group Scope. IF target is "Billing/Policy", THEN Answer = Subscription Scope.'
+            };
+          }
+          // 2. NUCLEAR OPTION DETECTOR (Security Critical)
+          // Logic: Selecting "Owner" or "User Access Admin" for standard tasks
+          else if (findPattern(e => e.user_logic === 'Owner' || e.user_logic === 'User Access Administrator')) {
+            dynamicInsight = {
+              header: 'DIAGNOSIS: NUCLEAR OPTION DETECTED',
+              synthesis: 'Stop selecting "Owner" for deployment tasks. You are defaulting to the broadest permission set because you are unsure of specific limits.',
+              rule: 'IF Verb = "Deploy/Create", THEN Role = Contributor. NEVER select Owner unless the requirement is "Assign Permissions".'
+            };
+          }
+          // 3. MAINTENANCE VS CONFIG DETECTOR (Logic Error)
+          // Logic: "Operator" for "Fixing Code"
+          else if (findPattern(e => (e.user_logic?.includes('Operator')) && (e.question_id?.includes('Logic App') || e.topic?.includes('Broken') || e.correct_logic?.includes('Contributor')))) {
+            dynamicInsight = {
+              header: 'DIAGNOSIS: VERB-ACTION MISMATCH',
+              synthesis: 'Operators cannot change code—only restart services. You saw the word "Fix" and assumed Operator, but this task required logic modification.',
+              rule: 'IF Action = "Restart/Enable", THEN Role = Operator. IF Action = "Edit Workflow/Code", THEN Role = Contributor.'
+            };
+          }
+          // 4. CONCEPT CONFUSION DETECTOR (Technical Error)
+          else if (findPattern(e => e.topic?.includes('Replication') || e.user_logic === 'ZRS' || e.user_logic === 'GRS')) {
+            dynamicInsight = {
+              header: 'DIAGNOSIS: REDUNDANCY CONFUSION',
+              synthesis: 'You are mixing up ZRS (Zones/Data Center) with GRS (Regions). Zones protect against fire/flood in one building; Regions protect against natural disasters.',
+              rule: 'IF Req = "Datacenter Failure", THEN ZRS. IF Req = "Region Failure", THEN GRS.'
+            };
+          }
+          else if (findPattern(e => e.topic?.includes('Orchestration') || e.user_logic === 'Uniform' || e.user_logic === 'Flexible')) {
+            dynamicInsight = {
+              header: 'DIAGNOSIS: ORCHESTRATION CONFUSION',
+              synthesis: 'You are confusing Uniform Mode (manual) with Flexible Mode (automatic/high availability).',
+              rule: 'IF Req = "Manual Updates/Exact Control", THEN Uniform. IF Req = "Patch Free/High Availability", THEN Flexible.'
+            };
+          }
+
+          resolve(dynamicInsight);
+        }, 800);
+      });
+    }
+
+    async function renderInsights() {
+      const insightEl = document.getElementById('insight-message');
+      if (!insightEl) return;
+
+      const scores = JSON.parse(localStorage.getItem('mergedQuizScores') || '{}');
+
+      // Calculate Weakest Domain
+      let weakest = null;
+      let minPercent = 100;
+
+      // Default to Storage if no scores, or find actual weakest
+      const domains = ['Storage', 'Compute', 'Networking', 'Identities', 'Monitoring'];
+      let hasData = false;
+
+      domains.forEach(d => {
+        // Manual Map matching index.html logic
+        const keyMap = {
+          'Identities': ['id', 'gov', '1'],
+          'Storage': ['storage', '2'],
+          'Compute': ['compute', '3'],
+          'Networking': ['vnet', '4'],
+          'Monitoring': ['monitor', '5']
+        };
+
+        let total = 0;
+        let correct = 0;
+
+        const scoreKeys = keyMap[d] || [];
+        scoreKeys.forEach(k => {
+          if (scores[k]) {
+            total += scores[k].total || 0;
+            correct += scores[k].correct || 0;
+          }
+        });
+
+        if (total > 0) {
+          hasData = true;
+          const p = (correct / total) * 100;
+          if (p < minPercent) {
+            minPercent = p;
+            weakest = d;
+          }
+        }
+      });
+
+      if (!hasData) {
+        weakest = 'Storage';
+      }
+
+      // UI INTERVENTION: Red Mode for < 70%
+      const headerEl = document.querySelector('.container h1');
+      const containerEl = document.querySelector('.container');
+      const subTitleEl = document.querySelector('.container .subtitle');
+
+      if (minPercent < 70) {
+        if (containerEl) {
+          containerEl.style.border = "4px solid #dc3545"; // Aggressive border
+          containerEl.style.background = "#fff5f5";
+          containerEl.style.padding = "24px";
+          containerEl.style.borderRadius = "12px";
+        }
+        if (headerEl) {
+          headerEl.innerHTML = `<i class="fas fa-exclamation-triangle"></i> REMEDIATION REQUIRED`;
+          headerEl.style.color = "#dc3545";
+          headerEl.style.textTransform = "uppercase";
+          headerEl.style.fontWeight = "800";
+        }
+        if (subTitleEl) {
+          subTitleEl.textContent = `Critical failure detected in ${weakest}. Immediate intervention required.`;
+          subTitleEl.style.color = "#a71d2a";
+          subTitleEl.style.fontWeight = "600";
+        }
+      } else {
+        // Reset styles (just in case)
+        if (containerEl) {
+          containerEl.style.border = "none";
+          containerEl.style.background = "transparent";
+          containerEl.style.padding = "0";
+        }
+        if (headerEl) {
+          headerEl.innerHTML = `<i class="fas fa-layer-group"></i> Anki Deck Library`;
+          headerEl.style.color = "var(--purple)";
+          headerEl.style.textTransform = "none";
+        }
+        if (subTitleEl) {
+          subTitleEl.textContent = "Track your CPRS study coverage across all AZ-104 domains";
+          subTitleEl.style.color = "var(--text-secondary)";
+        }
+      }
+
+      // Update UI to 'Analyzing...' state
+      insightEl.innerHTML = `
+        <div style="display:flex; align-items:center; gap:10px; color:var(--text-secondary);">
+           <i class="fas fa-circle-notch fa-spin"></i>
+           <span>Analyzing ${weakest} missed questions...</span>
+        </div>
+      `;
+
+      const insight = await fetchDiagnosticInsight(weakest);
+
+      // Render Insight Widget
+      const html = `
+        <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
+           <div style="display:flex; align-items:center; gap:10px; color:#dc3545; font-weight:700;">
+              <i class="fas fa-microscope"></i>
+              <span>DIAGNOSIS: ${insight.header}</span>
+           </div>
+           <div style="font-size:0.95em; color:var(--text-primary); line-height:1.5;">
+              ${insight.synthesis}
+           </div>
+           <div style="margin-top:4px; padding:8px 12px; background:rgba(16, 124, 16, 0.1); border-left:3px solid var(--success-color); border-radius:4px; font-size:0.9em;">
+              <strong style="color:var(--success-color);">REMEMBER:</strong> ${insight.rule}
+           </div>
+        </div>
+      `;
+
+      insightEl.innerHTML = html;
+      insightEl.style.background = 'var(--bg-secondary)';
+      insightEl.style.border = '1px solid var(--border-color)';
+      insightEl.style.boxShadow = '0 2px 8px rgba(0,0,0,0.05)';
+    }
+
     document.addEventListener('DOMContentLoaded', () => {
       renderLibrary();
       initLibrarySync();
+      setTimeout(renderInsights, 500); // Small delay to ensure styles/DOM ready
     });
   </script>
 </body>
