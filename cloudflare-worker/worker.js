@@ -175,7 +175,7 @@ async function callOpenAI(apiKey, messages, maxTokens = 2000) {
 
 async function handleExtractConcepts(request, env) {
   const origin = request.headers.get("Origin");
-  
+
   try {
     const data = await request.json();
     if (!data || !data.text) {
@@ -230,9 +230,6 @@ Format your response as JSON with this structure:
 }
 
 Quiz review content:
-<<<<<<< HEAD
-${rawText.slice(0, 4000)}`;
-=======
 ${rawText.slice(0, 16000)}`;
 
     // Generate specific cache key for this text content
@@ -247,30 +244,22 @@ ${rawText.slice(0, 16000)}`;
         return new Response(JSON.stringify({ ...cached, cached: true }), { headers: corsHeaders(origin) });
       }
     }
->>>>>>> 8018936 (feat(sync): Migrate to Firebase and fix Worker limits)
 
     const result = await callOpenAI(env.OPENAI_API_KEY, [
       { role: "system", content: "You are an Azure certification expert who provides accurate, authoritative Azure facts for the AZ-104 exam. Always be precise and factual." },
       { role: "user", content: prompt }
     ]);
 
-<<<<<<< HEAD
-=======
 
->>>>>>> 8018936 (feat(sync): Migrate to Firebase and fix Worker limits)
     const allConceptNames = result.concepts ? result.concepts.map(c => c.name) : [];
     allConceptNames.push(...localConcepts);
 
     result.guide_references = findGuideReferences(allConceptNames);
     result.local_concepts = localConcepts;
 
-<<<<<<< HEAD
-=======
     if (env.CPRS_CACHE) {
       await env.CPRS_CACHE.put(cacheKey, JSON.stringify(result), { expirationTtl: 60 * 60 * 24 * 7 }); // Cache for 7 days
     }
-
->>>>>>> 8018936 (feat(sync): Migrate to Firebase and fix Worker limits)
     return new Response(JSON.stringify(result), { headers: corsHeaders(origin) });
 
   } catch (e) {
@@ -329,6 +318,8 @@ async function handleGenerateCPRS(request, env) {
     }
 
     const prompt = `You are an Azure certification expert using the CPRS (Concept-Pathway Reinforcement System) methodology.
+
+Before generating questions, identify the PRIMARY AZURE ACTION VERB associated with each concept. Each MCQ must test a single Azure action or permission implied by that verb.
 
 Generate 6 SEPARATE multiple-choice questions (MCQ) for: "${concept}"
 
@@ -541,7 +532,7 @@ async function handleGetAnkiDeck(request, env) {
 
   try {
     const object = await env.ANKI_DECKS.get(deckName);
-    
+
     if (!object) {
       return new Response(JSON.stringify({ error: "Deck not found" }), {
         status: 404,
