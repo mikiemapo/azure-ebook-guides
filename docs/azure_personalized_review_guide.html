@@ -2833,6 +2833,10 @@
           statsEl.style.display = 'none';
           outputEl.style.display = 'none';
 
+          // Visual feedback for Action Verb constraints
+          const originalLoadingText = loadingEl.innerHTML;
+          loadingEl.innerHTML = '<div class="spinner"></div><div style="margin-top:10px;font-weight:500;color:var(--azure-blue)">Identifying PRIMARY AZURE ACTION VERB...</div>';
+
           try {
             const apiBase = (window.AZ104_API_CONFIG && window.AZ104_API_CONFIG.baseUrl) || '';
             const response = await fetch(apiBase + '/api/generate-cprs', {
@@ -2840,6 +2844,9 @@
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ concept: concept })
             });
+
+            // Restore loading text (though it gets hidden immediately on success)
+            loadingEl.innerHTML = originalLoadingText;
 
             const data = await response.json();
             loadingEl.style.display = 'none';
